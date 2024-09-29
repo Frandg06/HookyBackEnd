@@ -23,6 +23,7 @@ class AuthService {
     }
 
     public function login($data) {
+
       if (!Auth::attempt($data)) {
         throw new \Exception('Invalid credentials');
       }
@@ -36,5 +37,17 @@ class AuthService {
           'access_token' => $token,
           'token_type' => 'Bearer',
       ]);
+    }
+
+    public function setCompany($request) {
+      
+      if(!$request->user()){
+        throw new \Exception("The user not exist");
+      }
+
+      $request->user()->company_id = $request->company_id;
+      $request->user()->save();
+
+      return $request->user()->company_id;
     }
 }
