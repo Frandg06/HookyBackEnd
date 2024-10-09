@@ -28,15 +28,14 @@ class AuthService {
         throw new \Exception('Invalid credentials');
       }
 
-      $user = User::where('email', $data['email'])->firstOrFail();
+      $user = User::where('email', $data['email'])->get()->firstOrFail();
 
-      $token = $user->createToken('auth_token', ['*'], now()->addHours(1))->plainTextToken;
-      
-      return response()->json([
+      $token =  $user->createToken('auth_token', ['*'], now()->addHours(1))->plainTextToken;
+      return [
           'user' => $user,
           'access_token' => $token,
           'token_type' => 'Bearer',
-      ]);
+      ];
     }
 
     public function setCompany($request) {

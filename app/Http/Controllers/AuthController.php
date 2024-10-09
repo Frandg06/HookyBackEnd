@@ -22,7 +22,7 @@ class AuthController extends Controller
             $data = $request->only('name', 'email', 'password');
             $response = $this->authService->register($data);
             return response()->json([
-                "succes" => true,
+                "success" => true,
                 "message" => "Registered successfully",
                 "data" => $response
             ]);
@@ -40,7 +40,7 @@ class AuthController extends Controller
             $data = $request->only('email', 'password');
             $response = $this->authService->login($data);
             return response()->json([
-                "succes" => true,
+                "success" => true,
                 "data" => $response,
                 "message" => "Logged in successfully"
             ]);
