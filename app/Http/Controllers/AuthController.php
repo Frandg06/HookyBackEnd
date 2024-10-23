@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CompleteDataRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Services\AuthService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use \stdClass;
 
 class AuthController extends Controller
@@ -70,6 +72,26 @@ class AuthController extends Controller
             ]);
 
         }catch (Exception $e){
+            return response()->json([
+                "error" => true,
+                "message" => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function update(CompleteDataRequest $request) {
+
+        $user = $request->user();
+        $data = $request->only(["instagram", "twitter", "description", "city", "born_date", "gender_id", "sexual_orientation_id"]);
+        try {
+            $response = $this->authService->completeInfo($user, $data);
+
+            return response()->json([
+                "success" => true,
+                "data" => $response,
+                "message" => "Data complete succesfuly",
+            ]);
+        } catch (Exception $e) {
             return response()->json([
                 "error" => true,
                 "message" => $e->getMessage(),

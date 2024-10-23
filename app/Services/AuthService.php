@@ -5,12 +5,20 @@ use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AuthService {
 
     public function register($data) {
 
-      $user = User::create($data);
+      $companyDefaultData = [
+        'like_credits' => 20,
+        'super_like_credits' => 3,
+      ];
+
+      $paseData = array_merge($companyDefaultData, $data);
+
+      $user = User::create($paseData);
 
       $token = $user->createToken('auth_token', ['*'], now()->addHours(1))->plainTextToken;
 
@@ -36,6 +44,20 @@ class AuthService {
           'access_token' => $token,
           'token_type' => 'Bearer',
       ];
+    }
+
+    public function completeInfo(User $user, $data) {
+      try {
+        $user->completeInfo($data);
+
+        $user->isDataComplete();
+        
+        return $user;
+
+      } catch (\Exception $e) {
+        throw new \Exception($e->getMessage());
+      }
+
     }
 
     public function setCompany($request) {

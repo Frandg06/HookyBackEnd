@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('company_id')->nullable();
-            $table->bigInteger('gender_id')->nullable();
-            $table->bigInteger('sexual_orientation')->nullable();
-            $table->bigInteger('role_id')->nullable();
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->unsignedBigInteger('gender_id')->nullable();
+            $table->unsignedBigInteger('sexual_orientation_id')->nullable();
+            $table->unsignedBigInteger('role_id')->default(2); 
             $table->string('name');
             $table->string('surnames')->nullable();
             $table->string('email')->unique();
@@ -25,7 +25,6 @@ return new class extends Migration
             $table->longText('description')->nullable();
             $table->integer('like_credits')->nullable();
             $table->integer('super_like_credits')->nullable();
-            $table->timestamp('email_verified_at')->nullable();
             $table->boolean('data_complete')->default(false);
             $table->string('password');
             $table->rememberToken();

@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Gender;
+use App\Models\Role;
+use App\Models\SexualOrientation;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -13,11 +16,45 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        Gender::create([
+            'name' => 'Female',
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        Gender::create([
+            'name' => 'Male',
+        ]);
+
+        Role::create([
+            'name' => 'Admin',
+        ]);
+
+        Role::create([
+            'name' => 'User',
+        ]);
+
+        Role::create([
+            'name' => 'Vip',
+        ]);
+
+        SexualOrientation::create([
+            'name' => 'Bisexual',
+        ]);
+
+        SexualOrientation::create([
+            'name' => 'Heterosexual',
+        ]);
+
+        SexualOrientation::create([
+            'name' => 'Homosexual',
+        ]);
+
+        User::create([
+            'name' => 'Admin',
+            'surnames' => "Fran",
+            'email' => 'a@a.es',
+            'password' => bcrypt('a'),
+            'like_credits' => 20,
+            'super_like_credits' => 3,
         ]);
     }
 }

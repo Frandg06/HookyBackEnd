@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ImageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 /*
@@ -13,9 +14,18 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::get('/user/auth', [AuthController::class, 'checkAuthentication']);
-    Route::get('/logout', [AuthController::class, 'logout']);
-    Route::post('/user/company', [AuthController::class, 'setCompany']);
+    
+    Route::group(['prefix' => 'user'], function () {
+        Route::get('/auth', [AuthController::class, 'checkAuthentication']);
+        Route::put('/company/{company_id}', [AuthController::class, 'setCompany']);
+        Route::put('/update', [AuthController::class, 'update']);
+        Route::get('/logout', [AuthController::class, 'logout']);
+        Route::post('/images', [ImageController::class, 'store']);
+    });
+
+
+
+    
 });
 
 
