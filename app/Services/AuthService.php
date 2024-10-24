@@ -1,11 +1,9 @@
 <?php
 namespace App\Services;
 
-use App\Http\Requests\RegisterRequest;
+use App\Http\Resources\UserReosurce;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class AuthService {
 
@@ -23,7 +21,7 @@ class AuthService {
       $token = $user->createToken('auth_token', ['*'], now()->addHours(1))->plainTextToken;
 
       return [
-          'user' => $user,
+          'user' => UserReosurce::make($user),
           'access_token' => $token,
           'token_type' => 'Bearer',
       ];
@@ -36,11 +34,10 @@ class AuthService {
         throw new \Exception('Invalid credentials');
       }
 
-      $user = User::where('email', $data['email'])->get()->firstOrFail();
-
+      $user = User::with('userImages')->where('email', $data['email'])->get()->firstOrFail();
       $token =  $user->createToken('auth_token', ['*'], now()->addHours(1))->plainTextToken;
       return [
-          'user' => $user,
+          'user' => UserReosurce::make($user),
           'access_token' => $token,
           'token_type' => 'Bearer',
       ];
@@ -52,7 +49,7 @@ class AuthService {
 
         $user->isDataComplete();
         
-        return $user;
+        return UserReosurce::make($user);
 
       } catch (\Exception $e) {
         throw new \Exception($e->getMessage());

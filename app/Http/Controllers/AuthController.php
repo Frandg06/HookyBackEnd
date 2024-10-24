@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CompleteDataRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Resources\UserReosurce;
 use App\Services\AuthService;
 use Exception;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class AuthController extends Controller
     public function register(RegisterRequest $request) 
     {
         try {
-            $data = $request->only('name', 'email', 'password');
+            $data = $request->only('name', 'surnames', 'email', 'password');
             $response = $this->authService->register($data);
             return response()->json([
                 "success" => true,
@@ -54,7 +55,8 @@ class AuthController extends Controller
         }
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request) 
+    {
 
         $request->user()->tokens()->delete();
         return response()->json(["success" => true, 'message' => 'Logged out successfully'], 200);
@@ -63,7 +65,10 @@ class AuthController extends Controller
 
     public function checkAuthentication(Request $request) {
         try {
-            $user = $request->user();
+            
+            $userRequest = $request->user();
+
+            $user = UserReosurce::make($userRequest);
 
             return response()->json([
                 "success" => true,
@@ -82,7 +87,7 @@ class AuthController extends Controller
     public function update(CompleteDataRequest $request) {
 
         $user = $request->user();
-        $data = $request->only(["instagram", "twitter", "description", "city", "born_date", "gender_id", "sexual_orientation_id"]);
+        $data = $request->only(["instagram", "twitter", "description", "city", "born_date", "gender_id", "sexual_orientation_id", "socials"]);
         try {
             $response = $this->authService->completeInfo($user, $data);
 

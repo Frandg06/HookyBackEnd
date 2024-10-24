@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Gender;
 use App\Models\Role;
 use App\Models\SexualOrientation;
+use App\Models\Social;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -55,6 +56,16 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('a'),
             'like_credits' => 20,
             'super_like_credits' => 3,
+        ]);
+
+        Social::create([
+            "name" => "Instagram",
+            "base_url" => "https://www.instagram.com/"
+        ]);
+
+        Social::create([
+            "name" => "Twitter",
+            "base_url" => "https://x.com/"
         ]);
     }
 }

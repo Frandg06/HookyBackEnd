@@ -3,17 +3,20 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Models\Traits\HasUid;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens, HasUid;
 
     /**
      * The attributes that are mass assignable.
@@ -22,6 +25,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'surnames',
         'email',
         'password',
         'gender_id',
@@ -34,15 +38,19 @@ class User extends Authenticatable
         'super_like_credits',
     ];
 
+    protected $hidden = [
+        'password',
+        'remember_token',
+        'role_id',
+        'updated_at',
+        'created_at',
+    ];
+
     /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
 
     public function gender() : BelongsTo {
         return $this->belongsTo(Gender::class);
@@ -60,8 +68,32 @@ class User extends Authenticatable
         return $this->belongsTo(Company::class);
     }
 
+    public function userImages() : HasMany {
+        return $this->hasMany(UserImage::class);
+    }
+
+    public function socials() : BelongsToMany {
+        return $this->belongsToMany(Social::class, 'user_socials', 'user_id', 'social_id')->withPivot('social_name');
+    }
+
+    public function getAgeAttribute() : int {
+        return Carbon::parse($this->born_date)->age;
+    }
+
+    public function getInstagramAttribute() {
+        $social = $this->socials()->where("social_id", 1)->first();
+
+        return $social->base_url . $social->pivot->social_name;
+    }
+
+    public function getTwAttribute() {
+        $social = $this->socials()->where("social_id", 2)->first();
+
+        return $social->base_url . $social->pivot->social_name;
+    }
 
     public function completeInfo(array $array) {
+        $this->socials()->attach($array['socials']);
         return $this->update($array);
     }
 
@@ -77,8 +109,11 @@ class User extends Authenticatable
             }
         }
 
-        return $this->setCompleteData(true);
+        if($this->userImages()->count() < 3) {
+            return $this->setCompleteData(false);
+        }
 
+        return $this->setCompleteData(true);
     }
 
     /**
