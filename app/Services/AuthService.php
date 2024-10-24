@@ -43,9 +43,14 @@ class AuthService {
       ];
     }
 
-    public function completeInfo(User $user, $data) {
+    public function update(User $user, $data) {
       try {
-        $user->completeInfo($data);
+        
+        $socials = $data['socials'] ?? [];
+        $user->update($data);
+
+        
+
 
         $user->isDataComplete();
         

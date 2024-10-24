@@ -87,9 +87,9 @@ class AuthController extends Controller
     public function update(CompleteDataRequest $request) {
 
         $user = $request->user();
-        $data = $request->only(["instagram", "twitter", "description", "city", "born_date", "gender_id", "sexual_orientation_id", "socials"]);
+        $data = $request->all();
         try {
-            $response = $this->authService->completeInfo($user, $data);
+            $response = $this->authService->update($user, $data);
 
             return response()->json([
                 "success" => true,

@@ -39,8 +39,14 @@ class UserReosurce extends JsonResource
                 ] ;
             }),
             "socials" => [
-                "instagram" => $this->instagram,
-                "tw" => $this->tw
+                "instagram" => [
+                    "name" => $this->igName,
+                    "url" => $this->igUrl
+                ],
+                "tw" => [
+                    "name" => $this->twName,
+                    "url" => $this->twUrl
+                ]
             ]
         ];
     }

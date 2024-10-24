@@ -80,22 +80,26 @@ class User extends Authenticatable
         return Carbon::parse($this->born_date)->age;
     }
 
-    public function getInstagramAttribute() {
-        $social = $this->socials()->where("social_id", 1)->first();
+    public function getIgUrlAttribute() {
+        $social = $this->socials()->where("social_id", 1)->first() ?? null;
 
-        return $social->base_url . $social->pivot->social_name;
+        return $social ? $social->base_url . $social->pivot->social_name : null;
     }
 
-    public function getTwAttribute() {
-        $social = $this->socials()->where("social_id", 2)->first();
+    public function getTwUrlAttribute() {
+        $social = $this->socials()->where("social_id", 2)->first() ?? null;
 
-        return $social->base_url . $social->pivot->social_name;
+        return $social ? $social->base_url . $social->pivot->social_name : null;
     }
 
-    public function completeInfo(array $array) {
-        $this->socials()->attach($array['socials']);
-        return $this->update($array);
+    public function getIgNameAttribute() {
+        return $this->socials()->where("social_id", 1)->first()->pivot->social_name ?? null;
     }
+
+    public function getTwNameAttribute() {
+        return $this->socials()->where("social_id", 2)->first()->pivot->social_name ?? null;
+    }
+
 
     public function setCompleteData(bool $value) {
         $this->data_complete = $value;
