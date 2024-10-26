@@ -20,11 +20,7 @@ class ImagesService {
         DB::beginTransaction();
 
         $newImage = $user->userImages()->create([
-          'height' => 400,
-          'width' => 500,
-          'extension' => "webp",
           'order' => $user->userImages()->count() + 1,
-          'size' => round(340, 2),
         ]);
 
         $storage = Storage::disk('r2')->put($newImage->url, $image);
@@ -59,6 +55,7 @@ class ImagesService {
       }
       
       $imageToDelete->delete();
+      
       return true;
 
     } catch (\Exception $e) {
