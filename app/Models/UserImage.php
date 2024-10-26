@@ -13,10 +13,7 @@ class UserImage extends Model
 
     protected $fillable = [
         'url',
-        'height',
-        'width',
         'order',
-        'size',
         'extension'
     ];
 
@@ -29,9 +26,6 @@ class UserImage extends Model
     protected $hidden = [
         'id',
         'user_id',
-        'height',
-        'width',
-        'size',
         'created_at',
         'updated_at',
     ];

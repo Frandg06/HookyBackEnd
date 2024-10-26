@@ -7,29 +7,27 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Laravel\Facades\Image;
 
 class ImagesService {
 
   public function store(User $user, $img) {
 
-    $imageSize = getimagesize($img);
-    $width = $imageSize[0];
-    $height = $imageSize[1];
-    $size = filesize($img) / 1048576;
+    $image = Image::read($img)->resize(500, null)->toWebP(80);
 
 
     try {
         DB::beginTransaction();
 
         $newImage = $user->userImages()->create([
-          'height' => $height,
-          'width' => $width,
-          'extension' => $img->getClientOriginalExtension(),
+          'height' => 400,
+          'width' => 500,
+          'extension' => "webp",
           'order' => $user->userImages()->count() + 1,
-          'size' => round($size, 2),
+          'size' => round(340, 2),
         ]);
 
-        $storage = Storage::disk('r2')->put($newImage->url, file_get_contents($img));
+        $storage = Storage::disk('r2')->put($newImage->url, $image);
 
         if(!$storage) {
           throw new \Exception("Error storing image");
