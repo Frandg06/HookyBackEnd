@@ -36,6 +36,8 @@ class User extends Authenticatable
         'description',
         'like_credits',
         'super_like_credits',
+        'tw',
+        'ig',
     ];
 
     protected $hidden = [
@@ -72,34 +74,9 @@ class User extends Authenticatable
         return $this->hasMany(UserImage::class);
     }
 
-    public function socials() : BelongsToMany {
-        return $this->belongsToMany(Social::class, 'user_socials', 'user_id', 'social_id')->withPivot('social_name');
-    }
-
     public function getAgeAttribute() : int {
         return Carbon::parse($this->born_date)->age;
     }
-
-    public function getIgUrlAttribute() {
-        $social = $this->socials()->where("social_id", 1)->first() ?? null;
-
-        return $social ? $social->base_url . $social->pivot->social_name : null;
-    }
-
-    public function getTwUrlAttribute() {
-        $social = $this->socials()->where("social_id", 2)->first() ?? null;
-
-        return $social ? $social->base_url . $social->pivot->social_name : null;
-    }
-
-    public function getIgNameAttribute() {
-        return $this->socials()->where("social_id", 1)->first()->pivot->social_name ?? null;
-    }
-
-    public function getTwNameAttribute() {
-        return $this->socials()->where("social_id", 2)->first()->pivot->social_name ?? null;
-    }
-
 
     public function setCompleteData(bool $value) {
         $this->data_complete = $value;

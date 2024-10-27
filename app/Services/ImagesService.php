@@ -13,7 +13,7 @@ class ImagesService {
 
   public function store(User $user, $img) {
 
-    $image = Image::read($img)->resize(500, null)->toWebP(80);
+    $image = $this->optimize($img);
 
 
     try {
@@ -61,5 +61,9 @@ class ImagesService {
     } catch (\Exception $e) {
       throw new \Exception($e->getMessage());
     }
+  }
+
+  public function optimize($image) {
+    return Image::read($image)->resize(500, null)->toWebP(80);
   }
 }

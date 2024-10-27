@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('city')->nullable(); 
             $table->date('born_date')->nullable();
+            $table->string('ig')->nullable();
+            $table->string('tw')->nullable();
             $table->longText('description')->nullable();
             $table->integer('like_credits')->nullable();
             $table->integer('super_like_credits')->nullable();
