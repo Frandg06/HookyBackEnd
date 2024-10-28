@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Http\Resources\UserReosurce;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthService {
 
@@ -48,11 +49,6 @@ class AuthService {
         
         $socials = $data['socials'] ?? [];
         $user->update($data);
-
-        
-
-
-        $user->isDataComplete();
         
         return UserReosurce::make($user);
 
@@ -72,5 +68,20 @@ class AuthService {
       $request->user()->save();
 
       return $request->user()->company_id;
+    }
+
+    public function changePassword($data, $user) {
+      try {
+        if(!Hash::check($data['old_password'], $user->password)) {
+          throw new \Exception("La contraseña actual es incorrecta");
+        }
+
+        $user->password = bcrypt($data['password']);
+        $user->save();
+
+        return true;
+      } catch (\Exception $e) {
+        throw new \Exception($e->getMessage());
+      }
     }
 }

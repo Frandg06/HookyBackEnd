@@ -120,7 +120,31 @@ class AuthController extends Controller
                 "message" => $e->getMessage(),
             ]);
         }
-        
 
+    }
+
+    public function changePassword(Request $request) {
+        try {
+            $request->validate([
+                'old_password' => 'required',
+                'password' => 'required|min:8|confirmed',
+            ]);
+            $user = $request->user();
+            $data = $request->only('old_password', 'password');
+
+
+            $response = $this->authService->changePassword($data, $user);
+            
+            return response()->json([
+                "success" => true,
+                "data" => $response,
+                "message" => "Password changed successfully",
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                "error" => true,
+                "message" => $e->getMessage(),
+            ]);
+        }
     }
 }

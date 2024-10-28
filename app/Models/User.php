@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -78,25 +79,20 @@ class User extends Authenticatable
         return Carbon::parse($this->born_date)->age;
     }
 
-    public function setCompleteData(bool $value) {
-        $this->data_complete = $value;
-        $this->save();
-    }
-
-    public function isDataComplete() {
-        foreach ($this->getFillable() as $key => $value) {
-            if(!$value) {
-                return $this->setCompleteData(false);
+    public function getDataCompleteAttribute() : bool {
+        foreach ($this->getFillable() as $value) {
+            if(!$this->{$value} && $value != 'ig' && $value != 'tw' && $value != 'data_images') {
+                Log::info($value);
+                return false; 
+                break;
             }
         }
-
-        if($this->userImages()->count() < 3) {
-            return $this->setCompleteData(false);
-        }
-
-        return $this->setCompleteData(true);
+        return true; 
     }
 
+    public function getDataImagesAttribute() : bool {
+        return $this->userImages()->count() == 3 ? true : false;
+    }
     /**
      * Get the attributes that should be cast.
      *

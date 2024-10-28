@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserReosurce;
 use App\Services\ImagesService;
 use Illuminate\Http\Request;
 
@@ -22,11 +23,12 @@ class ImageController extends Controller
         $user = $request->user();
         $image = $request->file('image');
         
-        try {
+        if($user->userImages()->count() == 3) return $this->responseError("El usuario ya tiene 3 imágenes");
 
+        try {
             $response = $this->imageService->store($user, $image);
             if(!$response) return $this->responseError("Unexpected error while uploading image");
-            return $this->responseSuccess('Image uploaded successfully');
+            return $this->responseSuccess('Image uploaded successfully', UserReosurce::make($user));
 
         } catch (\Exception $e) {
 
@@ -56,6 +58,19 @@ class ImageController extends Controller
 
         }
 
+    }
 
+    public function deleteAll(Request $request) {
+        try {
+
+            $response = $this->imageService->deleteAll();
+
+            return $this->responseSuccess('All images deleted successfully');
+
+        } catch (\Exception $e) {
+
+            return $this->responseError($e->getMessage(), 500);
+
+        }
     }
 }

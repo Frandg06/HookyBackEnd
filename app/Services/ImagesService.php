@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Models\UserImage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -16,8 +16,8 @@ class ImagesService {
     $image = $this->optimize($img);
 
 
+    DB::beginTransaction();
     try {
-        DB::beginTransaction();
 
         $newImage = $user->userImages()->create([
           'order' => $user->userImages()->count() + 1,
@@ -63,7 +63,33 @@ class ImagesService {
     }
   }
 
+  public function deleteAll() {
+    try {
+      
+      foreach (UserImage::all() as $image) {
+        $image->delete();
+      }
+      
+      Storage::disk('r2')->deleteDirectory('hooky');
+
+      return true;
+
+    } catch (\Exception $e) {
+      throw new \Exception($e->getMessage());
+    }
+  }
+
   public function optimize($image) {
-    return Image::read($image)->resize(500, null)->toWebP(80);
+    $img = Image::read($image);
+
+    $ogWidth = $img->width();
+    $ogHeight = $img->height();
+
+    $aspectRatio = $ogWidth / $ogHeight;
+
+    $newHeight = 500 / $aspectRatio;
+
+
+    return $img->resize(500, $newHeight)->toWebP(80);
   }
 }

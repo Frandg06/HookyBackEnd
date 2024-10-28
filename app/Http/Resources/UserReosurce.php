@@ -29,6 +29,7 @@ class UserReosurce extends JsonResource
             "like_credits" => $this->like_credits,
             "super_like_credits" => $this->super_like_credits,
             "data_complete" => $this->data_complete,
+            "data_images" => $this->data_images,
             "age" => $this->age,
             "userImages" => $this->userImages->map(function ($image) {
                 return [

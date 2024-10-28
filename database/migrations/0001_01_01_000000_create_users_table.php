@@ -28,7 +28,6 @@ return new class extends Migration
             $table->longText('description')->nullable();
             $table->integer('like_credits')->nullable();
             $table->integer('super_like_credits')->nullable();
-            $table->boolean('data_complete')->default(false);
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
