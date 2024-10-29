@@ -11,11 +11,12 @@ abstract class Controller
         ], $code);
     }
 
-    public function responseSuccess($message, $data = []) {
+    public function responseSuccess($message, $user, $data = []) {
         return response()->json([
             'success' => true,
             'message' => $message,
             'data' => $data,
+            'user' => $user
         ]);
         
     }

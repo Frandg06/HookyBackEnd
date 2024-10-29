@@ -30,6 +30,7 @@ class UserReosurce extends JsonResource
             "super_like_credits" => $this->super_like_credits,
             "data_complete" => $this->data_complete,
             "data_images" => $this->data_images,
+            "data_interest" => $this->data_interest,
             "age" => $this->age,
             "userImages" => $this->userImages->map(function ($image) {
                 return [
@@ -48,7 +49,16 @@ class UserReosurce extends JsonResource
                     "name" => $this->tw,
                     "url" => "https://www.x.com/" . $this->tw
                 ]
-            ]
+            ],
+            "interests" => $this->interests->map(function ($interest) {
+                return [
+                    "id" => $interest->interest_id,
+                    "name" => $interest->interest->name,
+                    "icon" => $interest->interest->icon,
+                    "color" => $interest->interest->color,
+                    "bg_color" => $interest->interest->bg_color,
+                ];
+            }),
         ];
     }
 }

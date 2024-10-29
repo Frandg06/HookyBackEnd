@@ -55,5 +55,7 @@ class DatabaseSeeder extends Seeder
             'like_credits' => 20,
             'super_like_credits' => 3,
         ]);
+
+        $this->call(InterestSeeder::class);
     }
 }

@@ -8,7 +8,6 @@ use App\Http\Resources\UserReosurce;
 use App\Services\AuthService;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use \stdClass;
 
 class AuthController extends Controller
@@ -24,11 +23,7 @@ class AuthController extends Controller
         try {
             $data = $request->only('name', 'surnames', 'email', 'password');
             $response = $this->authService->register($data);
-            return response()->json([
-                "success" => true,
-                "message" => "Registered successfully",
-                "data" => $response
-            ]);
+            return $this->responseSuccess('Register in successfully', $response['user'], ["access_token" =>  $response['access_token']]);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => true,
@@ -42,16 +37,9 @@ class AuthController extends Controller
         try {
             $data = $request->only('email', 'password');
             $response = $this->authService->login($data);
-            return response()->json([
-                "success" => true,
-                "data" => $response,
-                "message" => "Logged in successfully"
-            ]);
+            return $this->responseSuccess('Logged in successfully', $response['user'], ["access_token" =>  $response['access_token']]);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => true,
-                "message" => $e->getMessage()
-            ], 400);
+            return $this->responseError($e->getMessage(), 400);
         }
     }
 
@@ -91,11 +79,7 @@ class AuthController extends Controller
         try {
             $response = $this->authService->update($user, $data);
 
-            return response()->json([
-                "success" => true,
-                "data" => $response,
-                "message" => "Data complete succesfuly",
-            ]);
+            return $this->responseSuccess('Data complete succesfuly', $response);
         } catch (Exception $e) {
             return response()->json([
                 "error" => true,

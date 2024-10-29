@@ -50,7 +50,7 @@ class ImageController extends Controller
 
             if(!$response) return $this->responseError("Unexpected error while deleting image", 500);
 
-            return $this->responseSuccess('Image delete successfully');
+            return $this->responseSuccess('Image delete successfully', UserReosurce::make($user));
 
         } catch (\Exception $e) {
 
@@ -60,12 +60,29 @@ class ImageController extends Controller
 
     }
 
-    public function deleteAll(Request $request) {
-        try {
+    public function deleteAllUserImage(Request $request)  {
+        $user = $request->user();
 
+        try{
+            
+            $response = $this->imageService->deleteAllUserImage($user);
+
+            if(!$response) return $this->responseError("Unexpected error while deleting image", 500);
+            
+            return $this->responseSuccess('Image delete successfully',  UserReosurce::make($user));
+
+        }catch(\Exception $e) {
+            return $this->responseError($e->getMessage(), 500);
+        }
+    }
+
+    public function deleteAll(Request $request) {
+        $user = $request->user();
+        
+        try {
             $response = $this->imageService->deleteAll();
 
-            return $this->responseSuccess('All images deleted successfully');
+            return $this->responseSuccess('All images deleted successfully', UserReosurce::make($user));
 
         } catch (\Exception $e) {
 

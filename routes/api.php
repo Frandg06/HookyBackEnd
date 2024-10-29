@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DomainController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 /*
@@ -20,16 +22,18 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::put('/company/{company_id}', [AuthController::class, 'setCompany']);
         Route::put('/update', [AuthController::class, 'update']);
         Route::get('/logout', [AuthController::class, 'logout']);
-        Route::post('/images', [ImageController::class, 'store']);
-        Route::delete('/images/{uid}', [ImageController::class, 'delete']);
-        Route::delete('/images', [ImageController::class, 'deleteAll']);
         Route::put('/password/update', [AuthController::class, 'changePassword']);
+        Route::post('/images', [ImageController::class, 'store']);
+        Route::delete('/image/{uid}', [ImageController::class, 'delete']);
+        Route::delete('/images/all', [ImageController::class, 'deleteAll']);
+        Route::delete('/images', [ImageController::class, 'deleteAllUserImage']);
+        Route::put('/interest', [UserController::class, 'updateInterest']);
     });
-
-
+    Route::get('/interests', [DomainController::class, 'getInterests']);
 
     
 });
+
 
 
 

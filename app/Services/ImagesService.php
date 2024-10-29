@@ -79,6 +79,21 @@ class ImagesService {
     }
   }
 
+  public function deleteAllUserImage($user) {
+    try {
+      foreach($user->userImages()->get() as $item) {
+        $item->delete();
+      }
+      $remove = Storage::disk('r2')->deleteDirectory("hooky/profile/$user->uid");
+
+      if(!$remove) throw new \Exception("Error deleting image");
+
+      return true;
+    } catch (\Exception $e) {
+      throw new \Exception($e->getMessage());
+    }
+  }
+
   public function optimize($image) {
     $img = Image::read($image);
 

@@ -75,9 +75,15 @@ class User extends Authenticatable
         return $this->hasMany(UserImage::class);
     }
 
+    public function interests() : HasMany {
+        return $this->hasMany(UserInterest::class);
+    }
+
     public function getAgeAttribute() : int {
         return Carbon::parse($this->born_date)->age;
     }
+
+    
 
     public function getDataCompleteAttribute() : bool {
         foreach ($this->getFillable() as $value) {
@@ -92,6 +98,10 @@ class User extends Authenticatable
 
     public function getDataImagesAttribute() : bool {
         return $this->userImages()->count() == 3 ? true : false;
+    }
+
+    public function getDataInterestAttribute() : bool {
+        return $this->interests()->count() >= 3 ? true : false;
     }
     /**
      * Get the attributes that should be cast.

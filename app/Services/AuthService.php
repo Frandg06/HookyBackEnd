@@ -24,7 +24,6 @@ class AuthService {
       return [
           'user' => UserReosurce::make($user),
           'access_token' => $token,
-          'token_type' => 'Bearer',
       ];
         
     }
@@ -40,7 +39,6 @@ class AuthService {
       return [
           'user' => UserReosurce::make($user),
           'access_token' => $token,
-          'token_type' => 'Bearer',
       ];
     }
 
