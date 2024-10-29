@@ -1,4 +1,4 @@
-<? 
+<?php
 namespace App\Services;
 
 use App\Models\User;
@@ -26,6 +26,7 @@ class UserService
       }
 
       return $user;
+      
     } catch (\Exception $e) {
       throw new \Exception($e->getMessage());
     }

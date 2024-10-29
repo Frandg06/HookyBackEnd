@@ -18,15 +18,20 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
     
     Route::group(['prefix' => 'user'], function () {
+        
         Route::get('/auth', [AuthController::class, 'checkAuthentication']);
-        Route::put('/company/{company_id}', [AuthController::class, 'setCompany']);
-        Route::put('/update', [AuthController::class, 'update']);
         Route::get('/logout', [AuthController::class, 'logout']);
         Route::put('/password/update', [AuthController::class, 'changePassword']);
-        Route::post('/images', [ImageController::class, 'store']);
+
+        Route::put('/update', [AuthController::class, 'update']);
+        Route::put('/company/{company_id}', [AuthController::class, 'setCompany']);
+
+        Route::post('/image', [ImageController::class, 'store']);
+        Route::post('/image/update', [ImageController::class, 'update']);
         Route::delete('/image/{uid}', [ImageController::class, 'delete']);
-        Route::delete('/images/all', [ImageController::class, 'deleteAll']);
         Route::delete('/images', [ImageController::class, 'deleteAllUserImage']);
+
+        Route::delete('/images/all', [ImageController::class, 'deleteAll']);
         Route::put('/interest', [UserController::class, 'updateInterest']);
     });
     Route::get('/interests', [DomainController::class, 'getInterests']);

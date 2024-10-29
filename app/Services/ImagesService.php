@@ -38,8 +38,8 @@ class ImagesService {
         throw new \Exception($e->getMessage());
       }
   }
-
-  public function delete($user, $uid) {
+ 
+  public function delete(User $user, $uid) {
     try {
       
       $imageToDelete = $user->userImages()->where('uid', $uid)->first();
@@ -70,7 +70,7 @@ class ImagesService {
         $image->delete();
       }
       
-      Storage::disk('r2')->deleteDirectory('hooky');
+      Storage::disk('r2')->deleteDirectory('hooky/profile');
 
       return true;
 
