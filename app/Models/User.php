@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -88,7 +89,6 @@ class User extends Authenticatable
     public function getDataCompleteAttribute() : bool {
         foreach ($this->getFillable() as $value) {
             if(!$this->{$value} && $value != 'ig' && $value != 'tw' && $value != 'data_images') {
-                Log::info($value);
                 return false; 
                 break;
             }
@@ -102,6 +102,21 @@ class User extends Authenticatable
 
     public function getDataInterestAttribute() : bool {
         return $this->interests()->count() >= 3 ? true : false;
+    }
+
+    public function interestBelongsToMany()
+    {
+        return $this->belongsToMany(Interest::class, 'user_interests', 'user_id', 'interest_id');
+    }
+
+    public function prevPage(LengthAwarePaginator $paginator)
+    {
+        return ($paginator->currentPage() - 1) < 1 ? null : $paginator->currentPage() - 1;
+    }
+
+    public function nextPage(LengthAwarePaginator $paginator)
+    {
+        return ($paginator->currentPage() + 1) > $paginator->lastPage() ? null : $paginator->currentPage() + 1;
     }
     /**
      * Get the attributes that should be cast.

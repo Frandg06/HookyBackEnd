@@ -21,8 +21,8 @@ class AuthService {
 
       $token = $user->createToken('auth_token', ['*'], now()->addHours(1))->plainTextToken;
 
-      return [
-          'user' => UserReosurce::make($user),
+      return (object)[
+          'user' => $user,
           'access_token' => $token,
       ];
         
@@ -36,7 +36,7 @@ class AuthService {
 
       $user = User::with('userImages')->where('email', $data['email'])->get()->firstOrFail();
       $token =  $user->createToken('auth_token', ['*'], now()->addHours(1))->plainTextToken;
-      return [
+      return (object)[
           'user' => UserReosurce::make($user),
           'access_token' => $token,
       ];
@@ -48,7 +48,7 @@ class AuthService {
         $socials = $data['socials'] ?? [];
         $user->update($data);
         
-        return UserReosurce::make($user);
+        return $user;
 
       } catch (\Exception $e) {
         throw new \Exception($e->getMessage());
@@ -70,6 +70,7 @@ class AuthService {
 
     public function changePassword($data, $user) {
       try {
+        
         if(!Hash::check($data['old_password'], $user->password)) {
           throw new \Exception("La contraseña actual es incorrecta");
         }

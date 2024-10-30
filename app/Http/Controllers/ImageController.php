@@ -28,7 +28,7 @@ class ImageController extends Controller
         try {
             $response = $this->imageService->store($user, $image);
             if(!$response) return $this->responseError("Unexpected error while uploading image");
-            return $this->responseSuccess('Image uploaded successfully', UserReosurce::make($user));
+            return $this->responseSuccess('Image uploaded successfully', $user);
 
         } catch (\Exception $e) {
 
@@ -50,7 +50,7 @@ class ImageController extends Controller
 
             if(!$response) return $this->responseError("Unexpected error while deleting image", 500);
 
-            return $this->responseSuccess('Image delete successfully', UserReosurce::make($user));
+            return $this->responseSuccess('Image delete successfully', $user);
 
         } catch (\Exception $e) {
 
@@ -81,7 +81,7 @@ class ImageController extends Controller
 
             if(!$store) return $this->responseError("Unexpected error while storing new image", 500);
 
-            return $this->responseSuccess('Image swapped successfully', UserReosurce::make($user));
+            return $this->responseSuccess('Image swapped successfully', $user);
 
         } catch (\Exception $e) {
 
@@ -99,7 +99,7 @@ class ImageController extends Controller
 
             if(!$response) return $this->responseError("Unexpected error while deleting image", 500);
             
-            return $this->responseSuccess('Image delete successfully',  UserReosurce::make($user));
+            return $this->responseSuccess('Image delete successfully',  $user);
 
         }catch(\Exception $e) {
             return $this->responseError($e->getMessage(), 500);
@@ -112,7 +112,7 @@ class ImageController extends Controller
         try {
             $response = $this->imageService->deleteAll();
 
-            return $this->responseSuccess('All images deleted successfully', UserReosurce::make($user));
+            return $this->responseSuccess('All images deleted successfully', $user);
 
         } catch (\Exception $e) {
 

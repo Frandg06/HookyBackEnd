@@ -1,9 +1,35 @@
 <?php
 namespace App\Services;
 
+use App\Http\Resources\UserReosurce;
 use App\Models\User;
 class UserService
 {
+
+  public function getUsers(User $user) {
+    
+    try {
+      $users = User::whereNot('id', $user->id)->limit(10)->pluck('id');
+
+      
+
+
+      
+      
+      return [
+        "userToSee" => UserReosurce::collection($users),
+        "links" => [
+          "nextUrl" => $users->nextPageUrl(),
+          "prevUrl" => $users->previousPageUrl(),
+          "nextPage" => ($users->currentPage() + 1) > $users->lastPage() ? null : $users->currentPage() + 1,
+          "prevPage" => ($users->currentPage() - 1) < 1 ? null : $users->currentPage() - 1
+        ]
+    ];
+
+    } catch (\Exception $e) {
+      throw new \Exception($e->getMessage());
+    }
+  }
 
   public function updateInterest(User $user, $newInterests) {
     

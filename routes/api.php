@@ -34,7 +34,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::delete('/images/all', [ImageController::class, 'deleteAll']);
         Route::put('/interest', [UserController::class, 'updateInterest']);
     });
+
+    Route::group(['prefix' => 'users'], function () {
+        Route::get('/', [UserController::class, 'index']);
+    });
     Route::get('/interests', [DomainController::class, 'getInterests']);
+    
 
     
 });

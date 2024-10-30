@@ -15,6 +15,14 @@ class UserController extends Controller
     {
         $this->userService = $userService;
     }
+
+    public function index(Request $request)
+    {
+        $user = $request->user();
+        $response = $this->userService->getUsers($user);
+
+        return $this->responseSuccess('Users retrieved successfully', $user, $response);
+    }
     public function updateInterest(Request $request)
     {
         $request->validate([
@@ -25,7 +33,7 @@ class UserController extends Controller
         $interests = $request->interests;
         try {
             $this->userService->updateInterest($user, $interests);
-            return $this->responseSuccess('Interests updated successfully', UserReosurce::make($user));
+            return $this->responseSuccess('Interests updated successfully', $user);
 
         } catch (\Exception $e) {
 
