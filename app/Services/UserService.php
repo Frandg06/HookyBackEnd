@@ -9,7 +9,7 @@ class UserService
   public function getUsers(User $user) {
     
     try {
-      $users = User::whereNot('id', $user->id)->limit(10)->pluck('id');
+      $users = User::whereNot('id', $user->id)->limit(10)->paginate(10);
 
       
 
