@@ -9,22 +9,9 @@ class UserService
   public function getUsers(User $user) {
     
     try {
-      $users = User::whereNot('id', $user->id)->limit(10)->pluck('id');
+      $users = User::whereNot('id', $user->id)->limit(50)->get();
 
-      
-
-
-      
-      
-      return [
-        "userToSee" => UserReosurce::collection($users),
-        "links" => [
-          "nextUrl" => $users->nextPageUrl(),
-          "prevUrl" => $users->previousPageUrl(),
-          "nextPage" => ($users->currentPage() + 1) > $users->lastPage() ? null : $users->currentPage() + 1,
-          "prevPage" => ($users->currentPage() - 1) < 1 ? null : $users->currentPage() - 1
-        ]
-    ];
+      return UserReosurce::collection($users);
 
     } catch (\Exception $e) {
       throw new \Exception($e->getMessage());

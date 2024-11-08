@@ -21,8 +21,9 @@ class UserController extends Controller
         $user = $request->user();
         $response = $this->userService->getUsers($user);
 
-        return $this->responseSuccess('Users retrieved successfully', $user, $response);
+        return response()->json(["resp" => $response, "success" => true], 200); 
     }
+
     public function updateInterest(Request $request)
     {
         $request->validate([

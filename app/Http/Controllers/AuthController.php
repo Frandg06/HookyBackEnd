@@ -23,7 +23,7 @@ class AuthController extends Controller
         try {
             $data = $request->only('name', 'surnames', 'email', 'password');
             $response = $this->authService->register($data);
-            return $this->responseSuccess('Register in successfully', $response->user, ["access_token" =>  $response->access_token]);
+            return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
         } catch (\Exception $e) {
             return $this->responseError($e->getMessage(), 400);
         }
@@ -35,7 +35,7 @@ class AuthController extends Controller
             
             $data = $request->only('email', 'password');
             $response = $this->authService->login($data);
-            return $this->responseSuccess('Logged in successfully', $response->user, ["access_token" =>  $response->access_token]);
+            return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
 
         } catch (\Exception $e) {
             return $this->responseError($e->getMessage(), 400);
@@ -52,7 +52,10 @@ class AuthController extends Controller
         try {
 
             $userRequest = $request->user();
-            $this->responseSuccess('Authenticated', $userRequest);
+
+            $user = UserReosurce::make($userRequest);
+
+            return response()->json(["resp" => $user, "success" => true], 200); 
 
         }catch (Exception $e){
             return $this->responseError($e->getMessage(), 400);
