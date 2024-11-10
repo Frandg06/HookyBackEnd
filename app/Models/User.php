@@ -104,6 +104,13 @@ class User extends Authenticatable
         return $this->interests()->count() >= 3 ? true : false;
     }
 
+    public function getCompleteRegisterAttribute() : bool {
+        if($this->data_complete && $this->data_images && $this->data_interest) {
+            return true;
+        }
+        return false;
+    }
+
     public function interestBelongsToMany()
     {
         return $this->belongsToMany(Interest::class, 'user_interests', 'user_id', 'interest_id');

@@ -70,8 +70,8 @@ class AuthController extends Controller
         try {
 
             $response = $this->authService->update($user, $data);
-            return $this->responseSuccess('Data complete succesfuly', $response);
-
+            return response()->json(["success" => true, "resp" =>  $response], 200); 
+            
         } catch (Exception $e) {
             return $this->responseError($e->getMessage(), 400);
         }

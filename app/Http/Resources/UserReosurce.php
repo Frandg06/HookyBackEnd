@@ -31,12 +31,15 @@ class UserReosurce extends JsonResource
             "data_complete" => $this->data_complete,
             "data_images" => $this->data_images,
             "data_interest" => $this->data_interest,
+            "complete_register" => $this->complete_register,
             "age" => $this->age,
             "userImages" => $this->userImages->map(function ($image) {
                 return [
                     "web_url" => $image->web_url,
                     "order" => $image->order,
-                    "extension" => $image->extension,
+                    "type" => $image->type,
+                    "size" => $image->size,
+                    "name" => $image->name,
                     "uid" => $image->uid,
                 ] ;
             }),

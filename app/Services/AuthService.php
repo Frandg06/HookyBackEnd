@@ -48,7 +48,7 @@ class AuthService {
         $socials = $data['socials'] ?? [];
         $user->update($data);
         
-        return $user;
+        return UserReosurce::make($user);
 
       } catch (\Exception $e) {
         throw new \Exception($e->getMessage());

@@ -13,6 +13,7 @@ class ImagesService {
 
   public function store(User $user, $img) {
 
+
     $image = $this->optimize($img);
 
 
@@ -21,6 +22,9 @@ class ImagesService {
 
         $newImage = $user->userImages()->create([
           'order' => $user->userImages()->count() + 1,
+          'name' => $img->getClientOriginalName(),
+          'size' => $img->getSize(),
+          'type' => $img->getMimeType(),
         ]);
 
         $storage = Storage::disk('r2')->put($newImage->url, $image);

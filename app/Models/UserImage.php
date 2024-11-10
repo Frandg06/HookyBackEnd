@@ -14,12 +14,18 @@ class UserImage extends Model
     protected $fillable = [
         'url',
         'order',
+        'size',
+        'type',
+        'name',
     ];
 
     protected $visible = [
         'uid',
         'order',
         'url',
+        'size',
+        'type',
+        'name',
     ];
     protected $hidden = [
         'id',

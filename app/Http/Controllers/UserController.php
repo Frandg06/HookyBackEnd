@@ -34,7 +34,8 @@ class UserController extends Controller
         $interests = $request->interests;
         try {
             $this->userService->updateInterest($user, $interests);
-            return $this->responseSuccess('Interests updated successfully', $user);
+
+            return response()->json(["success" => true, "resp" => UserReosurce::make($user)], 200);
 
         } catch (\Exception $e) {
 
