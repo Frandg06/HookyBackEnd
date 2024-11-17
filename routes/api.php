@@ -21,7 +21,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         
         Route::get('/auth', [AuthController::class, 'checkAuthentication']);
         Route::get('/logout', [AuthController::class, 'logout']);
-        Route::put('/password/update', [AuthController::class, 'changePassword']);
+        Route::put('/password', [AuthController::class, 'changePassword']);
 
         Route::put('/update', [AuthController::class, 'update']);
         Route::put('/company/{company_id}', [AuthController::class, 'setCompany']);
@@ -37,7 +37,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::group(['prefix' => 'users'], function () {
         Route::get('/', [UserController::class, 'index']);
+        Route::post('/{id}', [UserController::class, 'setInteraction']);
     });
+
     Route::get('/interests', [DomainController::class, 'getInterests']);
     
 

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CompleteDataRequest;
 use App\Http\Requests\RegisterRequest;
-use App\Http\Resources\UserReosurce;
+use App\Http\Resources\AuthUserReosurce;
 use App\Services\AuthService;
 use Exception;
 use Illuminate\Http\Request;
@@ -53,7 +53,7 @@ class AuthController extends Controller
 
             $userRequest = $request->user();
 
-            $user = UserReosurce::make($userRequest);
+            $user = AuthUserReosurce::make($userRequest);
 
             return response()->json(["resp" => $user, "success" => true], 200); 
 

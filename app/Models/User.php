@@ -80,6 +80,10 @@ class User extends Authenticatable
         return $this->hasMany(UserInterest::class);
     }
 
+    public function interactions() : HasMany {
+        return $this->hasMany(UsersInteraction::class);
+    }
+
     public function getAgeAttribute() : int {
         return Carbon::parse($this->born_date)->age;
     }

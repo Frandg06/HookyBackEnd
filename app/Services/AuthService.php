@@ -1,7 +1,7 @@
 <?php
 namespace App\Services;
 
-use App\Http\Resources\UserReosurce;
+use App\Http\Resources\AuthUserReosurce;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -37,7 +37,7 @@ class AuthService {
       $user = User::with('userImages')->where('email', $data['email'])->get()->firstOrFail();
       $token =  $user->createToken('auth_token', ['*'], now()->addHours(1))->plainTextToken;
       return (object)[
-          'user' => UserReosurce::make($user),
+          'user' => AuthUserReosurce::make($user),
           'access_token' => $token,
       ];
     }
@@ -48,7 +48,7 @@ class AuthService {
         $socials = $data['socials'] ?? [];
         $user->update($data);
         
-        return UserReosurce::make($user);
+        return AuthUserReosurce::make($user);
 
       } catch (\Exception $e) {
         throw new \Exception($e->getMessage());

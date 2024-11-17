@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\UserReosurce;
+use App\Http\Resources\AuthUserReosurce;
 use App\Services\ImagesService;
 use Illuminate\Http\Request;
 
@@ -81,7 +81,9 @@ class ImageController extends Controller
 
             if(!$store) return $this->responseError("Unexpected error while storing new image", 500);
 
-            return $this->responseSuccess('Image swapped successfully', $user);
+            $user = AuthUserReosurce::make($user);
+            
+            return response()->json(["success" => true, "resp" =>  $user], 200);
 
         } catch (\Exception $e) {
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\UserReosurce;
+use App\Http\Resources\AuthUserReosurce;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 
@@ -35,12 +35,25 @@ class UserController extends Controller
         try {
             $this->userService->updateInterest($user, $interests);
 
-            return response()->json(["success" => true, "resp" => UserReosurce::make($user)], 200);
+            return response()->json(["success" => true, "resp" => AuthUserReosurce::make($user)], 200);
 
         } catch (\Exception $e) {
 
             return $this->responseError($e->getMessage(), 500);
 
+        }
+    }
+
+    public function setInteraction(Request $request, $id)
+    {
+        $interaction = $request->interaction_id;
+        $user = $request->user();
+
+        try {
+            $this->userService->setInteraction($user, $id, $interaction);
+            return response()->json(["success" => true, "resp" => true], 200);
+        } catch (\Exception $e) {
+            return $this->responseError($e->getMessage(), 400);
         }
     }
 }

@@ -11,6 +11,11 @@ use App\Models\UserInterest;
 use Database\Factories\UserFactory;
 use Database\Factories\UserInterestFactory;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Laravel\Facades\Image;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -52,6 +57,7 @@ class DatabaseSeeder extends Seeder
         ]);
         
         $this->call(InterestSeeder::class);
+        $this->call(InteractionSeeder::class);
 
 
         $new = User::create([
@@ -77,6 +83,33 @@ class DatabaseSeeder extends Seeder
         User::factory(UserFactory::new())->count(100)->create()->each(function ($user) {
             $interests = Interest::inRandomOrder()->limit(3)->pluck('id');
             $user->interestBelongsToMany()->attach($interests);
+
+            for($i = 0; $i < 3; $i++) {
+
+                $imageData = file_get_contents("https://picsum.photos/200/300");
+                
+                $img = Image::read($imageData);
+    
+                $ogWidth = $img->width();
+                $ogHeight = $img->height();
+                
+                $aspectRatio = $ogWidth / $ogHeight;
+    
+                $newHeight = 500 / $aspectRatio;
+    
+    
+                $processedImage = $img->resize(500, $newHeight)->toWebP(80);
+                
+                $newImage = $user->userImages()->create([
+                  'order' => $user->userImages()->count() + 1,
+                  'name' => "databnaseSeeder",
+                  'size' => "34886",
+                  'type' => "image/png",
+                ]);
+        
+                Storage::disk('r2')->put($newImage->url, $processedImage);
+            }
+
         });
     }
 }
