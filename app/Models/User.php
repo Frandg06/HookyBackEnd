@@ -115,6 +115,18 @@ class User extends Authenticatable
         return false;
     }
 
+    public function getMatchGenderAttribute(): array {
+        switch($this->sexual_orientation_id){
+            case 1:
+                return [1, 2];
+            case 2:
+                return $this->gender_id == 1 ? [2] : [1]; 
+            case 3:
+                return [$this->gender_id];
+        }
+
+    }
+
     public function interestBelongsToMany()
     {
         return $this->belongsToMany(Interest::class, 'user_interests', 'user_id', 'interest_id');

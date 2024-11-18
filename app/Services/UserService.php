@@ -10,13 +10,9 @@ class UserService
 {
 
   public function getUsers(User $user) {
-
-    $gender = $this->getUsersGender($user->gender_id, $user->sexual_orientation_id);
-    
     try {
       // obtener los usuarios que no tienen interaccion con el usuario actual y que se han cargado previamente
-      $userIds = $user->interactions()->where('interaction_id', null)->get()->pluck('interaction_user_id');
-      $existingusers = User::whereIn('id', $userIds)->get();
+      $existingusers = $user->interactions()->where('interaction_id', null)->get();
 
       // obtener los usuarios que no se han cargado previamente hasta un maximo de 50
       $remainingUsers = 50 - $existingusers->count();
@@ -24,23 +20,25 @@ class UserService
       // obtener los usuarios que tienen intereses en comun
       if($remainingUsers > 0) {
         $lastUserIds = $user->interactions()->get()->pluck('interaction_user_id');
-        $newUsers = User::where("gender_id", $gender)
+
+        $users = User::whereIn("gender_id", $user->match_gender)
                       ->where("sexual_orientation_id", $user->sexual_orientation_id)
                       ->whereNot('id', $user->id)
                       ->whereNotIn('id', $lastUserIds)
+                      ->orWhereIn('id', $existingusers->pluck('interaction_user_id'))
                       ->limit($remainingUsers)
                       ->get();
 
-        foreach ($newUsers as $userToInsert) {  
+        foreach ($users as $userToInsert) {  
           UsersInteraction::create([
             'user_id' => $user->id,
             'interaction_user_id' => $userToInsert->id,
             'interaction_id' => null,
           ]);
         }
-        $users = $existingusers->merge($newUsers);
+
       }else{
-        $users = $existingusers;
+        $users = User::whereIn('id', $existingusers->pluck('interaction_user_id'))->get();
       }
 
       return UserResource::collection($users);
@@ -84,14 +82,6 @@ class UserService
       return true;
     } catch (\Exception $e) {
       throw new \Exception($e->getMessage());
-    }
-  }
-
-  private function getUsersGender($genderId, $sexualOrientationId) {
-    if($sexualOrientationId == 2) {
-      return $genderId == 1 ? 2 : 1;
-    } elseif ($sexualOrientationId == 3) {
-      return $genderId;
     }
   }
 }

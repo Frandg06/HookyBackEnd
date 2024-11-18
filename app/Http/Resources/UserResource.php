@@ -27,7 +27,7 @@ class UserResource extends JsonResource
             "userImages" => $this->userImages->map(function ($image) {
                 return [
                     "web_url" => $image->web_url,
-                ] ;
+                ];
             }),
             "socials" => [
                 "instagram" => [
