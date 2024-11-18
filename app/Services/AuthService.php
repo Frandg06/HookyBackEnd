@@ -5,6 +5,7 @@ use App\Http\Resources\AuthUserReosurce;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class AuthService {
 
@@ -47,6 +48,10 @@ class AuthService {
         
         $socials = $data['socials'] ?? [];
         $user->update($data);
+
+        if( isset($user['gender_id']) || isset( $user['sexual_orientation_id'] )) {
+          $user->interactions()->delete();
+        }
         
         return AuthUserReosurce::make($user);
 
