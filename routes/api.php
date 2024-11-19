@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DomainController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\CheckCreditsMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 /*
@@ -37,7 +38,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::group(['prefix' => 'users'], function () {
         Route::get('/', [UserController::class, 'index']);
-        Route::post('/{id}', [UserController::class, 'setInteraction']);
+   
+        Route::post('/{id}', [UserController::class, 'setInteraction'])->middleware(CheckCreditsMiddleware::class);
+    
     });
 
     Route::get('/interests', [DomainController::class, 'getInterests']);

@@ -46,12 +46,12 @@ class UserController extends Controller
 
     public function setInteraction(Request $request, $id)
     {
-        $interaction = $request->interaction_id;
+        $interaction = $request->interactionId;
         $user = $request->user();
 
         try {
-            $this->userService->setInteraction($user, $id, $interaction);
-            return response()->json(["success" => true, "resp" => true], 200);
+            $response = $this->userService->setInteraction($user, $id, $interaction);
+            return response()->json(["success" => true, "resp" => $response], 200);
         } catch (\Exception $e) {
             return $this->responseError($e->getMessage(), 400);
         }

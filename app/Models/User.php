@@ -20,6 +20,8 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasApiTokens, HasUid;
 
+    
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -48,6 +50,19 @@ class User extends Authenticatable
         'role_id',
         'updated_at',
         'created_at',
+    ];
+
+    protected $dataCompleteValues = [
+        'name',
+        'surnames',
+        'email',
+        'password',
+        'gender_id',
+        'sexual_orientation_id',
+        'role_id',
+        'city',
+        'born_date',
+        'description',
     ];
 
     /**
@@ -91,8 +106,8 @@ class User extends Authenticatable
     
 
     public function getDataCompleteAttribute() : bool {
-        foreach ($this->getFillable() as $value) {
-            if(!$this->{$value} && $value != 'ig' && $value != 'tw' && $value != 'data_images') {
+        foreach ($this->dataCompleteValues as $value) {
+            if(!$this->{$value}) {
                 return false; 
                 break;
             }
@@ -132,15 +147,13 @@ class User extends Authenticatable
         return $this->belongsToMany(Interest::class, 'user_interests', 'user_id', 'interest_id');
     }
 
-    public function prevPage(LengthAwarePaginator $paginator)
-    {
-        return ($paginator->currentPage() - 1) < 1 ? null : $paginator->currentPage() - 1;
+    public function refreshInteractions($interaction) {
+        $this->like_credits = $interaction == 2 ? $this->like_credits - 1 : $this->like_credits;
+        $this->super_like_credits = $interaction == 1 ? $this->super_like_credits - 1 : $this->super_like_credits;
+        $this->save();
     }
 
-    public function nextPage(LengthAwarePaginator $paginator)
-    {
-        return ($paginator->currentPage() + 1) > $paginator->lastPage() ? null : $paginator->currentPage() + 1;
-    }
+
     /**
      * Get the attributes that should be cast.
      *
