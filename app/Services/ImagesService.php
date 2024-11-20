@@ -13,6 +13,9 @@ class ImagesService {
 
   public function store(User $user, $img) {
 
+    if($img->getMimeType() !== 'image/jpeg' && $img->getMimeType() !== 'image/png' && $img->getMimeType() !== 'image/webp') {
+      throw new \Exception("Solo jpg, png and webp estan permitidos");
+    }
 
     $image = $this->optimize($img);
 

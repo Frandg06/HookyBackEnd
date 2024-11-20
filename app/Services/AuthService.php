@@ -45,8 +45,7 @@ class AuthService {
 
     public function update(User $user, $data) {
       try {
-        
-        $socials = $data['socials'] ?? [];
+
         $user->update($data);
 
         if( isset($user['gender_id']) || isset( $user['sexual_orientation_id'] )) {

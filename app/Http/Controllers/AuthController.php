@@ -2,20 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CompleteAuthUserRequest;
 use App\Http\Requests\CompleteDataRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\AuthUserReosurce;
 use App\Services\AuthService;
+use App\Services\ImagesService;
+use App\Services\UserService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use \stdClass;
 
 class AuthController extends Controller
 {
-    public $authService;
+    public $authService, $userService, $imageService;
 
-    public function __construct(AuthService $authService) {
+    public function __construct(AuthService $authService, UserService $userService, ImagesService $imageService) {
         $this->authService = $authService;
+        $this->userService = $userService;
+        $this->imageService = $imageService;
     }
 
     public function register(RegisterRequest $request) 
@@ -77,6 +83,30 @@ class AuthController extends Controller
         }
     }
 
+    public function complete(CompleteAuthUserRequest $request) {
+     
+        $data = $request->all();
+        $user = $request->user(); 
+        $info = $this->parseCompleteData($data);   
+        $files = $this->parseCompleteFiles($data);
+        $interests = $this->parseCompleteInterests($data);
+
+        try {
+            $this->authService->update($user, $data);
+            $this->userService->updateInterest($user, $interests);
+            if($user->userImages()->count() === 0){
+                if(count($files) < 3 || count($files) > 3) throw new \Exception("El usuario solo puede subir 3 imágenes");
+                foreach ($files as $file) {
+                    $this->imageService->store($user, $file);
+                }
+            }
+            
+            return response()->json(["success" => true, "resp" =>  AuthUserReosurce::make($user)], 200);
+        } catch (Exception $e) {
+            return $this->responseError($e->getMessage(), 400);
+        }
+    }
+
     public function setCompany(Request $request) {
         
         try {
@@ -112,5 +142,33 @@ class AuthController extends Controller
         } catch (Exception $e) {
             return $this->responseError($e->getMessage(), 400);
         }
+    }
+
+    private function parseCompleteData($data) {
+        return [
+            "born_date" => $data["born_date"],
+            "city" => $data["city"],
+            "description" => $data["description"],
+            "email" => $data["email"],
+            "gender_id" => $data["gender_id"],
+            "ig" => $data["ig"],
+            "interests" => $data["interests"],
+            "name" => $data["name"],
+            "sexual_orientation_id" => $data["sexual_orientation_id"],
+            "surnames" => $data["surnames"],
+            "tw" => $data["tw"],
+        ];
+    }
+
+    private function parseCompleteFiles($data) {
+        return [
+            $data["userImages0"],
+            $data["userImages1"],
+            $data["userImages2"],
+        ];
+    }
+
+    private function parseCompleteInterests($data) {
+        return explode(',', $data["interests"]);
     }
 }

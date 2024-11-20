@@ -25,6 +25,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::put('/password', [AuthController::class, 'changePassword']);
 
         Route::put('/update', [AuthController::class, 'update']);
+        Route::post('/complete', [AuthController::class, 'complete']);
         Route::put('/company/{company_id}', [AuthController::class, 'setCompany']);
 
         Route::post('/image', [ImageController::class, 'store']);
@@ -48,6 +49,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     
 });
+
+
 
 
 
