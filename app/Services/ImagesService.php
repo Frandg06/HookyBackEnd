@@ -16,6 +16,9 @@ class ImagesService {
     if($img->getMimeType() !== 'image/jpeg' && $img->getMimeType() !== 'image/png' && $img->getMimeType() !== 'image/webp') {
       throw new \Exception("Solo jpg, png and webp estan permitidos");
     }
+    if($img->getSize() > 1024 * 1024 * 10) {
+      throw new \Exception("El tamaño de la imagen es muy grande");
+    }
 
     $image = $this->optimize($img);
 

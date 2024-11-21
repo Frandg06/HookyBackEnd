@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\AuthUserReosurce;
 use App\Services\ImagesService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ImageController extends Controller
@@ -71,9 +72,9 @@ class ImageController extends Controller
         $uid = $request->uid;
         $image = $request->file('image');
         $user = $request->user();
-
+        
+        DB::beginTransaction();
         try {
-
             $delete = $this->imageService->delete($user, $uid);
 
             if(!$delete) return $this->responseError("Unexpected error while deleting image", 500);
@@ -83,11 +84,11 @@ class ImageController extends Controller
             if(!$store) return $this->responseError("Unexpected error while storing new image", 500);
 
             $user = AuthUserReosurce::make($user);
-            
+            DB::commit();
             return response()->json(["success" => true, "resp" =>  $user], 200);
 
         } catch (\Exception $e) {
-
+            DB::rollBack();
             return $this->responseError($e->getMessage(), 500);
 
         }

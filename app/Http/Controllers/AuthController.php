@@ -11,6 +11,7 @@ use App\Services\ImagesService;
 use App\Services\UserService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use \stdClass;
 
@@ -91,18 +92,23 @@ class AuthController extends Controller
         $files = $this->parseCompleteFiles($data);
         $interests = $this->parseCompleteInterests($data);
 
+        DB::beginTransaction();
+        
         try {
-            $this->authService->update($user, $data);
+            
+            $this->authService->update($user, $info);
             $this->userService->updateInterest($user, $interests);
+
             if($user->userImages()->count() === 0){
                 if(count($files) < 3 || count($files) > 3) throw new \Exception("El usuario solo puede subir 3 imágenes");
                 foreach ($files as $file) {
                     $this->imageService->store($user, $file);
                 }
             }
-            
+            DB::commit();
             return response()->json(["success" => true, "resp" =>  AuthUserReosurce::make($user)], 200);
         } catch (Exception $e) {
+            DB::rollBack();
             return $this->responseError($e->getMessage(), 400);
         }
     }
