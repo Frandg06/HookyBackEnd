@@ -7,12 +7,8 @@ use App\Models\Interest;
 use App\Models\Role;
 use App\Models\SexualOrientation;
 use App\Models\User;
-use App\Models\UserInterest;
 use Database\Factories\UserFactory;
-use Database\Factories\UserInterestFactory;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
 
@@ -84,31 +80,31 @@ class DatabaseSeeder extends Seeder
             $interests = Interest::inRandomOrder()->limit(3)->pluck('id');
             $user->interestBelongsToMany()->attach($interests);
 
-            // for($i = 0; $i < 3; $i++) {
+            for($i = 0; $i < 3; $i++) {
 
-            //     $imageData = file_get_contents("https://picsum.photos/500/900");
+                $imageData = file_get_contents("https://picsum.photos/500/900");
                 
-            //     $img = Image::read($imageData);
+                $img = Image::read($imageData);
     
-            //     $ogWidth = $img->width();
-            //     $ogHeight = $img->height();
+                $ogWidth = $img->width();
+                $ogHeight = $img->height();
                 
-            //     $aspectRatio = $ogWidth / $ogHeight;
+                $aspectRatio = $ogWidth / $ogHeight;
     
-            //     $newHeight = 500 / $aspectRatio;
+                $newHeight = 500 / $aspectRatio;
     
     
-            //     $processedImage = $img->resize(500, $newHeight)->toWebP(80);
+                $processedImage = $img->resize(500, $newHeight)->toWebP(80);
                 
-            //     $newImage = $user->userImages()->create([
-            //       'order' => $user->userImages()->count() + 1,
-            //       'name' => "databnaseSeeder",
-            //       'size' => "34886",
-            //       'type' => "image/png",
-            //     ]);
+                $newImage = $user->userImages()->create([
+                  'order' => $user->userImages()->count() + 1,
+                  'name' => "databnaseSeeder",
+                  'size' => "34886",
+                  'type' => "image/png",
+                ]);
         
-            //     Storage::disk('r2')->put($newImage->url, $processedImage);
-            // }
+                Storage::disk('r2')->put($newImage->url, $processedImage);
+            }
 
         });
     }
