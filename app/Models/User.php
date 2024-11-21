@@ -2,23 +2,19 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use App\Models\Traits\HasUid;
+use App\Models\Traits\HasVerified;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens, HasUid;
+    use HasFactory, Notifiable, HasApiTokens, HasUid, HasVerified;
 
     
     
@@ -42,6 +38,7 @@ class User extends Authenticatable
         'super_like_credits',
         'tw',
         'ig',
+        'verified',
     ];
 
     protected $hidden = [

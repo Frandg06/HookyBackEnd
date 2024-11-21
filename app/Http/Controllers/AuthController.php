@@ -36,6 +36,17 @@ class AuthController extends Controller
         }
     }
 
+    public function registerCompany(Request $request) 
+    {
+        try {
+            $data = $request->only('name');
+            $response = $this->authService->registerCompany($data);
+            return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
+        } catch (\Exception $e) {
+            return $this->responseError($e->getMessage(), 400);
+        }
+    }
+
     public function login(Request $request) 
     {
         try {

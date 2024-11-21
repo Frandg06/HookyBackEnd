@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Http\Resources\AuthUserReosurce;
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -24,6 +25,18 @@ class AuthService {
 
       return (object)[
           'user' => $user,
+          'access_token' => $token,
+      ];
+        
+    }
+    public function registerCompany($data) {
+
+      $company = Company::create($data);
+
+      $token = $company->createToken('company_auth_token', ['*'], now()->addHours(1))->plainTextToken;
+
+      return (object)[
+          'user' => $company,
           'access_token' => $token,
       ];
         

@@ -14,6 +14,7 @@ Todas las peticiones deben de llevar los headers
     - Authorization: Bearer {token}
 */
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/register/company', [AuthController::class, 'registerCompany']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
@@ -32,24 +33,21 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/image/update', [ImageController::class, 'update']);
         Route::delete('/image/{uid}', [ImageController::class, 'delete']);
         Route::delete('/images', [ImageController::class, 'deleteAllUserImage']);
-
-        Route::delete('/images/all', [ImageController::class, 'deleteAll']);
         Route::put('/interest', [UserController::class, 'updateInterest']);
     });
 
     Route::group(['prefix' => 'users'], function () {
         Route::get('/', [UserController::class, 'index']);
-   
         Route::post('/{id}', [UserController::class, 'setInteraction'])->middleware(CheckCreditsMiddleware::class);
-    
     });
 
     Route::get('/interests', [DomainController::class, 'getInterests']);
     
-
+    
     
 });
 
+Route::delete('/images/all', [ImageController::class, 'deleteAll']);
 
 
 
