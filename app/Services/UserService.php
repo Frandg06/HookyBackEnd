@@ -56,34 +56,6 @@ class UserService
     }
   }
 
-  public function updateInterest(User $user, $newInterests) {
-    
-    try {
-
-      $hasInterest = $user->interests()->get()->pluck('interest_id')->toArray();
-
-      foreach ($newInterests as $item) {
-        if(!in_array($item, $hasInterest)) {
-          $user->interests()->create([
-            'interest_id' => $item
-          ]);
-        }
-      }
-
-      foreach ($hasInterest as $item) {
-        if(!in_array($item, $newInterests)) {
-          $user->interests()->where('interest_id', $item)->delete();
-        }
-      }
-
-      return $user;
-      
-    } catch (\Exception $e) {
-      throw new \Exception($e->getMessage());
-    }
-
-  }
-
   public function setInteraction(User $authUser, $id, $interaction) {
     try {
 
@@ -100,4 +72,5 @@ class UserService
       throw new \Exception($e->getMessage());
     }
   }
+  
 }

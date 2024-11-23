@@ -66,7 +66,7 @@ class AuthController extends Controller
         return response()->json(["success" => true, 'message' => 'Logged out successfully'], 200);
     }
 
-    public function checkAuthentication(Request $request) {
+    public function isAuth(Request $request) {
         try {
 
             $userRequest = $request->user();
@@ -80,112 +80,4 @@ class AuthController extends Controller
         }
     }
 
-    public function update(CompleteDataRequest $request) {
-
-        $user = $request->user();
-        $data = $request->all();
-
-        try {
-
-            $response = $this->authService->update($user, $data);
-            return response()->json(["success" => true, "resp" =>  $response], 200); 
-            
-        } catch (Exception $e) {
-            return $this->responseError($e->getMessage(), 400);
-        }
-    }
-
-    public function complete(CompleteAuthUserRequest $request) {
-     
-        $data = $request->all();
-        $user = $request->user(); 
-        $info = $this->parseCompleteData($data);   
-        $files = $this->parseCompleteFiles($data);
-        $interests = $this->parseCompleteInterests($data);
-
-        DB::beginTransaction();
-        
-        try {
-            
-            $this->authService->update($user, $info);
-            $this->userService->updateInterest($user, $interests);
-
-            if($user->userImages()->count() === 0){
-                if(count($files) < 3 || count($files) > 3) throw new \Exception("El usuario solo puede subir 3 imágenes");
-                foreach ($files as $file) {
-                    $this->imageService->store($user, $file);
-                }
-            }
-            DB::commit();
-            return response()->json(["success" => true, "resp" =>  AuthUserReosurce::make($user)], 200);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return $this->responseError($e->getMessage(), 400);
-        }
-    }
-
-    public function setCompany(Request $request) {
-        
-        try {
-            $response = $this->authService->setCompany($request);   
-            return response()->json([
-                "success" => true,
-                'message' => 'Company set successfully',
-                "data" => $response
-            ], 200);
-
-        }catch (Exception $e){
-            return $this->responseError($e->getMessage(), 400);
-        }
-
-    }
-
-    public function changePassword(Request $request) {
-        
-        $request->validate([
-            'old_password' => 'required',
-            'password' => 'required|min:8|confirmed',
-        ]);
-        
-        $user = $request->user();
-        $data = $request->only('old_password', 'password');
-
-        try {
-
-            $response = $this->authService->changePassword($data, $user);
-
-            return $this->responseSuccess('Password changed successfully');
-
-        } catch (Exception $e) {
-            return $this->responseError($e->getMessage(), 400);
-        }
-    }
-
-    private function parseCompleteData($data) {
-        return [
-            "born_date" => $data["born_date"],
-            "city" => $data["city"],
-            "description" => $data["description"],
-            "email" => $data["email"],
-            "gender_id" => $data["gender_id"],
-            "ig" => $data["ig"],
-            "interests" => $data["interests"],
-            "name" => $data["name"],
-            "sexual_orientation_id" => $data["sexual_orientation_id"],
-            "surnames" => $data["surnames"],
-            "tw" => $data["tw"],
-        ];
-    }
-
-    private function parseCompleteFiles($data) {
-        return [
-            $data["userImages0"],
-            $data["userImages1"],
-            $data["userImages2"],
-        ];
-    }
-
-    private function parseCompleteInterests($data) {
-        return explode(',', $data["interests"]);
-    }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AuthUserController;
 use App\Http\Controllers\DomainController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\UserController;
@@ -21,19 +22,19 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     
     Route::group(['prefix' => 'user'], function () {
         
-        Route::get('/auth', [AuthController::class, 'checkAuthentication']);
+        Route::get('/auth', [AuthController::class, 'isAuth']);
         Route::get('/logout', [AuthController::class, 'logout']);
-        Route::put('/password', [AuthController::class, 'changePassword']);
-
-        Route::put('/update', [AuthController::class, 'update']);
-        Route::post('/complete', [AuthController::class, 'complete']);
-        Route::put('/company/{company_id}', [AuthController::class, 'setCompany']);
+        
+        Route::put('/password', [AuthUserController::class, 'updatePassword']);
+        Route::put('/update', [AuthUserController::class, 'update']);
+        Route::post('/complete', [AuthUserController::class, 'store']);
+        Route::put('/event/{uid}', [AuthUserController::class, 'setEvent']); 
+        Route::put('/interest', [AuthUserController::class, 'updateInterest']);
 
         Route::post('/image', [ImageController::class, 'store']);
         Route::post('/image/update', [ImageController::class, 'update']);
         Route::delete('/image/{uid}', [ImageController::class, 'delete']);
         Route::delete('/images', [ImageController::class, 'deleteAllUserImage']);
-        Route::put('/interest', [UserController::class, 'updateInterest']);
     });
 
     Route::group(['prefix' => 'users'], function () {
