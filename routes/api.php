@@ -6,7 +6,6 @@ use App\Http\Controllers\DomainController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\CheckCreditsMiddleware;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 /*
 Todas las peticiones deben de llevar los headers
@@ -15,14 +14,18 @@ Todas las peticiones deben de llevar los headers
     - Authorization: Bearer {token}
 */
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/register/company', [AuthController::class, 'registerCompany']);
 Route::post('/login', [AuthController::class, 'login']);
+
+Route::group(['prefix' => 'company'], function () {
+    Route::post('/register', [AuthController::class, 'registerCompany']);
+    Route::post('/login', [AuthController::class, 'loginCompany']);
+});
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     
     Route::group(['prefix' => 'user'], function () {
         
-        Route::get('/auth', [AuthController::class, 'isAuth']);
+        Route::get('/auth', [AuthController::class, 'isUserAuth']);
         Route::get('/logout', [AuthController::class, 'logout']);
         
         Route::put('/password', [AuthUserController::class, 'updatePassword']);
@@ -40,6 +43,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => 'users'], function () {
         Route::get('/', [UserController::class, 'index']);
         Route::post('/{id}', [UserController::class, 'setInteraction'])->middleware(CheckCreditsMiddleware::class);
+    });
+
+    Route::group(['prefix' => 'company'], function () {
+        Route::get('/auth', [AuthController::class, 'isCompanyAuth']);
+        
+       
     });
 
     Route::get('/interests', [DomainController::class, 'getInterests']);

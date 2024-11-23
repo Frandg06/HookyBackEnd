@@ -9,9 +9,22 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Company extends Model
 {
-    use HasFactory, HasFactory, HasApiTokens, HasUid;
+    use HasFactory, HasApiTokens, HasUid;
 
     protected $fillable = [
         'name',
+        'email',
+        'phone',
+        'address',
+        'city',
+        'country',
+        'password',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
+    }
 }

@@ -12,6 +12,10 @@ class AuthService {
 
     public function register($data) {
 
+      $user = User::where('email', $data['email'])->first();
+
+      if($user) throw new \Exception("El usuario ya existe");
+      
       $companyDefaultData = [
         'like_credits' => 20,
         'super_like_credits' => 3,
@@ -30,6 +34,10 @@ class AuthService {
         
     }
     public function registerCompany($data) {
+
+      $company = Company::where('email', $data['email'])->first();
+
+      if($company) throw new \Exception("El usuario ya existe");
 
       $company = Company::create($data);
 
@@ -52,6 +60,22 @@ class AuthService {
       $token =  $user->createToken('auth_token', ['*'], now()->addHours(1))->plainTextToken;
       return (object)[
           'user' => AuthUserReosurce::make($user),
+          'access_token' => $token,
+      ];
+    }
+
+    public function loginCompany($data) {
+
+      $company = Company::where('email', $data['email'])->first();
+
+      if (!$company || !Hash::check($data['password'], $company->password)) {
+        throw new \Exception('Invalid credentials');
+      }
+
+      $token = $company->createToken('company_auth_token', ['*'], now()->addHours(1))->plainTextToken;
+
+      return (object)[
+          'company' => $company,
           'access_token' => $token,
       ];
     }

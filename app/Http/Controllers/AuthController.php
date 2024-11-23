@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CompleteAuthUserRequest;
 use App\Http\Requests\CompleteDataRequest;
+use App\Http\Requests\RegisterCompanyRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\AuthUserReosurce;
 use App\Services\AuthService;
@@ -36,11 +37,13 @@ class AuthController extends Controller
         }
     }
 
-    public function registerCompany(Request $request) 
+    public function registerCompany(RegisterCompanyRequest $request) 
     {
         try {
-            $data = $request->only('name');
+            $data = $request->only('name', 'email', 'phone', 'address', 'city', 'country', 'password');
+            
             $response = $this->authService->registerCompany($data);
+
             return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
         } catch (\Exception $e) {
             return $this->responseError($e->getMessage(), 400);
@@ -60,13 +63,26 @@ class AuthController extends Controller
         }
     }
 
+    public function loginCompany(Request $request) 
+    {
+        try {
+            $data = $request->only('email', 'password');
+            $response = $this->authService->loginCompany($data);
+
+            return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
+
+        } catch (\Exception $e) {
+            return $this->responseError($e->getMessage(), 400);
+        }
+    }
+
     public function logout(Request $request) 
     {
         $request->user()->tokens()->delete();
         return response()->json(["success" => true, 'message' => 'Logged out successfully'], 200);
     }
 
-    public function isAuth(Request $request) {
+    public function isUserAuth(Request $request) {
         try {
 
             $userRequest = $request->user();
@@ -80,4 +96,15 @@ class AuthController extends Controller
         }
     }
 
+    public function isCompanyAuth(Request $request) {
+        try {
+
+            $company = $request->user();
+
+            return response()->json(["resp" => $company, "success" => true], 200); 
+
+        }catch (Exception $e){
+            return $this->responseError($e->getMessage(), 400);
+        }
+    }
 }
