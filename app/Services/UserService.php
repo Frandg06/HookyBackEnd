@@ -27,10 +27,14 @@ class UserService
                       ->whereNot('id', $authUser->id)
                       ->whereNotIn('id', $usersRegistered)
                       ->whereHas('interests', function ($query) {
-                        $query->havingRaw('COUNT(*) BETWEEN 3 AND 6');
+                        $query->select('user_id') // Asegura contar imágenes por usuario
+                        ->groupBy('user_id')
+                        ->havingRaw('COUNT(*) BETWEEN 3 AND 6');
                       })
                       ->whereHas('userImages', function ($query) {
-                        $query->havingRaw('COUNT(*) = 3');
+                        $query->select('user_id') // Asegura contar imágenes por usuario
+                        ->groupBy('user_id')
+                        ->havingRaw('COUNT(*) = 3');
                       })
                       ->limit($remainingUsers)
                       ->get();
