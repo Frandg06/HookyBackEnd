@@ -2,7 +2,6 @@
 namespace App\Services;
 
 use App\Http\Resources\UserResource;
-use App\Models\Interaction;
 use App\Models\User;
 use App\Models\UsersInteraction;
 use Illuminate\Support\Facades\Log;
