@@ -15,6 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('uid')->unique();
             $table->string('name');
+            $table->string('email');
+            $table->string('phone')->nullable();
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('country')->nullable();
+            $table->string('password')->nullable();
             $table->timestamps();
         });
     }

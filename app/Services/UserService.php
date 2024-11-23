@@ -26,6 +26,12 @@ class UserService
                       ->where("sexual_orientation_id", $authUser->sexual_orientation_id)
                       ->whereNot('id', $authUser->id)
                       ->whereNotIn('id', $usersRegistered)
+                      ->whereHas('interests', function ($query) {
+                        $query->havingRaw('COUNT(*) BETWEEN 3 AND 6');
+                      })
+                      ->whereHas('userImages', function ($query) {
+                        $query->havingRaw('COUNT(*) = 3');
+                      })
                       ->limit($remainingUsers)
                       ->get();
 

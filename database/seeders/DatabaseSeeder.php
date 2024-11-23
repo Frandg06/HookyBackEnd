@@ -63,7 +63,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('a'),
             'like_credits' => 20,
             'super_like_credits' => 3,
-            "gender_id" =>2,
+            "gender_id" => 2,
             "sexual_orientation_id" => 2,
             "role_id" => 2,
             "city" => "Leon",
@@ -76,7 +76,7 @@ class DatabaseSeeder extends Seeder
         $new->interestBelongsToMany()->attach([1,2,3]);
 
         
-        User::factory(UserFactory::new())->count(100)->create()->each(function ($user) {
+        User::factory(UserFactory::new())->count(10)->create()->each(function ($user) {
             $interests = Interest::inRandomOrder()->limit(3)->pluck('id');
             $user->interestBelongsToMany()->attach($interests);
 
