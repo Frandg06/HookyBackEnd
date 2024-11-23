@@ -68,14 +68,14 @@ class AuthUserController extends Controller
         }
     }
 
-    public function setEvent(Request $request) {
+    public function setEvent(Request $request, $company_uid) {
         
         try {
-            $response = $this->authUserService->setEvent($request);   
+            $response = $this->authUserService->setEvent($request, $company_uid);   
+
             return response()->json([
                 "success" => true,
-                'message' => 'Company set successfully',
-                "data" => $response
+                "resp" => $response
             ], 200);
 
         }catch (Exception $e){

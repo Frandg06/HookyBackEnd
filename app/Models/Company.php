@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Traits\HasUid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Sanctum\HasApiTokens;
 
 class Company extends Model
@@ -20,6 +21,14 @@ class Company extends Model
         'country',
         'password',
     ];
+
+    public function events() : HasMany {
+        return $this->hasMany(Event::class, 'company_id');
+    }
+
+    public function getlinkAttribute() {
+        return config("app.front_url") . "/event?uid=" . $this->uid;
+    }
 
     protected function casts(): array
     {

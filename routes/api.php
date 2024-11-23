@@ -2,10 +2,13 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthUserController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DomainController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\CheckCreditsMiddleware;
+use App\Models\Company;
 use Illuminate\Support\Facades\Route;
 /*
 Todas las peticiones deben de llevar los headers
@@ -36,7 +39,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
         Route::post('/image', [ImageController::class, 'store']);
         Route::post('/image/update', [ImageController::class, 'update']);
-        Route::delete('/image/{uid}', [ImageController::class, 'delete']);
+        Route::delete('/image/{company_uid}', [ImageController::class, 'delete']);
         Route::delete('/images', [ImageController::class, 'deleteAllUserImage']);
     });
 
@@ -47,7 +50,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::group(['prefix' => 'company'], function () {
         Route::get('/auth', [AuthController::class, 'isCompanyAuth']);
-        
+        Route::get('/logout', [AuthController::class, 'logoutCompany']);
+        Route::post('/event', [EventController::class, 'store']);
+        Route::get('/url', [CompanyController::class, 'getLink']);
        
     });
 

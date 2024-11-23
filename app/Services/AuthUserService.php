@@ -27,16 +27,29 @@ class AuthUserService {
 
     }
 
-    public function setEvent($request) {
-      
-      if(!$request->user()){
-        throw new \Exception("The user not exist");
+    public function setEvent($request, $company_uid) {
+      try {
+        
+        if(!$request->user()){
+          throw new \Exception("The user not exist");
+        }
+
+        $company = Company::where('uid', $company_uid)->first();
+
+        $event = $company->events()->latest()->first()->uid;
+
+        Log::info($company);
+        
+        $request->user()->event_uid = $event;
+        $request->user()->save();
+
+        return $request->user()->event_uid;
+
+      } catch (\Exception $e) {
+        throw new \Exception($e->getMessage());
       }
 
-      $request->user()->company_id = $request->company_id;
-      $request->user()->save();
-
-      return $request->user()->company_id;
+     
     }
 
     public function updatePassword($data, $user) {

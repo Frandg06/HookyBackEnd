@@ -39,6 +39,7 @@ class User extends Authenticatable
         'tw',
         'ig',
         'verified',
+        'event_uid',
     ];
 
     protected $hidden = [
