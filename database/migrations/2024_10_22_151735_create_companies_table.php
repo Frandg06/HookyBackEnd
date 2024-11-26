@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('country')->nullable();
             $table->string('password');
+            $table->string('timezone_uid')->nullable();
             $table->timestamps();
         });
     }

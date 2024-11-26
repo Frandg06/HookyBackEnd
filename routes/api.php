@@ -8,7 +8,6 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\CheckCreditsMiddleware;
-use App\Models\Company;
 use Illuminate\Support\Facades\Route;
 /*
 Todas las peticiones deben de llevar los headers
@@ -57,6 +56,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     });
 
     Route::get('/interests', [DomainController::class, 'getInterests']);
+    Route::get('/timezones', [DomainController::class, 'getTimeZones']);
     
     
     

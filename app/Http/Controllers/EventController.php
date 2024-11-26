@@ -18,19 +18,23 @@ class EventController extends Controller
         try {
             $request->validate([
                 'st_date' => 'required|date',
-                'en_date' => 'nullable|date',
+                'end_date' => 'nullable|date',
+                'timezone' => 'required|string',
+                'likes' => 'required|integer',
+                'superlikes' => 'required|integer',
             ]);
+            
             $company = $request->user();
     
             $event = $this->eventService->store($company, $request);
     
             return response()->json([
-                'status' => 'success',
+                'success' => true,
                 'resp' => $event,
             ],200);
 
         } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 400);
+            return response()->json(['error' => true, 'message' => $e->getMessage()], 400);
         }
     }
 }

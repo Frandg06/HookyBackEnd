@@ -6,6 +6,7 @@ use App\Http\Requests\CompleteAuthUserRequest;
 use App\Http\Requests\CompleteDataRequest;
 use App\Http\Requests\RegisterCompanyRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Resources\AuthCompanyResource;
 use App\Http\Resources\AuthUserReosurce;
 use App\Services\AuthService;
 use App\Services\ImagesService;
@@ -100,6 +101,8 @@ class AuthController extends Controller
         try {
 
             $company = $request->user();
+
+            $company = AuthCompanyResource::make($company);
 
             return response()->json(["resp" => $company, "success" => true], 200); 
 
