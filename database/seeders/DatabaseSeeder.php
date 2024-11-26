@@ -11,6 +11,7 @@ use App\Models\TimeZone;
 use App\Models\User;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
 
@@ -64,6 +65,10 @@ class DatabaseSeeder extends Seeder
             "password"=> "a",
             "timezone_uid" => TimeZone::find(2)->uid
         ]);
+
+        $response = Http::get('https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . $company->link);
+
+        Storage::disk('r2')->put('hooky/qr/' . $company->uid . '.png', $response->body());
 
 
         $new = User::create([

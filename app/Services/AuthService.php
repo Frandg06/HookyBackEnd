@@ -6,7 +6,9 @@ use App\Models\Company;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class AuthService {
 
@@ -40,6 +42,10 @@ class AuthService {
       if($company) throw new \Exception("El usuario ya existe");
 
       $company = Company::create($data);
+
+      $response = Http::get('https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . $company->link);
+
+      Storage::disk('r2')->put('hooky/qr/' . $company->uid . '.png', $response->body());
 
       $token = $company->createToken('company_auth_token', ['*'], now()->addHours(1))->plainTextToken;
 
