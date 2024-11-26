@@ -40,7 +40,9 @@ class EventService
         'super_likes' => $request->superlikes,
       ]);
 
-      return $event;
+      $last_event = $company->events()->where('st_date', '>', Carbon::now())->orderBy('st_date', 'asc')->first();
+
+      return $last_event;
 
     } catch (\Exception $e) {
       throw new \Exception($e->getMessage());
