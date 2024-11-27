@@ -26,6 +26,7 @@ class AuthCompanyResource extends JsonResource
            'timezone_uid' => $this->timezone_uid,
            'timezone_string' => $this->timezone->name,
            'next_event' => $this->events()->firstNextEvent()->first(),
+           'next_month_events' => $this->events()->nextMontEvents()->get(),
            'qr_url' => config("filesystems.disks.r2.url") . 'qr/' . $this->uid . '.png',
         ];
     }
