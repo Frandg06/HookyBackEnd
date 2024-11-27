@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('events', function (Blueprint $table) {
+        Schema::create('pricing_plans', function (Blueprint $table) {
             $table->id();
             $table->string('uid')->unique();
-            $table->string('company_uid');
-            $table->dateTime('st_date');
-            $table->dateTime('end_date');
-            $table->string('timezone');
-            $table->integer('likes');
-            $table->integer('super_likes');
-            $table->foreign('company_uid')->references('uid')->on("companies")->onDelete('cascade');
+            $table->string('name')->nullable();
+            $table->string('description')->nullable();
+            $table->float('price');
+            $table->integer('limit_users')->default(100);
+            $table->integer('limit_events')->default(10);
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('events');
+        Schema::dropIfExists('pricing_plans');
     }
 };

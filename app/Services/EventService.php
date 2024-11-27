@@ -17,29 +17,20 @@ class EventService
   public function store(Company $company, Request $request) 
   {
     try {
-      
       $nowInstance = Carbon::now()->setTimezone($request->timezone);
       $now = Carbon::parse($nowInstance);
       $st_date = Carbon::parse($request->st_date);
       $end_date = Carbon::parse($request->end_date);
-
-      if($st_date < $now) {
-        throw new CustomException("La fecha de inicio debe ser mayor a la actual");
-      }
-      
       $diff = $st_date->diffInHours($end_date);
+      
 
-      if($diff < 0) {
-        return throw new CustomException("La fecha de fin debe ser mayor a la fecha de inicio");
-      }
-
-      if($diff > 12) {
-        return throw new CustomException("La duracion maxima de un evento es de 12 horas");
-      }
-
-      if($diff < 2) {
-        return throw new CustomException("La duracion minima de un evento es de 2 horas");
-      }
+      if($company->checkEventInSameDay($st_date)) throw new CustomException("Ya hay un evento en la fecha elegida, elije otro dia");
+      if(!$company->checkEventLimit()) throw new CustomException("No puedes crear mas eventos, has alcanzado el limite");
+      
+      if($st_date < $now) throw new CustomException("La fecha de inicio debe ser mayor a la actual");
+      if($diff < 0) return throw new CustomException("La fecha de fin debe ser mayor a la fecha de inicio");
+      if($diff > 12) return throw new CustomException("La duracion maxima de un evento es de 12 horas");
+      if($diff < 2) return throw new CustomException("La duracion minima de un evento es de 2 horas");
 
       
       
@@ -54,7 +45,7 @@ class EventService
         'super_likes' => $request->superlikes,
       ]);
 
-      $last_event = $company->events()->where('st_date', '>', Carbon::now())->orderBy('st_date', 'asc')->first();
+      $last_event = $company->events()->firstNextEvent()->first();
       return $last_event;
 
     } catch (Throwable $e) {

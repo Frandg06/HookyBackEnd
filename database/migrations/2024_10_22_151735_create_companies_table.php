@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('country')->nullable();
             $table->string('password');
             $table->string('timezone_uid')->nullable();
+            $table->string('pricing_plan_uid')->nullable();
             $table->timestamps();
         });
     }

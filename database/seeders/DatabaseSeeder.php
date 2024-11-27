@@ -58,12 +58,14 @@ class DatabaseSeeder extends Seeder
         $this->call(InterestSeeder::class);
         $this->call(InteractionSeeder::class);
         $this->call(TimeZonesSeeder::class);
+        $this->call(PricingPlanSeeder::class);
 
         $company = Company::create([
             "name"=> "Studio54",
             "email"=> "studio54@email.es",
             "password"=> "a",
-            "timezone_uid" => TimeZone::find(2)->uid
+            "timezone_uid" => TimeZone::find(2)->uid,
+            "pricing_plan_uid" => \App\Models\PricingPlan::find(1)->uid
         ]);
 
         $response = Http::get('https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . $company->link);
