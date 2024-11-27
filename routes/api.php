@@ -48,6 +48,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     });
 
     Route::group(['prefix' => 'company'], function () {
+        Route::put('/update', [CompanyController::class, 'update']);
         Route::get('/auth', [AuthController::class, 'isCompanyAuth']);
         Route::get('/logout', [AuthController::class, 'logoutCompany']);
         Route::post('/event', [EventController::class, 'store']);
