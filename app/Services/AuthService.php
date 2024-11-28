@@ -7,46 +7,63 @@ use App\Models\Company;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class AuthService {
 
     public function register($data) {
+      DB::beginTransaction();
+      try {
 
-      $user = User::where('email', $data['email'])->first();
+        $user = User::where('email', $data['email'])->first();
+        
+        if($user) throw new CustomException("El usuario ya existe");
+        
+        $company = Company::where('uid', $data['company_uid'])->first();
+        
+        $timezone = $company->timezone->name;
+        
+        $event = $company->events()->activeEvent($timezone)->first();
+        
+        if(!$event) throw new CustomException("Actualmente no hay eventos activos");
+        
+        $user = User::create([
+          ...$data,
+          "like_credits" => $event->likes,
+          "super_like_credits" => $event->super_likes
+        ]);
+        
+        $user->events()->create([
+          'event_uid' => $event->uid,
+          'logged_at' => now()
+        ]);
+        
+        $now = Carbon::now($timezone);
+        $end_date = Carbon::parse($event->end_date);
+        $diff = $now->diffInMinutes($end_date);
+        
+        $token = $user->createToken('auth_token', ['*'], now()->addMinutes($diff))->plainTextToken;
+        
+        DB::commit();
 
-      if($user) throw new CustomException("El usuario ya existe");
-
-      $company = Company::where('uid', $data['company_uid'])->first();
-
-      $timezone = $company->timezone->name;
-
-      $event = $company->events()->activeEvent($timezone)->first();
-
-      if(!$event) throw new CustomException("Actualmente no hay eventos activos");
-
-
-      $user = User::create([
-        ...$data,
-        "like_credits" => $event->likes,
-        "super_like_credits" => $event->super_likes
-      ]);
-
-      $now = Carbon::now($timezone);
-      $end_date = Carbon::parse($event->end_date);
-      $diff = $now->diffInMinutes($end_date);
-
-      $token = $user->createToken('auth_token', ['*'], now()->addMinutes($diff))->plainTextToken;
-
-      return (object)[
+        return (object)[
           'user' => $user,
           'access_token' => $token,
-      ];
-        
+        ];
+
+      } catch (Throwable $e) {
+        DB::rollBack();
+        ($e instanceof CustomException)
+          ? throw new \Exception($e->getMessage())
+          : throw new \Exception("Se ha producido un error al registrar el usuario");
+      }
     }
+
     public function registerCompany($data) {
       try {
         $company = Company::where('email', $data['email'])->first();
