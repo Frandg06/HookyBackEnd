@@ -32,6 +32,7 @@ class AuthCompanyResource extends JsonResource
            'tickets_count_this_month' => $this->tickets()->ticketsCountThisMonth()->count(),
            'tickets_last_month' => $this->tickets()->ticketsCountLastMonth()->count(),
            'qr_url' => config("filesystems.disks.r2.url") . 'qr/' . $this->uid . '.png',
+           'link' => $this->link,
         ];
     }
 }

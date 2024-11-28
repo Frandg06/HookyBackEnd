@@ -30,7 +30,7 @@ class AuthController extends Controller
     public function register(RegisterRequest $request) 
     {
         try {
-            $data = $request->only('name', 'surnames', 'email', 'password');
+            $data = $request->only('name', 'surnames', 'email', 'password', 'company_uid');
             $response = $this->authService->register($data);
             return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
         } catch (\Exception $e) {

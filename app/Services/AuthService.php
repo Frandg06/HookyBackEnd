@@ -5,6 +5,7 @@ use App\Exceptions\CustomException;
 use App\Http\Resources\AuthUserReosurce;
 use App\Models\Company;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -17,18 +18,28 @@ class AuthService {
 
       $user = User::where('email', $data['email'])->first();
 
-      if($user) throw new \Exception("El usuario ya existe");
-      
-      $companyDefaultData = [
-        'like_credits' => 20,
-        'super_like_credits' => 3,
-      ];
+      if($user) throw new CustomException("El usuario ya existe");
 
-      $paseData = array_merge($companyDefaultData, $data);
+      $company = Company::where('uid', $data['company_uid'])->first();
 
-      $user = User::create($paseData);
+      $timezone = $company->timezone->name;
 
-      $token = $user->createToken('auth_token', ['*'], now()->addHours(1))->plainTextToken;
+      $event = $company->events()->activeEvent($timezone)->first();
+
+      if(!$event) throw new CustomException("Actualmente no hay eventos activos");
+
+
+      $user = User::create([
+        ...$data,
+        "like_credits" => $event->likes,
+        "super_like_credits" => $event->super_likes
+      ]);
+
+      $now = Carbon::now($timezone);
+      $end_date = Carbon::parse($event->end_date);
+      $diff = $now->diffInMinutes($end_date);
+
+      $token = $user->createToken('auth_token', ['*'], now()->addMinutes($diff))->plainTextToken;
 
       return (object)[
           'user' => $user,

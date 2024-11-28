@@ -19,7 +19,14 @@ class Event extends Model
     }
 
     public function scopeFirstNextEvent($query)  { 
-        $query->where('st_date', '>', Carbon::now())->orderBy('st_date', 'asc');
+        $query->where('st_date', '>', Carbon::now())
+            ->orderBy('st_date', 'asc');
+    }
+
+    public function scopeActiveEvent($query, $timezone)  {
+        return $query->where('st_date', '<', Carbon::now($timezone))
+            ->where('end_date', '>', Carbon::now($timezone))
+            ->orderBy('st_date', 'asc');
     }
 
     public function scopeEventInSameDay($query, $date)  { 
