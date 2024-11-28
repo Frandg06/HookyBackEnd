@@ -62,12 +62,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     Route::get('/interests', [DomainController::class, 'getInterests']);
     Route::get('/timezones', [DomainController::class, 'getTimeZones']);
-    
-    
-    
+     
 });
 
+
 Route::post('/email', [EmailController::class, 'test']);
+Route::post('/email/waitlist', [EmailController::class, 'storeWaitlist']);
 Route::delete('/images/all', [ImageController::class, 'deleteAll']);
 
 
