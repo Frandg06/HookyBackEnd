@@ -16,6 +16,10 @@ return new class extends Migration
             $table->string('uid')->unique();
             $table->string('company_uid');
             $table->string('code');
+            $table->boolean('redeemed')->default(false);
+            $table->dateTime('redeemed_at')->nullable();
+            $table->integer('likes')->default(5);
+            $table->integer('super_likes')->default(1);
             $table->timestamps();
             $table->foreign('company_uid')->references('uid')->on('companies');
         });

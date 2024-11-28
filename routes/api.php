@@ -7,6 +7,7 @@ use App\Http\Controllers\DomainController;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\CheckCreditsMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -54,6 +55,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/logout', [AuthController::class, 'logoutCompany']);
         Route::post('/event', [EventController::class, 'store']);
         Route::get('/url', [CompanyController::class, 'getLink']);
+        Route::post('/tickets', [TicketController::class, 'generateTickets']);
+        Route::get('/tickets', [TicketController::class, 'index']);
        
     });
 

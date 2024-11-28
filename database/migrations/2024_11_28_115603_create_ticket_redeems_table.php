@@ -16,9 +16,7 @@ return new class extends Migration
             $table->string('uid')->unique();
             $table->string('ticket_uid')->nullable();
             $table->string('user_uid')->nullable();
-            $table->string('event_uid')->nullable();
-            $table->string('redeemed_at')->nullable();
-            
+            $table->string('event_uid')->nullable();            
             $table->foreign('ticket_uid')->references('uid')->on('tickets')->onDelete('cascade');
             $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
             $table->foreign('event_uid')->references('uid')->on('events')->onDelete('cascade');

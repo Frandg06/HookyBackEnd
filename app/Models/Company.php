@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Traits\HasUid;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,6 +29,10 @@ class Company extends Model
 
     public function events() : HasMany {
         return $this->hasMany(Event::class, 'company_uid', 'uid');
+    }
+    
+    public function tickets() : HasMany {
+        return $this->hasMany(Ticket::class, 'company_uid', 'uid');
     }
 
     public function getlinkAttribute() {
