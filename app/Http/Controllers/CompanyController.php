@@ -24,7 +24,7 @@ class CompanyController extends Controller
 
     public function update(Request $request) {
         try {
-            $data = $request->only(['name', 'email', 'phone', 'address', 'city', 'country', 'timezone_string']);
+            $data = $request->only(['name', 'email', 'phone', 'address', 'city', 'country', 'timezone_string', 'average_ticket_price']);
             $company = $request->user();
             $response = $this->companyService->update($company, $data);
             return response()->json(['success' => true,  'resp' => $response]);

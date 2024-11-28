@@ -4,7 +4,7 @@ namespace App\Models\Traits;
 
 trait HasUid
 {
-    public bool $uidMoreEntropy = false;
+    public bool $uidMoreEntropy = true;
     
     protected static function bootHasUid()
     {

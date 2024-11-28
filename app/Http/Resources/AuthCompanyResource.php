@@ -23,6 +23,7 @@ class AuthCompanyResource extends JsonResource
            'address' => $this->address,
            'city' => $this->city,
            'country' => $this->country,
+           'average_ticket_price' => $this->average_ticket_price,
            'timezone_uid' => $this->timezone_uid,
            'timezone_string' => $this->timezone->name,
            'next_event' => $this->events()->firstNextEvent()->first(),

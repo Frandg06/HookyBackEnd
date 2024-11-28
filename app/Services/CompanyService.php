@@ -15,17 +15,10 @@ class CompanyService
   
         if(!$timezone_uid) throw new CustomException("No existe el timezone seleccionado");
   
-        $company->update([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'phone' => $data['phone'],
-            'address' => $data['address'],
-            'city' => $data['city'],
-            'country' => $data['country'],  
-            'timezone_uid' => $timezone_uid,
-        ]);
+        $company->update([...$data, 'timezone_uid' => $timezone_uid]);
 
         return AuthCompanyResource::make($company);
+        
       } catch (\Throwable $e) {
         ($e instanceof CustomException)
         ? throw new Exception($e->getMessage())

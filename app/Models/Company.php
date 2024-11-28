@@ -23,6 +23,7 @@ class Company extends Model
         'country',
         'password',
         'timezone_uid',
+        'average_ticket_price',
     ];
 
     public function events() : HasMany {

@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthUserController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DomainController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\UserController;
@@ -63,6 +64,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     
 });
 
+Route::post('/email', [EmailController::class, 'test']);
 Route::delete('/images/all', [ImageController::class, 'deleteAll']);
 
 
