@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -24,7 +25,7 @@ class AuthService {
         
         if($user) throw new CustomException("El usuario ya existe");
         
-        $company_uid = base64_decode($data['company_uid']);
+        $company_uid = Crypt::decrypt($data['company_uid']);
 
         $company = Company::where('uid', $company_uid)->first();
         
@@ -106,7 +107,8 @@ class AuthService {
           throw new CustomException('Las credenciales no son correctas');
         }
 
-        $company_uid = base64_decode($company_uid);
+        $company_uid = Crypt::decrypt($company_uid);
+
         $company = Company::where('uid', $company_uid)->first();
           
         if(!$company) throw new CustomException("El organzador no existe");
@@ -114,6 +116,8 @@ class AuthService {
         $timezone = $company->timezone->name;
           
         $event = $company->events()->activeEvent($timezone)->first();
+
+        if(!$event) throw new CustomException("Actualmente no hay eventos activos");
 
         $user = User::where('email', $data['email'])->get()->firstOrFail();
 

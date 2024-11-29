@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
-            $table->string('uid')->unique();
-            $table->string('company_uid');
+            $table->uuid('uid')->unique();
+            $table->uuid('company_uid');
             $table->string('code');
             $table->boolean('redeemed')->default(false);
             $table->dateTime('redeemed_at')->nullable();

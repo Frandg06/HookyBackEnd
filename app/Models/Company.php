@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -36,7 +37,7 @@ class Company extends Model
     }
 
     public function getlinkAttribute() {
-        return config("app.front_url") . "/?company=" . base64_encode($this->uid);
+        return config("app.front_url") . "/?company=" . Crypt::encrypt($this->uid);
     }
 
     public function timezone() : BelongsTo {

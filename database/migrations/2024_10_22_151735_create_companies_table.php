@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->string('uid')->unique();
+            $table->uuid('uid')->unique();
             $table->string('name');
             $table->string('email');
             $table->string('phone')->nullable();
@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('country')->nullable();
             $table->string('password');
             $table->float('average_ticket_price')->default(0);
-            $table->string('timezone_uid')->nullable();
-            $table->string('pricing_plan_uid')->nullable();
+            $table->uuid('timezone_uid')->nullable();
+            $table->uuid('pricing_plan_uid')->nullable();
             $table->timestamps();
         });
     }

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('user_events', function (Blueprint $table) {
             $table->id();
-            $table->string("user_uid");
-            $table->string("event_uid");
+            $table->uuid("user_uid");
+            $table->uuid("event_uid");
             $table->datetime("logged_at");
             $table->integer("likes");
             $table->integer("super_likes");

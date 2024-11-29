@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('time_zones', function (Blueprint $table) {
             $table->id();
-            $table->string('uid')->unique()->nullable(  );
+            $table->uuid('uid')->unique()->nullable(  );
             $table->string('name');
             $table->string('utc_offset');
             $table->timestamps();

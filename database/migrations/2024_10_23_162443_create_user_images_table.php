@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('user_images', function (Blueprint $table) {
             $table->id();
-            $table->string('uid')->unique();
+            $table->uuid('uid')->unique();
             $table->unsignedBigInteger('user_id');
             $table->string('name')->nullable();
             $table->string('type')->nullable();
