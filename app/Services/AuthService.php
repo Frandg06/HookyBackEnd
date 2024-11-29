@@ -38,11 +38,7 @@ class AuthService {
         
         if(!$event) throw new CustomException("Actualmente no hay eventos activos");
         
-        $user = User::create([
-          ...$data,
-          "like_credits" => $event->likes,
-          "super_like_credits" => $event->super_likes
-        ]);
+        $user = User::create($data);
         
         $user->events()->create([
           'event_uid' => $event->uid, 
@@ -65,6 +61,7 @@ class AuthService {
         ];
 
       } catch (Throwable $e) {
+        Log::error($e);
         DB::rollBack();
         ($e instanceof CustomException)
           ? throw new \Exception($e->getMessage())
