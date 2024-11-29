@@ -105,6 +105,13 @@ class User extends Authenticatable
         return Carbon::parse($this->born_date)->age;
     }
 
+    public function getLikeCreditsAttribute() : int {
+        return $this->events()->activeEventData()->likes;
+    }
+    public function getSuperLikeCreditsAttribute() : int {
+        return $this->events()->activeEventData()->super_likes;
+    }
+
     
 
     public function getDataCompleteAttribute() : bool {
@@ -150,9 +157,16 @@ class User extends Authenticatable
     }
 
     public function refreshInteractions($interaction) {
-        $this->like_credits = $interaction == 2 ? $this->like_credits - 1 : $this->like_credits;
-        $this->super_like_credits = $interaction == 1 ? $this->super_like_credits - 1 : $this->super_like_credits;
-        $this->save();
+
+        if($interaction == Interaction::LIKE_ID) {
+            $this->events()->activeEventData()->update([
+                'likes' => $this->like_credits - 1
+            ]);
+        }elseif($interaction == Interaction::SUPER_LIKE_ID) {
+            $this->events()->activeEventData()->update([
+                'super_likes' => $this->super_like_credits - 1
+            ]);
+        }
     }
 
 

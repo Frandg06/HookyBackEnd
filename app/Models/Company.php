@@ -36,7 +36,7 @@ class Company extends Model
     }
 
     public function getlinkAttribute() {
-        return config("app.front_url") . "/?company=" . $this->uid;
+        return config("app.front_url") . "/?company=" . base64_encode($this->uid);
     }
 
     public function timezone() : BelongsTo {

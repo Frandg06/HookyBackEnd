@@ -24,7 +24,12 @@ class AuthService {
         
         if($user) throw new CustomException("El usuario ya existe");
         
-        $company = Company::where('uid', $data['company_uid'])->first();
+        $company_uid = base64_decode($data['company_uid']);
+
+        $company = Company::where('uid', $company_uid)->first();
+        
+        if(!$company) throw new CustomException("El organzador no existe");
+
         
         $timezone = $company->timezone->name;
         
@@ -39,8 +44,10 @@ class AuthService {
         ]);
         
         $user->events()->create([
-          'event_uid' => $event->uid,
-          'logged_at' => now()
+          'event_uid' => $event->uid, 
+          'logged_at' => now(), 
+          'likes' => $event->likes, 
+          'super_likes' => $event->super_likes
         ]);
         
         $now = Carbon::now($timezone);
@@ -91,18 +98,58 @@ class AuthService {
         
     }
 
-    public function login($data) {
+    public function login($data, $company_uid) {
 
-      if (!Auth::attempt($data)) {
-        throw new \Exception('Invalid credentials');
+      DB::beginTransaction();
+      try {
+        if (!Auth::attempt($data)) {
+          throw new CustomException('Las credenciales no son correctas');
+        }
+
+        $company_uid = base64_decode($company_uid);
+        $company = Company::where('uid', $company_uid)->first();
+          
+        if(!$company) throw new CustomException("El organzador no existe");
+
+        $timezone = $company->timezone->name;
+          
+        $event = $company->events()->activeEvent($timezone)->first();
+
+        $user = User::where('email', $data['email'])->get()->firstOrFail();
+
+        $exist = $user->events()->where('event_uid', $event->uid)->exists();
+
+        if($exist){
+          $user->events()->where('event_uid', $event->uid)->update(['logged_at' => now()]);
+        }else{
+          $user->events()->create([
+            'event_uid' => $event->uid, 
+            'logged_at' => now(), 
+            'likes' => $event->likes, 
+            'super_likes' => $event->super_likes
+          ]);
+        }
+
+        $now = Carbon::now($timezone);
+        $end_date = Carbon::parse($event->end_date);
+        $diff = $now->diffInMinutes($end_date);
+
+
+        $token =  $user->createToken('auth_token', ['*'], now()->addMinutes($diff))->plainTextToken;
+
+        DB::commit();
+
+        return (object)[
+            'user' => AuthUserReosurce::make($user),
+            'access_token' => $token,
+        ];
       }
-
-      $user = User::with('userImages')->where('email', $data['email'])->get()->firstOrFail();
-      $token =  $user->createToken('auth_token', ['*'], now()->addHours(1))->plainTextToken;
-      return (object)[
-          'user' => AuthUserReosurce::make($user),
-          'access_token' => $token,
-      ];
+      catch (Throwable $e) {
+        DB::rollBack();
+        ($e instanceof CustomException)
+          ? throw new \Exception($e->getMessage())
+          : throw new \Exception("Se ha producido un error al iniciar sesion");
+      }
     }
 
     public function loginCompany($data) {

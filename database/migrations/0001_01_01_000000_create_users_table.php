@@ -26,8 +26,6 @@ return new class extends Migration
             $table->string('ig')->nullable();
             $table->string('tw')->nullable();
             $table->longText('description')->nullable();
-            $table->integer('like_credits')->nullable();
-            $table->integer('super_like_credits')->nullable();
             $table->string('password');
             $table->boolean('verified')->default(false);
             $table->rememberToken();

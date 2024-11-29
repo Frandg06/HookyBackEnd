@@ -31,7 +31,9 @@ class AuthController extends Controller
     {
         try {
             $data = $request->only('name', 'surnames', 'email', 'password', 'company_uid');
+
             $response = $this->authService->register($data);
+
             return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
         } catch (\Exception $e) {
             return $this->responseError($e->getMessage(), 400);
@@ -54,11 +56,9 @@ class AuthController extends Controller
     public function login(Request $request) 
     {
         try {
-            
             $data = $request->only('email', 'password');
-            $response = $this->authService->login($data);
+            $response = $this->authService->login($data, $request->company_uid);
             return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
-
         } catch (\Exception $e) {
             return $this->responseError($e->getMessage(), 400);
         }

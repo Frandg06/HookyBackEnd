@@ -36,8 +36,6 @@ class UserFactory extends Factory
             "ig" => fake()->name(),
             "tw" => fake()->name(),
             "description" => fake()->paragraph(),
-            "like_credits" => 20,
-            "super_like_credits" => 3,
         ];
            
             
