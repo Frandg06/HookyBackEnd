@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Crypt;
 
 class AuthUserReosurce extends JsonResource
 {
@@ -17,7 +18,6 @@ class AuthUserReosurce extends JsonResource
         return [
             "id" => $this->id,
             "uid" => $this->uid,
-            "event_uid" => $this->event_uid,
             "gender_id" => $this->gender_id,
             "sexual_orientation_id" => $this->sexual_orientation_id,
             "name" => $this->name,

@@ -112,7 +112,14 @@ class User extends Authenticatable
         return $this->events()->activeEventData()->super_likes;
     }
 
-    
+    public function getEventUidAttribute() : string {
+        return $this->events()->activeEventData()->event_uid;
+    }
+
+    public function getCompanyUidAttribute() : string {
+        return $this->events()->getCompanyByEvent();
+    }
+
 
     public function getDataCompleteAttribute() : bool {
         foreach ($this->dataCompleteValues as $value) {

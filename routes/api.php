@@ -42,6 +42,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/image/update', [ImageController::class, 'update']);
         Route::delete('/image/{company_uid}', [ImageController::class, 'delete']);
         Route::delete('/images', [ImageController::class, 'deleteAllUserImage']);
+
+        Route::post('/redeem', [TicketController::class, 'redeem']);
     });
 
     Route::group(['prefix' => 'users'], function () {

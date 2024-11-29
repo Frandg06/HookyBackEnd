@@ -43,4 +43,18 @@ class TicketController extends Controller
 
         }
     }
+
+    public function redeem(Request $request) {
+        
+        try {
+            $user = $request->user();
+            $code = $request->code;
+            $ticket = $this->ticketService->redeem($user, $code);
+            return response()->json(["resp" => $ticket, "success" => true], 200);
+        } catch (\Exception $e) {
+
+            return response()->json(['error' => $e->getMessage()], 500);
+
+        }
+    }
 }
