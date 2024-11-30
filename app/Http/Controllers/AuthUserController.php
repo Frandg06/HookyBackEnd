@@ -12,7 +12,7 @@ use App\Services\ImagesService;
 use App\Services\UserService;
 use Exception;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 
 class AuthUserController extends Controller
 {
@@ -56,6 +56,8 @@ class AuthUserController extends Controller
 
             if($user->userImages()->count() === 0){
                 if(count($files) < 3 || count($files) > 3) throw new \Exception("El usuario solo puede subir 3 imágenes");
+                Log::info("Subiendo imágenes");
+                Log::info($files);
                 foreach ($files as $file) {
                     $this->imageService->store($user, $file);
                 }
@@ -63,6 +65,7 @@ class AuthUserController extends Controller
             DB::commit();
             return response()->json(["success" => true, "resp" =>  AuthUserReosurce::make($user)], 200);
         } catch (Exception $e) {
+            Log::error($e);
             DB::rollBack();
             return $this->responseError($e->getMessage(), 400);
         }
