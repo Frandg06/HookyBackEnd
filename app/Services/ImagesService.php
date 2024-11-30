@@ -15,6 +15,7 @@ class ImagesService {
 
 
     Log::info($img->getMimeType());
+    
     if($img->getMimeType() !== 'image/jpeg' && $img->getMimeType() !== 'image/png' && $img->getMimeType() !== 'image/webp') {
       throw new \Exception("Solo jpg, png and webp estan permitidos");
     }
