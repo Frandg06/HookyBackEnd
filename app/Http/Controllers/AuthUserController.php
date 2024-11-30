@@ -59,6 +59,7 @@ class AuthUserController extends Controller
                 Log::info("Subiendo imágenes");
                 Log::info($files);
                 foreach ($files as $file) {
+                    Log::info("path: " . $file->getRealPath());
                     $this->imageService->store($user, $file);
                 }
             }
