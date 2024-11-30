@@ -1,9 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Http\Requests\CompleteAuthUserRequest;
-use App\Http\Requests\CompleteDataRequest;
 use App\Http\Requests\RegisterCompanyRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\AuthCompanyResource;
@@ -13,8 +10,6 @@ use App\Services\ImagesService;
 use App\Services\UserService;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use \stdClass;
 
 class AuthController extends Controller
