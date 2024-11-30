@@ -56,10 +56,8 @@ class AuthUserController extends Controller
 
             if($user->userImages()->count() === 0){
                 if(count($files) < 3 || count($files) > 3) throw new \Exception("El usuario solo puede subir 3 imágenes");
-                Log::info("Subiendo imágenes");
-                Log::info($files);
+                
                 foreach ($files as $file) {
-                    Log::info("path: " . $file->getRealPath());
                     $this->imageService->store($user, $file);
                 }
             }
