@@ -109,7 +109,7 @@ class ImagesService {
   }
 
   public function optimize($image) {
-    $img = Image::read($image);
+    $img = Image::make($image);
 
     $ogWidth = $img->width();
     $ogHeight = $img->height();
