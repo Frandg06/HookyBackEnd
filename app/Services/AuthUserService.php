@@ -99,15 +99,32 @@ class AuthUserService {
 
     public function getLikes(User $user) {
 
-      $userLikes = UsersInteraction::where('interaction_user_id', $user->id)->where('interaction_id', Interaction::LIKE_ID)->get();
+      try {
+        $userLikes = UsersInteraction::query()
+        ->where('interaction_user_uid', $user->uid)
+        ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID]);
+        
+        if($userLikes->count() === 0) return [
+          'likes' => 0,
+          'images' => []
+        ];
+        
+        // como maximo 4 imagenes + count
+        $image_max_count = ($userLikes->count() > 4) ? 4 : $userLikes->count();
+        
+        // los usuarios de mi evento que hayan interactuado conmigo dando like o superlike
+        $image = $userLikes->limit($image_max_count)->get();
+        
+        $resp['likes'] = $userLikes->count();
+        
+        $resp['images'] = $image->map(function ($item) {
+          return $item->user->userImages()->first()->web_url;
+        });
 
-      if(!$userLikes) return;
-
-      // como maximo 4 imagenes + count
-      $image_count = ($userLikes->count() > 4) ? 4 : $userLikes->count() -1;
-
-      
-      
+        return $resp;
+      }catch (\Exception $e) {
+        throw new \Exception("Error al obtener los likes");
+      }
       
     }
 }

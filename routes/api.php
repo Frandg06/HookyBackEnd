@@ -33,6 +33,7 @@ Route::group(['middleware' => ['auth:sanctum', CheckEventIsActiveMiddleware::cla
             Route::post('/complete', [AuthUserController::class, 'store']);
             Route::put('/event/{uid}', [AuthUserController::class, 'setEvent']); 
             Route::put('/interest', [AuthUserController::class, 'updateInterest']);
+            Route::get('/likes', [AuthUserController::class, 'getLikes']);
 
             Route::post('/image', [ImageController::class, 'store']);
             Route::post('/image/update', [ImageController::class, 'update']);
