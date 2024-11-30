@@ -60,7 +60,6 @@ class User extends Authenticatable
         'role_id',
         'city',
         'born_date',
-        'description',
     ];
 
     /**

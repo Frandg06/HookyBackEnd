@@ -24,7 +24,7 @@ class CompleteDataRequest extends FormRequest
         return [
             'instagram' => 'nullable|string',
             'twitter' => 'nullable|string',
-            'description' => 'required|string',
+            'description' => 'nullable|string',
             'city' => 'required|string',
             'born_date' => 'required|date',
             'gender_id' => 'required|integer|exists:genders,id',

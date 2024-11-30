@@ -24,7 +24,7 @@ class CompleteAuthUserRequest extends FormRequest
         return [
             "born_date" => "required|date",
             "city" => "required|string|min:2",
-            "description" => "required|string|min:50",
+            "description" => "nullable|string",
             "email" => "required|email",
             "gender_id" => "required|exists:genders,id",
             "ig" => "nullable|string|min:2",
