@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Traits\HasUid;
-use App\Models\Traits\HasVerified;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +13,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens, HasUid, HasVerified;
+    use HasFactory, Notifiable, HasApiTokens, HasUid;
 
     
     
@@ -38,8 +37,6 @@ class User extends Authenticatable
         'super_like_credits',
         'tw',
         'ig',
-        'verified',
-        'event_uid',
     ];
 
     protected $hidden = [
@@ -93,7 +90,7 @@ class User extends Authenticatable
     }
 
     public function interactions() : HasMany {
-        return $this->hasMany(UsersInteraction::class);
+        return $this->hasMany(UsersInteraction::class, 'user_uid', 'uid');
     }
 
     public function events() : HasMany {
@@ -160,6 +157,37 @@ class User extends Authenticatable
     public function interestBelongsToMany()
     {
         return $this->belongsToMany(Interest::class, 'user_interests', 'user_id', 'interest_id');
+    }
+
+    public function scopeGetUsersToInteract($query, $authUser, $usersWithInteraction, $usersWithoutInteraction) {
+        return $query->whereIn("gender_id", $authUser->match_gender)
+        ->where("sexual_orientation_id", $authUser->sexual_orientation_id)
+        ->whereHas('events', function ($query) use ($authUser) {
+          $query->where('event_uid', $authUser->event_uid);
+        })
+        ->whereNot('uid', $authUser->uid)
+        ->whereNotIn('uid', $usersWithInteraction)
+        ->whereRaw("
+            EXISTS (
+                SELECT 1 
+                FROM user_interests 
+                WHERE user_interests.user_id = users.id 
+                GROUP BY user_interests.user_id 
+                HAVING COUNT(user_interests.user_id) BETWEEN 3 AND 6
+            )
+        ")
+        ->whereRaw("
+            EXISTS (
+                SELECT 1 
+                FROM user_images 
+                WHERE user_images.user_id = users.id 
+                GROUP BY user_images.user_id 
+                HAVING COUNT(user_images.user_id) = 3
+            )
+        ")
+        ->orWhereIn('uid', $usersWithoutInteraction)
+        ->limit(50)
+        ->get();
     }
 
     public function refreshInteractions($interaction) {

@@ -44,7 +44,7 @@ Route::group(['middleware' => ['auth:sanctum', CheckEventIsActiveMiddleware::cla
 
         Route::group(['prefix' => 'users'], function () {
             Route::get('/', [UserController::class, 'index']);
-            Route::post('/{id}', [UserController::class, 'setInteraction'])->middleware(CheckCreditsMiddleware::class);
+            Route::post('/{uid}', [UserController::class, 'setInteraction'])->middleware(CheckCreditsMiddleware::class);
         });
         
 });

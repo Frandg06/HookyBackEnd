@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('users_interactions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('interaction_user_id')->nullable();
+            $table->uuid('user_uid');
+            $table->uuid('interaction_user_uid')->nullable();
             $table->unsignedBigInteger('interaction_id')->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('interaction_user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->uuid('event_uid')->nullable();
+            $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
+            $table->foreign('interaction_user_uid')->references('uid')->on('users')->onDelete('cascade');
             $table->foreign('interaction_id')->references('id')->on('interactions')->onDelete('cascade');
+            $table->foreign('event_uid')->references('uid')->on('events')->onDelete('cascade');
         });
     }
 

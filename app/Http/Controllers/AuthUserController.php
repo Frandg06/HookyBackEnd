@@ -127,6 +127,16 @@ class AuthUserController extends Controller
         }
     }
 
+    public function getLikes(Request $request) {
+        $user = $request->user();
+        try {
+            $response = $this->authUserService->getLikes($user);
+            return response()->json(["success" => true, "resp" => $response], 200);
+        } catch (\Exception $e) {
+            return $this->responseError($e->getMessage(), 400);
+        }
+    }
+
 
 
     

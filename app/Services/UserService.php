@@ -5,60 +5,41 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\UsersInteraction;
 use Illuminate\Support\Facades\Log;
+/*
+Si es la primera vez carga 50 usuarios de su horientacion y sexo necesario regustrados en el mismo evento
 
+
+
+*/
 class UserService
 {
 
   public function getUsers(User $authUser) {
     try {
-      // obtener los usuarios que no tienen interaccion con el usuario actual y que se han cargado previamente
-      $idsWithNoInteraction = $authUser->interactions()->where('interaction_id', null)->get()->pluck('interaction_user_id');
-      $usersWithNoInteraction = User::whereIn('id', $idsWithNoInteraction)->get();
-      // obtener los usuarios que no se han cargado previamente hasta un maximo de 50
-      $remainingUsers = 50 - $idsWithNoInteraction->count();
+      // usuarios ya obtenidos previamente con lo que no se ha interactuado en el evento actual
+      $usersWithoutInteraction = $authUser->interactions()->usersWithoutInteraction($authUser->event_uid);
       
-      // obtener los usuarios que tienen intereses en comun
-      if($remainingUsers > 0) {
-        $usersRegistered = $authUser->interactions()->get()->pluck('interaction_user_id');
+      // usuarios que se han cargado previamente y que se ha interactuado en el evento actual
+      $usersWithInteraction = $authUser->interactions()->usersWithInteraction($authUser->event_uid);
 
-        $newUsersWithNoInteraction = User::whereIn("gender_id", $authUser->match_gender)
-                      ->where("sexual_orientation_id", $authUser->sexual_orientation_id)
-                      ->whereNot('id', $authUser->id)
-                      ->whereNotIn('id', $usersRegistered)
-                      ->whereRaw("
-                          EXISTS (
-                              SELECT 1 
-                              FROM user_interests 
-                              WHERE user_interests.user_id = users.id 
-                              GROUP BY user_interests.user_id 
-                              HAVING COUNT(user_interests.user_id) BETWEEN 3 AND 6
-                          )
-                      ")
-                      ->whereRaw("
-                          EXISTS (
-                              SELECT 1 
-                              FROM user_images 
-                              WHERE user_images.user_id = users.id 
-                              GROUP BY user_images.user_id 
-                              HAVING COUNT(user_images.user_id) = 3
-                          )
-                      ")
-                      ->limit($remainingUsers)
-                      ->get();
+      // obtener los usuarios que se van a interactuar que esten en el evento que no se haya interactuado con ellos
+      $users = User::getUsersToInteract($authUser, $usersWithInteraction, $usersWithoutInteraction);
 
-        foreach ($newUsersWithNoInteraction as $userToInsert) {  
-          UsersInteraction::create([
-            'user_id' => $authUser->id,
-            'interaction_user_id' => $userToInsert->id,
-            'interaction_id' => null,
-          ]);
-        }
+      $newUsersWithInteractions = [];
 
-        $users = $usersWithNoInteraction->merge($newUsersWithNoInteraction);
+      foreach ($users as $userToInsert) {  
+        if(UsersInteraction::where('user_uid', $authUser->uid)->where('interaction_user_uid', $userToInsert->uid)->count() > 0) continue;
+      
+        $newUsersWithInteractions[] = [
+          'user_uid' => $authUser->uid,
+          'interaction_user_uid' => $userToInsert->uid,
+          'interaction_id' => null,
+          'event_uid' => $authUser->event_uid
+        ];
 
-      }else{
-        $users = User::whereIn('id', $idsWithNoInteraction)->get();
       }
+
+      UsersInteraction::insert($newUsersWithInteractions);
 
       return UserResource::collection($users);
 
@@ -67,10 +48,12 @@ class UserService
     }
   }
 
-  public function setInteraction(User $authUser, $id, $interaction) {
+  public function setInteraction(User $authUser, $uid, $interaction) {
     try {
 
-      UsersInteraction::where('user_id', $authUser->id)->where('interaction_user_id', $id)->update(['interaction_id' => $interaction]);
+      UsersInteraction::where('user_uid', $authUser->uid)
+        ->where('interaction_user_uid', $uid)
+        ->update(['interaction_id' => $interaction]);
       
       $authUser->refreshInteractions($interaction);
 

@@ -9,6 +9,7 @@ use App\Models\Role;
 use App\Models\SexualOrientation;
 use App\Models\TimeZone;
 use App\Models\User;
+use App\Models\UserEvent;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Http;
@@ -68,6 +69,15 @@ class DatabaseSeeder extends Seeder
             "pricing_plan_uid" => \App\Models\PricingPlan::find(1)->uid
         ]);
 
+        $event = $company->events()->create([
+            'st_date' => now()->format('Y-m-d H:i'),
+            'end_date' => now()->addDay()->format('Y-m-d H:i'),
+            'timezone' => 'Europe/Madrid',
+            'likes' => 10,
+            'super_likes' => 2,
+        ]);
+        
+
         $response = Http::get('https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . $company->link);
 
         Storage::disk('r2')->put('hooky/qr/' . $company->uid . '.png', $response->body());
@@ -91,9 +101,17 @@ class DatabaseSeeder extends Seeder
         $new->interestBelongsToMany()->attach([1,2,3]);
 
         
-        User::factory(UserFactory::new())->count(10)->create()->each(function ($user) {
+        User::factory(UserFactory::new())->count(10)->create()->each(function ($user) use ($event) {
             $interests = Interest::inRandomOrder()->limit(3)->pluck('id');
             $user->interestBelongsToMany()->attach($interests);
+
+            UserEvent::create([
+              'user_uid' => $user->uid,
+              'event_uid' => $event->uid,
+              'logged_at' => now()->format('Y-m-d H:i'),
+              'super_likes' => $event->super_likes,
+              'likes' => $event->likes,
+            ]);
 
             for($i = 0; $i < 3; $i++) {
 

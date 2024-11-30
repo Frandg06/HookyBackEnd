@@ -3,7 +3,9 @@ namespace App\Services;
 
 use App\Http\Resources\AuthUserReosurce;
 use App\Models\Company;
+use App\Models\Interaction;
 use App\Models\User;
+use App\Models\UsersInteraction;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
@@ -93,5 +95,19 @@ class AuthUserService {
         throw new \Exception($e->getMessage());
       }
   
+    }
+
+    public function getLikes(User $user) {
+
+      $userLikes = UsersInteraction::where('interaction_user_id', $user->id)->where('interaction_id', Interaction::LIKE_ID)->get();
+
+      if(!$userLikes) return;
+
+      // como maximo 4 imagenes + count
+      $image_count = ($userLikes->count() > 4) ? 4 : $userLikes->count() -1;
+
+      
+      
+      
     }
 }
