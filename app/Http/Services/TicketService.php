@@ -94,8 +94,14 @@ class TicketService
             DB::commit();
 
             return [
-                "super_like_credits" => $user->super_like_credits,
-                "like_credits" => $user->like_credits,
+                "user_total" => [
+                    "super_like_credits" => $user->super_like_credits,
+                    "like_credits" => $user->like_credits,
+                ],
+                "ticket_add" => [
+                    "super_likes" => $ticket->super_likes,
+                    "likes" => $ticket->likes,
+                ]
             ];
 
         }catch (\Throwable $e) {
