@@ -8,8 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class UsersInteraction extends Model
 {
     use HasFactory;
-
-    public $timestamps = false;
+    
     protected $fillable = ['user_uid', 'iteraction_id', 'interaction_user_uid' , 'event_uid'];
 
     public function user() {

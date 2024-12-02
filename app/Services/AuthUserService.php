@@ -98,28 +98,47 @@ class AuthUserService {
     }
 
     public function getLikes(User $user) {
-
+      $resp = [
+          'likes' => 0,
+          'images' => [],
+          'premium' => null
+      ];
       try {
         $userLikes = UsersInteraction::query()
         ->where('interaction_user_uid', $user->uid)
-        ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID]);
+        ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
+        ->where('is_confirmed', false)
+        ->orderBy('updated_at', 'desc');
         
-        if($userLikes->count() === 0) return [
-          'likes' => 0,
-          'images' => []
-        ];
+        if($userLikes->count() === 0) return $resp;
         
         // como maximo 4 imagenes + count
         $image_max_count = ($userLikes->count() > 4) ? 4 : $userLikes->count();
         
         // los usuarios de mi evento que hayan interactuado conmigo dando like o superlike
-        $image = $userLikes->limit($image_max_count)->get();
-        
         $resp['likes'] = $userLikes->count();
         
-        $resp['images'] = $image->map(function ($item) {
-          return $item->user->userImages()->first()->web_url;
-        });
+        if($user->role_id === User::ROLE_PREMIUM) {
+          
+          $resp['premium'] = $userLikes->get()->map(function ($user) {
+            return [
+              "name" => $user->user->name,
+              "surnames" => $user->user->surnames,
+              "image" => $user->user->userImages()->first()->web_url,
+              "uid" => $user->user->uid,
+              "time" => $user->updated_at->diffForHumans(),
+            ];
+          });
+
+        }else {
+
+          $image = $userLikes->limit($image_max_count)->get();
+
+          $resp['images'] = $image->map(function ($item) {
+            return $item->user->userImages()->first()->web_url;
+          });
+
+        }
 
         return $resp;
       }catch (\Exception $e) {

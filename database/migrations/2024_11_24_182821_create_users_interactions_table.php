@@ -16,11 +16,13 @@ return new class extends Migration
             $table->uuid('user_uid');
             $table->uuid('interaction_user_uid')->nullable();
             $table->unsignedBigInteger('interaction_id')->nullable();
+            $table->boolean('is_confirmed')->default(false);
             $table->uuid('event_uid')->nullable();
             $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
             $table->foreign('interaction_user_uid')->references('uid')->on('users')->onDelete('cascade');
             $table->foreign('interaction_id')->references('id')->on('interactions')->onDelete('cascade');
             $table->foreign('event_uid')->references('uid')->on('events')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
