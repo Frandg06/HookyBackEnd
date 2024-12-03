@@ -2,10 +2,13 @@
 namespace App\Services;
 
 use App\Http\Resources\AuthUserReosurce;
+use App\Http\Resources\NotificationUserResource;
+use App\Http\Resources\UserResource;
 use App\Models\Company;
 use App\Models\Interaction;
 use App\Models\User;
 use App\Models\UsersInteraction;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
@@ -98,51 +101,31 @@ class AuthUserService {
     }
 
     public function getLikes(User $user) {
-      $resp = [
-          'likes' => 0,
-          'images' => [],
-          'premium' => null
-      ];
+
       try {
-        $userLikes = UsersInteraction::query()
-        ->where('interaction_user_uid', $user->uid)
-        ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
-        ->where('is_confirmed', false)
-        ->orderBy('updated_at', 'desc');
-        
-        if($userLikes->count() === 0) return $resp;
-        
-        // como maximo 4 imagenes + count
-        $image_max_count = ($userLikes->count() > 4) ? 4 : $userLikes->count();
-        
-        // los usuarios de mi evento que hayan interactuado conmigo dando like o superlike
-        $resp['likes'] = $userLikes->count();
-        
-        if($user->role_id === User::ROLE_PREMIUM) {
-          
-          $resp['premium'] = $userLikes->get()->map(function ($user) {
-            return [
-              "name" => $user->user->name,
-              "surnames" => $user->user->surnames,
-              "image" => $user->user->userImages()->first()->web_url,
-              "uid" => $user->user->uid,
-              "time" => $user->updated_at->diffForHumans(),
-            ];
-          });
 
-        }else {
+        $usersHook =  $user->getUserHooks();
 
-          $image = $userLikes->limit($image_max_count)->get();
+        $userLikes =$user->scopeGetUserLikes();
+        Log::info($userLikes);
 
-          $resp['images'] = $image->map(function ($item) {
-            return $item->user->userImages()->first()->web_url;
-          });
+        $userLikes = $userLikes->map(function ($u) use ($user) {
+          return $user->role_id == User::ROLE_PREMIUM 
+            ? NotificationUserResource::make($u)
+            : $u->userImages()->first()->web_url;
+        });
 
-        }
+        $userSuperLikes =  $user->getUserSuperLikes();
 
-        return $resp;
+        return [
+          "likes" => $userLikes,
+          "super_likes" => $userSuperLikes,
+          "hooks" => NotificationUserResource::collection($usersHook)
+        ];
+
       }catch (\Exception $e) {
-        throw new \Exception("Error al obtener los likes");
+        Log::error($e);
+        throw new \Exception("Error al obtener las notificaciones");
       }
       
     }

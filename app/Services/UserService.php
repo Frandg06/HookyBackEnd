@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Http\Resources\UserResource;
+use App\Models\Interaction;
 use App\Models\User;
 use App\Models\UsersInteraction;
 use Illuminate\Support\Facades\Log;
@@ -53,7 +54,10 @@ class UserService
 
       UsersInteraction::where('user_uid', $authUser->uid)
         ->where('interaction_user_uid', $uid)
-        ->update(['interaction_id' => $interaction]);
+        ->update([
+          'interaction_id' => $interaction,
+          'is_confirmed' => in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID]) ? true : false
+          ]);
       
       $authUser->refreshInteractions($interaction);
 

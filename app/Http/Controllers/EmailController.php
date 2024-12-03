@@ -12,9 +12,9 @@ class EmailController extends Controller
     public function test(Request $request)
     {
         $email = new Mail(); 
-        $email->setFrom("admin@hooky.com", "Hooky!"); 
+        $email->setFrom("admin@hookyapp.es", "Hooky!"); 
         $email->setSubject("Sending with SendGrid is Fun");
-        $email->addTo("test@example.com", "Example User");
+        $email->addTo("fdiez86@gmail.com", "Example User");
         $email->addContent("text/plain", "and easy to do anywhere, even with PHP");
         $email->addContent(
             "text/html", "<strong>and easy to do anywhere, even with PHP</strong>"

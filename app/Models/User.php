@@ -192,6 +192,56 @@ class User extends Authenticatable
         ->get();
     }
 
+    public function scopeGetUserSuperLikes($query) {
+        return $query->join('users_interactions as i1', 'users.uid', '=', 'i1.interaction_user_uid')
+        ->where('i1.user_uid', $this->uid)
+        ->where('i1.event_uid', $this->event_uid)
+        ->whereExists(function ($query) {
+            $query->from('users_interactions as i2')
+                ->whereColumn('i2.user_uid', 'i1.interaction_user_uid')
+                ->where('i2.interaction_user_uid', $this->uid)
+                ->where('i2.event_uid', $this->event_uid)
+                ->where('i2.interaction_id', Interaction::SUPER_LIKE_ID);
+        })
+        ->orderBy('i1.updated_at', 'desc')
+        ->distinct()
+        ->get(['users.*', 'i1.updated_at as ago']);
+    }
+
+    public function scopeGetUserLikes() {
+        return self::query()
+        ->join('users_interactions as i1', 'users.uid', '=', 'i1.interaction_user_uid')
+        ->where('i1.user_uid', $this->uid)
+        ->where('i1.event_uid', $this->event_uid)
+        ->whereExists(function ($query) {
+            $query->from('users_interactions as i2')
+                ->whereColumn('i2.user_uid', 'i1.interaction_user_uid')
+                ->where('i2.interaction_user_uid', $this->uid)
+                ->where('i2.interaction_id', Interaction::LIKE_ID);
+        })
+        ->orderBy('i1.updated_at', 'desc')
+        ->distinct()
+        ->get(['users.*', 'i1.updated_at as ago']);
+    }
+
+    public function getUserHooks() {
+        return self::query()
+        ->join('users_interactions as i1', 'users.uid', '=', 'i1.interaction_user_uid')
+        ->where('i1.user_uid', $this->uid)
+        ->where('i1.event_uid', $this->event_uid)
+        ->whereIn('i1.interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
+        ->whereExists(function ($query) {
+            $query->from('users_interactions as i2')
+                ->whereColumn('i2.user_uid', 'i1.interaction_user_uid')
+                ->where('i2.interaction_user_uid', $this->uid)
+                ->where('i2.event_uid', $this->event_uid)
+                ->whereIn('i2.interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID]);
+        })
+        ->orderBy('i1.updated_at', 'desc')
+        ->distinct()
+        ->get(['users.*', 'i1.updated_at as ago']);
+    }
+
     public function refreshInteractions($interaction) {
 
         if($interaction == Interaction::LIKE_ID) {

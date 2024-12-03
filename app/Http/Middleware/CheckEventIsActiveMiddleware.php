@@ -22,7 +22,7 @@ class CheckEventIsActiveMiddleware
         $now =  strtotime(Carbon::now($tz));
         $end_date = strtotime(Carbon::parse($activeevent->event->end_date));
 
-        if($now > $end_date)  return response()->json(["error" => true, "message" => "El evento no está activo"], 401);
+        if($now > $end_date)  return response()->json(["error" => true, "message" => "El evento no está activo", "type" => "AuthException"], 401);
 
         return $next($request);
     }

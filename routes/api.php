@@ -41,11 +41,13 @@ Route::group(['middleware' => ['auth:sanctum', CheckEventIsActiveMiddleware::cla
             Route::delete('/images', [ImageController::class, 'deleteAllUserImage']);
 
             Route::post('/redeem', [TicketController::class, 'redeem']);
+
         });
 
         Route::group(['prefix' => 'users'], function () {
             Route::get('/', [UserController::class, 'index']);
             Route::post('/{uid}', [UserController::class, 'setInteraction'])->middleware(CheckCreditsMiddleware::class);
+            Route::get('/{uid}', [UserController::class, 'getUser']);
         });
         
 });
