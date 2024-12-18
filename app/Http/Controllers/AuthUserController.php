@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\CompleteAuthUserRequest;
 use App\Http\Requests\CompleteDataRequest;
 use App\Http\Resources\AuthUserReosurce;
+use App\Http\Services\NotificationService;
 use App\Services\AuthUserService;
 use App\Services\ImagesService;
 use App\Services\UserService;
@@ -16,12 +17,13 @@ use Illuminate\Support\Facades\Log;
 
 class AuthUserController extends Controller
 {
-    public $authUserService, $userService, $imageService;
+    public $authUserService, $userService, $imageService, $notificationService;
 
-    public function __construct(AuthUserService $authUserService, UserService $userService, ImagesService $imageService) {
+    public function __construct(AuthUserService $authUserService, UserService $userService, ImagesService $imageService, NotificationService $notificationService) {
         $this->authUserService = $authUserService;
         $this->userService = $userService;
         $this->imageService = $imageService;
+        $this->notificationService = $notificationService;
     }
 
     public function update(CompleteDataRequest $request) {
@@ -127,18 +129,25 @@ class AuthUserController extends Controller
         }
     }
 
-    public function getLikes(Request $request) {
+    public function getNotifications(Request $request) {
         $user = $request->user();
         try {
-            $response = $this->authUserService->getLikes($user);
+            $response = $this->authUserService->getNotifications($user);
             return response()->json(["success" => true, "resp" => $response], 200);
         } catch (\Exception $e) {
             return $this->responseError($e->getMessage(), 400);
         }
     }
 
-
-
+    public function readNotificationsByType(Request $request, $type) {
+        $user = $request->user();
+        try {
+            $response = $this->notificationService->readNotificationsByType($user, $type);
+            return response()->json(["success" => true, "resp" => $response], 200);
+        } catch (\Exception $e) {
+            return $this->responseError($e->getMessage(), 400);
+        }
+    }
     
     private function parseCompleteData($data) {
         return [

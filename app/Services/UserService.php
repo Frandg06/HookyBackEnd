@@ -80,6 +80,7 @@ class UserService
             'type' => $type,
             'data' => "Has obtenido un nuevo ". $type,
             'read_at' => null,
+            'event_uid' => $authUser->event_uid,
           ];
 
           $this->notificationService->publishNotification($authNotification);
@@ -95,6 +96,7 @@ class UserService
           'type' => $type,
           'data' => "Has obtenido un nuevo ". $type,
           'read_at' => null,
+          'event_uid' => $authUser->event_uid,
         ];
 
         $this->notificationService->publishNotification($newNotification);

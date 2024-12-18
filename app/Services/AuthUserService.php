@@ -100,7 +100,7 @@ class AuthUserService {
   
     }
 
-    public function getLikes(User $user) {
+    public function getNotifications(User $user) {
 
       try {
 

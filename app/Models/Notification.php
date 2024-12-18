@@ -13,6 +13,7 @@ class Notification extends Model
         "id",
         "uid",
         "user_uid",
+        "event_uid",
         "type",
         "data",
         "read_at",

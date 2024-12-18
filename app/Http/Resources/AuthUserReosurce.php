@@ -65,9 +65,9 @@ class AuthUserReosurce extends JsonResource
                 ];
             }),
             "notifications" => [
-                'likes' => $this->notifications->where('type', 'like')->where('read_at', null)->count(),
-                'superlikes' => $this->notifications->where('type', 'superlike')->where('read_at', null)->count(),
-                'hooks' => $this->notifications->where('type', 'hook')->where('read_at', null)->count(),
+                'likes' => $this->notifications->where('event_uid', $this->event_uid)->where('type', 'like')->where('read_at', null)->count(),
+                'superlikes' => $this->notifications->where('event_uid', $this->event_uid)->where('type', 'superlike')->where('read_at', null)->count(),
+                'hooks' => $this->notifications->where('event_uid', $this->event_uid)->where('type', 'hook')->where('read_at', null)->count(),
             ]
         ];
     }

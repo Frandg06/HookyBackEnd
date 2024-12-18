@@ -15,11 +15,13 @@ return new class extends Migration
             $table->id();
             $table->uuid('uid');
             $table->uuid('user_uid');
+            $table->uuid('event_uid');
             $table->string('type');
             $table->text('data');
             $table->dateTime('read_at')->nullable();
             $table->timestamps();
             $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
+            $table->foreign('event_uid')->references('uid')->on('events')->onDelete('cascade');
         });
     }
 
