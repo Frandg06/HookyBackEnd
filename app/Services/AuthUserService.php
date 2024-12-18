@@ -104,11 +104,10 @@ class AuthUserService {
 
       try {
 
-        $usersHook =  $user->getUserHooks();
+        $usersHook = $user->getUserHooks();
 
-        $userLikes =$user->scopeGetUserLikes();
-        Log::info($userLikes);
-
+        $userLikes = $user->scopeGetUserLikes();
+        
         $userLikes = $userLikes->map(function ($u) use ($user) {
           return $user->role_id == User::ROLE_PREMIUM 
             ? NotificationUserResource::make($u)
@@ -119,7 +118,7 @@ class AuthUserService {
 
         return [
           "likes" => $userLikes,
-          "super_likes" => $userSuperLikes,
+          "super_likes" => NotificationUserResource::collection($userSuperLikes),
           "hooks" => NotificationUserResource::collection($usersHook)
         ];
 

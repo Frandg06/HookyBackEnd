@@ -2,18 +2,20 @@
 namespace App\Services;
 
 use App\Http\Resources\UserResource;
+use App\Http\Services\NotificationService;
 use App\Models\Interaction;
 use App\Models\User;
 use App\Models\UsersInteraction;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-/*
-Si es la primera vez carga 50 usuarios de su horientacion y sexo necesario regustrados en el mismo evento
-
-
-
-*/
 class UserService
 {
+  private $notificationService;
+
+  public function __construct(NotificationService $notificationService) {
+    $this->notificationService = $notificationService;
+    
+  }
 
   public function getUsers(User $authUser) {
     try {
@@ -50,6 +52,7 @@ class UserService
   }
 
   public function setInteraction(User $authUser, $uid, $interaction) {
+    DB::beginTransaction();
     try {
 
       UsersInteraction::where('user_uid', $authUser->uid)
@@ -57,9 +60,47 @@ class UserService
         ->update([
           'interaction_id' => $interaction,
           'is_confirmed' => in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID]) ? true : false
-          ]);
+        ]);
       
       $authUser->refreshInteractions($interaction);
+
+      
+      if(in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
+
+        $checkHook =  UsersInteraction::where('user_uid', $uid)
+                      ->where('interaction_user_uid', $authUser->uid)
+                      ->whereIn('interaction_id',  [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
+                      ->exists();
+
+        if($checkHook) {
+          $type = 'hook';
+
+          $authNotification = [
+            'user_uid' => $authUser->uid,
+            'type' => $type,
+            'data' => "Has obtenido un nuevo ". $type,
+            'read_at' => null,
+          ];
+
+          $this->notificationService->publishNotification($authNotification);
+
+        }else {
+
+          $type = ($interaction == Interaction::LIKE_ID) ? 'like' : 'superlike';
+
+        }
+
+        $newNotification = [
+          'user_uid' => $uid,
+          'type' => $type,
+          'data' => "Has obtenido un nuevo ". $type,
+          'read_at' => null,
+        ];
+
+        $this->notificationService->publishNotification($newNotification);
+      }
+
+      DB::commit();
 
       return [
         "super_like_credits" => $authUser->super_like_credits,
@@ -67,7 +108,9 @@ class UserService
       ];
       
     } catch (\Exception $e) {
-      throw new \Exception($e->getMessage());
+      DB::rollBack();
+      Log::error($e);
+      throw new \Exception();
     }
   }
   

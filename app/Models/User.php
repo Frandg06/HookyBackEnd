@@ -99,6 +99,10 @@ class User extends Authenticatable
         return $this->hasMany(UserEvent::class, 'user_uid', 'uid');
     }
 
+    public function notifications(): HasMany {
+        return $this->hasMany(Notification::class, 'user_uid', 'uid');
+    }
+
     public function getAgeAttribute() : int {
         return Carbon::parse($this->born_date)->age;
     }

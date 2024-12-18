@@ -64,6 +64,11 @@ class AuthUserReosurce extends JsonResource
                     "bg_color" => $interest->interest->bg_color,
                 ];
             }),
+            "notifications" => [
+                'likes' => $this->notifications->where('type', 'like')->where('read_at', null)->count(),
+                'superlikes' => $this->notifications->where('type', 'superlike')->where('read_at', null)->count(),
+                'hooks' => $this->notifications->where('type', 'hook')->where('read_at', null)->count(),
+            ]
         ];
     }
 }

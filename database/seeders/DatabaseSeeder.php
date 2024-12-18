@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\UserEvent;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
@@ -100,8 +101,46 @@ class DatabaseSeeder extends Seeder
 
         $new->interestBelongsToMany()->attach([1,2,3]);
 
+        // heterosexuales
+        for($i = 0; $i < 20; $i++) {
+            User::create([
+                'name' => fake()->name(),
+                'surnames' => fake()->name(),
+                'email' => fake()->unique()->safeEmail(),
+                'password' => Hash::make('password'),
+                "gender_id" => $i > 9 ? 2 : 1,
+                "sexual_orientation_id" => 1,
+                "role_id" => 2,
+                "city" => fake()->city(),
+                "born_date" => fake()->date(),
+                "ig" => fake()->name(),
+                "tw" => fake()->name(),
+                "description" => fake()->paragraph(),
+            ]);
+
+        }
+
+        // Homosexuales
+        for($i = 0; $i < 20; $i++) {
+            User::create([
+                'name' => fake()->name(),
+                'surnames' => fake()->name(),
+                'email' => fake()->unique()->safeEmail(),
+                'password' => Hash::make('password'),
+                "gender_id" => $i > 9 ? 2 : 1,
+                "sexual_orientation_id" => 2,
+                "role_id" => 2,
+                "city" => fake()->city(),
+                "born_date" => fake()->date(),
+                "ig" => fake()->name(),
+                "tw" => fake()->name(),
+                "description" => fake()->paragraph(),
+            ]);
+
+        }
+
         
-        User::factory(UserFactory::new())->count(10)->create()->each(function ($user) use ($event) {
+        User::all()->each(function ($user) use ($event) {
             $interests = Interest::inRandomOrder()->limit(3)->pluck('id');
             $user->interestBelongsToMany()->attach($interests);
 
