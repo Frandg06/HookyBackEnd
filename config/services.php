@@ -27,6 +27,9 @@ return [
     'resend' => [
         'key' => env('RESEND_KEY'),
     ],
+    'ably' => [
+        'key' => env('ABLY_API_KEY'),
+    ],
 
     'slack' => [
         'notifications' => [
