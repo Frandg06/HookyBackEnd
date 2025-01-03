@@ -17,10 +17,15 @@ class NotificationService {
   public function publishNotification($data) {
     try {
       
-      $notification = Notification::create($data);
-      $channel = $this->ably->channels->get('notifications');
-      $channel_name = 'interactions-' . $data['user_uid'] . '-' . $data['event_uid'];
-      $channel->publish($channel_name, $data['data']);
+      Notification::create($data);
+
+      $channel_name = 'notifications:interactions-' . $data['user_uid'] . '-' . $data['event_uid'];
+
+      $this->ably->channels->get($channel_name)->publish('notification', [
+        'message' => $data['data'],
+        'type' => $data['type'],
+        'timestamp' => now(),
+      ]);
 
     } catch (\Exception $e) {
       throw new \Exception($e->getMessage());

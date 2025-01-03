@@ -19,6 +19,7 @@ class AuthUserReosurce extends JsonResource
         return [
             "id" => $this->id,
             "uid" => $this->uid,
+            "event_uid" => $this->event_uid,
             "gender_id" => $this->gender_id,
             "sexual_orientation_id" => $this->sexual_orientation_id,
             "premium" => $this->role_id == User::ROLE_PREMIUM ? true : false,
@@ -65,9 +66,9 @@ class AuthUserReosurce extends JsonResource
                 ];
             }),
             "notifications" => [
-                'likes' => $this->notifications->where('event_uid', $this->event_uid)->where('type', 'like')->where('read_at', null)->count(),
-                'superlikes' => $this->notifications->where('event_uid', $this->event_uid)->where('type', 'superlike')->where('read_at', null)->count(),
-                'hooks' => $this->notifications->where('event_uid', $this->event_uid)->where('type', 'hook')->where('read_at', null)->count(),
+                'like' => $this->notifications->where('event_uid', $this->event_uid)->where('type', 'like')->where('read_at', null)->count(),
+                'superlike' => $this->notifications->where('event_uid', $this->event_uid)->where('type', 'superlike')->where('read_at', null)->count(),
+                'hook' => $this->notifications->where('event_uid', $this->event_uid)->where('type', 'hook')->where('read_at', null)->count(),
             ]
         ];
     }
