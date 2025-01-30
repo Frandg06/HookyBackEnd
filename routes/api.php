@@ -65,7 +65,7 @@ Route::prefix('company')->group(function () {
         
         Route::put('/update', [CompanyController::class, 'update']);
         Route::get('/auth', [AuthController::class, 'isCompanyAuth']);
-        Route::get('/logout', [AuthController::class, 'logoutCompany']);
+        Route::get('/logout', [AuthController::class, 'logout']);
         Route::post('/event', [EventController::class, 'store']);
         Route::get('/url', [CompanyController::class, 'getLink']);
         Route::post('/tickets', [TicketController::class, 'generateTickets']);

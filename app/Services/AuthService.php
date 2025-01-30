@@ -71,28 +71,35 @@ class AuthService {
     }
 
     public function registerCompany($data) {
+      DB::beginTransaction();
       try {
+
         $company = Company::where('email', $data['email'])->first();
-  
-        if($company) throw new CustomException("El usuario ya existe");
+        
+        if($company) throw new CustomException(__("i18n.user_exists"));
   
         $company = Company::create($data);
   
-        $response = Http::get('https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . $company->link);
+        $response = Http::get(env('QR_API_URL') . $company->link);
   
         Storage::disk('r2')->put('hooky/qr/' . $company->uid . '.png', $response->body());
   
         $token = $company->createToken('company_auth_token', ['*'], now()->addHours(1))->plainTextToken;
   
+        DB::commit();
+
         return (object)[
             'user' => $company,
             'access_token' => $token,
         ];
 
-      }catch (\Throwable $e) {
-        ($e instanceof CustomException)
-        ? throw new \Exception($e->getMessage())
-        : throw new \Exception("Se ha producido un error al registrar la empresa");
+      }catch (CustomException $e) {
+        DB::rollBack();
+        throw new \Exception($e->getMessage());
+      } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+        throw new \Exception(__("i18n.register_company_ko"));
       }
         
     }
@@ -102,7 +109,7 @@ class AuthService {
       DB::beginTransaction();
 
       try {
-        
+
         if (!Auth::attempt($data))  throw new CustomException(__("i18n.credentials_ko"));
 
         $company_uid = Crypt::decrypt($company_uid);
@@ -162,7 +169,7 @@ class AuthService {
         $company = Company::where('email', $data['email'])->first();
 
         if (!$company || !Hash::check($data['password'], $company->password)) {
-          throw new CustomException('Invalid credentials');
+          throw new CustomException(__("i18n.credentials_ko"));
         }
   
         $token = $company->createToken('company_auth_token', ['*'], now()->addHours(1))->plainTextToken;
@@ -171,10 +178,13 @@ class AuthService {
             'company' => $company,
             'access_token' => $token,
         ];
-      } catch (\Throwable $e) {
-        ($e instanceof CustomException)
-        ? throw new \Exception($e->getMessage())
-        : throw new \Exception("Se ha producido un error al iniciar sesion");
+      }catch (CustomException $e) {
+          DB::rollBack();
+          throw new \Exception($e->getMessage());
+      } catch (\Exception $e) {
+          DB::rollBack();
+          Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+          throw new \Exception(__("i18n.login_ko"));
       }
      
     }

@@ -47,7 +47,7 @@ class AuthController extends Controller
 
             return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
         } catch (\Exception $e) {
-            return $this->responseError($e->getMessage(), 400);
+            return $this->responseError($e->getMessage(), 500);
         }
     }
 
@@ -60,7 +60,7 @@ class AuthController extends Controller
             ]);
 
             $response = $this->authService->login($validated, $request->company_uid);
-            
+
             return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
         } catch (\Exception $e) {
             return $this->responseError($e->getMessage(), 400);
