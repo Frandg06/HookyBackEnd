@@ -102,7 +102,7 @@ class AuthService {
       DB::beginTransaction();
 
       try {
-        throw new \Exception(__("i18n.credentials_ko"));
+        
         if (!Auth::attempt($data))  throw new CustomException(__("i18n.credentials_ko"));
 
         $company_uid = Crypt::decrypt($company_uid);
