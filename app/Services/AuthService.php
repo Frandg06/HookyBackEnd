@@ -99,6 +99,7 @@ class AuthService {
     public function login($data, $company_uid) {
 
       DB::beginTransaction();
+
       try {
         if (!Auth::attempt($data)) {
           throw new CustomException('Las credenciales no son correctas');

@@ -11,6 +11,9 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\CheckCreditsMiddleware;
 use App\Http\Middleware\CheckEventIsActiveMiddleware;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 /*
 Todas las peticiones deben de llevar los headers
@@ -21,9 +24,9 @@ Todas las peticiones deben de llevar los headers
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::group(['middleware' => ['auth:sanctum', CheckEventIsActiveMiddleware::class]], function () {
+Route::middleware(['auth:sanctum', 'event'])->group(function () {
     
-        Route::group(['prefix' => 'user'], function () {
+        Route::prefix('user')->group(function () {
             
             Route::get('/auth', [AuthController::class, 'isUserAuth']);
             Route::get('/logout', [AuthController::class, 'logout']);
@@ -45,20 +48,20 @@ Route::group(['middleware' => ['auth:sanctum', CheckEventIsActiveMiddleware::cla
 
         });
 
-        Route::group(['prefix' => 'users'], function () {
+        Route::prefix('users')->group(function () {
             Route::get('/', [UserController::class, 'index']);
-            Route::post('/{uid}', [UserController::class, 'setInteraction'])->middleware(CheckCreditsMiddleware::class);
+            Route::post('/{uid}', [UserController::class, 'setInteraction'])->middleware('credits');
             Route::get('/{uid}', [UserController::class, 'getUser']);
         });
-        
+
 });
     
-Route::group(['prefix' => 'company'], function () {
+Route::prefix('company')->group(function () {
     
     Route::post('/register', [AuthController::class, 'registerCompany']);
     Route::post('/login', [AuthController::class, 'loginCompany']);
     
-    Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         
         Route::put('/update', [CompanyController::class, 'update']);
         Route::get('/auth', [AuthController::class, 'isCompanyAuth']);
@@ -73,7 +76,7 @@ Route::group(['prefix' => 'company'], function () {
 });
 
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/timezones', [DomainController::class, 'getTimeZones']);
     Route::get('/interests', [DomainController::class, 'getInterests']);
 });

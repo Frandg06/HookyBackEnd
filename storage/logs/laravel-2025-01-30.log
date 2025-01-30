@@ -1,4 +1,4 @@
-[2024-12-18 14:06:05] local.ERROR: SQLSTATE[HY000] [2002] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión (Connection: mysql, SQL: select exists (select 1 from information_schema.tables where table_schema = 'hooky-db' and table_name = 'migrations' and table_type in ('BASE TABLE', 'SYSTEM VERSIONED')) as `exists`) {"exception":"[object] (Illuminate\\Database\\QueryException(code: 2002): SQLSTATE[HY000] [2002] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión (Connection: mysql, SQL: select exists (select 1 from information_schema.tables where table_schema = 'hooky-db' and table_name = 'migrations' and table_type in ('BASE TABLE', 'SYSTEM VERSIONED')) as `exists`) at C:\\Users\\fdiez\\Documents\\Dev\\hooky-api\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:825)
+[2025-01-30 16:57:19] local.ERROR: SQLSTATE[HY000] [1049] Unknown database 'hooky-db' (Connection: mysql, SQL: select exists (select 1 from information_schema.tables where table_schema = 'hooky-db' and table_name = 'migrations' and table_type in ('BASE TABLE', 'SYSTEM VERSIONED')) as `exists`) {"exception":"[object] (Illuminate\\Database\\QueryException(code: 1049): SQLSTATE[HY000] [1049] Unknown database 'hooky-db' (Connection: mysql, SQL: select exists (select 1 from information_schema.tables where table_schema = 'hooky-db' and table_name = 'migrations' and table_type in ('BASE TABLE', 'SYSTEM VERSIONED')) as `exists`) at C:\\Users\\fdiez\\Documents\\Dev\\hooky-api\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:825)
 [stacktrace]
 #0 C:\\Users\\fdiez\\Documents\\Dev\\hooky-api\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(779): Illuminate\\Database\\Connection->runQueryCallback('select exists (...', Array, Object(Closure))
 #1 C:\\Users\\fdiez\\Documents\\Dev\\hooky-api\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php(398): Illuminate\\Database\\Connection->run('select exists (...', Array, Object(Closure))
@@ -26,7 +26,7 @@
 #23 C:\\Users\\fdiez\\Documents\\Dev\\hooky-api\\artisan(13): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
 #24 {main}
 
-[previous exception] [object] (PDOException(code: 2002): SQLSTATE[HY000] [2002] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión at C:\\Users\\fdiez\\Documents\\Dev\\hooky-api\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connectors\\Connector.php:66)
+[previous exception] [object] (PDOException(code: 1049): SQLSTATE[HY000] [1049] Unknown database 'hooky-db' at C:\\Users\\fdiez\\Documents\\Dev\\hooky-api\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connectors\\Connector.php:66)
 [stacktrace]
 #0 C:\\Users\\fdiez\\Documents\\Dev\\hooky-api\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connectors\\Connector.php(66): PDO->__construct('mysql:host=127....', 'root', Object(SensitiveParameterValue), Array)
 #1 C:\\Users\\fdiez\\Documents\\Dev\\hooky-api\\vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connectors\\Connector.php(44): Illuminate\\Database\\Connectors\\Connector->createPdoConnection('mysql:host=127....', 'root', Object(SensitiveParameterValue), Array)
@@ -64,25 +64,3 @@
 #33 C:\\Users\\fdiez\\Documents\\Dev\\hooky-api\\artisan(13): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
 #34 {main}
 "} 
-[2024-12-18 14:45:14] local.INFO: 1  
-[2024-12-18 14:45:15] local.INFO: 1  
-[2024-12-18 14:45:26] local.INFO: 0  
-[2024-12-18 14:45:29] local.INFO: 0  
-[2024-12-18 14:45:29] local.INFO: 0  
-[2024-12-18 14:45:30] local.INFO: 0  
-[2024-12-18 14:45:31] local.INFO: 0  
-[2024-12-18 14:45:33] local.INFO: 0  
-[2024-12-18 14:45:34] local.INFO: 0  
-[2024-12-18 14:45:37] local.INFO: 1  
-[2024-12-18 14:45:38] local.INFO: 1  
-[2024-12-18 14:45:39] local.INFO: 1  
-[2024-12-18 14:45:39] local.INFO: 1  
-[2024-12-18 14:45:41] local.INFO: 1  
-[2024-12-18 14:45:45] local.INFO: 1  
-[2024-12-18 14:45:48] local.INFO: 1  
-[2024-12-18 14:45:58] local.INFO: 1  
-[2024-12-18 14:49:39] local.INFO: 1  
-[2024-12-18 14:49:48] local.INFO: 1  
-[2024-12-18 14:50:01] local.INFO: 1  
-[2024-12-18 14:50:08] local.INFO: 0  
-[2024-12-18 14:50:11] local.INFO: 0  
