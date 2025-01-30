@@ -21,6 +21,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (AuthenticationException $e, Request $request) { 
-            return response()->json(['message' => 'No esta autenticado', 'type' => 'AuthException'], 401);
+            return response()->json(['message' => 'No existe una sesion activa', 'type' => 'AuthException'], 401);
         });
     })->create();

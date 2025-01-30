@@ -9,11 +9,6 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
-use App\Http\Middleware\CheckCreditsMiddleware;
-use App\Http\Middleware\CheckEventIsActiveMiddleware;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 /*
 Todas las peticiones deben de llevar los headers
