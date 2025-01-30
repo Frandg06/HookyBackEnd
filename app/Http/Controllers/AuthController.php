@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public $authService, $userService, $imageService;
+    protected $authService, $userService, $imageService;
 
     public function __construct(AuthService $authService, UserService $userService, ImagesService $imageService) {
         $this->authService = $authService;

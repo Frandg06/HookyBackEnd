@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Log;
 
 class AuthUserController extends Controller
 {
-    public $authUserService, $userService, $imageService, $notificationService;
+    protected $authUserService, $userService, $imageService, $notificationService;
 
     public function __construct(AuthUserService $authUserService, UserService $userService, ImagesService $imageService, NotificationService $notificationService) {
         $this->authUserService = $authUserService;
