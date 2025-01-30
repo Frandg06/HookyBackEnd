@@ -10,7 +10,6 @@ use App\Services\ImagesService;
 use App\Services\UserService;
 use Exception;
 use Illuminate\Http\Request;
-use \stdClass;
 
 class AuthController extends Controller
 {
@@ -29,7 +28,11 @@ class AuthController extends Controller
 
             $response = $this->authService->register($data);
 
-            return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
+            return response()->json([
+                "success" => true, 
+                "access_token" =>  $response->access_token
+            ], 200);
+
         } catch (\Exception $e) {
             return $this->responseError($e->getMessage(), 400);
         }
@@ -51,8 +54,13 @@ class AuthController extends Controller
     public function login(Request $request) 
     {
         try {
-            $data = $request->only('email', 'password');
-            $response = $this->authService->login($data, $request->company_uid);
+            $validated = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required'
+            ]);
+
+            $response = $this->authService->login($validated, $request->company_uid);
+            
             return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
         } catch (\Exception $e) {
             return $this->responseError($e->getMessage(), 400);
