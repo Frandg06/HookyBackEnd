@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Exceptions\CustomException;
 use App\Http\Resources\AuthUserReosurce;
 use App\Models\Company;
+use App\Models\TimeZone;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -77,14 +78,18 @@ class AuthService {
         $company = Company::where('email', $data['email'])->first();
         
         if($company) throw new CustomException(__("i18n.user_exists"));
-  
+        
+        if(!isset($data['timezone_uid']) || empty($data['timezone_uid'])){
+          $data['timezone_uid'] = TimeZone::where('name', 'Europe/Berlin')->first()->uid;
+        } 
+
         $company = Company::create($data);
   
         $response = Http::get(env('QR_API_URL') . $company->link);
   
         Storage::disk('r2')->put('hooky/qr/' . $company->uid . '.png', $response->body());
   
-        $token = $company->createToken('company_auth_token', ['*'], now()->addHours(1))->plainTextToken;
+        $token = Auth::guard('company')->attempt(['email' => $data['email'], 'password' => $data['password']]);
   
         DB::commit();
 
@@ -110,7 +115,9 @@ class AuthService {
 
       try {
 
-        if (!Auth::attempt($data))  throw new CustomException(__("i18n.credentials_ko"));
+        $token = Auth::attempt($data);
+
+        if (!$token)  throw new CustomException(__("i18n.credentials_ko"));
 
         $company_uid = Crypt::decrypt($company_uid);
 
@@ -124,7 +131,9 @@ class AuthService {
 
         if(!$event) throw new CustomException(__("i18n.event_not_active"));
 
-        $user = User::where('email', $data['email'])->get()->firstOrFail();
+        $user = request()->user();
+
+        Log::info($user);
 
         $exist = $user->events()->where('event_uid', $event->uid)->exists();
 
@@ -142,9 +151,6 @@ class AuthService {
         $now = Carbon::now($timezone);
         $end_date = Carbon::parse($event->end_date);
         $diff = $now->diffInMinutes($end_date);
-
-
-        $token =  $user->createToken('auth_token', ['*'], now()->addMinutes($diff))->plainTextToken;
 
         DB::commit();
 
@@ -172,7 +178,7 @@ class AuthService {
           throw new CustomException(__("i18n.credentials_ko"));
         }
   
-        $token = $company->createToken('company_auth_token', ['*'], now()->addHours(1))->plainTextToken;
+        $token = Auth::guard('company')->attempt($data);
   
         return (object)[
             'company' => $company,

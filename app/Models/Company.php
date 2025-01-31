@@ -10,11 +10,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class Company extends Model
+class Company extends Authenticatable implements JWTSubject
 {
-    use HasFactory, HasApiTokens, HasUid;
+    use HasFactory, HasUid;
 
     protected $fillable = [
         'name',
@@ -64,5 +66,13 @@ class Company extends Model
         return [
             'password' => 'hashed',
         ];
+    }
+
+    public function getJWTIdentifier() {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims() {
+        return [];
     }
 }

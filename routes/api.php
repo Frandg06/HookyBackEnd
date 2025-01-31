@@ -9,6 +9,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 /*
 Todas las peticiones deben de llevar los headers
@@ -19,11 +20,11 @@ Todas las peticiones deben de llevar los headers
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware(['auth:sanctum', 'event'])->group(function () {
+Route::middleware(['auth:api', 'event'])->group(function () {
     
         Route::prefix('user')->group(function () {
             
-            Route::get('/auth', [AuthController::class, 'isUserAuth']);
+            Route::get('/me', [AuthController::class, 'me']);
             Route::get('/logout', [AuthController::class, 'logout']);
             
             Route::put('/password', [AuthUserController::class, 'updatePassword']);
@@ -56,8 +57,7 @@ Route::prefix('company')->group(function () {
     Route::post('/register', [AuthController::class, 'registerCompany']);
     Route::post('/login', [AuthController::class, 'loginCompany']);
     
-    Route::middleware(['auth:sanctum'])->group(function () {
-        
+    Route::middleware(['auth:company'])->group(function () {        
         Route::put('/update', [CompanyController::class, 'update']);
         Route::get('/auth', [AuthController::class, 'isCompanyAuth']);
         Route::get('/logout', [AuthController::class, 'logout']);

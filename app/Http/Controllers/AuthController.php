@@ -5,11 +5,14 @@ use App\Http\Requests\RegisterCompanyRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\AuthCompanyResource;
 use App\Http\Resources\AuthUserReosurce;
+use App\Models\Company;
 use App\Services\AuthService;
 use App\Services\ImagesService;
 use App\Services\UserService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -86,10 +89,12 @@ class AuthController extends Controller
         return response()->json(["success" => true, 'message' => 'Logged out successfully'], 200);
     }
 
-    public function isUserAuth(Request $request) {
+    public function me() {
         try {
 
-            $userRequest = $request->user();
+            $userRequest = Auth::user();
+
+            Log::info($userRequest);
 
             $user = AuthUserReosurce::make($userRequest);
 
@@ -102,7 +107,6 @@ class AuthController extends Controller
 
     public function isCompanyAuth(Request $request) {
         try {
-
             $company = $request->user();
 
             $company = AuthCompanyResource::make($company);
