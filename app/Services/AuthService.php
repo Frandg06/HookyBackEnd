@@ -23,7 +23,6 @@ class AuthService {
 
         $user = User::where('email', $data['email'])->first();
         
-        
         if($user) throw new CustomException(__("i18n.user_exists"));
         
         $company_uid = Crypt::decrypt($data['company_uid']);
@@ -52,7 +51,7 @@ class AuthService {
         $end_date = Carbon::parse($event->end_date);
         $diff = $now->diffInMinutes($end_date);
         
-        $token = $user->createToken('auth_token', ['*'], now()->addMinutes($diff))->plainTextToken;
+        $token = Auth::setTTL($diff)->attempt(['email' => $data['email'], 'password' => $data['password']]);
         
         DB::commit();
 
@@ -115,9 +114,6 @@ class AuthService {
 
       try {
 
-        $token = Auth::attempt($data);
-
-        if (!$token)  throw new CustomException(__("i18n.credentials_ko"));
 
         $company_uid = Crypt::decrypt($company_uid);
 
@@ -126,10 +122,18 @@ class AuthService {
         if(!$company) throw new CustomException(__("i18n.company_not_exists"));
 
         $timezone = $company->timezone->name;
-          
+        
         $event = $company->events()->activeEvent($timezone)->first();
 
         if(!$event) throw new CustomException(__("i18n.event_not_active"));
+
+        $now = Carbon::now($timezone);
+        $end_date = Carbon::parse($event->end_date);
+        $diff = $now->diffInMinutes($end_date);
+
+        $token = Auth::setTTL($diff)->attempt($data);
+
+        if (!$token)  throw new CustomException(__("i18n.credentials_ko"));
 
         $user = request()->user();
 
@@ -148,9 +152,7 @@ class AuthService {
           ]);
         }
 
-        $now = Carbon::now($timezone);
-        $end_date = Carbon::parse($event->end_date);
-        $diff = $now->diffInMinutes($end_date);
+        
 
         DB::commit();
 
