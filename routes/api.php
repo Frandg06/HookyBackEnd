@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/companies.php';
-require __DIR__ . '/app.php';
+require __DIR__ . '/hooky-admin.php';
+require __DIR__ . '/hooky-app.php';
 
 use App\Http\Controllers\DomainController;
 use App\Http\Controllers\EmailController;
