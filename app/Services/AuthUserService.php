@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\Exceptions\CustomException;
 use App\Http\Resources\AuthUserReosurce;
 use App\Http\Resources\NotificationUserResource;
 use App\Http\Resources\UserResource;
@@ -15,65 +16,47 @@ use Illuminate\Support\Facades\Log;
 class AuthUserService {
 
     public function update(User $user, $data) {
+      DB::beginTransaction();
       try {
 
         $user->update($data);
 
-        if( isset($user['gender_id']) || isset( $user['sexual_orientation_id'] )) {
+        if( isset($user['gender_id']) || isset($user['sexual_orientation_id'] )) {
           $user->interactions()->delete();
         }
         
+        DB::commit();
         return AuthUserReosurce::make($user);
 
       } catch (\Exception $e) {
-        throw new \Exception($e->getMessage());
+        DB::rollBack();
+        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+        throw new \Exception(__("i18n.update_user_ko"));
       }
 
-    }
-
-    public function setEvent($request, $company_uid) {
-      try {
-        
-        if(!$request->user()){
-          throw new \Exception("The user not exist");
-        }
-
-        $company = Company::where('uid', $company_uid)->first();
-
-        $event = $company->events()->latest()->first()->uid;
-
-        Log::info($company);
-        
-        $request->user()->event_uid = $event;
-        $request->user()->save();
-
-        return $request->user()->event_uid;
-
-      } catch (\Exception $e) {
-        throw new \Exception($e->getMessage());
-      }
-
-     
     }
 
     public function updatePassword($data, $user) {
       try {
         
         if(!Hash::check($data['old_password'], $user->password)) {
-          throw new \Exception("La contraseña actual es incorrecta");
+          throw new CustomException(__("i18n.actual_password_ko"));
         }
 
         $user->password = bcrypt($data['password']);
         $user->save();
 
         return true;
-      } catch (\Exception $e) {
+
+      } catch (CustomException $e) {
         throw new \Exception($e->getMessage());
+      } catch (\Exception $e) {
+        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+        throw new \Exception(__("i18n.update_password_ko"));
       }
     }
 
     public function updateInterest(User $user, $newInterests) {
-    
       try {
   
         $hasInterest = $user->interests()->get()->pluck('interest_id')->toArray();
@@ -93,9 +76,10 @@ class AuthUserService {
         }
   
         return $user;
-        
+    
       } catch (\Exception $e) {
-        throw new \Exception($e->getMessage());
+        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+        throw new \Exception(__("i18n.update_user_interest_ko"));
       }
   
     }
@@ -124,7 +108,7 @@ class AuthUserService {
 
       }catch (\Exception $e) {
         Log::error($e);
-        throw new \Exception("Error al obtener las notificaciones");
+        throw new \Exception(__("i18n.get_notifications_ko"));
       }
       
     }

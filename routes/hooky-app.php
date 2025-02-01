@@ -20,7 +20,6 @@ Route::middleware(['api', 'auth:api', 'event'])->group(function () {
             Route::put('/password', [AuthUserController::class, 'updatePassword']);
             Route::put('/update', [AuthUserController::class, 'update']);
             Route::post('/complete', [AuthUserController::class, 'store']);
-            Route::put('/event/{uid}', [AuthUserController::class, 'setEvent']); 
             Route::put('/interest', [AuthUserController::class, 'updateInterest']);
             Route::get('/notifications', [AuthUserController::class, 'getNotifications']);
             Route::post('/notifications/read/{type}', [AuthUserController::class, 'readNotificationsByType']);

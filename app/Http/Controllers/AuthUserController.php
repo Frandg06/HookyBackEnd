@@ -26,7 +26,8 @@ class AuthUserController extends Controller
         $this->notificationService = $notificationService;
     }
 
-    public function update(CompleteDataRequest $request) {
+    public function update(CompleteDataRequest $request) 
+    {
 
         $user = $request->user();
         $data = $request->all();
@@ -41,7 +42,8 @@ class AuthUserController extends Controller
         }
     }
 
-    public function store(CompleteAuthUserRequest $request) {
+    public function store(CompleteAuthUserRequest $request) 
+    {
      
         $data = $request->all();
         $user = $request->user(); 
@@ -70,22 +72,6 @@ class AuthUserController extends Controller
             DB::rollBack();
             return $this->responseError($e->getMessage(), 400);
         }
-    }
-
-    public function setEvent(Request $request, $company_uid) {
-        
-        try {
-            $response = $this->authUserService->setEvent($request, $company_uid);   
-
-            return response()->json([
-                "success" => true,
-                "resp" => $response
-            ], 200);
-
-        }catch (Exception $e){
-            return $this->responseError($e->getMessage(), 400);
-        }
-
     }
 
     public function updatePassword(Request $request) {
@@ -117,7 +103,9 @@ class AuthUserController extends Controller
 
         $user = $request->user();
         $interests = $request->interests;
+
         try {
+
             $this->authUserService->updateInterest($user, $interests);
 
             return response()->json(["success" => true, "resp" => AuthUserReosurce::make($user)], 200);
@@ -129,23 +117,35 @@ class AuthUserController extends Controller
         }
     }
 
-    public function getNotifications(Request $request) {
+    public function getNotifications(Request $request) 
+    {
         $user = $request->user();
+        
         try {
+            
             $response = $this->authUserService->getNotifications($user);
             return response()->json(["success" => true, "resp" => $response], 200);
+
         } catch (\Exception $e) {
+            
             return $this->responseError($e->getMessage(), 400);
+
         }
     }
 
-    public function readNotificationsByType(Request $request, $type) {
+    public function readNotificationsByType(Request $request, $type) 
+    {
         $user = $request->user();
+
         try {
+
             $response = $this->notificationService->readNotificationsByType($user, $type);
             return response()->json(["success" => true, "resp" => $response], 200);
+
         } catch (\Exception $e) {
+
             return $this->responseError($e->getMessage(), 400);
+
         }
     }
     
@@ -165,7 +165,8 @@ class AuthUserController extends Controller
         ];
     }
 
-    private function parseCompleteFiles($data) {
+    private function parseCompleteFiles($data) 
+    {
         return [
             $data["userImages0"],
             $data["userImages1"],
@@ -173,7 +174,8 @@ class AuthUserController extends Controller
         ];
     }
 
-    private function parseCompleteInterests($data) {
+    private function parseCompleteInterests($data) 
+    {
         return explode(',', $data["interests"]);
     }
 }
