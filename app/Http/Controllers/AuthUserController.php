@@ -11,7 +11,6 @@ use App\Http\Services\NotificationService;
 use App\Services\AuthUserService;
 use App\Services\ImagesService;
 use App\Services\UserService;
-use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -19,7 +18,8 @@ class AuthUserController extends Controller
 {
     protected $authUserService, $userService, $imageService, $notificationService;
 
-    public function __construct(AuthUserService $authUserService, UserService $userService, ImagesService $imageService, NotificationService $notificationService) {
+    public function __construct(AuthUserService $authUserService, UserService $userService, ImagesService $imageService, NotificationService $notificationService) 
+    {
         $this->authUserService = $authUserService;
         $this->userService = $userService;
         $this->imageService = $imageService;
@@ -37,7 +37,7 @@ class AuthUserController extends Controller
             $response = $this->authUserService->update($user, $data);
             return response()->json(["success" => true, "resp" =>  $response], 200); 
             
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->responseError($e->getMessage(), 400);
         }
     }
@@ -67,14 +67,15 @@ class AuthUserController extends Controller
             }
             DB::commit();
             return response()->json(["success" => true, "resp" =>  AuthUserReosurce::make($user)], 200);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error($e);
             DB::rollBack();
             return $this->responseError($e->getMessage(), 400);
         }
     }
 
-    public function updatePassword(Request $request) {
+    public function updatePassword(Request $request) 
+    {
         
         $request->validate([
             'old_password' => 'required',
@@ -90,7 +91,7 @@ class AuthUserController extends Controller
 
             return $this->responseSuccess('Password changed successfully');
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return $this->responseError($e->getMessage(), 400);
         }
     }
