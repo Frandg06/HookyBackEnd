@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 class UserService
 {
-  private $notificationService;
+  protected $notificationService;
 
   public function __construct(NotificationService $notificationService) {
     $this->notificationService = $notificationService;
@@ -47,7 +47,8 @@ class UserService
       return UserResource::collection($users);
 
     } catch (\Exception $e) {
-      throw new \Exception($e->getMessage());
+      Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+      throw new \Exception(__('i18n.get_users_ko'));
     }
   }
 
@@ -111,8 +112,8 @@ class UserService
       
     } catch (\Exception $e) {
       DB::rollBack();
-      Log::error($e);
-      throw new \Exception();
+      Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+      throw new \Exception(__('i18n.set_interaction_ko'));
     }
   }
   
