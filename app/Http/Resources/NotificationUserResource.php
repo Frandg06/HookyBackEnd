@@ -16,10 +16,10 @@ class NotificationUserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "uid" => $this->user->uid,
-            "name" => $this->user->name,
-            "surnames" => $this->user->surnames,
-            "main_image" => $this->user->userImages()->first()->web_url,
+            "uid" => $this->emitter_user->uid,
+            "name" => $this->emitter_user->name,
+            "surnames" => $this->emitter_user->surnames,
+            "main_image" => $this->emitter_user->userImages()->first()->web_url,
             "time" => Carbon::parse($this->updated_at)->diffForHumans(),
         ];
     }

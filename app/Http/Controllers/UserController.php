@@ -65,21 +65,9 @@ class UserController extends Controller
     public function getUser(Request $request, $uid)
     {
         $user = $request->user();
-
-        $isHook = UsersInteraction::where('user_uid', $uid)
-                    ->where('interaction_user_uid', $user->uid)
-                    ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
-                    ->where('event_uid', $user->event_uid)
-                    ->whereExists(function ($query) use ($user, $uid) {
-                        $query->select(DB::raw(1))
-                            ->from('users_interactions as ui')
-                            ->where('ui.user_uid', $user->uid)
-                            ->where('ui.interaction_user_uid', $uid)
-                            ->where('ui.event_uid', $user->event_uid)
-                            ->whereIn('ui.interaction_id', [Interaction::SUPER_LIKE_ID, Interaction::LIKE_ID]);
-                    })
-                    ->exists();
         
+        $isHook = UsersInteraction::checkHook($user->uid, $uid, $user->event_uid);
+                    
         if(!$isHook) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
 
         $user = User::where('uid', $uid)->first();
