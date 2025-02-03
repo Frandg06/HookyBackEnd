@@ -12,4 +12,8 @@ class Interaction extends Model
     public const DISLIKE_ID = 3;
     use HasFactory;
     public $timestamps = false;
+
+    public static function needsConfirmation($id) {
+        return in_array($id, [self::LIKE_ID, self::SUPER_LIKE_ID]);
+    }
 }

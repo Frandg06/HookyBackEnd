@@ -19,13 +19,13 @@ class NotificationService {
       
       Notification::create($data);
 
-      $channel_name = 'notification-' . $data['event_uid'] . '-' . $data['user_uid'];
+      // $channel_name = 'notification-' . $data['event_uid'] . '-' . $data['user_uid'];
 
-      $this->ably->channels->get($channel_name)->publish('notification', [
-        'message' => $data['data'],
-        'type' => $data['type'],
-        'timestamp' => now(),
-      ]);
+      // $this->ably->channels->get($channel_name)->publish('notification', [
+      //   'message' => $data['data'],
+      //   'type' => $data['type'],
+      //   'timestamp' => now(),
+      // ]);
 
     } catch (\Exception $e) {
       throw new \Exception($e->getMessage());

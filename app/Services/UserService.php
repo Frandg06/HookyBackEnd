@@ -58,9 +58,10 @@ class UserService
 
       UsersInteraction::where('user_uid', $authUser->uid)
         ->where('interaction_user_uid', $uid)
+        ->where('event_uid', $authUser->event_uid)
         ->update([
           'interaction_id' => $interaction,
-          'is_confirmed' => in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID]) ? true : false
+          'is_confirmed' => Interaction::needsConfirmation($interaction)
         ]);
       
       $authUser->refreshInteractions($interaction);
