@@ -7,6 +7,7 @@ use App\Http\Resources\NotificationUserResource;
 use App\Http\Resources\UserResource;
 use App\Models\Company;
 use App\Models\Interaction;
+use App\Models\NotificationsType;
 use App\Models\User;
 use App\Models\UsersInteraction;
 use Illuminate\Support\Facades\DB;
@@ -88,23 +89,25 @@ class AuthUserService {
 
       try {
 
-        $usersHook = $user->getUserHooks();
+        $usersHook = $user->notifications()->where('type_id', NotificationsType::HOOK_TYPE)->where('event_uid', $user->event_uid)->get();
 
-        $userLikes = $user->scopeGetUserLikes();
+        $userLikes = $user->notifications()->where('type_id', NotificationsType::LIKE_TYPE)->where('event_uid', $user->event_uid)->get();
         
         $userLikes = $userLikes->map(function ($u) use ($user) {
           return $user->role_id == User::ROLE_PREMIUM 
             ? NotificationUserResource::make($u)
-            : $u->userImages()->first()->web_url;
+            : $u->user->userImages()->first()->web_url;
         });
 
-        $userSuperLikes =  $user->getUserSuperLikes();
+        $userSuperLikes =  $user->notifications()->where('type_id', NotificationsType::SUPER_LIKE_TYPE)->where('event_uid', $user->event_uid)->get();
 
-        return [
+        $data = [
           "likes" => $userLikes,
           "super_likes" => NotificationUserResource::collection($userSuperLikes),
           "hooks" => NotificationUserResource::collection($usersHook)
         ];
+
+        return $data;
 
       }catch (\Exception $e) {
         Log::error($e);

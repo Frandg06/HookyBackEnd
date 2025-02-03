@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Traits\HasUid;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends Model
 {
@@ -21,6 +22,10 @@ class Notification extends Model
         "created_at",
         "updated_at",
     ];
+
+    public function user(): BelongsTo {
+        return $this->belongsTo(User::class, 'user_uid', 'uid');
+    }
 
     public static function scopeGetLikeAndSuperLikeNotify($query, $reciber, $emitter, $event) {
         $query->where('user_uid', $reciber)
