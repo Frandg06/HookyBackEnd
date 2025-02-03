@@ -65,7 +65,8 @@ class UserController extends Controller
     public function getUser(Request $request, $uid)
     {
         $user = $request->user();
-        
+
+        // En el futuro si es hook cuando interacciona se crearea un chat ebntoinces esto lo que hara sera comprobar si hay chat abierto (a espensas de microservicios)
         $isHook = UsersInteraction::checkHook($user->uid, $uid, $user->event_uid);
                     
         if(!$isHook) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
