@@ -137,8 +137,6 @@ class AuthService {
 
         $user = request()->user();
 
-        Log::info($user);
-
         $exist = $user->events()->where('event_uid', $event->uid)->exists();
 
         if($exist){

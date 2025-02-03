@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
     - Accept: application/json
 */
 
-Route::middleware(['api'])->prefix('company')->group(function () {
+Route::prefix('company')->group(function () {
     
     Route::post('/register', [AuthController::class, 'registerCompany']);
     Route::post('/login', [AuthController::class, 'loginCompany']);

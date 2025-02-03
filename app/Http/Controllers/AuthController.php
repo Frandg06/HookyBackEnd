@@ -94,8 +94,6 @@ class AuthController extends Controller
 
             $userRequest = Auth::user();
 
-            Log::info($userRequest);
-
             $user = AuthUserReosurce::make($userRequest);
 
             return response()->json(["resp" => $user, "success" => true], 200); 
