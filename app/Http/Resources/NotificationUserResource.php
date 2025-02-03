@@ -20,7 +20,7 @@ class NotificationUserResource extends JsonResource
             "name" => $this->user->name,
             "surnames" => $this->user->surnames,
             "main_image" => $this->user->userImages()->first()->web_url,
-            "time" => Carbon::parse($this->user->ago)->diffForHumans(),
+            "time" => Carbon::parse($this->updated_at)->diffForHumans(),
         ];
     }
 }
