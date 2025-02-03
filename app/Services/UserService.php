@@ -5,6 +5,7 @@ use App\Http\Resources\UserResource;
 use App\Http\Services\NotificationService;
 use App\Models\Interaction;
 use App\Models\Notification;
+use App\Models\NotificationsType;
 use App\Models\User;
 use App\Models\UsersInteraction;
 use Illuminate\Support\Facades\Auth;
@@ -69,28 +70,29 @@ class UserService
         ]);
       
       $authUser->refreshInteractions($interaction);
-
       
-      if(in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
+      $checkHook =  UsersInteraction::checkHook($uid, $authUser->uid, $authUser->event_uid);
 
-        $checkHook =  UsersInteraction::where('user_uid', $uid)
-                      ->where('interaction_user_uid', $authUser->uid)
-                      ->whereIn('interaction_id',  [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
-                      ->exists();
+      if($checkHook) {
 
-        if($checkHook) {
-
-          $type = Notification::TYPE_HOOK;
-          $this->publishNotificationForUser($authUser->uid, $type, $authUser->event_uid);
-
-        }else {
-
-          $type = ($interaction == Interaction::LIKE_ID) ? Notification::TYPE_LIKE : Notification::TYPE_SUPER_LIKE;
-
-        }
-
-        $this->publishNotificationForUser($uid, $type, $authUser->event_uid);
+        $type = NotificationsType::HOOK_TYPE;
+        $msg = NotificationsType::HOOK_TYPE_STR;
         
+        $existLike = Notification::getLikeAndSuperLikeNotify($authUser->uid, $uid, $authUser->event_uid);
+        
+        if($existLike) $existLike->delete();
+        
+        $this->publishNotificationForUser($authUser->uid, $uid, $authUser->event_uid, $type, $msg);
+
+      }else {
+        
+        $type = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE : NotificationsType::SUPER_LIKE_TYPE;
+        $msg = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE_STR : NotificationsType::SUPER_LIKE_TYPE_STR;
+
+      }
+
+      if(in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
+        $this->publishNotificationForUser($uid, $authUser->uid, $authUser->event_uid, $type, $msg);
       }
 
       DB::commit();
@@ -107,14 +109,15 @@ class UserService
     }
   }
 
-  private function publishNotificationForUser($userUid, $type, $eventUid)
+  private function publishNotificationForUser($reciber, $emiter, $event, $type, $msg)
 {
     $notification = [
-        'user_uid'  => $userUid,
-        'type'      => $type,
-        'data'      => "Has obtenido un nuevo $type",
-        'read_at'   => null,
-        'event_uid' => $eventUid,
+        'user_uid'     => $reciber,
+        'emitter_uid' => $emiter,
+        'event_uid'    => $event,
+        'type_id'         => $type,
+        'msg'          => 'notification.'.$msg,
+        'read_at'      => null,
     ];
 
     $this->notificationService->publishNotification($notification);
