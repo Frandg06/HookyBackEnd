@@ -1,31 +1,15 @@
 <?php
 namespace App\Http\Services;
 
-use Ably\AblyRest;
 use App\Models\Notification;
 use App\Models\User;
 
 class NotificationService {
 
-
-  public $ably;
-
-  public function __construct() {
-    $this->ably = new AblyRest(config('services.ably.key'));
-  }
-
   public function publishNotification($data) {
     try {
       
       Notification::create($data);
-
-      // $channel_name = 'notification-' . $data['event_uid'] . '-' . $data['user_uid'];
-
-      // $this->ably->channels->get($channel_name)->publish('notification', [
-      //   'message' => $data['data'],
-      //   'type' => $data['type'],
-      //   'timestamp' => now(),
-      // ]);
 
     } catch (\Exception $e) {
       throw new \Exception($e->getMessage());

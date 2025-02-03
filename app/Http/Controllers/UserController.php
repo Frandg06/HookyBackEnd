@@ -6,8 +6,11 @@ use App\Http\Resources\AuthUserReosurce;
 use App\Http\Resources\UserResource;
 use App\Models\Interaction;
 use App\Models\User;
+use App\Models\UsersInteraction;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -27,14 +30,30 @@ class UserController extends Controller
         return response()->json(["resp" => $response, "success" => true], 200); 
     }
 
-    public function getUser(Request $request, $uid)
+    public function getUserToConfirm(Request $request, $uid)
     {
         $user = $request->user();
+
+        if($user->role_id != User::ROLE_PREMIUM) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
+
+        $isLike = UsersInteraction::where('user_uid', $uid)
+                    ->where('interaction_user_uid', $user->uid)
+                    ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
+                    ->where('event_uid', $user->event_uid)
+                    ->whereExists(function ($query) use ($user, $uid) {
+                        $query->select(DB::raw(1))
+                            ->from('users_interactions as ui')
+                            ->where('ui.user_uid', $user->uid)
+                            ->where('ui.interaction_user_uid', $uid)
+                            ->where('ui.event_uid', $user->event_uid)
+                            ->where(function ($subquery) {
+                                $subquery->where('ui.interaction_id', Interaction::DISLIKE_ID) 
+                                    ->orWhereNull('ui.interaction_id');
+                            });
+                    })
+                    ->exists();
         
-        $isMatch = $user->interactions()->where('interaction_user_uid', $uid)->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])->exists();
-        $isNotConfirmed = $user->interactions()->where('interaction_user_uid', $uid)->where('is_confirmed', false)->exists();
-        
-        if(!$isMatch || !$isNotConfirmed) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
+        if(!$isLike) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
 
         $user = User::where('uid', $uid)->first();
 
@@ -43,7 +62,32 @@ class UserController extends Controller
         return response()->json(["resp" => $response, "success" => true], 200);
     }
 
-    
+    public function getUser(Request $request, $uid)
+    {
+        $user = $request->user();
+
+        $isHook = UsersInteraction::where('user_uid', $uid)
+                    ->where('interaction_user_uid', $user->uid)
+                    ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
+                    ->where('event_uid', $user->event_uid)
+                    ->whereExists(function ($query) use ($user, $uid) {
+                        $query->select(DB::raw(1))
+                            ->from('users_interactions as ui')
+                            ->where('ui.user_uid', $user->uid)
+                            ->where('ui.interaction_user_uid', $uid)
+                            ->where('ui.event_uid', $user->event_uid)
+                            ->whereIn('ui.interaction_id', [Interaction::SUPER_LIKE_ID, Interaction::LIKE_ID]);
+                    })
+                    ->exists();
+        
+        if(!$isHook) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
+
+        $user = User::where('uid', $uid)->first();
+
+        $response = UserResource::make($user);
+
+        return response()->json(["resp" => $response, "success" => true], 200);
+    }
 
     public function setInteraction(Request $request, $uid)
     {

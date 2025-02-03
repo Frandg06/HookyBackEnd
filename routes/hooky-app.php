@@ -37,6 +37,7 @@ Route::middleware(['auth:api', 'event'])->group(function () {
 
             Route::get('/', [UserController::class, 'index']);
             Route::post('/{uid}', [UserController::class, 'setInteraction'])->middleware('credits');
+            Route::get('/confirm/{uid}', [UserController::class, 'getUserToConfirm']);
             Route::get('/{uid}', [UserController::class, 'getUser']);
             
         });
