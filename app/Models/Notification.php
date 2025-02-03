@@ -9,6 +9,10 @@ class Notification extends Model
 {
     use HasUid;
 
+    public const TYPE_LIKE = "like";
+    public const TYPE_SUPER_LIKE = "superlike";
+    public const TYPE_HOOK = "hook";
+
     protected $fillable = [
         "id",
         "uid",

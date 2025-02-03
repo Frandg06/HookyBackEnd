@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::middleware(['api', 'auth:api', 'event'])->group(function () {
+Route::middleware(['auth:api', 'event'])->group(function () {
     
         Route::prefix('user')->group(function () {
             
@@ -37,6 +37,7 @@ Route::middleware(['api', 'auth:api', 'event'])->group(function () {
 
             Route::get('/', [UserController::class, 'index']);
             Route::post('/{uid}', [UserController::class, 'setInteraction'])->middleware('credits');
+            Route::get('/confirm/{uid}', [UserController::class, 'getUserToConfirm']);
             Route::get('/{uid}', [UserController::class, 'getUser']);
             
         });

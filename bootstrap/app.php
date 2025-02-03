@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'event' => \App\Http\Middleware\CheckEventIsActiveMiddleware::class,
             'credits' => \App\Http\Middleware\CheckCreditsMiddleware::class,
+            'lang' => \App\Http\Middleware\LangMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

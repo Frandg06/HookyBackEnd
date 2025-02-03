@@ -208,6 +208,12 @@ class User extends Authenticatable implements JWTSubject
                 ->where('i2.event_uid', $this->event_uid)
                 ->where('i2.interaction_id', Interaction::SUPER_LIKE_ID);
         })
+        ->whereNotExists(function ($query) {
+            $query->from('users_interactions as i3')
+                  ->where('i3.user_uid', $this->uid)
+                  ->whereColumn('i3.interaction_user_uid', 'i1.interaction_user_uid')
+                  ->whereIn('i3.interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID]);
+        })
         ->orderBy('i1.updated_at', 'desc')
         ->distinct()
         ->get(['users.*', 'i1.updated_at as ago']);
@@ -223,6 +229,12 @@ class User extends Authenticatable implements JWTSubject
                 ->whereColumn('i2.user_uid', 'i1.interaction_user_uid')
                 ->where('i2.interaction_user_uid', $this->uid)
                 ->where('i2.interaction_id', Interaction::LIKE_ID);
+        })
+        ->whereNotExists(function ($query) {
+            $query->from('users_interactions as i3')
+                  ->where('i3.user_uid', $this->uid)
+                  ->whereColumn('i3.interaction_user_uid', 'i1.interaction_user_uid')
+                  ->whereIn('i3.interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID]);
         })
         ->orderBy('i1.updated_at', 'desc')
         ->distinct()

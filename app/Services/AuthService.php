@@ -88,6 +88,7 @@ class AuthService {
   
         Storage::disk('r2')->put('hooky/qr/' . $company->uid . '.png', $response->body());
   
+        Auth::setTTL(24*60);
         $token = Auth::guard('company')->attempt(['email' => $data['email'], 'password' => $data['password']]);
   
         DB::commit();
@@ -130,14 +131,12 @@ class AuthService {
         $now = Carbon::now($timezone);
         $end_date = Carbon::parse($event->end_date);
         $diff = $now->diffInMinutes($end_date);
-
+        
         $token = Auth::setTTL($diff)->attempt($data);
 
         if (!$token)  throw new CustomException(__("i18n.credentials_ko"));
 
         $user = request()->user();
-
-        Log::info($user);
 
         $exist = $user->events()->where('event_uid', $event->uid)->exists();
 
@@ -179,9 +178,10 @@ class AuthService {
         if (!$company || !Hash::check($data['password'], $company->password)) {
           throw new CustomException(__("i18n.credentials_ko"));
         }
-  
+
+        Auth::setTTL(24*60);
         $token = Auth::guard('company')->attempt($data);
-  
+
         return (object)[
             'company' => $company,
             'access_token' => $token,
