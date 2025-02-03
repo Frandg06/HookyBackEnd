@@ -61,6 +61,7 @@ class DatabaseSeeder extends Seeder
         $this->call(InteractionSeeder::class);
         $this->call(TimeZonesSeeder::class);
         $this->call(PricingPlanSeeder::class);
+        $this->call(NotificationsTypeSeeder::class);
 
         $company = Company::create([
             "name"=> "Studio54",
