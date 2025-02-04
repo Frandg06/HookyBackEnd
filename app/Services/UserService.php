@@ -3,23 +3,22 @@ namespace App\Services;
 
 use App\Http\Resources\UserResource;
 use App\Http\Services\NotificationService;
+use App\Http\Services\WsChatService;
 use App\Models\Interaction;
 use App\Models\Notification;
 use App\Models\NotificationsType;
 use App\Models\User;
 use App\Models\UsersInteraction;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Mockery\Matcher\Not;
 
 class UserService
 {
-  protected $notificationService;
+  protected $notificationService, $wsChatService;
 
-  public function __construct(NotificationService $notificationService) {
+  public function __construct(NotificationService $notificationService ,WsChatService $wsChatService) {
     $this->notificationService = $notificationService;
-    
+    $this->wsChatService = $wsChatService;
   }
 
   public function getUsers(User $authUser) {
@@ -95,6 +94,8 @@ class UserService
 
         $this->publishNotificationForUser($authUser->uid, $uid, $authUser->event_uid, $type, $msg);
         $this->publishNotificationForUser($uid, $authUser->uid, $authUser->event_uid, $type, $msg);
+
+        $this->wsChatService->storeChat($authUser->uid, $uid, $authUser->event_uid);
 
       }elseif(in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
         

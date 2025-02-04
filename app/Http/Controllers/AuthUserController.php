@@ -32,12 +32,11 @@ class AuthUserController extends Controller
     public function update(CompleteDataRequest $request) 
     {
 
-        $user = $request->user();
         $data = $request->all();
 
         try {
 
-            $response = $this->authUserService->update($user, $data);
+            $response = $this->authUserService->update($data);
             return response()->json(["success" => true, "resp" =>  $response], 200); 
             
         } catch (\Exception $e) {
@@ -125,8 +124,7 @@ class AuthUserController extends Controller
         $user = $request->user();
         $hooks = Notification::where('user_uid', $user->uid)->where('event_uid', $user->event_uid)->where('type_id', NotificationsType::HOOK_TYPE)->get();
         $hooks = MessageListResource::collection($hooks);
-        return response()->json(["success" => true, "resp" => $hooks], 200);
-            
+        return response()->json(["success" => true, "resp" => $hooks], 200);       
     }
 
     public function getNotifications(Request $request) 

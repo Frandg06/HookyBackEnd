@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\Log;
 
 class AuthUserService {
 
-    public function update(User $user, $data) {
+    public function update($data) {
       DB::beginTransaction();
       try {
-
+        $user = request()->user();
         $user->update($data);
 
         if( isset($user['gender_id']) || isset($user['sexual_orientation_id'] )) {
