@@ -1,0 +1,54 @@
+networks:
+  hooky:
+    driver: bridge
+
+volumes:
+  hooky_db:
+    driver: local
+  chat_db:
+    driver: local
+  db_chat:
+    driver: local
+
+services:
+  hooky_db:
+    image: mysql:8.0
+    container_name: hooky_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hooky_db
+      MYSQL_PASSWORD: root
+    ports:
+      - '3320:3306'
+    volumes:
+      - hooky_db:/var/lib/mysql
+    networks:
+      - hooky
+  chat_db:
+    image: mysql:8.0
+    container_name: chat_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: chat_db
+      MYSQL_PASSWORD: root
+    ports:
+      - '3330:3306'
+    volumes:
+      - chat_db:/var/lib/mysql
+    networks:
+      - hooky
+  db_chat:
+    image: mongo:latest
+    container_name: db_chat
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - '27020:27017'
+    volumes:
+      - db_chat:/data/db
+    networks:
+      - hooky
