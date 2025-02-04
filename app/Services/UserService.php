@@ -61,13 +61,25 @@ class UserService
     DB::beginTransaction();
     try {
 
-      UsersInteraction::where('user_uid', $authUser->uid)
+      $search = UsersInteraction::where('user_uid', $authUser->uid)
         ->where('interaction_user_uid', $uid)
         ->where('event_uid', $authUser->event_uid)
-        ->update([
+        ->first();
+
+      if(!empty($search)) {
+        $search->update([
           'interaction_id' => $interaction,
           'is_confirmed' => Interaction::needsConfirmation($interaction)
         ]);
+      }else {
+        UsersInteraction::create([
+          'user_uid' => $authUser->uid,
+          'interaction_user_uid' => $uid,
+          'interaction_id' => $interaction,
+          'is_confirmed' => Interaction::needsConfirmation($interaction),
+          'event_uid' => $authUser->event_uid
+        ]);
+      }
       
       $authUser->refreshInteractions($interaction);
       
