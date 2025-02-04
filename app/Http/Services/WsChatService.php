@@ -7,10 +7,6 @@ use Illuminate\Support\Facades\Log;
 
 class WsChatService
 {
-    public function __construct()
-    {
-        
-    }
 
     public function storeChat($user1_uid, $user2_uid, $event_uid) {
 
@@ -37,7 +33,9 @@ class WsChatService
               'Accept' => 'application/json'
             ])->post('http://localhost:5001/api/ws/chat', $data);
         } catch (\Exception $e) {
-            Log::info($e->getMessage());
+          Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+          throw new \Exception(__('i18n.ws_chat_ko'));
+
         }
         
     }
