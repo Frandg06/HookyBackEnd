@@ -15,13 +15,16 @@ return new class extends Migration
             $table->id();
             $table->uuid('uid');
             $table->uuid('user_uid');
+            $table->uuid('emitter_uid')->nullable();
             $table->uuid('event_uid');
-            $table->string('type');
-            $table->text('data');
+            $table->unsignedBigInteger('type_id');
+            $table->text('msg');
             $table->dateTime('read_at')->nullable();
             $table->timestamps();
             $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
+            $table->foreign('emitter_uid')->references('uid')->on('users')->onDelete('cascade');
             $table->foreign('event_uid')->references('uid')->on('events')->onDelete('cascade');
+            $table->foreign('type_id')->references('id')->on('notifications_types')->onDelete('cascade');
         });
     }
 

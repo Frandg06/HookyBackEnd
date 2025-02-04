@@ -18,7 +18,7 @@ class NotificationService {
 
   public function readNotificationsByType(User $user, $type) {
     try {
-      $notifications = $user->notifications()->where('type', $type)->where('event_uid', $user->event_uid)->where('read_at', null)->get();
+      $notifications = $user->notifications()->where('type_id', $type)->where('event_uid', $user->event_uid)->where('read_at', null)->get();
       
       $notifications->each(function ($notification) {
         $notification->read_at = now();

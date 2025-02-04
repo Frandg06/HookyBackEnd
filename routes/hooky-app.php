@@ -39,7 +39,10 @@ Route::middleware(['auth:api', 'event'])->group(function () {
             Route::post('/{uid}', [UserController::class, 'setInteraction'])->middleware('credits');
             Route::get('/confirm/{uid}', [UserController::class, 'getUserToConfirm']);
             Route::get('/{uid}', [UserController::class, 'getUser']);
+            Route::get('/{uid}/chat', [UserController::class, 'getUserChat']);
             
         });
+
+        Route::get('chats', [AuthUserController::class, 'getChats']);
 
 });

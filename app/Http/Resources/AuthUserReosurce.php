@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\NotificationsType;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -66,9 +67,9 @@ class AuthUserReosurce extends JsonResource
                 ];
             }),
             "notifications" => [
-                'like' => $this->notifications->where('event_uid', $this->event_uid)->where('type', 'like')->where('read_at', null)->count(),
-                'superlike' => $this->notifications->where('event_uid', $this->event_uid)->where('type', 'superlike')->where('read_at', null)->count(),
-                'hook' => $this->notifications->where('event_uid', $this->event_uid)->where('type', 'hook')->where('read_at', null)->count(),
+                'like' => $this->notifications()->where('event_uid', $this->event_uid)->where('type_id', NotificationsType::LIKE_TYPE)->where('read_at', null)->count(),
+                'superlike' => $this->notifications()->where('event_uid', $this->event_uid)->where('type_id', NotificationsType::SUPER_LIKE_TYPE)->where('read_at', null)->count(),
+                'hook' => $this->notifications()->where('event_uid', $this->event_uid)->where('type_id', NotificationsType::HOOK_TYPE)->where('read_at', null)->count(),
             ]
         ];
     }

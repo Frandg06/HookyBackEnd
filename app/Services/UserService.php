@@ -3,22 +3,22 @@ namespace App\Services;
 
 use App\Http\Resources\UserResource;
 use App\Http\Services\NotificationService;
+use App\Http\Services\WsChatService;
 use App\Models\Interaction;
 use App\Models\Notification;
+use App\Models\NotificationsType;
 use App\Models\User;
 use App\Models\UsersInteraction;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Mockery\Matcher\Not;
 
 class UserService
 {
-  protected $notificationService;
+  protected $notificationService, $wsChatService;
 
-  public function __construct(NotificationService $notificationService) {
+  public function __construct(NotificationService $notificationService ,WsChatService $wsChatService) {
     $this->notificationService = $notificationService;
-    
+    $this->wsChatService = $wsChatService;
   }
 
   public function getUsers(User $authUser) {
@@ -60,37 +60,49 @@ class UserService
     DB::beginTransaction();
     try {
 
-      UsersInteraction::where('user_uid', $authUser->uid)
+      $search = UsersInteraction::where('user_uid', $authUser->uid)
         ->where('interaction_user_uid', $uid)
         ->where('event_uid', $authUser->event_uid)
-        ->update([
+        ->first();
+
+      if(!empty($search)) {
+        $search->update([
           'interaction_id' => $interaction,
           'is_confirmed' => Interaction::needsConfirmation($interaction)
         ]);
+      }else {
+        UsersInteraction::create([
+          'user_uid' => $authUser->uid,
+          'interaction_user_uid' => $uid,
+          'interaction_id' => $interaction,
+          'is_confirmed' => Interaction::needsConfirmation($interaction),
+          'event_uid' => $authUser->event_uid
+        ]);
+      }
       
       $authUser->refreshInteractions($interaction);
-
       
-      if(in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
+      $checkHook =  UsersInteraction::checkHook($uid, $authUser->uid, $authUser->event_uid);
 
-        $checkHook =  UsersInteraction::where('user_uid', $uid)
-                      ->where('interaction_user_uid', $authUser->uid)
-                      ->whereIn('interaction_id',  [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
-                      ->exists();
+      if($checkHook) {
 
-        if($checkHook) {
+        $existLike = Notification::getLikeAndSuperLikeNotify($authUser->uid, $uid, $authUser->event_uid);
+        if($existLike) $existLike->delete();
 
-          $type = Notification::TYPE_HOOK;
-          $this->publishNotificationForUser($authUser->uid, $type, $authUser->event_uid);
+        $type = NotificationsType::HOOK_TYPE;
+        $msg = NotificationsType::HOOK_TYPE_STR;
 
-        }else {
+        $this->publishNotificationForUser($authUser->uid, $uid, $authUser->event_uid, $type, $msg);
+        $this->publishNotificationForUser($uid, $authUser->uid, $authUser->event_uid, $type, $msg);
 
-          $type = ($interaction == Interaction::LIKE_ID) ? Notification::TYPE_LIKE : Notification::TYPE_SUPER_LIKE;
+        $this->wsChatService->storeChat($authUser->uid, $uid, $authUser->event_uid);
 
-        }
-
-        $this->publishNotificationForUser($uid, $type, $authUser->event_uid);
+      }elseif(in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
         
+        $type = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE : NotificationsType::SUPER_LIKE_TYPE;
+        $msg = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE_STR : NotificationsType::SUPER_LIKE_TYPE_STR;
+        $this->publishNotificationForUser($uid, $authUser->uid, $authUser->event_uid, $type, $msg);
+
       }
 
       DB::commit();
@@ -107,14 +119,15 @@ class UserService
     }
   }
 
-  private function publishNotificationForUser($userUid, $type, $eventUid)
+  private function publishNotificationForUser($reciber, $emiter, $event, $type, $msg)
 {
     $notification = [
-        'user_uid'  => $userUid,
-        'type'      => $type,
-        'data'      => "Has obtenido un nuevo $type",
-        'read_at'   => null,
-        'event_uid' => $eventUid,
+        'user_uid'    => $reciber,
+        'emitter_uid' => $emiter,
+        'event_uid'   => $event,
+        'type_id'     => $type,
+        'msg'         => 'notification.'.$msg,
+        'read_at'     => null,
     ];
 
     $this->notificationService->publishNotification($notification);

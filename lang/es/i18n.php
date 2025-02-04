@@ -23,5 +23,5 @@ return [
   'image_delete_ko' => 'Ocurrió un error al eliminar la imagen.',
   'get_users_ko' => 'Ocurrió un error al obtener los usuarios.',
   'set_interaction_ko' => 'Ocurrió un error al registrar la interacción.',
-
+  'ws_chat_ko' => 'Ocurrió un error al crear el chat.',
 ];
