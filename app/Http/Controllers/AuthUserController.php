@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use App\Http\Requests\CompleteAuthUserRequest;
 use App\Http\Requests\CompleteDataRequest;
 use App\Http\Resources\AuthUserReosurce;
+use App\Http\Resources\MessageListResource;
 use App\Http\Services\NotificationService;
+use App\Models\Notification;
+use App\Models\NotificationsType;
 use App\Services\AuthUserService;
 use App\Services\ImagesService;
 use App\Services\UserService;
@@ -116,6 +119,14 @@ class AuthUserController extends Controller
             return $this->responseError($e->getMessage(), 500);
 
         }
+    }
+
+    public function getChats(Request $request) {
+        $user = $request->user();
+        $hooks = Notification::where('user_uid', $user->uid)->where('event_uid', $user->event_uid)->where('type_id', NotificationsType::HOOK_TYPE)->get();
+        $hooks = MessageListResource::collection($hooks);
+        return response()->json(["success" => true, "resp" => $hooks], 200);
+            
     }
 
     public function getNotifications(Request $request) 
