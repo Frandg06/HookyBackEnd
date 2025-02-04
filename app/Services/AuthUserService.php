@@ -93,16 +93,21 @@ class AuthUserService {
 
         $userLikes = $user->notifications()->where('type_id', NotificationsType::LIKE_TYPE)->where('event_uid', $user->event_uid)->get();
         
-        $userLikes = $userLikes->map(function ($u) use ($user) {
-          return $user->role_id == User::ROLE_PREMIUM 
-            ? NotificationUserResource::make($u)
-            : $u->user->userImages()->first()->web_url;
-        });
+        $likes_count = $userLikes->count();
+
+        if($user->role_id == User::ROLE_PREMIUM) {
+          $likes = NotificationUserResource::collection($userLikes);
+        } else {
+          $likes['images'] = $userLikes->take(7)->map(function ($u) use ($user) {
+            return $u->user->userImages()->first()->web_url;
+          });
+          $likes['count'] = $likes_count;
+        }
 
         $userSuperLikes =  $user->notifications()->where('type_id', NotificationsType::SUPER_LIKE_TYPE)->where('event_uid', $user->event_uid)->get();
 
         $data = [
-          "likes" => $userLikes,
+          "likes" => $likes,
           "super_likes" => NotificationUserResource::collection($userSuperLikes),
           "hooks" => NotificationUserResource::collection($usersHook)
         ];
