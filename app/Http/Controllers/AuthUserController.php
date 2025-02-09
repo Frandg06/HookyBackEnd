@@ -56,8 +56,8 @@ class AuthUserController extends Controller
         DB::beginTransaction();
         
         try {
-            
-            $this->authUserService->update($user, $info);
+            Log::info("Datos del usuario actualizados");
+            $this->authUserService->update($info);
             $this->authUserService->updateInterest($user, $interests);
 
             if($user->userImages()->count() === 0){
