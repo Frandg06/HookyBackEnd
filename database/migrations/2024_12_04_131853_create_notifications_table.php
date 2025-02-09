@@ -18,7 +18,6 @@ return new class extends Migration
             $table->uuid('emitter_uid')->nullable();
             $table->uuid('event_uid');
             $table->unsignedBigInteger('type_id');
-            $table->text('msg');
             $table->dateTime('read_at')->nullable();
             $table->timestamps();
             $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');

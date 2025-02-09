@@ -27,11 +27,13 @@ class WsChatService
             'event_uid' => $event_uid,
         ];
 
+        $chat_url = config('services.ws_api.chat_url');
+
         try {
-            $response = Http::withHeaders([
+            Http::withHeaders([
               'Authorization' => 'Bearer '.request()->bearerToken(),
               'Accept' => 'application/json'
-            ])->post('http://localhost:5001/api/ws/chat', $data);
+            ])->post($chat_url, $data);
         } catch (\Exception $e) {
           Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
           throw new \Exception(__('i18n.ws_chat_ko'));

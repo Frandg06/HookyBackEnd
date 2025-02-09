@@ -85,23 +85,23 @@ class UserService
       $checkHook =  UsersInteraction::checkHook($uid, $authUser->uid, $authUser->event_uid);
 
       if($checkHook) {
-
+        Log::alert("esta aqui");
         $existLike = Notification::getLikeAndSuperLikeNotify($authUser->uid, $uid, $authUser->event_uid);
         if($existLike) $existLike->delete();
 
         $type = NotificationsType::HOOK_TYPE;
-        $msg = NotificationsType::HOOK_TYPE_STR;
+        $type_str = NotificationsType::HOOK_TYPE_STR;
 
-        $this->publishNotificationForUser($authUser->uid, $uid, $authUser->event_uid, $type, $msg);
-        $this->publishNotificationForUser($uid, $authUser->uid, $authUser->event_uid, $type, $msg);
+        $this->publishNotificationForUser($authUser->uid, $uid, $authUser->event_uid, $type, $type_str);
+        $this->publishNotificationForUser($uid, $authUser->uid, $authUser->event_uid, $type, $type_str);
 
         $this->wsChatService->storeChat($authUser->uid, $uid, $authUser->event_uid);
 
       }elseif(in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
         
         $type = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE : NotificationsType::SUPER_LIKE_TYPE;
-        $msg = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE_STR : NotificationsType::SUPER_LIKE_TYPE_STR;
-        $this->publishNotificationForUser($uid, $authUser->uid, $authUser->event_uid, $type, $msg);
+        $type_str = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE_STR : NotificationsType::SUPER_LIKE_TYPE_STR;
+        $this->publishNotificationForUser($uid, $authUser->uid, $authUser->event_uid, $type, $type_str);
 
       }
 
@@ -119,18 +119,18 @@ class UserService
     }
   }
 
-  private function publishNotificationForUser($reciber, $emiter, $event, $type, $msg)
-{
-    $notification = [
-        'user_uid'    => $reciber,
-        'emitter_uid' => $emiter,
-        'event_uid'   => $event,
-        'type_id'     => $type,
-        'msg'         => 'notification.'.$msg,
-        'read_at'     => null,
-    ];
+  private function publishNotificationForUser($reciber, $emiter, $event, $type, $type_str)
+  {
+      $notification = [
+          'user_uid'    => $reciber,
+          'emitter_uid' => $emiter,
+          'event_uid'   => $event,
+          'type_id'     => $type,
+          'type_str'    => $type_str,
+          'read_at'     => null,
+      ];
 
-    $this->notificationService->publishNotification($notification);
-}
+      $this->notificationService->publishNotification($notification);
+  }
   
 }

@@ -27,8 +27,10 @@ return [
     'resend' => [
         'key' => env('RESEND_KEY'),
     ],
-    'ably' => [
-        'key' => env('ABLY_API_KEY'),
+
+    'ws_api' => [
+        'notify_url' => env('WS_API_URL_NOTIFY'),
+        'chat_url' => env('WS_API_URL_CHAT')
     ],
 
     'slack' => [

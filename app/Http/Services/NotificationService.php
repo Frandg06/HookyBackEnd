@@ -3,6 +3,9 @@ namespace App\Http\Services;
 
 use App\Models\Notification;
 use App\Models\User;
+use Exception;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class NotificationService {
 
@@ -10,6 +13,14 @@ class NotificationService {
     try {
       
       Notification::create($data);
+
+      $sendData = [
+        'userToNotify' => $data['user_uid'],
+        'type_id'      => $data['type_id'],
+        'type_str'     => $data['type_str']
+      ];
+
+      $this->emitNotification($sendData);
 
     } catch (\Exception $e) {
       throw new \Exception($e->getMessage());
@@ -29,6 +40,20 @@ class NotificationService {
 
     } catch (\Exception $e) {
       throw new \Exception($e->getMessage());
+    }
+  }
+
+  private function emitNotification($data) {
+    try {
+      $notify_url = config('services.ws_api.notify_url');
+      
+      Http::withHeaders([
+        'Authorization' => 'Bearer '.request()->bearerToken(),
+        'Accept' => 'application/json'
+      ])->post($notify_url, $data);
+
+    } catch (Exception $e) {
+      Log::alert($e);
     }
   }
 }
