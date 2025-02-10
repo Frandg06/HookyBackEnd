@@ -53,7 +53,7 @@ class NotificationService {
       ])->post($notify_url, $data);
 
     } catch (Exception $e) {
-      Log::alert($e);
+      Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
     }
   }
 }

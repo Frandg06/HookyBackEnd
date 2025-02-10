@@ -24,4 +24,26 @@ return [
   'get_users_ko' => 'Ocurrió un error al obtener los usuarios.',
   'set_interaction_ko' => 'Ocurrió un error al registrar la interacción.',
   'ws_chat_ko' => 'Ocurrió un error al crear el chat.',
+  'user_not_found' => 'El usuario no existe.',
+  'password_reset_email' => 'Se ha enviado un correo electrónico con el link para restablecer la contraseña.',
+  'password_reset_subject' => 'Restablecer contraseña',
+  'email_reset_password' => [
+    'subject' => 'Restablecer contraseña',
+    'message_1' => '<p style="line-height: 140%; margin: 0px">
+      Hola :name,<br /><br />
+      Has solicitado restablecer tu contraseña en <strong>Hooky!</strong>.  
+      Haz clic en el siguiente enlace para crear una nueva contraseña:<br /><br />
+      
+      <em><strong>Este enlace expirará en 15 minutos.</strong></em>
+      Si no solicitaste este cambio, puedes ignorar este mensaje. 
+      <br /><br /><strong>Reference: </strong>:uid 
+    </p>',
+    'button' => 'Restablecer contraseña',
+    'footer' => '<p style="font-size: 12px; text-align: center; margin-top: 20px;">
+      <strong>Hooky!</strong> - Conéctate con personas dentro de la discoteca y haz nuevas amistades mientras disfrutas de la noche.<br />
+      Si tienes preguntas o necesitas ayuda, no dudes en ponerte en contacto con nuestro equipo de soporte en <a href="mailto:support@hooky.com">support@hooky.com</a>.<br /><br />
+      Este es un mensaje automatizado, por favor no respondas a este correo.<br />
+      <small>&copy; 2025 Hooky. Todos los derechos reservados.</small>
+    </p>'
+  ],
 ];
