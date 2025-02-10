@@ -56,7 +56,6 @@ class AuthUserController extends Controller
         DB::beginTransaction();
         
         try {
-            Log::info("Datos del usuario actualizados");
             $this->authUserService->update($info);
             $this->authUserService->updateInterest($user, $interests);
 
@@ -70,7 +69,7 @@ class AuthUserController extends Controller
             DB::commit();
             return response()->json(["success" => true, "resp" =>  AuthUserReosurce::make($user)], 200);
         } catch (\Exception $e) {
-            Log::error($e);
+            Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
             DB::rollBack();
             return $this->responseError($e->getMessage(), 400);
         }

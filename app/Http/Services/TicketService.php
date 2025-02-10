@@ -105,7 +105,7 @@ class TicketService
             ];
 
         }catch (\Throwable $e) {
-            Log::error($e);
+            Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
             DB::rollBack();
             ($e instanceof CustomException)
                 ? throw new Exception($e->getMessage())

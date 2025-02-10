@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/password/reset', [AuthController::class, 'passwordReset']);
+Route::post('/password/reset/new', [AuthController::class, 'setNewPassword']);
 
 Route::middleware(['auth:api', 'event'])->group(function () {
     

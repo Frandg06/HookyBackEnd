@@ -85,7 +85,6 @@ class UserService
       $checkHook =  UsersInteraction::checkHook($uid, $authUser->uid, $authUser->event_uid);
 
       if($checkHook) {
-        Log::alert("esta aqui");
         $existLike = Notification::getLikeAndSuperLikeNotify($authUser->uid, $uid, $authUser->event_uid);
         if($existLike) $existLike->delete();
 
