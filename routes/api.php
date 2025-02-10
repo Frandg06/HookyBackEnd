@@ -13,8 +13,10 @@ use Illuminate\Support\Facades\Route;
     - Authorization: Bearer {token}
 */  
 Route::middleware(['api', 'lang'])->group(function () {
+    require __DIR__ . '/hooky-auth.php';
     require __DIR__ . '/hooky-admin.php';
     require __DIR__ . '/hooky-app.php';
+
     Route::get('/timezones', [DomainController::class, 'getTimeZones'])->middleware(['auth:company']);
     Route::get('/interests', [DomainController::class, 'getInterests'])->middleware(['auth:api']);
     

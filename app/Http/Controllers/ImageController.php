@@ -94,34 +94,27 @@ class ImageController extends Controller
         }
     }
 
-    public function deleteAllUserImage(Request $request)  {
-        $user = $request->user();
+    public function deleteUserImages()  {
 
         try{
             
-            $response = $this->imageService->deleteAllUserImage($user);
+            $response = $this->imageService->deleteUserImages();
 
             if(!$response) return $this->responseError("Unexpected error while deleting image", 500);
             
-            return $this->responseSuccess('Image delete successfully',  $user);
+            return response()->json(["success" => true, "resp" =>  "Image delete successfully"], 200);
 
         }catch(\Exception $e) {
             return $this->responseError($e->getMessage(), 500);
         }
     }
 
-    public function deleteAll(Request $request) {
-        $user = $request->user();
-        
+    public function deleteAll() {
         try {
             $response = $this->imageService->deleteAll();
-
-            return $this->responseSuccess('All images deleted successfully', $user);
-
+            return response()->json(["success" => true, "resp" =>  "All images deleted successfully"], 200);
         } catch (\Exception $e) {
-
             return $this->responseError($e->getMessage(), 500);
-
         }
     }
 }

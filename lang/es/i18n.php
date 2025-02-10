@@ -46,4 +46,5 @@ return [
       <small>&copy; 2025 Hooky. Todos los derechos reservados.</small>
     </p>'
   ],
+  'logged_out' => 'Has cerrado sesión correctamente.',
 ];

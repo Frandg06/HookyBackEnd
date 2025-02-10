@@ -84,7 +84,7 @@ class ImagesService {
       foreach (UserImage::all() as $image) {
         $image->delete();
       }
-      
+
       Storage::disk('r2')->deleteDirectory('hooky/profile');
 
       return true;
@@ -94,8 +94,9 @@ class ImagesService {
     }
   }
 
-  public function deleteAllUserImage($user) 
+  public function deleteUserImages() 
   {
+    $user = request()->user();
     try {
       foreach($user->userImages()->get() as $item) {
         $item->delete();

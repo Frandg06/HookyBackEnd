@@ -8,9 +8,13 @@ use App\Http\Requests\CompleteAuthUserRequest;
 use App\Http\Requests\CompleteDataRequest;
 use App\Http\Resources\AuthUserReosurce;
 use App\Http\Resources\MessageListResource;
+use App\Http\Resources\UserResource;
 use App\Http\Services\NotificationService;
+use App\Models\Interaction;
 use App\Models\Notification;
 use App\Models\NotificationsType;
+use App\Models\User;
+use App\Models\UsersInteraction;
 use App\Services\AuthUserService;
 use App\Services\ImagesService;
 use App\Services\UserService;
@@ -44,7 +48,7 @@ class AuthUserController extends Controller
         }
     }
 
-    public function store(CompleteAuthUserRequest $request) 
+    public function completeRegisterData(CompleteAuthUserRequest $request) 
     {
      
         $data = $request->all();
@@ -155,6 +159,64 @@ class AuthUserController extends Controller
 
             return $this->responseError($e->getMessage(), 400);
 
+        }
+    }
+
+    public function getUsers(Request $request)
+    {
+        $user = $request->user();
+        $response = $this->userService->getUsers($user);
+
+        return response()->json(["resp" => $response, "success" => true], 200); 
+    }
+
+    public function getUserToConfirm(Request $request, $uid)
+    {
+        $user = $request->user();
+        
+        if($user->role_id != User::ROLE_PREMIUM) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
+
+        $isLike = UsersInteraction::where('user_uid', $uid)
+                    ->where('interaction_user_uid', $user->uid)
+                    ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
+                    ->where('event_uid', $user->event_uid)
+                    ->exists();
+        
+        if(!$isLike) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
+
+        $user = User::where('uid', $uid)->first();
+
+        $response = UserResource::make($user);
+
+        return response()->json(["resp" => $response, "success" => true], 200);
+    }
+
+    public function getUser(Request $request, $uid)
+    {
+        $user = $request->user();
+
+        // En el futuro si es hook cuando interacciona se crearea un chat ebntoinces esto lo que hara sera comprobar si hay chat abierto (a espensas de microservicios)
+        $isHook = UsersInteraction::checkHook($user->uid, $uid, $user->event_uid);
+                    
+        if(!$isHook) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
+
+        $user = User::where('uid', $uid)->first();
+
+        $response = UserResource::make($user);
+
+        return response()->json(["resp" => $response, "success" => true], 200);
+    }
+
+    public function setInteraction(Request $request, $uid)
+    {
+        $interaction = $request->interactionId;
+        $user = $request->user();
+
+        try {
+            $response = $this->userService->setInteraction($user, $uid, $interaction);
+            return response()->json(["success" => true, "resp" => $response], 200);
+        } catch (\Exception $e) {
+            return $this->responseError($e->getMessage(), 400);
         }
     }
     

@@ -6,7 +6,6 @@ use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\AuthCompanyResource;
 use App\Http\Resources\AuthUserReosurce;
 use App\Http\Services\EmailService;
-use App\Models\Company;
 use App\Models\PasswordResetToken;
 use App\Models\User;
 use App\Services\AuthService;
@@ -21,7 +20,7 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    private $authService, $userService, $imageService, $emailService;
+    protected $authService, $userService, $imageService, $emailService;
 
     public function __construct(AuthService $authService, UserService $userService, ImagesService $imageService, EmailService $emailService) { 
         $this->authService = $authService;
@@ -65,7 +64,7 @@ class AuthController extends Controller
         try {
             $validated = $request->validate([
                 'email' => 'required|email',
-                'password' => 'required'
+                'password' => 'required',
             ]);
 
             $response = $this->authService->login($validated, $request->company_uid);
@@ -89,12 +88,12 @@ class AuthController extends Controller
         }
     }
 
-    public function logout(Request $request) 
+    public function logout() 
     {
-        $request->user()->tokens()->delete();
-        return response()->json(["success" => true, 'message' => 'Logged out successfully'], 200);
+        Auth::invalidate(true);
+        Auth::logout();
+        return response()->json(["success" => true, 'message' => __('i18n.logged_out')], 200);
     }
-
     public function me() {
         try {
 
@@ -109,9 +108,9 @@ class AuthController extends Controller
         }
     }
 
-    public function isCompanyAuth(Request $request) {
+    public function isCompanyAuth() {
         try {
-            $company = $request->user();
+            $company = request()->user();
 
             $company = AuthCompanyResource::make($company);
 
