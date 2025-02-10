@@ -10,7 +10,6 @@ use App\Models\SexualOrientation;
 use App\Models\TimeZone;
 use App\Models\User;
 use App\Models\UserEvent;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -63,6 +62,9 @@ class DatabaseSeeder extends Seeder
         $this->call(PricingPlanSeeder::class);
         $this->call(NotificationsTypeSeeder::class);
 
+        Storage::disk('r2')->deleteDirectory('hooky/profile');
+        Storage::disk('r2')->deleteDirectory('hooky/qr');
+
         $company = Company::create([
             "name"=> "Studio54",
             "email"=> "studio54@email.es",
@@ -78,7 +80,6 @@ class DatabaseSeeder extends Seeder
             'likes' => 10,
             'super_likes' => 2,
         ]);
-        
 
         $response = Http::get('https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . $company->link);
 
