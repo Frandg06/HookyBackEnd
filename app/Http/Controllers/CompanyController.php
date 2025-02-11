@@ -2,34 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ApiException;
 use App\Http\Services\CompanyService;
 use Illuminate\Http\Request;
 
 
 class CompanyController extends Controller
 {
-
     protected $companyService;
+    
     public function __construct(CompanyService $companyService) {
         $this->companyService = $companyService;
-        
-    }
-    public function getLink(Request $request) {
-        $company = $request->user();
-        return response()->json([
-            'status' => 'success',
-            'resp' => $company->link,
-        ]);
     }
 
     public function update(Request $request) {
         try {
             $data = $request->only(['name', 'email', 'phone', 'address', 'city', 'country', 'timezone_string', 'average_ticket_price']);
-            $company = $request->user();
-            $response = $this->companyService->update($company, $data);
+            $response = $this->companyService->update($data);
             return response()->json(['success' => true,  'resp' => $response]);
-        } catch (\Throwable $e) {
-            return response()->json(['success' => false, 'error' => $e->getMessage()]);
+        } catch (ApiException $e) {
+            return $e->render();
+        } catch (\Throwable $e) { 
+            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
         }
     }
 }

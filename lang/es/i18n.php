@@ -61,4 +61,6 @@ return [
   'tickets_minimum' => 'El número de tickets debe ser mayor a 1.',
   'tickets_maximum' => 'El número de tickets no puede ser mayor a 1000.',
   'ticket_invalid' => 'El código ya ha sido canjeado o no existe.',
+  'timezone_not_found' => 'No existe el timezone seleccionado.',
+  'update_company_ko' => 'Ocurrió un error al actualizar los datos.',
 ];

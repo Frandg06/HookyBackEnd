@@ -23,7 +23,6 @@ Route::prefix('company')->group(function () {
         Route::get('/auth', [AuthCompanyController::class, 'me']);
         Route::post('/logout', [AuthCompanyController::class, 'logout']);
         Route::post('/event', [EventController::class, 'store']);
-        Route::get('/url', [CompanyController::class, 'getLink']);
         Route::post('/tickets', [TicketController::class, 'generateTickets']);
         Route::get('/tickets', [TicketController::class, 'index']);
     });
