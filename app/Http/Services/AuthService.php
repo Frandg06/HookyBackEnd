@@ -2,7 +2,6 @@
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
-use App\Http\Resources\AuthUserReosurce;
 use App\Models\Company;
 use App\Models\PasswordResetToken;
 use App\Models\User;
@@ -11,7 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Nette\Utils\Arrays;
 
 class AuthService {
 
