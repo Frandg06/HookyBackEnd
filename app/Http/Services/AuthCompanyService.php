@@ -45,7 +45,7 @@ class AuthCompanyService {
       } catch (\Exception $e) {
         DB::rollBack();
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new ApiException(__("i18n.register_company_ko"), 500);
+        throw new ApiException("register_company_ko", 500);
       }
         
     }
@@ -65,12 +65,10 @@ class AuthCompanyService {
 
         return $token;
       }catch (ApiException $e) {
-        DB::rollBack();
         throw new ApiException($e->getMessage(), $e->getCode());
       } catch (\Exception $e) {
-        DB::rollBack();
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new ApiException(__("i18n.register_ko"), 500);
+        throw new ApiException("login_ko", 500);
       }
      
     }

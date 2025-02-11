@@ -91,7 +91,7 @@ class AuthUserService {
       } catch (\Exception $e) {
         DB::rollBack();
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new ApiException(__("i18n.update_user_interest_ko"), 500);
+        throw new ApiException("update_user_interest_ko", 500); 
       }
   
     }
@@ -155,7 +155,7 @@ class AuthUserService {
       } catch (\Exception $e) {
         DB::rollBack();
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new ApiException(__("i18n.update_company_ko"), 500);
+        throw new ApiException("update_company_ko", 500);
       }
     }
 }
