@@ -43,7 +43,7 @@ class AuthController extends Controller
                 "access_token" =>  $response->access_token
             ], 200);
 
-        }  catch (ApiException $e) {
+        } catch (ApiException $e) {
             return $e->render();
         } catch (\Throwable $e) { 
             return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);

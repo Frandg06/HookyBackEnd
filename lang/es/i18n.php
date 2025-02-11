@@ -50,4 +50,11 @@ return [
   'token_not_found' => 'No existe ningun usuario con ese token.',
   'token_expired' => 'El token ha expirado.',
   'unexpected_error' => 'Ha ocurrido un error inesperado. Intentelo mas tarde.',
+  'event_same_day' => 'Ya hay un evento en la fecha elegida, elige otro día.',
+  'event_limit_reached' => 'No puedes crear más eventos, has alcanzado el límite.',
+  'start_date_past' => 'La fecha de inicio debe ser mayor a la actual.',
+  'end_date_before_start' => 'La fecha de fin debe ser mayor a la fecha de inicio.',
+  'event_duration_exceeded' => 'La duración máxima de un evento es de 12 horas.',
+  'event_duration_too_short' => 'La duración mínima de un evento es de 2 horas.',
+  'create_event_ko' => 'Ocurrió un error al crear el evento.',
 ];

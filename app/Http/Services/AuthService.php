@@ -106,8 +106,7 @@ class AuthService {
         }
         DB::commit();
         return $token;
-      }
-      catch (ApiException $e) {
+      } catch (ApiException $e) {
         DB::rollBack();
         throw new ApiException($e->getMessage(), $e->getCode());
       } catch (\Exception $e) {
