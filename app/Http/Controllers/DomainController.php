@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Interest;
 use App\Models\TimeZone;
-use Illuminate\Http\Request;
 
 class DomainController extends Controller
 {
