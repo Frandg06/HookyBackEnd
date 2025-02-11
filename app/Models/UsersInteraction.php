@@ -9,7 +9,7 @@ class UsersInteraction extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_uid', 'interaction_id', 'interaction_user_uid' , 'event_uid', 'is_confirmed'];
+    protected $fillable = ['user_uid', 'interaction_id', 'interaction_user_uid' , 'event_uid'];
 
     public function user() {
         return $this->belongsTo(User::class, 'user_uid', 'uid');
@@ -53,6 +53,14 @@ class UsersInteraction extends Model
             ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
             ->where('event_uid', $event);
         })
+        ->exists();
+    }
+
+    public static function checkIsLike($uid, $auth) {
+        return self::where('user_uid', $uid)
+        ->where('interaction_user_uid', $auth->uid)
+        ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
+        ->where('event_uid', $auth->event_uid)
         ->exists();
     }
 

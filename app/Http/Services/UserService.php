@@ -23,8 +23,11 @@ class UserService
     $this->wsChatService = $wsChatService;
   }
 
-  public function getUsers(User $authUser) {
+  public function getUsers() {
+    DB::beginTransaction();
     try {
+
+      $authUser = request()->user();
       // usuarios ya obtenidos previamente con lo que no se ha interactuado en el evento actual
       $usersWithoutInteraction = $authUser->interactions()->usersWithoutInteraction($authUser->event_uid);
       
@@ -52,35 +55,35 @@ class UserService
       }
 
       UsersInteraction::insert($newUsersWithInteractions);
+      
+      DB::commit();
 
       return UserResource::collection($users);
 
     } catch (\Exception $e) {
+      DB::rollBack();
       Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
       throw new ApiException('get_users_ko', 500);
     }
   }
 
-  public function setInteraction(User $authUser, $uid, $interaction) {
+  public function setInteraction($uid, $interaction) {
     DB::beginTransaction();
     try {
-
+      $authUser = request()->user();
+      
       $search = UsersInteraction::where('user_uid', $authUser->uid)
         ->where('interaction_user_uid', $uid)
         ->where('event_uid', $authUser->event_uid)
         ->first();
 
       if(!empty($search)) {
-        $search->update([
-          'interaction_id' => $interaction,
-          'is_confirmed' => Interaction::needsConfirmation($interaction)
-        ]);
+        $search->update(['interaction_id' => $interaction]);
       }else {
         UsersInteraction::create([
           'user_uid' => $authUser->uid,
           'interaction_user_uid' => $uid,
           'interaction_id' => $interaction,
-          'is_confirmed' => Interaction::needsConfirmation($interaction),
           'event_uid' => $authUser->event_uid
         ]);
       }
@@ -119,7 +122,7 @@ class UserService
     } catch (\Exception $e) {
       DB::rollBack();
       Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-      throw new \Exception(__('i18n.set_interaction_ko'));
+      throw new ApiException('set_interaction_ko', 500); 
     }
   }
 

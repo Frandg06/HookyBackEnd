@@ -70,5 +70,7 @@ return [
   'image_delete_ko' => 'Ocurrió un error al eliminar la imagen.',
   'delete_image_unexpected_error' => 'Error inesperado al eliminar la imagen.',
   'store_image_unexpected_error' => 'Error inesperado al almacenar la nueva imagen.',
+  'read_notifications_ko' => 'Ocurrió un error al leer las notificaciones.',
+  'notification_ko' => 'Ocurrió un error al enviar la notificación.',
 
 ];

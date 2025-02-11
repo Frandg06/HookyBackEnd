@@ -106,43 +106,21 @@ class AuthUserController extends Controller
         }
     }
 
-    public function getNotifications(Request $request) 
+    public function getNotifications() 
     {
-        $user = $request->user();
-        
-        try {
-            
-            $response = $this->authUserService->getNotifications($user);
-            return response()->json(["success" => true, "resp" => $response], 200);
-
-        } catch (\Exception $e) {
-            
-            return $this->responseError($e->getMessage(), 400);
-
-        }
+        $response = $this->authUserService->getNotifications();
+        return response()->json(["success" => true, "resp" => $response], 200);
     }
 
-    public function readNotificationsByType(Request $request, $type) 
+    public function readNotificationsByType($type) 
     {
-        $user = $request->user();
-
-        try {
-
-            $response = $this->notificationService->readNotificationsByType($user, $type);
-            return response()->json(["success" => true, "resp" => $response], 200);
-
-        } catch (\Exception $e) {
-
-            return $this->responseError($e->getMessage(), 400);
-
-        }
+        $response = $this->notificationService->readNotificationsByType($type);
+        return response()->json(["success" => true, "resp" => $response], 200);
     }
 
-    public function getUsers(Request $request)
+    public function getUsers()
     {
-        $user = $request->user();
-        $response = $this->userService->getUsers($user);
-
+        $response = $this->userService->getUsers();
         return response()->json(["resp" => $response, "success" => true], 200); 
     }
 
@@ -152,48 +130,35 @@ class AuthUserController extends Controller
         
         if($user->role_id != Role::ROLE_PREMIUM) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
 
-        $isLike = UsersInteraction::where('user_uid', $uid)
-                    ->where('interaction_user_uid', $user->uid)
-                    ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
-                    ->where('event_uid', $user->event_uid)
-                    ->exists();
+        $isLike = UsersInteraction::checkIsLike($uid, $user);
         
         if(!$isLike) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
 
         $user = User::where('uid', $uid)->first();
 
-        $response = UserResource::make($user);
-
-        return response()->json(["resp" => $response, "success" => true], 200);
+        return response()->json(["resp" => $user->resource(), "success" => true], 200);
     }
 
     public function getUser(Request $request, $uid)
     {
         $user = $request->user();
 
-        // En el futuro si es hook cuando interacciona se crearea un chat ebntoinces esto lo que hara sera comprobar si hay chat abierto (a espensas de microservicios)
         $isHook = UsersInteraction::checkHook($user->uid, $uid, $user->event_uid);
                     
         if(!$isHook) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
 
         $user = User::where('uid', $uid)->first();
 
-        $response = UserResource::make($user);
-
-        return response()->json(["resp" => $response, "success" => true], 200);
+        return response()->json(["resp" => $user->resource(), "success" => true], 200);
     }
 
     public function setInteraction(Request $request, $uid)
     {
         $interaction = $request->interactionId;
-        $user = $request->user();
 
-        try {
-            $response = $this->userService->setInteraction($user, $uid, $interaction);
-            return response()->json(["success" => true, "resp" => $response], 200);
-        } catch (\Exception $e) {
-            return $this->responseError($e->getMessage(), 400);
-        }
+        $response = $this->userService->setInteraction($uid, $interaction);
+        return response()->json(["success" => true, "resp" => $response], 200);
+        
     }
     
     private function parseCompleteData($data) {

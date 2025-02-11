@@ -100,9 +100,10 @@ class AuthUserService {
   
     }
 
-    public function getNotifications(User $user) {
-
+    public function getNotifications() {
+      DB::beginTransaction();
       try {
+        $user = request()->user();
 
         $usersHook = $user->notifications()->where('type_id', NotificationsType::HOOK_TYPE)->where('event_uid', $user->event_uid)->get();
 
@@ -127,11 +128,14 @@ class AuthUserService {
           "hooks" => NotificationUserResource::collection($usersHook)
         ];
 
+        DB::commit();
+
         return $data;
 
       }catch (\Exception $e) {
+        DB::rollBack();
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new \Exception(__("i18n.get_notifications_ko"));
+        throw new ApiException( 'get_notifications_ko', 500);
       }
       
     }

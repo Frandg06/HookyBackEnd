@@ -14,8 +14,4 @@ class Interaction extends Model
     use HasFactory;
 
     public $timestamps = false;
-
-    public static function needsConfirmation($id) {
-        return in_array($id, [self::LIKE_ID, self::SUPER_LIKE_ID]);
-    }
 }
