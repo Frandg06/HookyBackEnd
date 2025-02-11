@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ApiException;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\CompleteAuthUserRequest;
@@ -36,69 +37,53 @@ class AuthUserController extends Controller
 
     public function update(CompleteDataRequest $request) 
     {
-
         $data = $request->all();
-
         try {
-
             $response = $this->authUserService->update($data);
-            return response()->json(["success" => true, "resp" =>  $response], 200); 
-            
-        } catch (\Exception $e) {
-            return $this->responseError($e->getMessage(), 400);
+
+            return response()->json(["success" => true, "resp" =>  $response], 200);             
+        } catch (ApiException $e) {
+            return $e->render();
+        } catch (\Throwable $e) { 
+            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
         }
     }
 
     public function completeRegisterData(CompleteAuthUserRequest $request) 
-    {
-     
+    {     
         $data = $request->all();
-        $user = $request->user(); 
         $info = $this->parseCompleteData($data);   
         $files = $this->parseCompleteFiles($data);
         $interests = $this->parseCompleteInterests($data);
 
-        DB::beginTransaction();
-        
         try {
-            $this->authUserService->update($info);
-            $this->authUserService->updateInterest($user, $interests);
-
-            if($user->userImages()->count() === 0){
-                if(count($files) < 3 || count($files) > 3) throw new \Exception("El usuario solo puede subir 3 imágenes");
-                
-                foreach ($files as $file) {
-                    $this->imageService->store($user, $file);
-                }
-            }
-            DB::commit();
-            return response()->json(["success" => true, "resp" =>  AuthUserReosurce::make($user)], 200);
-        } catch (\Exception $e) {
-            Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-            DB::rollBack();
-            return $this->responseError($e->getMessage(), 400);
+            $response = $this->authUserService->completeRegisterData($info, $files, $interests);
+            
+            return response()->json(["success" => true, "resp" => $response], 200);
+        } catch (ApiException $e) {
+            return $e->render();
+        } catch (\Throwable $e) { 
+            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
         }
     }
 
     public function updatePassword(Request $request) 
     {
-        
         $request->validate([
             'old_password' => 'required',
             'password' => 'required|min:8|confirmed',
         ]);
         
-        $user = $request->user();
         $data = $request->only('old_password', 'password');
 
         try {
+            $response =$this->authUserService->updatePassword($data);
 
-            $response = $this->authUserService->updatePassword($data, $user);
-
-            return $this->responseSuccess('Password changed successfully');
-
-        } catch (\Exception $e) {
-            return $this->responseError($e->getMessage(), 400);
+            return response()->json(["success" => true, "resp" => $response], 200);
+        } catch (ApiException $e) {
+            return $e->render();
+        } catch (\Throwable $e) { 
+            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
         }
     }
 
@@ -108,19 +93,16 @@ class AuthUserController extends Controller
             'interests' => 'required|array|min:3'
         ]);
 
-        $user = $request->user();
         $interests = $request->interests;
 
         try {
+            $response = $this->authUserService->updateInterest($interests);
 
-            $this->authUserService->updateInterest($user, $interests);
-
-            return response()->json(["success" => true, "resp" => AuthUserReosurce::make($user)], 200);
-
-        } catch (\Exception $e) {
-
-            return $this->responseError($e->getMessage(), 500);
-
+            return response()->json(["success" => true, "resp" => $response], 200);
+        } catch (ApiException $e) {
+            return $e->render();
+        } catch (\Throwable $e) { 
+            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
         }
     }
 

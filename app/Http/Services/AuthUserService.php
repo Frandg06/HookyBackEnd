@@ -4,13 +4,9 @@ namespace App\Http\Services;
 use App\Exceptions\ApiException;
 use App\Http\Resources\AuthUserReosurce;
 use App\Http\Resources\NotificationUserResource;
-use App\Http\Resources\UserResource;
-use App\Models\Company;
-use App\Models\Interaction;
 use App\Models\NotificationsType;
 use App\Models\Role;
 use App\Models\User;
-use App\Models\UsersInteraction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -21,6 +17,11 @@ class AuthUserService {
       DB::beginTransaction();
       try {
         $user = request()->user();
+        
+        $existingUser = User::where('email', $data['email'])->whereNot('uid', $user->uid)->first();
+
+        if($existingUser) throw new ApiException("user_exists", 409);
+
         $user->update($data);
 
         if( isset($user['gender_id']) || isset($user['sexual_orientation_id'] )) {
@@ -28,39 +29,48 @@ class AuthUserService {
         }
         
         DB::commit();
+
         return AuthUserReosurce::make($user);
 
+      } catch (ApiException $e) {
+        DB::rollBack();
+        throw new ApiException($e->getMessage(), $e->getCode());
       } catch (\Exception $e) {
         DB::rollBack();
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new \Exception(__("i18n.update_user_ko"));
+        throw new ApiException("update_company_ko");
       }
 
     }
 
-    public function updatePassword($data, $user) {
+    public function updatePassword($data) {
+      DB::beginTransaction();
       try {
-        
-        if(!Hash::check($data['old_password'], $user->password)) {
-          throw new ApiException(__("i18n.actual_password_ko"));
-        }
+        $user = request()->user();
+
+        if(!Hash::check($data['old_password'], $user->password)) throw new ApiException("actual_password_ko", 400);
 
         $user->password = bcrypt($data['password']);
         $user->save();
 
-        return true;
+        DB::commit();
+      
+        return AuthUserReosurce::make($user);
 
       } catch (ApiException $e) {
-        throw new \Exception($e->getMessage());
+        DB::rollBack();
+        throw new ApiException($e->getMessage());
       } catch (\Exception $e) {
+        DB::rollBack();
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new \Exception(__("i18n.update_password_ko"));
+        throw new ApiException("update_password_ko", 500);
       }
     }
 
-    public function updateInterest(User $user, $newInterests) {
+    public function updateInterest($newInterests) 
+    {
       try {
-  
+        $user = request()->user();
         $hasInterest = $user->interests()->get()->pluck('interest_id')->toArray();
   
         foreach ($newInterests as $item) {
@@ -77,11 +87,11 @@ class AuthUserService {
           }
         }
   
-        return $user;
-    
+        return AuthUserReosurce::make($user);
       } catch (\Exception $e) {
+        DB::rollBack();
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new \Exception(__("i18n.update_user_interest_ko"));
+        throw new ApiException(__("i18n.update_user_interest_ko"), 500);
       }
   
     }
@@ -120,5 +130,32 @@ class AuthUserService {
         throw new \Exception(__("i18n.get_notifications_ko"));
       }
       
+    }
+
+    public function completeRegisterData($info, $files, $interests) {
+      DB::beginTransaction();
+      try {
+        $user = request()->user();
+        $this->update($info);
+        $this->updateInterest($user, $interests);
+        
+        $imageService = new ImagesService();
+
+        if($user->userImages()->count() === 0){
+            if(count($files) < 3 || count($files) > 3) throw new ApiException("invalid_image_count", 400);
+            foreach ($files as $file) {
+                $imageService->store($user, $file);
+            }
+        }
+        DB::commit();
+        return AuthUserReosurce::make($user);
+      }catch (ApiException $e) {
+        DB::rollBack();
+        throw new ApiException($e->getMessage(), $e->getCode());
+      } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+        throw new ApiException(__("i18n.update_company_ko"), 500);
+      }
     }
 }

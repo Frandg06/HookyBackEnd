@@ -63,4 +63,7 @@ return [
   'ticket_invalid' => 'El código ya ha sido canjeado o no existe.',
   'timezone_not_found' => 'No existe el timezone seleccionado.',
   'update_company_ko' => 'Ocurrió un error al actualizar los datos.',
+  'invalid_image_count' => 'El usuario solo puede subir 3 imágenes.',
+  'update_user_interest_ko' => 'Ocurrió un error al actualizar los intereses del usuario.',
+  'password_changed' => 'La contraseña ha sido cambiada correctamente.',
 ];
