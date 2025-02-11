@@ -47,4 +47,7 @@ return [
     </p>'
   ],
   'logged_out' => 'Has cerrado sesión correctamente.',
+  'token_not_found' => 'No existe ningun usuario con ese token.',
+  'token_expired' => 'El token ha expirado.',
+  'unexpected_error' => 'Ha ocurrido un error inesperado. Intentelo mas tarde.',
 ];

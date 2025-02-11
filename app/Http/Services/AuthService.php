@@ -4,18 +4,21 @@ namespace App\Http\Services;
 use App\Exceptions\ApiException;
 use App\Http\Resources\AuthUserReosurce;
 use App\Models\Company;
+use App\Models\PasswordResetToken;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Nette\Utils\Arrays;
 
 class AuthService {
 
     public function register($data) {
       DB::beginTransaction();
       try {
+
         $user = User::where('email', $data['email'])->first();
 
         if($user) throw new ApiException("user_exists", 409);
@@ -42,9 +45,7 @@ class AuthService {
           'super_likes' => $event->super_likes
         ]);
         
-        $now = Carbon::now($timezone);
-        $end_date = Carbon::parse($event->end_date);
-        $diff = $now->diffInMinutes($end_date);
+        $diff = $this->getDiff($event->end_date, $timezone);
         
         $token = Auth::setTTL($diff)->attempt(['email' => $data['email'], 'password' => $data['password']]);
         
@@ -70,26 +71,24 @@ class AuthService {
       DB::beginTransaction();
 
       try {
-
+         
         $company_uid = Crypt::decrypt($company_uid);
 
         $company = Company::where('uid', $company_uid)->first();
           
-        if(!$company) throw new ApiException(__("i18n.company_not_exists"));
+        if(!$company) throw new ApiException('company_not_exists', 404);
 
         $timezone = $company->timezone->name;
         
         $event = $company->events()->activeEvent($timezone)->first();
 
-        if(!$event) throw new ApiException(__("i18n.event_not_active"));
+        if(!$event) throw new ApiException("event_not_active", 404); 
 
-        $now = Carbon::now($timezone);
-        $end_date = Carbon::parse($event->end_date);
-        $diff = $now->diffInMinutes($end_date);
+        $diff = $this->getDiff($event->end_date, $timezone);
         
         $token = Auth::setTTL($diff)->attempt($data);
 
-        if (!$token)  throw new ApiException(__("i18n.credentials_ko"));
+        if (!$token)  throw new ApiException("i18n.credentials_ko", 401);
 
         $user = request()->user();
 
@@ -105,23 +104,93 @@ class AuthService {
             'super_likes' => $event->super_likes
           ]);
         }
-
-        
-
         DB::commit();
-
-        return (object)[
-            'user' => AuthUserReosurce::make($user),
-            'access_token' => $token,
-        ];
+        return $token;
       }
       catch (ApiException $e) {
         DB::rollBack();
-        throw new \Exception($e->getMessage());
+        throw new ApiException($e->getMessage(), $e->getCode());
       } catch (\Exception $e) {
         DB::rollBack();
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new \Exception(__("i18n.login_ko"));
+        throw new ApiException("login_ko", 500); 
       }
+    }
+
+    public function passwordReset(String $email) {
+      try {
+        $user = User::where('email', $email)->first();
+
+        if(!$user) throw new ApiException('user_not_found', 404);
+        
+        $token = uniqid(rand(), true);
+
+        $already_used = PasswordResetToken::where('email', $user->email)->get();
+
+        foreach ($already_used as $token) {
+            $token->delete();
+        }
+
+        $password_token = PasswordResetToken::create([
+            'email' => $user->email,
+            'token' => base64_encode($token),
+            'expires_at' => now()->addMinutes(15)
+        ]);
+
+        $url = config('app.front_url') . '/auth/password/new?token=' . $password_token->token;
+
+
+        $template = view('emails.recovery_password_app', [
+            'link' => $url,
+            'name' => $user->name,
+        ])->render();
+        
+        $emailService = new EmailService();
+        $emailService->sendEmail($user, __('i18n.password_reset_subject'), $template);
+
+        return true;
+
+      } catch (ApiException $e) { 
+        DB::rollBack();
+        throw new ApiException($e->getMessage(), $e->getCode());
+      } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+        throw new ApiException("unexpected_error", 500);
+      }
+    }
+     
+    public function setNewPassword(Array $data) {
+      try {
+        $token_model = PasswordResetToken::where('token', $data['token'])->first();
+
+        if(!$token_model) throw new ApiException('token_not_found', 404);
+        
+        if(now()->greaterThan(Carbon::parse($token_model->expires_at))) throw new ApiException('token_expired', 404);
+        
+        $user = $token_model->user;
+        
+        $user->update([
+          'password' => bcrypt($data['password'])
+        ]);
+        
+        $token_model->delete();
+
+        return true;
+
+      } catch (ApiException $e) { 
+        DB::rollBack();
+        throw new ApiException($e->getMessage(), $e->getCode());
+      } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+        throw new ApiException("unexpected_error", 500);
+      }
+    }
+
+    private function getDiff($end_date, $timezone) { 
+      $now = Carbon::now($timezone);
+      $end_date = Carbon::parse($end_date);
+      return $now->diffInMinutes($end_date);
     }
 }

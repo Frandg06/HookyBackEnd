@@ -19,4 +19,5 @@ class ApiException extends Exception
       'message' => __('i18n.' . $this->getMessage()),
     ], $this->getCode());
   }
+
 }

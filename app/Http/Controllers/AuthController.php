@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\ApiException;
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Resources\AuthUserReosurce;
 use App\Http\Services\AuthService;
 use App\Http\Services\EmailService;
@@ -41,24 +43,26 @@ class AuthController extends Controller
                 "access_token" =>  $response->access_token
             ], 200);
 
-        } catch (ApiException $e) {
+        }  catch (ApiException $e) {
             return $e->render();
-        } 
+        } catch (\Throwable $e) { 
+            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
+        }
     }
 
-    public function login(Request $request) 
+    public function login(LoginRequest $request) 
     {
         try {
-            $validated = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required',
-            ]);
+            $credentials = $request->only('email', 'password');
+            $company_uid = $request->company_uid;
+            
+            $response = $this->authService->login($credentials, $company_uid);
 
-            $response = $this->authService->login($validated, $request->company_uid);
-
-            return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
-        } catch (\Exception $e) {
-            return $this->responseError($e->getMessage(), 400);
+            return response()->json(["success" => true, "access_token" => $response], 200);
+        } catch (ApiException $e) {
+            return $e->render();
+        } catch (\Throwable $e) { 
+            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
         }
     }
 
@@ -69,7 +73,8 @@ class AuthController extends Controller
         return response()->json(["success" => true, 'message' => __('i18n.logged_out')], 200);
     }
 
-    public function me() {
+    public function me() 
+    {
         try {
 
             $userRequest = Auth::user();
@@ -78,78 +83,44 @@ class AuthController extends Controller
 
             return response()->json(["resp" => $user, "success" => true], 200); 
 
-        }catch (ApiException $e){
+        }catch (ApiException $e) {
             return $e->render();
+        } catch (\Throwable $e) { 
+            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
         }
     }
 
-    public function passwordReset(Request $request){
+    public function passwordReset(Request $request)
+    {
         try{
 
-            if(!$request->email) return response()->json(["error" => true, "message" => __('validation.required', ['attribute' => 'email'])], 400);
+            $email = $request->email;
 
-            $user = User::where('email', $request->email)->first();
+            if(!$email) return response()->json(["error" => true, "message" => __('validation.required', ['attribute' => 'email'])], 400);
 
-            if(!$user){
-                return $this->responseError(__('i18n.user_not_found'), 404);
-            }
-            
-            $token = Str::random(60);
-
-            $already_used = PasswordResetToken::where('email', $user->email)->get();
-
-            foreach ($already_used as $token) {
-                $token->delete();
-            }
-
-            $password_token = PasswordResetToken::create([
-                'email' => $user->email,
-                'token' => base64_encode($token),
-                'expires_at' => now()->addMinutes(15)
-            ]);
-
-            $url = config('app.front_url') . '/auth/password/new?token=' . $password_token->token;
-
-
-            $template = view('emails.recovery_password_app', [
-                'link' => $url,
-                'name' => $user->name,
-            ])->render();
-
-            $this->emailService->sendEmail($user, __('i18n.password_reset_subject'), $template);
-
+            $this->authService->passwordReset($email);
 
             return response()->json(["message" => __('i18n.password_reset_email'), "success" => true], 200);
-        }catch (Exception $e){
-            return $this->responseError($e->getMessage(), 400);
+        } catch (ApiException $e) {
+            return $e->render();
+        } catch (\Throwable $e) { 
+            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
         }
     }
 
-    public function setNewPassword(Request $request){
+    public function setNewPassword(ResetPasswordRequest $request) 
+    {
         try{
-            
-            $validated = $request->validate([
-                'token' => 'required',
-                'password' => 'required|min:8|confirmed'
-            ]);
 
-            $token_model = PasswordResetToken::where('token', $validated['token'])->first();
+            $validated = $request->only('token', 'password');
 
-            if(!$token_model) return response()->json(["error" => true, "message" => "No existe ningun usuario con ese token"], 404);
-
-            if(now()->greaterThan(Carbon::parse($token_model->expires_at))) return response()->json(["error" => true, "message" => "El token ha expirado"], 404);
-
-            $user = $token_model->user;
-
-            $user->update([
-                'password' => bcrypt($validated['password'])
-            ]);
-
-            $token_model->delete();
+            $this->authService->setNewPassword($validated);
 
             return response()->json(["message" => __('i18n.password_reset_email'), "success" => true], 200);
-        }catch (Exception $e){
-            return $this->responseError($e->getMessage(), 400);
+        } catch (ApiException $e) {
+            return $e->render();
+        } catch (\Throwable $e) { 
+            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
         }
     }
 }
