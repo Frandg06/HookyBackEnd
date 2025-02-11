@@ -78,8 +78,8 @@ class AuthController extends Controller
 
             return response()->json(["resp" => $user, "success" => true], 200); 
 
-        }catch (Exception $e){
-            return $this->responseError($e->getMessage(), 400);
+        }catch (ApiException $e){
+            return $e->render();
         }
     }
 
