@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
+use App\Http\Resources\AuthUserResource;
 use App\Models\User;
 use App\Models\UserImage;
 use Illuminate\Support\Facades\DB;
@@ -12,69 +13,125 @@ use Intervention\Image\Laravel\Facades\Image;
 
 class ImagesService {
 
-  public function store(User $user, $img) 
+  public function store($img) 
   {
-
-    if($img->getMimeType() !== 'image/jpeg' && $img->getMimeType() !== 'image/png' && $img->getMimeType() !== 'image/webp') {
-      throw new ApiException(__('i18n.images_extension_ko')); 
-    }
-
-    if($img->getSize() > 1024 * 1024 * 10) throw new ApiException(__('i18n.images_size_ko'));
-
-    $image = $this->optimize($img);
-
     DB::beginTransaction();
-
     try {
 
-        $newImage = $user->userImages()->create([
-          'order' => $user->userImages()->count() + 1,
-          'name' => $img->getClientOriginalName(),
-          'size' => $img->getSize(),
-          'type' => $img->getMimeType(),
-        ]);
+      $user = request()->user();
 
-        $storage = Storage::disk('r2')->put($newImage->url, $image);
+      if($user->userImages()->count() == 3) throw new ApiException('user_images_limit', 409);
 
-        if(!$storage) throw new ApiException(__('i18n.images_store_ko'));
-        
-        DB::commit();
-
-        return true;
-        
-      } catch (ApiException $e) {
-        DB::rollBack();
-        throw new \Exception($e->getMessage());
-      }catch (\Exception $e) {
-        DB::rollBack();
-        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new \Exception(__('i18n.images_store_ko'));
+      if(!in_array($img->getMimeType(), ['image/jpeg', 'image/png', 'image/webp'])) {
+        throw new ApiException('images_extension_ko', 409);
       }
+
+      if($img->getSize() > 1024 * 1024 * 10) throw new ApiException('images_size_ko', 409);
+
+      $image = $this->optimize($img);
+
+      $newImage = $user->userImages()->create([
+        'order' => $user->userImages()->count() + 1,
+        'name' => $img->getClientOriginalName(),
+        'size' => $img->getSize(),
+        'type' => $img->getMimeType(),
+      ]);
+      
+      $storage = Storage::disk('r2')->put($newImage->url, $image);
+      if(!$storage) throw new ApiException('images_store_ko', 500); 
+      
+      DB::commit();
+
+      return $user->resource();
+        
+    } catch (ApiException $e) {
+      DB::rollBack();
+      throw new ApiException($e->getMessage(), $e->getCode());
+    }catch (\Exception $e) {
+      DB::rollBack();
+      Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+      throw new ApiException('images_store_ko', 500);
+    }
+  }
+
+  public function update($img_uid, $img)
+  {
+    DB::beginTransaction();
+    try {
+      $user = request()->user();
+
+      $delete = $this->delete($img_uid);
+
+      if(!$delete) throw new ApiException('delete_image_unexpected_error', 500);
+      
+      $store = $this->store($img);
+
+      if(!$store) throw new ApiException('store_image_unexpected_error', 500);
+      
+      DB::commit();
+
+      return $user->resource();
+      
+    } catch (ApiException $e) {
+      DB::rollBack();
+      throw new ApiException($e->getMessage(), $e->getCode());
+    }catch (\Exception $e) {
+      DB::rollBack();
+      Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+      throw new ApiException('images_store_ko', 500);
+    }
   }
  
-  public function delete(User $user, $uid) 
+  public function delete($uid) 
   {
     try {
+
+      $user = request()->user();
       
       $imageToDelete = $user->userImages()->where('uid', $uid)->first();
       
-      if(!$imageToDelete) {
-        return throw new ApiException(__('i18n.image_not_found'));
-      }
+      if(!$imageToDelete) return throw new ApiException('image_not_found', 404);
 
       $delete = Storage::disk('r2')->delete($imageToDelete->url);
       
-      if(!$delete) throw new ApiException(__('i18n.image_delete_ko'));
+      if(!$delete) throw new ApiException('i18n.image_delete_ko', 500);
       
       $imageToDelete->delete();
       
       return true;
 
     } catch (ApiException $e) {
-      throw new \Exception($e->getMessage());
-    } catch (\Exception $e) {
+      DB::rollBack();
+      throw new ApiException($e->getMessage(), $e->getCode());
+    }catch (\Exception $e) {
+      DB::rollBack();
       Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-      throw new \Exception(__('i18n.image_delete_ko'));
+      throw new ApiException('images_store_ko', 500);
+    }
+  }
+
+  public function deleteUserImages() 
+  {
+    DB::beginTransaction();
+    try {
+      $user = request()->user();
+  
+      foreach($user->userImages()->get() as $item) {
+        $item->delete();
+      }
+
+      $remove = Storage::disk('r2')->deleteDirectory("hooky/profile/$user->uid");
+
+      if(!$remove) throw new ApiException('image_delete_ko', 500);
+
+      return true; 
+    } catch (ApiException $e) {
+      DB::rollBack();
+      throw new ApiException($e->getMessage(), $e->getCode());
+    }catch (\Exception $e) {
+      DB::rollBack();
+      Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+      throw new ApiException('image_delete_ko', 500);
     }
   }
 
@@ -91,26 +148,6 @@ class ImagesService {
 
     } catch (\Exception $e) {
       throw new \Exception($e->getMessage());
-    }
-  }
-
-  public function deleteUserImages() 
-  {
-    $user = request()->user();
-    try {
-      foreach($user->userImages()->get() as $item) {
-        $item->delete();
-      }
-      $remove = Storage::disk('r2')->deleteDirectory("hooky/profile/$user->uid");
-
-      if(!$remove) throw new ApiException(__('i18n.image_delete_ko'));
-
-      return true; 
-    } catch (ApiException $e) {
-      throw new \Exception($e->getMessage());
-    } catch (\Exception $e) {
-      Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-      throw new \Exception(__('i18n.image_delete_ko'));
     }
   }
 

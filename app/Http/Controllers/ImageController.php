@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\AuthUserReosurce;
+use App\Exceptions\ApiException;
+use App\Http\Resources\AuthUserResource;
 use App\Http\Services\ImagesService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,22 +22,11 @@ class ImageController extends Controller
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5000'
         ]);
-        
-        $user = $request->user();
+
         $image = $request->file('image');
-        
-        if($user->userImages()->count() == 3) return $this->responseError("El usuario ya tiene 3 imágenes");
+        $response = $this->imageService->store($image);
 
-        try {
-            $response = $this->imageService->store($user, $image);
-            if(!$response) return $this->responseError("Unexpected error while uploading image");
-            return $this->responseSuccess('Image uploaded successfully', $user);
-
-        } catch (\Exception $e) {
-
-            return $this->responseError($e->getMessage(), 500);
-            
-        }
+        return response()->json(["success" => true, "resp" =>  $response], 200);
     }
 
     public function delete(Request $request) {
@@ -44,22 +34,10 @@ class ImageController extends Controller
         $request->validate(["uid" => "required|string"]);
 
         $uid = $request->uid;
-        $user = $request->user();
+        
+        $this->imageService->delete($uid);
 
-        try {
-
-            $response = $this->imageService->delete($user, $uid);
-
-            if(!$response) return $this->responseError("Unexpected error while deleting image", 500);
-
-            return $this->responseSuccess('Image delete successfully', $user);
-
-        } catch (\Exception $e) {
-
-            return $this->responseError($e->getMessage(), 500);
-
-        }
-
+        return response()->json(["success" => true, "resp" =>  "Image delete successfully"], 200);
     }
 
     public function update(Request $request) {
@@ -71,42 +49,14 @@ class ImageController extends Controller
 
         $uid = $request->uid;
         $image = $request->file('image');
-        $user = $request->user();
         
-        DB::beginTransaction();
-        try {
-            $delete = $this->imageService->delete($user, $uid);
-
-            if(!$delete) return $this->responseError("Unexpected error while deleting image", 500);
-
-            $store = $this->imageService->store($user, $image);
-
-            if(!$store) return $this->responseError("Unexpected error while storing new image", 500);
-
-            $user = AuthUserReosurce::make($user);
-            DB::commit();
-            return response()->json(["success" => true, "resp" =>  $user], 200);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return $this->responseError($e->getMessage(), 500);
-
-        }
+        $response = $this->imageService->update($uid, $image);
+        return response()->json(["success" => true, "resp" =>  $response], 200);
     }
 
     public function deleteUserImages()  {
-
-        try{
-            
-            $response = $this->imageService->deleteUserImages();
-
-            if(!$response) return $this->responseError("Unexpected error while deleting image", 500);
-            
-            return response()->json(["success" => true, "resp" =>  "Image delete successfully"], 200);
-
-        }catch(\Exception $e) {
-            return $this->responseError($e->getMessage(), 500);
-        }
+        $response = $this->imageService->deleteUserImages();
+        return response()->json(["success" => true, "resp" =>  "Image delete successfully"], 200);
     }
 
     public function deleteAll() {

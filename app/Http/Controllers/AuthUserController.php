@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests\CompleteAuthUserRequest;
 use App\Http\Requests\CompleteDataRequest;
-use App\Http\Resources\AuthUserReosurce;
+use App\Http\Resources\AuthUserResource;
 use App\Http\Resources\MessageListResource;
 use App\Http\Resources\UserResource;
 use App\Http\Services\AuthUserService;

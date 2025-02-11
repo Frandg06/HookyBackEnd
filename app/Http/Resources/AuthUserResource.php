@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Crypt;
 
-class AuthUserReosurce extends JsonResource
+class AuthUserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

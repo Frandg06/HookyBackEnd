@@ -66,4 +66,9 @@ return [
   'invalid_image_count' => 'El usuario solo puede subir 3 imágenes.',
   'update_user_interest_ko' => 'Ocurrió un error al actualizar los intereses del usuario.',
   'password_changed' => 'La contraseña ha sido cambiada correctamente.',
+  'user_images_limit' => 'El usuario ya tiene 3 imágenes.',
+  'image_delete_ko' => 'Ocurrió un error al eliminar la imagen.',
+  'delete_image_unexpected_error' => 'Error inesperado al eliminar la imagen.',
+  'store_image_unexpected_error' => 'Error inesperado al almacenar la nueva imagen.',
+
 ];

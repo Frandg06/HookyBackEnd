@@ -2,7 +2,7 @@
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
-use App\Http\Resources\AuthUserReosurce;
+use App\Http\Resources\AuthUserResource;
 use App\Http\Resources\NotificationUserResource;
 use App\Models\NotificationsType;
 use App\Models\Role;
@@ -30,7 +30,7 @@ class AuthUserService {
         
         DB::commit();
 
-        return AuthUserReosurce::make($user);
+        return AuthUserResource::make($user);
 
       } catch (ApiException $e) {
         DB::rollBack();
@@ -55,7 +55,7 @@ class AuthUserService {
 
         DB::commit();
       
-        return AuthUserReosurce::make($user);
+        return AuthUserResource::make($user);
 
       } catch (ApiException $e) {
         DB::rollBack();
@@ -90,7 +90,8 @@ class AuthUserService {
         
         DB::commit();
   
-        return AuthUserReosurce::make($user);
+        return AuthUserResource::make($user);
+
       } catch (\Exception $e) {
         DB::rollBack();
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
@@ -140,18 +141,18 @@ class AuthUserService {
       try {
         $user = request()->user();
         $this->update($info);
-        $this->updateInterest($user, $interests);
+        $this->updateInterest($interests);
         
         $imageService = new ImagesService();
 
         if($user->userImages()->count() === 0){
             if(count($files) < 3 || count($files) > 3) throw new ApiException("invalid_image_count", 400);
             foreach ($files as $file) {
-                $imageService->store($user, $file);
+                $imageService->store($file);
             }
         }
         DB::commit();
-        return AuthUserReosurce::make($user);
+        return AuthUserResource::make($user);
       }catch (ApiException $e) {
         DB::rollBack();
         throw new ApiException($e->getMessage(), $e->getCode());

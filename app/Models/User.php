@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\AuthUserResource;
 use App\Models\Traits\HasUid;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -154,7 +155,10 @@ class User extends Authenticatable implements JWTSubject
             case SexualOrientation::HOMOSEXUAL:
                 return [$this->gender_id];
         }
+    }
 
+    public function scopeResource() {
+        return AuthUserResource::make($this);
     }
 
     public function interestBelongsToMany()

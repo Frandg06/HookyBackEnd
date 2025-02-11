@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\AuthUserReosurce;
+use App\Http\Resources\AuthUserResource;
 
 abstract class Controller
 {
@@ -18,7 +18,7 @@ abstract class Controller
             'success' => true,
             'message' => $message,
             'data' => $data,
-            'user' => $user ? AuthUserReosurce::make($user) : null
+            'user' => $user ? AuthUserResource::make($user) : null
         ]);
         
     }
