@@ -178,10 +178,8 @@ class AuthService {
         return true;
 
       } catch (ApiException $e) { 
-        DB::rollBack();
         throw new ApiException($e->getMessage(), $e->getCode());
       } catch (\Exception $e) {
-        DB::rollBack();
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
         throw new ApiException("unexpected_error", 500);
       }
