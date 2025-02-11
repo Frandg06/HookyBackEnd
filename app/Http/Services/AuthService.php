@@ -64,10 +64,9 @@ class AuthService {
       }
     }
 
-    public function login($data, $company_uid) {
-
+    public function login($data, $company_uid) 
+    {
       DB::beginTransaction();
-
       try {
          
         $company_uid = Crypt::decrypt($company_uid);
@@ -102,7 +101,9 @@ class AuthService {
             'super_likes' => $event->super_likes
           ]);
         }
+
         DB::commit();
+
         return $token;
       } catch (ApiException $e) {
         DB::rollBack();
@@ -114,7 +115,9 @@ class AuthService {
       }
     }
 
-    public function passwordReset(String $email) {
+    public function passwordReset(String $email) 
+    {
+      DB::beginTransaction();
       try {
         $user = User::where('email', $email)->first();
 
@@ -144,6 +147,8 @@ class AuthService {
         
         $emailService = new EmailService();
         $emailService->sendEmail($user, __('i18n.password_reset_subject'), $template);
+        
+        DB::commit();
 
         return true;
 
@@ -158,6 +163,7 @@ class AuthService {
     }
      
     public function setNewPassword(Array $data) {
+      DB::beginTransaction();
       try {
         $token_model = PasswordResetToken::where('token', $data['token'])->first();
 
@@ -172,12 +178,14 @@ class AuthService {
         ]);
         
         $token_model->delete();
-
+        DB::commit();
         return true;
 
       } catch (ApiException $e) { 
+        DB::rollBack();
         throw new ApiException($e->getMessage(), $e->getCode());
       } catch (\Exception $e) {
+        DB::rollBack();
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
         throw new ApiException("unexpected_error", 500);
       }

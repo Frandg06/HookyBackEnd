@@ -69,6 +69,7 @@ class AuthUserService {
 
     public function updateInterest($newInterests) 
     {
+      DB::beginTransaction();
       try {
         $user = request()->user();
         $hasInterest = $user->interests()->get()->pluck('interest_id')->toArray();
@@ -86,6 +87,8 @@ class AuthUserService {
             $user->interests()->where('interest_id', $item)->delete();
           }
         }
+        
+        DB::commit();
   
         return AuthUserReosurce::make($user);
       } catch (\Exception $e) {

@@ -12,6 +12,7 @@ class TicketService
 {
     public function generateTickets($data) 
     {
+        DB::beginTransaction();
         try {
             
             $company = request()->user();
