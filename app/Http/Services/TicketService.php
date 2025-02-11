@@ -2,7 +2,7 @@
 
 namespace App\Http\Services;
 
-use App\Exceptions\CustomException;
+use App\Exceptions\ApiException;
 use App\Models\Company;
 use App\Models\Ticket;
 use App\Models\TicketRedeem;
@@ -18,9 +18,9 @@ class TicketService
     public function generateTickets(Company $company, $data) {
       try {
 
-            if (!is_numeric($data['count'])) throw new CustomException("El numero de tickets debe ser un numero");
-            if ($data['count'] < 1) throw new CustomException("El numero de tickets debe ser mayor a 1");
-            if ($data['count'] > 1000) throw new CustomException("El numero de tickets no puede ser mayor a 1000");
+            if (!is_numeric($data['count'])) throw new ApiException("El numero de tickets debe ser un numero");
+            if ($data['count'] < 1) throw new ApiException("El numero de tickets debe ser mayor a 1");
+            if ($data['count'] > 1000) throw new ApiException("El numero de tickets no puede ser mayor a 1000");
 
             DB::beginTransaction();
             $tickets = [];  
@@ -56,7 +56,7 @@ class TicketService
 
         } catch (\Throwable $e) {
             DB::rollBack();
-            ($e instanceof CustomException)
+            ($e instanceof ApiException)
                 ? throw new Exception($e->getMessage())
                 : throw new Exception("Se ha producido un error al generar tickets");
         }
@@ -70,7 +70,7 @@ class TicketService
 
             $ticket = Ticket::getTicketByCompanyEventAndCode($company_uid, $code)->first();
 
-            if (!$ticket) throw new CustomException("El codigo ya ha sido canjeado o no existe");
+            if (!$ticket) throw new ApiException("El codigo ya ha sido canjeado o no existe");
 
 
             $ticket->ticketsRedeem()->create([
@@ -107,7 +107,7 @@ class TicketService
         }catch (\Throwable $e) {
             Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
             DB::rollBack();
-            ($e instanceof CustomException)
+            ($e instanceof ApiException)
                 ? throw new Exception($e->getMessage())
                 : throw new Exception("Se ha producido un error al generar tickets");
         }

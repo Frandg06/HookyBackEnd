@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Exceptions\CustomException;
+use App\Exceptions\ApiException;
 use App\Models\User;
 use App\Models\UserImage;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +16,10 @@ class ImagesService {
   {
 
     if($img->getMimeType() !== 'image/jpeg' && $img->getMimeType() !== 'image/png' && $img->getMimeType() !== 'image/webp') {
-      throw new CustomException(__('i18n.images_extension_ko')); 
+      throw new ApiException(__('i18n.images_extension_ko')); 
     }
 
-    if($img->getSize() > 1024 * 1024 * 10) throw new CustomException(__('i18n.images_size_ko'));
+    if($img->getSize() > 1024 * 1024 * 10) throw new ApiException(__('i18n.images_size_ko'));
 
     $image = $this->optimize($img);
 
@@ -36,13 +36,13 @@ class ImagesService {
 
         $storage = Storage::disk('r2')->put($newImage->url, $image);
 
-        if(!$storage) throw new CustomException(__('i18n.images_store_ko'));
+        if(!$storage) throw new ApiException(__('i18n.images_store_ko'));
         
         DB::commit();
 
         return true;
         
-      } catch (CustomException $e) {
+      } catch (ApiException $e) {
         DB::rollBack();
         throw new \Exception($e->getMessage());
       }catch (\Exception $e) {
@@ -59,18 +59,18 @@ class ImagesService {
       $imageToDelete = $user->userImages()->where('uid', $uid)->first();
       
       if(!$imageToDelete) {
-        return throw new CustomException(__('i18n.image_not_found'));
+        return throw new ApiException(__('i18n.image_not_found'));
       }
 
       $delete = Storage::disk('r2')->delete($imageToDelete->url);
       
-      if(!$delete) throw new CustomException(__('i18n.image_delete_ko'));
+      if(!$delete) throw new ApiException(__('i18n.image_delete_ko'));
       
       $imageToDelete->delete();
       
       return true;
 
-    } catch (CustomException $e) {
+    } catch (ApiException $e) {
       throw new \Exception($e->getMessage());
     } catch (\Exception $e) {
       Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
@@ -103,10 +103,10 @@ class ImagesService {
       }
       $remove = Storage::disk('r2')->deleteDirectory("hooky/profile/$user->uid");
 
-      if(!$remove) throw new CustomException(__('i18n.image_delete_ko'));
+      if(!$remove) throw new ApiException(__('i18n.image_delete_ko'));
 
       return true; 
-    } catch (CustomException $e) {
+    } catch (ApiException $e) {
       throw new \Exception($e->getMessage());
     } catch (\Exception $e) {
       Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);

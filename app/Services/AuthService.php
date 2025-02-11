@@ -1,7 +1,7 @@
 <?php
 namespace App\Services;
 
-use App\Exceptions\CustomException;
+use App\Exceptions\ApiException;
 use App\Http\Resources\AuthUserReosurce;
 use App\Models\Company;
 use App\Models\TimeZone;
@@ -20,23 +20,22 @@ class AuthService {
     public function register($data) {
       DB::beginTransaction();
       try {
-
         $user = User::where('email', $data['email'])->first();
-        
-        if($user) throw new CustomException(__("i18n.user_exists"));
+
+        if($user) throw new ApiException("user_exists", 409);
         
         $company_uid = Crypt::decrypt($data['company_uid']);
 
         $company = Company::where('uid', $company_uid)->first();
         
-        if(!$company) throw new CustomException(__("i18n.company_not_exists"));
+        if(!$company) throw new ApiException("company_not_exists", 404);
 
         
         $timezone = $company->timezone->name;
         
         $event = $company->events()->activeEvent($timezone)->first();
         
-        if(!$event) throw new CustomException(__("i18n.event_not_active"));
+        if(!$event) throw new ApiException("event_not_active", 404);
         
         $user = User::create($data);
         
@@ -60,13 +59,13 @@ class AuthService {
           'access_token' => $token,
         ];
 
-      } catch (CustomException $e) { 
+      } catch (ApiException $e) { 
         DB::rollBack();
-        throw new \Exception($e->getMessage());
+        throw new ApiException($e->getMessage(), $e->getCode());
       } catch (\Exception $e) {
         DB::rollBack();
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new \Exception(__("i18n.register_user_ko"));
+        throw new ApiException("register_user_ko", 500);
       }
     }
 
@@ -76,7 +75,7 @@ class AuthService {
 
         $company = Company::where('email', $data['email'])->first();
         
-        if($company) throw new CustomException(__("i18n.user_exists"));
+        if($company) throw new ApiException(__("i18n.user_exists"));
         
         if(!isset($data['timezone_uid']) || empty($data['timezone_uid'])){
           $data['timezone_uid'] = TimeZone::where('name', 'Europe/Berlin')->first()->uid;
@@ -98,7 +97,7 @@ class AuthService {
             'access_token' => $token,
         ];
 
-      }catch (CustomException $e) {
+      }catch (ApiException $e) {
         DB::rollBack();
         throw new \Exception($e->getMessage());
       } catch (\Exception $e) {
@@ -115,18 +114,17 @@ class AuthService {
 
       try {
 
-
         $company_uid = Crypt::decrypt($company_uid);
 
         $company = Company::where('uid', $company_uid)->first();
           
-        if(!$company) throw new CustomException(__("i18n.company_not_exists"));
+        if(!$company) throw new ApiException(__("i18n.company_not_exists"));
 
         $timezone = $company->timezone->name;
         
         $event = $company->events()->activeEvent($timezone)->first();
 
-        if(!$event) throw new CustomException(__("i18n.event_not_active"));
+        if(!$event) throw new ApiException(__("i18n.event_not_active"));
 
         $now = Carbon::now($timezone);
         $end_date = Carbon::parse($event->end_date);
@@ -134,7 +132,7 @@ class AuthService {
         
         $token = Auth::setTTL($diff)->attempt($data);
 
-        if (!$token)  throw new CustomException(__("i18n.credentials_ko"));
+        if (!$token)  throw new ApiException(__("i18n.credentials_ko"));
 
         $user = request()->user();
 
@@ -160,7 +158,7 @@ class AuthService {
             'access_token' => $token,
         ];
       }
-      catch (CustomException $e) {
+      catch (ApiException $e) {
         DB::rollBack();
         throw new \Exception($e->getMessage());
       } catch (\Exception $e) {
@@ -176,7 +174,7 @@ class AuthService {
         $company = Company::where('email', $data['email'])->first();
 
         if (!$company || !Hash::check($data['password'], $company->password)) {
-          throw new CustomException(__("i18n.credentials_ko"));
+          throw new ApiException(__("i18n.credentials_ko"));
         }
 
         Auth::setTTL(24*60);
@@ -186,7 +184,7 @@ class AuthService {
             'company' => $company,
             'access_token' => $token,
         ];
-      }catch (CustomException $e) {
+      }catch (ApiException $e) {
           DB::rollBack();
           throw new \Exception($e->getMessage());
       } catch (\Exception $e) {

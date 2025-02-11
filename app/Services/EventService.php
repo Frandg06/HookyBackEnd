@@ -1,7 +1,7 @@
 <?php
 namespace App\Services;
 
-use App\Exceptions\CustomException;
+use App\Exceptions\ApiException;
 use App\Http\Resources\UserResource;
 use App\Models\Company;
 use App\Models\UsersInteraction;
@@ -24,13 +24,13 @@ class EventService
       $diff = $st_date->diffInHours($end_date);
       
 
-      if($company->checkEventInSameDay($st_date)) throw new CustomException("Ya hay un evento en la fecha elegida, elije otro dia");
-      if(!$company->checkEventLimit()) throw new CustomException("No puedes crear mas eventos, has alcanzado el limite");
+      if($company->checkEventInSameDay($st_date)) throw new ApiException("Ya hay un evento en la fecha elegida, elije otro dia");
+      if(!$company->checkEventLimit()) throw new ApiException("No puedes crear mas eventos, has alcanzado el limite");
       
-      if($st_date < $now) throw new CustomException("La fecha de inicio debe ser mayor a la actual");
-      if($diff < 0) return throw new CustomException("La fecha de fin debe ser mayor a la fecha de inicio");
-      if($diff > 12) return throw new CustomException("La duracion maxima de un evento es de 12 horas");
-      if($diff < 2) return throw new CustomException("La duracion minima de un evento es de 2 horas");
+      if($st_date < $now) throw new ApiException("La fecha de inicio debe ser mayor a la actual");
+      if($diff < 0) return throw new ApiException("La fecha de fin debe ser mayor a la fecha de inicio");
+      if($diff > 12) return throw new ApiException("La duracion maxima de un evento es de 12 horas");
+      if($diff < 2) return throw new ApiException("La duracion minima de un evento es de 2 horas");
 
       
       
@@ -49,7 +49,7 @@ class EventService
       return $last_event;
 
     } catch (Throwable $e) {
-      ($e instanceof CustomException)
+      ($e instanceof ApiException)
         ? throw new Exception($e->getMessage())
         : throw new \Exception("Se ha producido un error al crear el evento");
        

@@ -1,7 +1,7 @@
 <?php
 namespace App\Services;
 
-use App\Exceptions\CustomException;
+use App\Exceptions\ApiException;
 use App\Http\Resources\AuthUserReosurce;
 use App\Http\Resources\NotificationUserResource;
 use App\Http\Resources\UserResource;
@@ -41,7 +41,7 @@ class AuthUserService {
       try {
         
         if(!Hash::check($data['old_password'], $user->password)) {
-          throw new CustomException(__("i18n.actual_password_ko"));
+          throw new ApiException(__("i18n.actual_password_ko"));
         }
 
         $user->password = bcrypt($data['password']);
@@ -49,7 +49,7 @@ class AuthUserService {
 
         return true;
 
-      } catch (CustomException $e) {
+      } catch (ApiException $e) {
         throw new \Exception($e->getMessage());
       } catch (\Exception $e) {
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);

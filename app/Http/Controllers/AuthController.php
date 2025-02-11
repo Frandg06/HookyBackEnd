@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Exceptions\ApiException;
 use App\Http\Requests\RegisterCompanyRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\AuthCompanyResource;
@@ -41,9 +43,9 @@ class AuthController extends Controller
                 "access_token" =>  $response->access_token
             ], 200);
 
-        } catch (\Exception $e) {
-            return $this->responseError($e->getMessage(), 400);
-        }
+        } catch (ApiException $e) {
+            return $e->render();
+        } 
     }
 
     public function registerCompany(RegisterCompanyRequest $request) 
