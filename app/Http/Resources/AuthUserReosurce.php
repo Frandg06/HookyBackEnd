@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\NotificationsType;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -23,7 +24,7 @@ class AuthUserReosurce extends JsonResource
             "event_uid" => $this->event_uid,
             "gender_id" => $this->gender_id,
             "sexual_orientation_id" => $this->sexual_orientation_id,
-            "premium" => $this->role_id == User::ROLE_PREMIUM ? true : false,
+            "premium" => $this->role_id == Role::ROLE_PREMIUM ? true : false,
             "name" => $this->name,
             "surnames" => $this->surnames,
             "email" => $this->email,

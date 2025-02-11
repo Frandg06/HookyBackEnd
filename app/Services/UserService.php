@@ -1,12 +1,14 @@
 <?php
 namespace App\Services;
 
+use App\Exceptions\ApiException;
 use App\Http\Resources\UserResource;
 use App\Http\Services\NotificationService;
 use App\Http\Services\WsChatService;
 use App\Models\Interaction;
 use App\Models\Notification;
 use App\Models\NotificationsType;
+use App\Models\SexualOrientation;
 use App\Models\User;
 use App\Models\UsersInteraction;
 use Illuminate\Support\Facades\DB;
@@ -30,8 +32,11 @@ class UserService
       $usersWithInteraction = $authUser->interactions()->usersWithInteraction($authUser->event_uid);
 
       // obtener los usuarios que se van a interactuar que esten en el evento que no se haya interactuado con ellos
-      $users = User::getUsersToInteract($authUser, $usersWithInteraction, $usersWithoutInteraction);
-
+      if($authUser->sexual_orientation_id == SexualOrientation::BISEXUAL) {
+        $users = User::getBisexualUsersToInteract($authUser, $usersWithInteraction, $usersWithoutInteraction);
+      }else {
+        $users = User::getUsersToInteract($authUser, $usersWithInteraction, $usersWithoutInteraction);
+      }
       $newUsersWithInteractions = [];
 
       foreach ($users as $userToInsert) {  
@@ -52,7 +57,7 @@ class UserService
 
     } catch (\Exception $e) {
       Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-      throw new \Exception(__('i18n.get_users_ko'));
+      throw new ApiException('get_users_ko', 500);
     }
   }
 

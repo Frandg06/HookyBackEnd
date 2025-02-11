@@ -7,5 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class SexualOrientation extends Model
 {
+    const BISEXUAL = 1;
+    const HETEROSEXUAL = 2;
+    const HOMOSEXUAL = 3;
     use HasFactory;
 }

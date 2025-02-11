@@ -8,6 +8,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Company;
 use App\Models\Interaction;
 use App\Models\NotificationsType;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\UsersInteraction;
 use Illuminate\Support\Facades\DB;
@@ -95,7 +96,7 @@ class AuthUserService {
         
         $likes_count = $userLikes->count();
 
-        if($user->role_id == User::ROLE_PREMIUM) {
+        if($user->role_id == Role::ROLE_PREMIUM) {
           $likes = NotificationUserResource::collection($userLikes);
         } else {
           $likes['images'] = $userLikes->take(7)->map(function ($u) use ($user) {
@@ -115,7 +116,7 @@ class AuthUserService {
         return $data;
 
       }catch (\Exception $e) {
-        Log::error($e);
+        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
         throw new \Exception(__("i18n.get_notifications_ko"));
       }
       

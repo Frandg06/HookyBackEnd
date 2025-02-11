@@ -86,60 +86,44 @@ class DatabaseSeeder extends Seeder
         Storage::disk('r2')->put('hooky/qr/' . $company->uid . '.png', $response->body());
 
 
-        $new = User::create([
-            'name' => 'Admin',
-            'surnames' => "Fran",
-            'email' => 'a@a.es',
-            'password' => bcrypt('a'),
-            "gender_id" => 2,
-            "sexual_orientation_id" => 2,
-            "role_id" => 2,
-            "city" => "Leon",
-            "born_date" => "1990-01-01",
-            "ig" => "frandiez",
-            "tw" => "frandiez",
-            "description" => "Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.",
-        ]);
-
-        $new->interestBelongsToMany()->attach([1,2,3]);
-
+        $this->call(UserMockSeeder::class);
         // heterosexuales
-        for($i = 0; $i < 20; $i++) {
-            User::create([
-                'name' => fake()->name(),
-                'surnames' => fake()->name(),
-                'email' => fake()->unique()->safeEmail(),
-                'password' => Hash::make('password'),
-                "gender_id" => $i > 9 ? 2 : 1,
-                "sexual_orientation_id" => 1,
-                "role_id" => 2,
-                "city" => fake()->city(),
-                "born_date" => fake()->date(),
-                "ig" => fake()->name(),
-                "tw" => fake()->name(),
-                "description" => fake()->paragraph(),
-            ]);
+        // for($i = 0; $i < 20; $i++) {
+        //     User::create([
+        //         'name' => fake()->name(),
+        //         'surnames' => fake()->name(),
+        //         'email' => fake()->unique()->safeEmail(),
+        //         'password' => Hash::make('password'),
+        //         "gender_id" => $i > 9 ? 2 : 1,
+        //         "sexual_orientation_id" => 1,
+        //         "role_id" => 2,
+        //         "city" => fake()->city(),
+        //         "born_date" => fake()->date(),
+        //         "ig" => fake()->name(),
+        //         "tw" => fake()->name(),
+        //         "description" => fake()->paragraph(),
+        //     ]);
 
-        }
+        // }
 
-        // Homosexuales
-        for($i = 0; $i < 20; $i++) {
-            User::create([
-                'name' => fake()->name(),
-                'surnames' => fake()->name(),
-                'email' => fake()->unique()->safeEmail(),
-                'password' => Hash::make('password'),
-                "gender_id" => $i > 9 ? 2 : 1,
-                "sexual_orientation_id" => 2,
-                "role_id" => 2,
-                "city" => fake()->city(),
-                "born_date" => fake()->date(),
-                "ig" => fake()->name(),
-                "tw" => fake()->name(),
-                "description" => fake()->paragraph(),
-            ]);
+        // // Homosexuales
+        // for($i = 0; $i < 20; $i++) {
+        //     User::create([
+        //         'name' => fake()->name(),
+        //         'surnames' => fake()->name(),
+        //         'email' => fake()->unique()->safeEmail(),
+        //         'password' => Hash::make('password'),
+        //         "gender_id" => $i > 9 ? 2 : 1,
+        //         "sexual_orientation_id" => 2,
+        //         "role_id" => 2,
+        //         "city" => fake()->city(),
+        //         "born_date" => fake()->date(),
+        //         "ig" => fake()->name(),
+        //         "tw" => fake()->name(),
+        //         "description" => fake()->paragraph(),
+        //     ]);
 
-        }
+        // }
 
         
         User::all()->each(function ($user) use ($event) {

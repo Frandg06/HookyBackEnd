@@ -13,6 +13,7 @@ use App\Http\Services\NotificationService;
 use App\Models\Interaction;
 use App\Models\Notification;
 use App\Models\NotificationsType;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\UsersInteraction;
 use App\Services\AuthUserService;
@@ -123,13 +124,6 @@ class AuthUserController extends Controller
         }
     }
 
-    public function getChats(Request $request) {
-        $user = $request->user();
-        $hooks = Notification::where('user_uid', $user->uid)->where('event_uid', $user->event_uid)->where('type_id', NotificationsType::HOOK_TYPE)->get();
-        $hooks = MessageListResource::collection($hooks);
-        return response()->json(["success" => true, "resp" => $hooks], 200);       
-    }
-
     public function getNotifications(Request $request) 
     {
         $user = $request->user();
@@ -174,7 +168,7 @@ class AuthUserController extends Controller
     {
         $user = $request->user();
         
-        if($user->role_id != User::ROLE_PREMIUM) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
+        if($user->role_id != Role::ROLE_PREMIUM) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
 
         $isLike = UsersInteraction::where('user_uid', $uid)
                     ->where('interaction_user_uid', $user->uid)

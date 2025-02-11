@@ -37,6 +37,4 @@ Route::middleware(['auth:api', 'event'])->group(function () {
             
         });
 
-        Route::get('chats', [AuthUserController::class, 'getChats']);
-
 });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\AuthUserReosurce;
 use App\Http\Resources\UserResource;
 use App\Models\Interaction;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\UsersInteraction;
 use App\Services\UserService;
@@ -34,7 +35,7 @@ class UserController extends Controller
     {
         $user = $request->user();
         
-        if($user->role_id != User::ROLE_PREMIUM) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
+        if($user->role_id != Role::ROLE_PREMIUM) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
 
         $isLike = UsersInteraction::where('user_uid', $uid)
                     ->where('interaction_user_uid', $user->uid)

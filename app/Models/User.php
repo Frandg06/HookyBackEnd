@@ -16,10 +16,6 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable, HasUid;
 
-    
-    public const ROLE_USER = 2;
-    public const ROLE_PREMIUM = 3;
-
     /**
      * The attributes that are mass assignable.
      *
@@ -151,11 +147,11 @@ class User extends Authenticatable implements JWTSubject
 
     public function getMatchGenderAttribute(): array {
         switch($this->sexual_orientation_id){
-            case 1:
-                return [1, 2];
-            case 2:
-                return $this->gender_id == 1 ? [2] : [1]; 
-            case 3:
+            case SexualOrientation::BISEXUAL:
+                return [Gender::MALE, Gender::FEMALE];
+            case SexualOrientation::HETEROSEXUAL:
+                return $this->gender_id == Gender::FEMALE ? [Gender::MALE] : [Gender::FEMALE];
+            case SexualOrientation::HOMOSEXUAL:
                 return [$this->gender_id];
         }
 
@@ -168,7 +164,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function scopeGetUsersToInteract($query, $authUser, $usersWithInteraction, $usersWithoutInteraction) {
         return $query->whereIn("gender_id", $authUser->match_gender)
-        ->where("sexual_orientation_id", $authUser->sexual_orientation_id)
+        ->whereIn("sexual_orientation_id", [$authUser->sexual_orientation_id, SexualOrientation::BISEXUAL])
         ->whereHas('events', function ($query) use ($authUser) {
           $query->where('event_uid', $authUser->event_uid);
         })
@@ -196,6 +192,55 @@ class User extends Authenticatable implements JWTSubject
         ->limit(50)
         ->get();
     }
+
+    public function scopeGetBisexualUsersToInteract($query, $authUser, $usersWithInteraction, $usersWithoutInteraction) {
+        return $query->where(function ($q) use ($authUser) {
+                if ($authUser->gender_id === Gender::MALE) {
+                    $q->where(function ($subQuery) {
+                        $subQuery->where('gender_id', Gender::MALE)
+                                 ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
+                    })->orWhere(function ($subQuery) {
+                        $subQuery->where('gender_id', Gender::FEMALE)
+                                 ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                    });
+                } elseif ($authUser->gender_id === Gender::FEMALE) {
+                    $q->where(function ($subQuery) {
+                        $subQuery->where('gender_id', Gender::FEMALE)
+                                 ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
+                    })->orWhere(function ($subQuery) {
+                        $subQuery->where('gender_id', Gender::MALE)
+                                 ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                    });
+                }
+            })
+            ->whereHas('events', function ($query) use ($authUser) {
+                $query->where('event_uid', $authUser->event_uid);
+            })
+            ->whereNot('uid', $authUser->uid)
+            ->whereNotIn('uid', $usersWithInteraction)
+            ->whereRaw("
+                EXISTS (
+                    SELECT 1 
+                    FROM user_interests 
+                    WHERE user_interests.user_id = users.id 
+                    GROUP BY user_interests.user_id 
+                    HAVING COUNT(user_interests.user_id) BETWEEN 3 AND 6
+                )
+            ")
+            ->whereRaw("
+                EXISTS (
+                    SELECT 1 
+                    FROM user_images 
+                    WHERE user_images.user_id = users.id 
+                    GROUP BY user_images.user_id 
+                    HAVING COUNT(user_images.user_id) = 3
+                )
+            ")
+            ->orWhereIn('uid', $usersWithoutInteraction)
+            ->limit(50)
+            ->get();
+    }
+    
 
     public function refreshInteractions($interaction) {
 
