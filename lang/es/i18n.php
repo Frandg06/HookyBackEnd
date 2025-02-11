@@ -57,4 +57,8 @@ return [
   'event_duration_exceeded' => 'La duración máxima de un evento es de 12 horas.',
   'event_duration_too_short' => 'La duración mínima de un evento es de 2 horas.',
   'create_event_ko' => 'Ocurrió un error al crear el evento.',
+  'tickets_not_numeric' => 'El número de tickets debe ser un número.',
+  'tickets_minimum' => 'El número de tickets debe ser mayor a 1.',
+  'tickets_maximum' => 'El número de tickets no puede ser mayor a 1000.',
+  'ticket_invalid' => 'El código ya ha sido canjeado o no existe.',
 ];
