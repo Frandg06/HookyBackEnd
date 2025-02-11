@@ -1,5 +1,5 @@
 <?php
-namespace App\Services;
+namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
 use App\Http\Resources\AuthUserReosurce;
