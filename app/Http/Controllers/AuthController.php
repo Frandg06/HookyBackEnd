@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\ApiException;
-use App\Http\Requests\RegisterCompanyRequest;
 use App\Http\Requests\RegisterRequest;
-use App\Http\Resources\AuthCompanyResource;
 use App\Http\Resources\AuthUserReosurce;
 use App\Http\Services\AuthService;
 use App\Http\Services\EmailService;
@@ -48,19 +46,6 @@ class AuthController extends Controller
         } 
     }
 
-    public function registerCompany(RegisterCompanyRequest $request) 
-    {
-        try {
-            $data = $request->only('name', 'email', 'phone', 'address', 'city', 'country', 'password');
-            
-            $response = $this->authService->registerCompany($data);
-
-            return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
-        } catch (\Exception $e) {
-            return $this->responseError($e->getMessage(), 500);
-        }
-    }
-
     public function login(Request $request) 
     {
         try {
@@ -77,25 +62,13 @@ class AuthController extends Controller
         }
     }
 
-    public function loginCompany(Request $request) 
-    {
-        try {
-            $data = $request->only('email', 'password');
-            $response = $this->authService->loginCompany($data);
-
-            return response()->json(["success" => true, "access_token" =>  $response->access_token], 200);
-
-        } catch (\Exception $e) {
-            return $this->responseError($e->getMessage(), 400);
-        }
-    }
-
     public function logout() 
     {
         Auth::invalidate(true);
         Auth::logout();
         return response()->json(["success" => true, 'message' => __('i18n.logged_out')], 200);
     }
+
     public function me() {
         try {
 
@@ -104,19 +77,6 @@ class AuthController extends Controller
             $user = AuthUserReosurce::make($userRequest);
 
             return response()->json(["resp" => $user, "success" => true], 200); 
-
-        }catch (Exception $e){
-            return $this->responseError($e->getMessage(), 400);
-        }
-    }
-
-    public function isCompanyAuth() {
-        try {
-            $company = request()->user();
-
-            $company = AuthCompanyResource::make($company);
-
-            return response()->json(["resp" => $company, "success" => true], 200); 
 
         }catch (Exception $e){
             return $this->responseError($e->getMessage(), 400);

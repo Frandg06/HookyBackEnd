@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\AuthCompanyController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EventController;
@@ -13,13 +15,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('company')->group(function () {
     
-    Route::post('/register', [AuthController::class, 'registerCompany']);
-    Route::post('/login', [AuthController::class, 'loginCompany']);
+    Route::post('/register', [AuthCompanyController::class, 'register']);
+    Route::post('/login', [AuthCompanyController::class, 'login']);
     
     Route::middleware(['auth:company'])->group(function () {        
         Route::put('/update', [CompanyController::class, 'update']);
-        Route::get('/auth', [AuthController::class, 'isCompanyAuth']);
-        Route::get('/logout', [AuthController::class, 'logout']);
+        Route::get('/auth', [AuthCompanyController::class, 'me']);
+        Route::get('/logout', [AuthCompanyController::class, 'logout']);
         Route::post('/event', [EventController::class, 'store']);
         Route::get('/url', [CompanyController::class, 'getLink']);
         Route::post('/tickets', [TicketController::class, 'generateTickets']);
