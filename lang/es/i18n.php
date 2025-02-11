@@ -72,5 +72,6 @@ return [
   'store_image_unexpected_error' => 'Error inesperado al almacenar la nueva imagen.',
   'read_notifications_ko' => 'Ocurrió un error al leer las notificaciones.',
   'notification_ko' => 'Ocurrió un error al enviar la notificación.',
+  'email_required' => 'El email es requerido.',
 
 ];

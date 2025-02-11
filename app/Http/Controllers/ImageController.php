@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\ApiException;
-use App\Http\Resources\AuthUserResource;
 use App\Http\Services\ImagesService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ImageController extends Controller
 {
@@ -64,7 +60,7 @@ class ImageController extends Controller
             $response = $this->imageService->deleteAll();
             return response()->json(["success" => true, "resp" =>  "All images deleted successfully"], 200);
         } catch (\Exception $e) {
-            return $this->responseError($e->getMessage(), 500);
+            return response()->json(["error" => true, "message" => $e->getMessage()], 500);
         }
     }
 }

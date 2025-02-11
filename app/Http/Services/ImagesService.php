@@ -3,8 +3,6 @@
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
-use App\Http\Resources\AuthUserResource;
-use App\Models\User;
 use App\Models\UserImage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

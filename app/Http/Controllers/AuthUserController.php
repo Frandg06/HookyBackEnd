@@ -2,26 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\ApiException;
 use Illuminate\Http\Request;
-
 use App\Http\Requests\CompleteAuthUserRequest;
 use App\Http\Requests\CompleteDataRequest;
-use App\Http\Resources\AuthUserResource;
-use App\Http\Resources\MessageListResource;
-use App\Http\Resources\UserResource;
 use App\Http\Services\AuthUserService;
 use App\Http\Services\ImagesService;
 use App\Http\Services\NotificationService;
 use App\Http\Services\UserService;
-use App\Models\Interaction;
-use App\Models\Notification;
-use App\Models\NotificationsType;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\UsersInteraction;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class AuthUserController extends Controller
 {
@@ -38,15 +28,9 @@ class AuthUserController extends Controller
     public function update(CompleteDataRequest $request) 
     {
         $data = $request->all();
-        try {
-            $response = $this->authUserService->update($data);
-
-            return response()->json(["success" => true, "resp" =>  $response], 200);             
-        } catch (ApiException $e) {
-            return $e->render();
-        } catch (\Throwable $e) { 
-            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
-        }
+      
+        $response = $this->authUserService->update($data);
+        return response()->json(["success" => true, "resp" =>  $response], 200);             
     }
 
     public function completeRegisterData(CompleteAuthUserRequest $request) 
@@ -56,15 +40,8 @@ class AuthUserController extends Controller
         $files = $this->parseCompleteFiles($data);
         $interests = $this->parseCompleteInterests($data);
 
-        try {
-            $response = $this->authUserService->completeRegisterData($info, $files, $interests);
-            
-            return response()->json(["success" => true, "resp" => $response], 200);
-        } catch (ApiException $e) {
-            return $e->render();
-        } catch (\Throwable $e) { 
-            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
-        }
+        $response = $this->authUserService->completeRegisterData($info, $files, $interests);
+        return response()->json(["success" => true, "resp" => $response], 200);
     }
 
     public function updatePassword(Request $request) 
@@ -75,16 +52,10 @@ class AuthUserController extends Controller
         ]);
         
         $data = $request->only('old_password', 'password');
+        $response =$this->authUserService->updatePassword($data);
 
-        try {
-            $response =$this->authUserService->updatePassword($data);
-
-            return response()->json(["success" => true, "resp" => $response], 200);
-        } catch (ApiException $e) {
-            return $e->render();
-        } catch (\Throwable $e) { 
-            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
-        }
+        return response()->json(["success" => true, "resp" => $response], 200);
+     
     }
 
     public function updateInterest(Request $request)
@@ -94,16 +65,9 @@ class AuthUserController extends Controller
         ]);
 
         $interests = $request->interests;
-
-        try {
-            $response = $this->authUserService->updateInterest($interests);
-
-            return response()->json(["success" => true, "resp" => $response], 200);
-        } catch (ApiException $e) {
-            return $e->render();
-        } catch (\Throwable $e) { 
-            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
-        }
+        $response = $this->authUserService->updateInterest($interests);
+        
+        return response()->json(["success" => true, "resp" => $response], 200);
     }
 
     public function getNotifications() 

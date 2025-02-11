@@ -49,10 +49,8 @@ class AuthService {
         
         DB::commit();
 
-        return (object)[
-          'user' => $user,
-          'access_token' => $token,
-        ];
+        return $token;
+        
 
       } catch (ApiException $e) { 
         DB::rollBack();
@@ -119,6 +117,8 @@ class AuthService {
     {
       DB::beginTransaction();
       try {
+        if(!$email) throw new ApiException('email_required', 400);
+
         $user = User::where('email', $email)->first();
 
         if(!$user) throw new ApiException('user_not_found', 404);

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetPasswordRequest;
-use App\Http\Resources\AuthUserResource;
 use App\Http\Services\AuthService;
 use App\Http\Services\EmailService;
 use App\Http\Services\ImagesService;
@@ -28,10 +27,8 @@ class AuthController extends Controller
     {
         $data = $request->only('name', 'surnames', 'email', 'password', 'company_uid');
         $response = $this->authService->register($data);
-        return response()->json([
-            "success" => true, 
-            "access_token" =>  $response->access_token
-        ], 200);
+
+        return response()->json(["success" => true, "access_token" => $response], 200);
 
     }
 
@@ -53,31 +50,23 @@ class AuthController extends Controller
 
     public function me() 
     {
-        try {
-
-            $user = request()->user()->resource();
-
-            return response()->json(["resp" => $user, "success" => true], 200); 
-
-        } catch (\Throwable $e) { 
-            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
-        }
+        $user = request()->user()->resource();
+        return response()->json(["resp" => $user, "success" => true], 200);   
     }
 
     public function passwordReset(Request $request)
     {
-        $email = $request->email;
-        if(!$email) return response()->json(["error" => true, "message" => __('validation.required', ['attribute' => 'email'])], 400);
+        $email = $request->email;        
         $this->authService->passwordReset($email);
+
         return response()->json(["message" => __('i18n.password_reset_email'), "success" => true], 200);
-        
     }
 
     public function setNewPassword(ResetPasswordRequest $request) 
     {
         $validated = $request->only('token', 'password');
         $this->authService->setNewPassword($validated);
+
         return response()->json(["message" => __('i18n.password_reset_email'), "success" => true], 200);
-        
     }
 }

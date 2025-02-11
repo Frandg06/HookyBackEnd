@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Resources\AuthCompanyResource;
 use App\Models\Traits\HasUid;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -54,6 +55,10 @@ class Company extends Authenticatable implements JWTSubject
         $events = $this->events()->nextMontEvents()->count();
         $limit = $this->pricing_plan->limit_events;
         return $events < $limit;
+    }
+
+    public function scopeResource() {
+        return AuthCompanyResource::make($this);
     }
 
     public function checkEventInSameDay($date) {

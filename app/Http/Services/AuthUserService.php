@@ -2,7 +2,6 @@
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
-use App\Http\Resources\AuthUserResource;
 use App\Http\Resources\NotificationUserResource;
 use App\Models\NotificationsType;
 use App\Models\Role;
@@ -30,7 +29,7 @@ class AuthUserService {
         
         DB::commit();
 
-        return AuthUserResource::make($user);
+        return $user->resource();
 
       } catch (ApiException $e) {
         DB::rollBack();
@@ -55,7 +54,7 @@ class AuthUserService {
 
         DB::commit();
       
-        return AuthUserResource::make($user);
+        return $user->resource();
 
       } catch (ApiException $e) {
         DB::rollBack();
@@ -90,7 +89,7 @@ class AuthUserService {
         
         DB::commit();
   
-        return AuthUserResource::make($user);
+        return $user->resource();
 
       } catch (\Exception $e) {
         DB::rollBack();
@@ -155,8 +154,11 @@ class AuthUserService {
                 $imageService->store($file);
             }
         }
+
         DB::commit();
-        return AuthUserResource::make($user);
+
+        return $user->resource();
+
       }catch (ApiException $e) {
         DB::rollBack();
         throw new ApiException($e->getMessage(), $e->getCode());
