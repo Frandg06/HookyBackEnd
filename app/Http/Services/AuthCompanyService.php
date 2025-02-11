@@ -19,7 +19,7 @@ class AuthCompanyService {
 
         $company = Company::where('email', $data['email'])->first();
         
-        if($company) throw new ApiException(__("i18n.user_exists"));
+        if($company) throw new ApiException('user_exists', 409);
         
         if(!isset($data['timezone_uid']) || empty($data['timezone_uid'])){
           $data['timezone_uid'] = TimeZone::where('name', 'Europe/Berlin')->first()->uid;
@@ -32,49 +32,45 @@ class AuthCompanyService {
         Storage::disk('r2')->put('hooky/qr/' . $company->uid . '.png', $response->body());
   
         Auth::setTTL(24*60);
+        
         $token = Auth::guard('company')->attempt(['email' => $data['email'], 'password' => $data['password']]);
   
         DB::commit();
 
-        return (object)[
-            'user' => $company,
-            'access_token' => $token,
-        ];
+        return $token;
 
       }catch (ApiException $e) {
         DB::rollBack();
-        throw new \Exception($e->getMessage());
+        throw new ApiException($e->getMessage(), $e->getCode());
       } catch (\Exception $e) {
         DB::rollBack();
         Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new \Exception(__("i18n.register_company_ko"));
+        throw new ApiException(__("i18n.register_company_ko"), 500);
       }
         
     }
 
     public function login($data) {
-
       try {
+
         $company = Company::where('email', $data['email'])->first();
 
         if (!$company || !Hash::check($data['password'], $company->password)) {
-          throw new ApiException(__("i18n.credentials_ko"));
+          throw new ApiException('credentials_ko', 401);
         }
 
         Auth::setTTL(24*60);
+        
         $token = Auth::guard('company')->attempt($data);
 
-        return (object)[
-            'company' => $company,
-            'access_token' => $token,
-        ];
+        return $token;
       }catch (ApiException $e) {
-          DB::rollBack();
-          throw new \Exception($e->getMessage());
+        DB::rollBack();
+        throw new ApiException($e->getMessage(), $e->getCode());
       } catch (\Exception $e) {
-          DB::rollBack();
-          Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-          throw new \Exception(__("i18n.login_ko"));
+        DB::rollBack();
+        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+        throw new ApiException(__("i18n.register_ko"), 500);
       }
      
     }

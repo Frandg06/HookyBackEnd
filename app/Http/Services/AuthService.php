@@ -88,7 +88,7 @@ class AuthService {
         
         $token = Auth::setTTL($diff)->attempt($data);
 
-        if (!$token)  throw new ApiException("i18n.credentials_ko", 401);
+        if (!$token)  throw new ApiException("credentials_ko", 401);
 
         $user = request()->user();
 
