@@ -113,14 +113,18 @@ class UserService
       }
 
       $remainingUsers = $authUser->remainingUsersToInteract();
+      $remainingUsersCount = $remainingUsers->count();
       
       $response = [
         "super_like_credits" => $authUser->super_like_credits,
         "like_credits" => $authUser->like_credits,
       ];
-      
-      if($remainingUsers->count() <= 10) {
-        $response['remaining_users'] = $this->getUsers();
+
+      if($remainingUsersCount <= 10) {
+        $refetch = $this->getUsers();
+        if(count($refetch) != $remainingUsersCount) {
+          $response['remaining_users'] = $refetch;
+        }
       }
       
       DB::commit();
