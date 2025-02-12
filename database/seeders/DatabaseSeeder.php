@@ -88,23 +88,23 @@ class DatabaseSeeder extends Seeder
 
         $this->call(UserMockSeeder::class);
         // heterosexuales
-        // for($i = 0; $i < 20; $i++) {
-        //     User::create([
-        //         'name' => fake()->name(),
-        //         'surnames' => fake()->name(),
-        //         'email' => fake()->unique()->safeEmail(),
-        //         'password' => Hash::make('password'),
-        //         "gender_id" => $i > 9 ? 2 : 1,
-        //         "sexual_orientation_id" => 1,
-        //         "role_id" => 2,
-        //         "city" => fake()->city(),
-        //         "born_date" => fake()->date(),
-        //         "ig" => fake()->name(),
-        //         "tw" => fake()->name(),
-        //         "description" => fake()->paragraph(),
-        //     ]);
+        for($i = 0; $i < 100; $i++) {
+            User::create([
+                'name' => fake()->name(),
+                'surnames' => fake()->name(),
+                'email' => fake()->unique()->safeEmail(),
+                'password' => Hash::make('a'),
+                "gender_id" => Gender::FEMALE,
+                "sexual_orientation_id" => SexualOrientation::HETEROSEXUAL,
+                "role_id" => Role::USER,
+                "city" => fake()->city(),
+                "born_date" => fake()->date(),
+                "ig" => fake()->name(),
+                "tw" => fake()->name(),
+                "description" => fake()->paragraph(),
+            ]);
 
-        // }
+        }
 
         // // Homosexuales
         // for($i = 0; $i < 20; $i++) {

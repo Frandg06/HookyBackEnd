@@ -222,9 +222,14 @@ class User extends Authenticatable implements JWTSubject
             )
         ")
         ->orWhereIn('uid', $usersWithoutInteraction)
+        ->orderBy('created_at', 'asc')
+        ->orderBy('id', 'asc')
         ->limit(50)
-        ->inRandomOrder()
         ->get();
+    }
+
+    public function scopeRemainingUsersToInteract() {
+        return $this->interactions()->where('event_uid', $this->event_uid)->where('interaction_id', null)->get();
     }
     
     public function refreshInteractions($interaction) 

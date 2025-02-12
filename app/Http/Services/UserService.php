@@ -49,9 +49,9 @@ class UserService
           'user_uid' => $authUser->uid,
           'interaction_user_uid' => $userToInsert->uid,
           'interaction_id' => null,
-          'event_uid' => $authUser->event_uid
+          'event_uid' => $authUser->event_uid,
+          'created_at' => now()
         ];
-
       }
 
       UsersInteraction::insert($newUsersWithInteractions);
@@ -112,12 +112,20 @@ class UserService
 
       }
 
-      DB::commit();
-
-      return [
+      $remainingUsers = $authUser->remainingUsersToInteract();
+      
+      $response = [
         "super_like_credits" => $authUser->super_like_credits,
         "like_credits" => $authUser->like_credits,
       ];
+      
+      if($remainingUsers->count() <= 10) {
+        $response['remaining_users'] = $this->getUsers();
+      }
+      
+      DB::commit();
+
+      return $response;
       
     } catch (\Exception $e) {
       DB::rollBack();

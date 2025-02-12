@@ -110,7 +110,7 @@ class AuthUserService {
         
         $likes_count = $userLikes->count();
 
-        if($user->role_id == Role::ROLE_PREMIUM) {
+        if($user->role_id == Role::PREMIUM) {
           $likes = NotificationUserResource::collection($userLikes);
         } else {
           $likes['images'] = $userLikes->take(7)->map(function ($u) use ($user) {

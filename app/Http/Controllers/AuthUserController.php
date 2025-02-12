@@ -92,7 +92,7 @@ class AuthUserController extends Controller
     {
         $user = $request->user();
         
-        if($user->role_id != Role::ROLE_PREMIUM) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
+        if($user->role_id != Role::PREMIUM) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
 
         $isLike = UsersInteraction::checkIsLike($uid, $user);
         
@@ -119,8 +119,8 @@ class AuthUserController extends Controller
     public function setInteraction(Request $request, $uid)
     {
         $interaction = $request->interactionId;
-
         $response = $this->userService->setInteraction($uid, $interaction);
+
         return response()->json(["success" => true, "resp" => $response], 200);
         
     }
