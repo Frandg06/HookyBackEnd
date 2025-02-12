@@ -91,12 +91,14 @@ class AuthUserController extends Controller
     public function getUserToConfirm(Request $request, $uid)
     {
         $user = $request->user();
-        
-        if($user->role_id != Role::PREMIUM) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
 
         $isLike = UsersInteraction::checkIsLike($uid, $user);
+
+        $isSuperlike = UsersInteraction::checkIsSuperLike($uid, $user);
         
-        if(!$isLike) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
+        if(!$user->is_premium && !$isSuperlike) return response()->json(["success" => false, "message" => __('i18n.not_aviable_user'), "type" => "RoleException"], 401);
+        
+        if(!$isLike || !$isSuperlike) return response()->json(["success" => false, "message" => __('i18n.not_aviable_user'), "type" => "RoleException"], 401);
 
         $user = User::where('uid', $uid)->first();
 
@@ -109,7 +111,7 @@ class AuthUserController extends Controller
 
         $isHook = UsersInteraction::checkHook($user->uid, $uid, $user->event_uid);
                     
-        if(!$isHook) return response()->json(["success" => false, "message" => "No tienes permisos para ver este usuario", "type" => "RoleException"], 401);
+        if(!$isHook) return response()->json(["success" => false, "message" => __('i18n.not_aviable_user'), "type" => "RoleException"], 401);
 
         $user = User::where('uid', $uid)->first();
 

@@ -144,6 +144,9 @@ class User extends Authenticatable implements JWTSubject
         }
         return false;
     }
+    public function getIsPremiumAttribute() : bool {
+        return $this->role_id == Role::PREMIUM ? true : false;
+    }
 
     public function getMatchGenderAttribute(): array {
         switch($this->sexual_orientation_id){

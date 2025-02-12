@@ -59,7 +59,15 @@ class UsersInteraction extends Model
     public static function checkIsLike($uid, $auth) {
         return self::where('user_uid', $uid)
         ->where('interaction_user_uid', $auth->uid)
-        ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
+        ->where('interaction_id', Interaction::SUPER_LIKE_ID)
+        ->where('event_uid', $auth->event_uid)
+        ->exists();
+    }
+
+    public static function checkIsSuperLike($uid, $auth) {
+        return self::where('user_uid', $uid)
+        ->where('interaction_user_uid', $auth->uid)
+        ->where('interaction_id', Interaction::SUPER_LIKE_ID)
         ->where('event_uid', $auth->event_uid)
         ->exists();
     }

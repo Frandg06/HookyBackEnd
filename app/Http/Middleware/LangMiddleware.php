@@ -18,7 +18,11 @@ class LangMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $lang = $request->header('X-Locale');
+
+        if($lang == 'br') $lang = 'pt';
+
         App::setLocale($lang ?? 'es');
+        
         return $next($request);
     }
 }

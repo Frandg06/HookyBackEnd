@@ -73,5 +73,6 @@ return [
   'read_notifications_ko' => 'Ocurrió un error al leer las notificaciones.',
   'notification_ko' => 'Ocurrió un error al enviar la notificación.',
   'email_required' => 'El email es requerido.',
+  'not_aviable_user' => 'No tienes permisos para ver este usuario.',
 
 ];
