@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:5173', 'http://localhost:5174', 'http://api.hookyapp.es', 'http://admin.hookyapp.es'],
+    'allowed_origins' => ['http://localhost:5173', 'http://localhost:5174', 'https://app.hookyapp.es', 'https://admin.hookyapp.es', 'https://app.hookyapp.es'],
 
     'allowed_origins_patterns' => [],
 
