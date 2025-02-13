@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Company;
+use App\Models\Event;
 use App\Models\Gender;
 use App\Models\Interest;
 use App\Models\Role;
@@ -73,7 +74,11 @@ class DatabaseSeeder extends Seeder
             "pricing_plan_uid" => \App\Models\PricingPlan::find(1)->uid
         ]);
 
-        $event = $company->events()->create([
+        $response = Http::get('https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . $company->link);
+
+        Storage::disk('r2')->put('hooky/qr/' . $company->uid . '.png', $response->body());
+
+        $company->events()->create([
             'st_date' => now()->format('Y-m-d H:i'),
             'end_date' => now()->addDay()->format('Y-m-d H:i'),
             'timezone' => 'Europe/Madrid',
@@ -81,78 +86,115 @@ class DatabaseSeeder extends Seeder
             'super_likes' => 2,
         ]);
 
-        $response = Http::get('https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . $company->link);
+        $company->events()->create([
+            'st_date' => now()->subMonths(1)->format('Y-m-d H:i'),
+            'end_date' => now()->subMonths(1)->addDay()->format('Y-m-d H:i'),
+            'timezone' => 'Europe/Madrid',
+            'likes' => 10,
+            'super_likes' => 2,
+        ]);
 
-        Storage::disk('r2')->put('hooky/qr/' . $company->uid . '.png', $response->body());
+        $company->events()->create([
+            'st_date' => now()->subMonths(2)->format('Y-m-d H:i'),
+            'end_date' => now()->subMonths(2)->addDay()->format('Y-m-d H:i'),
+            'timezone' => 'Europe/Madrid',
+            'likes' => 10,
+            'super_likes' => 2,
+        ]);
+
+        $company->events()->create([
+            'st_date' => now()->subMonths(3)->format('Y-m-d H:i'),
+            'end_date' => now()->subMonths(3)->addDay()->format('Y-m-d H:i'),
+            'timezone' => 'Europe/Madrid',
+            'likes' => 10,
+            'super_likes' => 2,
+        ]);
+
+        $company->events()->create([
+            'st_date' => now()->subMonths(4)->format('Y-m-d H:i'),
+            'end_date' => now()->subMonths(4)->addDay()->format('Y-m-d H:i'),
+            'timezone' => 'Europe/Madrid',
+            'likes' => 10,
+            'super_likes' => 2,
+        ]);
+
+        $company->events()->create([
+            'st_date' => now()->subMonths(5)->format('Y-m-d H:i'),
+            'end_date' => now()->subMonths(5)->addDay()->format('Y-m-d H:i'),
+            'timezone' => 'Europe/Madrid',
+            'likes' => 10,
+            'super_likes' => 2,
+        ]);
+
+        $company->events()->create([
+            'st_date' => now()->subMonths(6)->format('Y-m-d H:i'),
+            'end_date' => now()->subMonths(6)->addDay()->format('Y-m-d H:i'),
+            'timezone' => 'Europe/Madrid',
+            'likes' => 10,
+            'super_likes' => 2,
+        ]);
+
+        $company->events()->create([
+            'st_date' => now()->subMonths(7)->format('Y-m-d H:i'),
+            'end_date' => now()->subMonths(7)->addDay()->format('Y-m-d H:i'),
+            'timezone' => 'Europe/Madrid',
+            'likes' => 10,
+            'super_likes' => 2,
+        ]);
+
+       
 
 
         $this->call(UserMockSeeder::class);
         // heterosexuales
-        // for($i = 0; $i < 100; $i++) {
-        //     User::create([
-        //         'name' => fake()->name(),
-        //         'surnames' => fake()->name(),
-        //         'email' => fake()->unique()->safeEmail(),
-        //         'password' => Hash::make('a'),
-        //         "gender_id" => Gender::FEMALE,
-        //         "sexual_orientation_id" => SexualOrientation::HETEROSEXUAL,
-        //         "role_id" => Role::USER,
-        //         "city" => fake()->city(),
-        //         "born_date" => fake()->date(),
-        //         "ig" => fake()->name(),
-        //         "tw" => fake()->name(),
-        //         "description" => fake()->paragraph(),
-        //     ]);
+        for($i = 0; $i < 3000; $i++) {
+            User::create([
+                'name' => fake()->name(),
+                'surnames' => fake()->name(),
+                'email' => fake()->unique()->safeEmail(),
+                'password' => Hash::make('a'),
+                "gender_id" => $i % 2 == 0 ? Gender::MALE : Gender::FEMALE,
+                "sexual_orientation_id" => SexualOrientation::HETEROSEXUAL,
+                "role_id" => Role::USER,
+                "city" => fake()->city(),
+                "born_date" => fake()->date(),
+                "ig" => fake()->name(),
+                "tw" => fake()->name(),
+                "description" => fake()->paragraph(),
+            ]);
 
-        // }
-
-        // // Homosexuales
-        // for($i = 0; $i < 20; $i++) {
-        //     User::create([
-        //         'name' => fake()->name(),
-        //         'surnames' => fake()->name(),
-        //         'email' => fake()->unique()->safeEmail(),
-        //         'password' => Hash::make('password'),
-        //         "gender_id" => $i > 9 ? 2 : 1,
-        //         "sexual_orientation_id" => 2,
-        //         "role_id" => 2,
-        //         "city" => fake()->city(),
-        //         "born_date" => fake()->date(),
-        //         "ig" => fake()->name(),
-        //         "tw" => fake()->name(),
-        //         "description" => fake()->paragraph(),
-        //     ]);
-
-        // }
+        }
+        
 
         
-        User::all()->each(function ($user) use ($event) {
+        User::all()->each(function ($user)  {
+            $randomEvents = Event::inRandomOrder()->first();
             $interests = Interest::inRandomOrder()->limit(3)->pluck('id');
             $user->interestBelongsToMany()->attach($interests);
 
             UserEvent::create([
               'user_uid' => $user->uid,
-              'event_uid' => $event->uid,
+              'event_uid' => $randomEvents->uid,
               'logged_at' => now()->format('Y-m-d H:i'),
-              'super_likes' => $event->super_likes,
-              'likes' => $event->likes,
+              'super_likes' => $randomEvents->super_likes,
+              'likes' => $randomEvents->likes,
             ]);
 
             for($i = 0; $i < 3; $i++) {
 
-                $imageData = file_get_contents("https://picsum.photos/500/900");
+                // $imageData = file_get_contents("https://picsum.photos/500/900");
                 
-                $img = Image::read($imageData);
+                // $img = Image::read($imageData);
     
-                $ogWidth = $img->width();
-                $ogHeight = $img->height();
+                // $ogWidth = $img->width();
+                // $ogHeight = $img->height();
                 
-                $aspectRatio = $ogWidth / $ogHeight;
+                // $aspectRatio = $ogWidth / $ogHeight;
     
-                $newHeight = 500 / $aspectRatio;
+                // $newHeight = 500 / $aspectRatio;
     
     
-                $processedImage = $img->resize(500, $newHeight)->toWebP(80);
+                // $processedImage = $img->resize(500, $newHeight)->toWebP(80);
                 
                 $newImage = $user->userImages()->create([
                   'order' => $user->userImages()->count() + 1,
@@ -161,7 +203,7 @@ class DatabaseSeeder extends Seeder
                   'type' => "image/png",
                 ]);
         
-                Storage::disk('r2')->put($newImage->url, $processedImage);
+                // Storage::disk('r2')->put($newImage->url, $processedImage);
             }
 
         });

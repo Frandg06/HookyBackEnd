@@ -20,7 +20,6 @@ class TicketService
             if ($data['count'] < 1) throw new ApiException("tickets_minimum", 400);
             if ($data['count'] > 1000) throw new ApiException("tickets_maximum", 400);
 
-            DB::beginTransaction();
 
             $tickets = [];  
 

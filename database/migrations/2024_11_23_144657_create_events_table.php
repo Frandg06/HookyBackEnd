@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->uuid('uid')->unique();
+            $table->string("name")->nullable()->default("No name");
             $table->uuid('company_uid');
             $table->dateTime('st_date');
             $table->dateTime('end_date');

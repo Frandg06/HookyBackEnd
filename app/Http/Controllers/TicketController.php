@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateTicketRequest;
 use App\Http\Services\TicketService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TicketController extends Controller
 {
@@ -31,6 +32,7 @@ class TicketController extends Controller
     public function generateTickets(CreateTicketRequest $request) 
     {
         $data = $request->only(['count', 'likes', 'superlikes']);
+
         $tickets = $this->ticketService->generateTickets($data);
             
         return response()->json(["resp" => $tickets, "success" => true], 200);
