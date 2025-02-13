@@ -101,7 +101,7 @@ class DatabaseSeeder extends Seeder
                   'type' => "image/png",
                 ]);
         
-                // Storage::disk('r2')->put($newImage->url, $processedImage);
+                Storage::disk('r2')->put($newImage->url, $processedImage);
             }
 
         });
