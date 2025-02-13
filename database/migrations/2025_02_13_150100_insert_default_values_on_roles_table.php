@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Role;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +20,9 @@ return new class extends Migration
             ["id" => 3, "name" => "Vip" ],
         ];
 
-        DB::table('roles')->insert($arr);
+        foreach ($arr as $item) {
+            Role::create($item);
+        }
 
 
     }

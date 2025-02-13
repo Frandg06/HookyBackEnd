@@ -1,9 +1,7 @@
 <?php
 
-use App\Models\Gender;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -13,13 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $arr = [
-            ["id" => 1, "name" => "Female" ],
-            ["id" => 2, "name" => "Male" ],
+        $types = [
+            'like',
+            'superlike',
+            'hook',
+            'message',
         ];
 
-        foreach ($arr as $item) {
-            Gender::create($item);
+        foreach ($types as $type) {
+            \App\Models\NotificationsType::create([
+                'name' => $type,
+            ]);
         }
     }
 
@@ -28,8 +30,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::table('genders')->get()->each(function ($item) {
-            DB::table('genders')->where('id', $item->id)->delete();
+        \App\Models\NotificationsType::all()->each(function ($item) {
+            $item->delete();
         });
     }
 };

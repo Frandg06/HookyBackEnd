@@ -14,4 +14,7 @@ class NotificationsType extends Model
     const SUPER_LIKE_TYPE_STR = "superlike";
     const HOOK_TYPE_STR = "hook";
     const MESSAGE_TYPE_STR = "message";
+
+    protected $fillable = ['id', 'name'];
+
 }

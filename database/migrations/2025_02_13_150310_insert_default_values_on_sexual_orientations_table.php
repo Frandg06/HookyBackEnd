@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\SexualOrientation;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
@@ -16,8 +17,10 @@ return new class extends Migration
             ["id" => 2, "name" => "Heterosexual" ],
             ["id" => 3, "name" => "Homosexual" ],
         ];
-
-        DB::table('sexual_orientations')->insert($arr);
+        
+        foreach ($arr as $item) {
+            SexualOrientation::create($item);
+        }
 
     }
 
