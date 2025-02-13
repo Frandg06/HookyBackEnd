@@ -32,8 +32,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::table('roles')->get()->each(function ($item) {
-            DB::table('roles')->where('id', $item->id)->delete();
+        Role::all()->each(function ($item) {
+            $item->delete();
         });
     }
 };

@@ -28,8 +28,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::table('genders')->get()->each(function ($item) {
-            DB::table('genders')->where('id', $item->id)->delete();
+        Gender::all()->each(function ($item) {
+            $item->delete();
         });
     }
 };
