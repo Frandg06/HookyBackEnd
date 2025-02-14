@@ -4,11 +4,15 @@ namespace Database\Seeders;
 
 use App\Models\Company;
 use App\Models\Event;
+use App\Models\Gender;
 use App\Models\Interest;
+use App\Models\Role;
+use App\Models\SexualOrientation;
 use App\Models\TimeZone;
 use App\Models\User;
 use App\Models\UserEvent;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
@@ -38,10 +42,9 @@ class DatabaseSeeder extends Seeder
 
         Storage::disk('r2')->put('hooky/qr/' . $company->uid . '.png', $response->body());
 
-        // $this->call(EventsMockSeeder::class);
-        // $this->call(UserMockSeeder::class);
+        $this->call(EventsMockSeeder::class);
+        $this->call(UserMockSeeder::class);
 
-        // heterosexuales
         // for($i = 0; $i < 3000; $i++) {
         //     User::create([
         //         'name' => fake()->name(),
@@ -62,45 +65,45 @@ class DatabaseSeeder extends Seeder
         
 
         
-        // User::all()->each(function ($user)  {
-        //     $randomEvents = Event::find(1);
-        //     $interests = Interest::inRandomOrder()->limit(3)->pluck('id');
-        //     $user->interestBelongsToMany()->attach($interests);
+        User::all()->each(function ($user)  {
+            $randomEvents = Event::find(1);
+            $interests = Interest::inRandomOrder()->limit(3)->pluck('id');
+            $user->interestBelongsToMany()->attach($interests);
 
-        //     UserEvent::create([
-        //       'user_uid' => $user->uid,
-        //       'event_uid' => $randomEvents->uid,
-        //       'logged_at' => now()->format('Y-m-d H:i'),
-        //       'super_likes' => $randomEvents->super_likes,
-        //       'likes' => $randomEvents->likes,
-        //     ]);
+            UserEvent::create([
+              'user_uid' => $user->uid,
+              'event_uid' => $randomEvents->uid,
+              'logged_at' => now()->format('Y-m-d H:i'),
+              'super_likes' => $randomEvents->super_likes,
+              'likes' => $randomEvents->likes,
+            ]);
 
-        //     for($i = 0; $i < 3; $i++) {
+            for($i = 0; $i < 3; $i++) {
 
-        //         $imageData = file_get_contents("https://picsum.photos/500/900");
+                $imageData = file_get_contents("https://picsum.photos/500/900");
                 
-        //         $img = Image::read($imageData);
+                $img = Image::read($imageData);
     
-        //         $ogWidth = $img->width();
-        //         $ogHeight = $img->height();
+                $ogWidth = $img->width();
+                $ogHeight = $img->height();
                 
-        //         $aspectRatio = $ogWidth / $ogHeight;
+                $aspectRatio = $ogWidth / $ogHeight;
     
-        //         $newHeight = 500 / $aspectRatio;
+                $newHeight = 500 / $aspectRatio;
     
     
-        //         $processedImage = $img->resize(500, $newHeight)->toWebP(80);
+                $processedImage = $img->resize(500, $newHeight)->toWebP(80);
                 
-        //         $newImage = $user->userImages()->create([
-        //           'order' => $user->userImages()->count() + 1,
-        //           'name' => "databnaseSeeder",
-        //           'size' => "34886",
-        //           'type' => "image/png",
-        //         ]);
+                $newImage = $user->userImages()->create([
+                  'order' => $user->userImages()->count() + 1,
+                  'name' => "databnaseSeeder",
+                  'size' => "34886",
+                  'type' => "image/png",
+                ]);
         
-        //         Storage::disk('r2')->put($newImage->url, $processedImage);
-        //     }
+                Storage::disk('r2')->put($newImage->url, $processedImage);
+            }
 
-        // });
+        });
     }
 }

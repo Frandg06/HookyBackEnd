@@ -30,8 +30,6 @@ class AuthCompanyResource extends JsonResource
             ]
         ];
 
-        $last_event = $this->events()->lastEvent()->first();
-
         return [
             'uid' => $this->uid,
             'name' => $this->name,
@@ -49,15 +47,15 @@ class AuthCompanyResource extends JsonResource
             'qr_url' => config("filesystems.disks.r2.url") . 'qr/' . $this->uid . '.png',
             'link' => $this->link,
             'users_incomes' => $arrayUsersIncome,
-            'last_event' => $last_event ? [
-                "total_users" => $last_event->total_users,
-                "incomes" => $last_event->total_incomes,
-                "hooks" => $last_event->hooks,
-                "tickets" => $last_event->tickets()->count(),
-                "avg_age" => round($last_event->avg_age),
-                "male_female" => $last_event->percents,
-                "name" => $last_event->name,
-                "date" => $last_event->st_date
+            'last_event' => $this->last_event ? [
+                "total_users" => $this->last_event->total_users,
+                "incomes" => $this->last_event->total_incomes,
+                "hooks" => $this->last_event->hooks,
+                "tickets" => $this->last_event->tickets()->count(),
+                "avg_age" => round($this->last_event->avg_age),
+                "male_female" => $this->last_event->percents,
+                "name" => $this->last_event->name,
+                "date" => $this->last_event->st_date
             ] : null,
         ];
     }

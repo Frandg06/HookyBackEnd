@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class Company extends Authenticatable implements JWTSubject
@@ -79,6 +80,11 @@ class Company extends Authenticatable implements JWTSubject
     public function getLimitUsersAttribute()
     {
        return $this->pricing_plan->limit_users;
+    }
+
+    public function getLastEventAttribute()
+    {
+        return $this->events()->lastEvent($this->timezone->name)->first();
     }
 
     protected function casts(): array

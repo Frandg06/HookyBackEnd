@@ -63,12 +63,10 @@ class Event extends Model
 
     }
 
-    public function scopeLastEvent($query) {
-        return $query->where(function ($sub) {
-                $sub->where('st_date', '<', now())
-                ->where('end_date', '>', now());
-            })->orWhere(function ($sub) {
-                $sub->where('end_date', '<', now());
+    public function scopeLastEvent($query, $timezone)  {
+        return $query->where(function ($sub) use ($timezone) {
+                $sub->where('st_date', '<', now($timezone))
+                ->where('end_date', '>', now($timezone));
             })
             ->orderBy('st_date', 'desc');
     }
