@@ -19,6 +19,7 @@ class User extends Authenticatable implements JWTSubject
     protected $table = 'users';
     protected $primaryKey = 'uid';
     protected $keyType = 'string';
+    public $incrementing = false;
     
     /**
      * The attributes that are mass assignable.

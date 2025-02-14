@@ -22,6 +22,7 @@ class Company extends Authenticatable implements JWTSubject
     protected $table = 'companies';
     protected $primaryKey = 'uid';
     protected $keyType = 'string';
+    public $incrementing = false;
 
     protected $fillable = [
         'name',

@@ -44,12 +44,12 @@ class AuthCompanyResource extends JsonResource
             'timezone_uid' => $this->timezone_uid,
             'timezone_string' => $this->timezone->name,
             'next_event' => $this->events()->firstNextEvent($this->timezone->name)->first(),
-            'tickets_count_this_month' => $this->tickets()->ticketsCountThisMonth()->count(),
+            'tickets_count_this_month' => $this->tickets()->ticketsCountThisMonth()->count() ?? 0,
             'tickets_last_month' => $this->tickets()->ticketsCountLastMonth()->count(),
             'qr_url' => config("filesystems.disks.r2.url") . 'qr/' . $this->uid . '.png',
             'link' => $this->link,
             'users_incomes' => $arrayUsersIncome,
-            'last_event' => [
+            'last_event' => $last_event ? [
                 "total_users" => $last_event->total_users,
                 "incomes" => $last_event->total_incomes,
                 "hooks" => $last_event->hooks,
@@ -57,8 +57,8 @@ class AuthCompanyResource extends JsonResource
                 "avg_age" => round($last_event->avg_age),
                 "male_female" => $last_event->percents,
                 "name" => $last_event->name,
-                "date" => date('d/m/Y', strtotime($last_event->st_date)),
-            ],
+                "date" => $last_event->st_date
+            ] : null,
         ];
     }
 }
