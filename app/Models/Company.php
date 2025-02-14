@@ -3,21 +3,16 @@
 namespace App\Models;
 
 use App\Http\Resources\AuthCompanyResource;
-use App\Models\Traits\HasUid;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class Company extends Authenticatable implements JWTSubject
 {
-    use HasFactory, HasUid;
+    use HasFactory;
 
     protected $table = 'companies';
     protected $primaryKey = 'uid';
