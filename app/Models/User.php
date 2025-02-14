@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Resources\AuthUserResource;
+use App\Http\Resources\UsersToTableResource;
 use App\Models\Traits\HasUid;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

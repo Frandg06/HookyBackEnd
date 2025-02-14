@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Http\Resources\AuthCompanyResource;
+use App\Http\Resources\UsersToTableResource;
+use App\Models\Traits\HasUid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,7 +15,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class Company extends Authenticatable implements JWTSubject
 {
-    use HasFactory;
+    use HasFactory, HasUid;
 
     protected $table = 'companies';
     protected $primaryKey = 'uid';
@@ -85,6 +87,27 @@ class Company extends Authenticatable implements JWTSubject
     public function getLastEventAttribute()
     {
         return $this->events()->lastEvent($this->timezone->name)->first();
+    }
+
+    public function getTotalUsersAttribute() {
+        return $this->events()
+        ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
+        ->distinct('user_events.user_uid')
+        ->count('user_events.user_uid');
+    }
+
+    public function getLastFiveUsersAttribute() {
+        
+        $ids = $this->events()
+        ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
+        ->join('users', 'user_events.user_uid', '=', 'users.uid')
+        ->select('users.*')
+        ->orderBy('users.created_at', 'desc')
+        ->limit(5)
+        ->pluck('users.uid');
+        $users = User::whereIn('uid', $ids)->get();
+        
+        return UsersToTableResource::collection($users);
     }
 
     protected function casts(): array
