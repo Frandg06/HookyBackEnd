@@ -11,7 +11,6 @@ Route::middleware(['auth:api', 'event', 'jwt.verify'])->group(function () {
             
             Route::put('/password', [AuthUserController::class, 'updatePassword']);
             Route::put('/update', [AuthUserController::class, 'update']);
-            Route::post('/complete', [AuthUserController::class, 'completeRegisterData']);
             Route::put('/interest', [AuthUserController::class, 'updateInterest']);
 
             Route::get('/notifications', [AuthUserController::class, 'getNotifications']);
@@ -35,3 +34,6 @@ Route::middleware(['auth:api', 'event', 'jwt.verify'])->group(function () {
         });
 
 });
+
+
+Route::post('/user/complete', [AuthUserController::class, 'completeRegisterData'])->middleware(['auth:api', 'jwt.verify']);
