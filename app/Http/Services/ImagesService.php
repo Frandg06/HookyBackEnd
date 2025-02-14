@@ -160,6 +160,9 @@ class ImagesService {
 
     $newHeight = 500 / $aspectRatio;
 
+    if($ogHeight < $newHeight) return $img->toWebp(80);
+
+    Log::alert("Height: " . $ogHeight . " Width: " . $ogWidth . " AspectRatio: " . $aspectRatio. " NewHeight: " . $newHeight);
 
     return $img->resize(500, $newHeight)->toWebP(80);
   }
