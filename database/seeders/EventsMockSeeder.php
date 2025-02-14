@@ -15,12 +15,13 @@ class EventsMockSeeder extends Seeder
     public function run(): void
     {
 
-        $company = Company::find(1);
+        $company = Company::orderBy('id', 'desc')->first();
+        $tz = $company->timezone->name;
 
         $events = [
             [
-                'st_date' => now()->format('Y-m-d H:i'),
-                'end_date' => now()->addDay()->format('Y-m-d H:i'),
+                'st_date' => now($tz)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->addDay()->format('Y-m-d H:i'),
                 'timezone' => 'Europe/Madrid',
                 'likes' => 10,
                 'super_likes' => 2,
@@ -28,8 +29,8 @@ class EventsMockSeeder extends Seeder
                 'company_uid' => $company->uid,
             ],
             [
-                'st_date' => now()->subMonths(1)->format('Y-m-d H:i'),
-                'end_date' => now()->subMonths(1)->addDay()->format('Y-m-d H:i'),
+                'st_date' => now($tz)->subMonths(1)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->subMonths(1)->addDay()->format('Y-m-d H:i'),
                 'timezone' => 'Europe/Madrid',
                 'likes' => 10,
                 'super_likes' => 2,
@@ -37,8 +38,8 @@ class EventsMockSeeder extends Seeder
                 'company_uid' => $company->uid,
             ],
             [
-                'st_date' => now()->subMonths(2)->format('Y-m-d H:i'),
-                'end_date' => now()->subMonths(2)->addDay()->format('Y-m-d H:i'),
+                'st_date' => now($tz)->subMonths(2)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->subMonths(2)->addDay()->format('Y-m-d H:i'),
                 'timezone' => 'Europe/Madrid',
                 'likes' => 10,
                 'super_likes' => 2,
@@ -46,8 +47,8 @@ class EventsMockSeeder extends Seeder
                 'company_uid' => $company->uid,
             ],
             [
-                'st_date' => now()->subMonths(3)->format('Y-m-d H:i'),
-                'end_date' => now()->subMonths(3)->addDay()->format('Y-m-d H:i'),
+                'st_date' => now($tz)->subMonths(3)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->subMonths(3)->addDay()->format('Y-m-d H:i'),
                 'timezone' => 'Europe/Madrid',
                 'likes' => 10,
                 'super_likes' => 2,
@@ -55,8 +56,8 @@ class EventsMockSeeder extends Seeder
                 'company_uid' => $company->uid,
             ],
             [
-                'st_date' => now()->subMonths(4)->format('Y-m-d H:i'),
-                'end_date' => now()->subMonths(4)->addDay()->format('Y-m-d H:i'),
+                'st_date' => now($tz)->subMonths(4)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->subMonths(4)->addDay()->format('Y-m-d H:i'),
                 'timezone' => 'Europe/Madrid',
                 'likes' => 10,
                 'super_likes' => 2,
@@ -64,8 +65,8 @@ class EventsMockSeeder extends Seeder
                 'company_uid' => $company->uid,
             ],
             [
-                'st_date' => now()->subMonths(5)->format('Y-m-d H:i'),
-                'end_date' => now()->subMonths(5)->addDay()->format('Y-m-d H:i'),
+                'st_date' => now($tz)->subMonths(5)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->subMonths(5)->addDay()->format('Y-m-d H:i'),
                 'timezone' => 'Europe/Madrid',
                 'likes' => 10,
                 'super_likes' => 2,
@@ -73,8 +74,8 @@ class EventsMockSeeder extends Seeder
                 'company_uid' => $company->uid,
             ],
             [
-                'st_date' => now()->subMonths(6)->format('Y-m-d H:i'),
-                'end_date' => now()->subMonths(6)->addDay()->format('Y-m-d H:i'),
+                'st_date' => now($tz)->subMonths(6)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->subMonths(6)->addDay()->format('Y-m-d H:i'),
                 'timezone' => 'Europe/Madrid',
                 'likes' => 10,
                 'super_likes' => 2,
@@ -82,8 +83,8 @@ class EventsMockSeeder extends Seeder
                 'company_uid' => $company->uid,
             ],
             [
-                'st_date' => now()->subMonths(7)->format('Y-m-d H:i'),
-                'end_date' => now()->subMonths(7)->addDay()->format('Y-m-d H:i'),
+                'st_date' => now($tz)->subMonths(7)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->subMonths(7)->addDay()->format('Y-m-d H:i'),
                 'timezone' => 'Europe/Madrid',
                 'likes' => 10,
                 'super_likes' => 2,

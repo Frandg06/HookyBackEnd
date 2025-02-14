@@ -19,6 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'event' => \App\Http\Middleware\CheckEventIsActiveMiddleware::class,
             'credits' => \App\Http\Middleware\CheckCreditsMiddleware::class,
             'lang' => \App\Http\Middleware\LangMiddleware::class,
+            'jwt.verify' => \App\Http\Middleware\JwtVerifyMiddleware::class,
+            'jwt.verify.company' => \App\Http\Middleware\JwtVerifyCompanyMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

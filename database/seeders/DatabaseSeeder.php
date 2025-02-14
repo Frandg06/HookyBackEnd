@@ -4,15 +4,11 @@ namespace Database\Seeders;
 
 use App\Models\Company;
 use App\Models\Event;
-use App\Models\Gender;
 use App\Models\Interest;
-use App\Models\Role;
-use App\Models\SexualOrientation;
 use App\Models\TimeZone;
 use App\Models\User;
 use App\Models\UserEvent;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;

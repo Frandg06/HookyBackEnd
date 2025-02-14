@@ -49,6 +49,18 @@ class Event extends Model
         return $query->where('st_date', '<', Carbon::now($timezone))
             ->where('end_date', '>', Carbon::now($timezone))
             ->orderBy('st_date', 'asc');
+
+    }
+
+    public function scopeActiveOrNextEvent($query, $timezone)  {
+        return $query->where(function ($sub) use ($timezone) {
+                $sub->where('st_date', '<', now($timezone))
+                ->where('end_date', '>', now($timezone));
+            })->orWhere(function ($sub) use ($timezone) {
+                $sub->where('st_date', '>', now($timezone));
+            })
+            ->orderBy('st_date', 'asc');
+
     }
 
     public function scopeLastEvent($query) {

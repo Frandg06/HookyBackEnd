@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('user_images', function (Blueprint $table) {
             $table->id();
             $table->uuid('uid')->unique();
-            $table->unsignedBigInteger('user_id');
+            $table->string('user_uid');
             $table->string('name')->nullable();
             $table->string('type')->nullable();
             $table->integer('size')->nullable();
             $table->integer('order')->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

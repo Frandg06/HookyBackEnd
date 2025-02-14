@@ -4,10 +4,8 @@ namespace App\Http\Resources;
 
 use App\Models\NotificationsType;
 use App\Models\Role;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Crypt;
 
 class AuthUserResource extends JsonResource
 {
@@ -18,6 +16,10 @@ class AuthUserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
+        $tz = $this->auth_event->event->timezone;
+        $now = now($tz);
+
         return [
             "id" => $this->id,
             "uid" => $this->uid,
@@ -71,8 +73,13 @@ class AuthUserResource extends JsonResource
                 'like' => $this->notifications()->where('event_uid', $this->event_uid)->where('type_id', NotificationsType::LIKE_TYPE)->where('read_at', null)->count(),
                 'superlike' => $this->notifications()->where('event_uid', $this->event_uid)->where('type_id', NotificationsType::SUPER_LIKE_TYPE)->where('read_at', null)->count(),
                 'hook' => $this->notifications()->where('event_uid', $this->event_uid)->where('type_id', NotificationsType::HOOK_TYPE)->where('read_at', null)->count(),
-                'message' => 0
+                'message' => 1
+            ],
+            "next_event" => [
+                'exists' => $now->lt($this->auth_event->event->st_date) ? true : null,
+                'st_date' => $this->auth_event->event->st_date,
             ]
+
         ];
     }
 }

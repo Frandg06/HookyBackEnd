@@ -27,7 +27,9 @@ class UserService
     DB::beginTransaction();
     try {
 
+      
       $authUser = request()->user();
+      Log::info("authUser->uid: " . $authUser->uid);
       // usuarios ya obtenidos previamente con lo que no se ha interactuado en el evento actual
       $usersWithoutInteraction = $authUser->interactions()->usersWithoutInteraction($authUser->event_uid);
       
@@ -40,6 +42,7 @@ class UserService
       }else {
         $users = User::getUsersToInteract($authUser, $usersWithInteraction, $usersWithoutInteraction);
       }
+      Log::info("users: " . count($users));
       $newUsersWithInteractions = [];
 
       foreach ($users as $userToInsert) {  

@@ -18,7 +18,7 @@ Route::prefix('company')->group(function () {
     Route::post('/register', [AuthCompanyController::class, 'register']);
     Route::post('/login', [AuthCompanyController::class, 'login']);
     
-    Route::middleware(['auth:company'])->group(function () {        
+    Route::middleware(['auth:company', 'jwt.verify.company'])->group(function () {
         Route::put('/update', [CompanyController::class, 'update']);
         Route::get('/auth', [AuthCompanyController::class, 'me']);
         Route::post('/logout', [AuthCompanyController::class, 'logout']);

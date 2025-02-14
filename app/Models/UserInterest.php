@@ -13,7 +13,7 @@ class UserInterest extends Model
     protected $fillable = ['user_id', 'interest_id']; 
 
     public function user() : BelongsTo {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_uid', 'uid');
     }
 
     public function interest() : BelongsTo {

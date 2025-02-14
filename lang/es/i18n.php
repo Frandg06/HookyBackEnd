@@ -74,5 +74,6 @@ return [
   'notification_ko' => 'Ocurrió un error al enviar la notificación.',
   'email_required' => 'El email es requerido.',
   'not_aviable_user' => 'No tienes permisos para ver este usuario.',
+  'event_not_active_or_next' => 'No existe ningún evento activo o próximo.',
 
 ];

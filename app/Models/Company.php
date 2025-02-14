@@ -19,6 +19,10 @@ class Company extends Authenticatable implements JWTSubject
 {
     use HasFactory, HasUid;
 
+    protected $table = 'companies';
+    protected $primaryKey = 'uid';
+    protected $keyType = 'string';
+
     protected $fillable = [
         'name',
         'email',
@@ -78,6 +82,8 @@ class Company extends Authenticatable implements JWTSubject
     }
 
     public function getJWTCustomClaims() {
-        return [];
+        return [
+            'uid' => $this->uid,
+        ];
     }
 }

@@ -16,6 +16,10 @@ class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable, HasUid;
 
+    protected $table = 'users';
+    protected $primaryKey = 'uid';
+    protected $keyType = 'string';
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -81,11 +85,11 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function userImages() : HasMany {
-        return $this->hasMany(UserImage::class);
+        return $this->hasMany(UserImage::class, 'user_uid', 'uid');
     }
 
     public function interests() : HasMany {
-        return $this->hasMany(UserInterest::class);
+        return $this->hasMany(UserInterest::class, 'user_uid', 'uid');
     }
 
     public function interactions() : HasMany {
@@ -117,6 +121,10 @@ class User extends Authenticatable implements JWTSubject
 
     public function getCompanyUidAttribute() : string {
         return $this->events()->getCompanyByEvent();
+    }
+
+    public function getAuthEventAttribute()  {
+        return $this->events()->activeEventData();
     }
 
 
@@ -165,7 +173,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function interestBelongsToMany()
     {
-        return $this->belongsToMany(Interest::class, 'user_interests', 'user_id', 'interest_id');
+        return $this->belongsToMany(Interest::class, 'user_interests', 'user_uid', 'interest_id');
     }
 
     public function scopeGetUsersToInteract($query, $authUser, $usersWithInteraction, $usersWithoutInteraction) 
@@ -210,18 +218,18 @@ class User extends Authenticatable implements JWTSubject
             EXISTS (
                 SELECT 1 
                 FROM user_interests 
-                WHERE user_interests.user_id = users.id 
-                GROUP BY user_interests.user_id 
-                HAVING COUNT(user_interests.user_id) BETWEEN 3 AND 6
+                WHERE user_interests.user_uid = users.uid 
+                GROUP BY user_interests.user_uid 
+                HAVING COUNT(user_interests.user_uid) BETWEEN 3 AND 6
             )
         ")
         ->whereRaw("
             EXISTS (
                 SELECT 1 
                 FROM user_images 
-                WHERE user_images.user_id = users.id 
-                GROUP BY user_images.user_id 
-                HAVING COUNT(user_images.user_id) = 3
+                WHERE user_images.user_uid = users.uid 
+                GROUP BY user_images.user_uid 
+                HAVING COUNT(user_images.user_uid) = 3
             )
         ")
         ->orWhereIn('uid', $usersWithoutInteraction)
