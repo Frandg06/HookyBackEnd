@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
         Storage::disk('r2')->deleteDirectory('hooky/qr');
 
         $company = Company::create([
+            "uid" => "1d59e992-7865-41c5-ad7d-d271ccf4e7fc",
             "name"=> "Studio54",
             "email"=> "studio54@email.es",
             "password"=> "a",
