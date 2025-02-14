@@ -42,7 +42,7 @@ class EventService
 
       DB::commit();
 
-      $last_event = $company->events()->firstNextEvent()->first();
+      $last_event = $company->events()->firstNextEvent($company->timezone->name)->first();
 
       return $last_event;
     } catch (ApiException $e) {

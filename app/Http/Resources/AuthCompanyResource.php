@@ -43,7 +43,7 @@ class AuthCompanyResource extends JsonResource
             'average_ticket_price' => $this->average_ticket_price,
             'timezone_uid' => $this->timezone_uid,
             'timezone_string' => $this->timezone->name,
-            'next_event' => $this->events()->firstNextEvent()->first(),
+            'next_event' => $this->events()->firstNextEvent($this->timezone->name)->first(),
             'tickets_count_this_month' => $this->tickets()->ticketsCountThisMonth()->count(),
             'tickets_last_month' => $this->tickets()->ticketsCountLastMonth()->count(),
             'qr_url' => config("filesystems.disks.r2.url") . 'qr/' . $this->uid . '.png',

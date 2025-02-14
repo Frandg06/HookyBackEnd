@@ -27,15 +27,25 @@ class AuthService {
         
         if(!$company) throw new ApiException("company_not_exists", 404);
 
-        
         $timezone = $company->timezone->name;
         
-        $event = $company->events()->activeEvent($timezone)->first();
+        $actual_event = $company->active_event;
+
+        if(!$actual_event) {
+          $next_event = $company->next_event;
+        }
+
+        $event = $actual_event ?? $next_event;
         
         if(!$event) throw new ApiException("event_not_active", 404);
         
         $user = User::create($data);
         
+        $count = $event->users()->count();
+        Log::info("count: " . $count);
+
+        if($count >= $company->limit_users) throw new ApiException("limit_users_reached", 409);
+
         $user->events()->create([
           'event_uid' => $event->uid, 
           'logged_at' => now(), 
@@ -75,9 +85,15 @@ class AuthService {
 
         $timezone = $company->timezone->name;
         
-        $event = $company->events()->activeEvent($timezone)->first();
+        $actual_event = $company->active_event;
 
-        if(!$event) throw new ApiException("event_not_active", 404); 
+        if(!$actual_event) {
+          $next_event = $company->next_event;
+        }
+
+        $event = $actual_event ?? $next_event;
+
+        if(!$event) throw new ApiException("event_not_active", 404);
 
         $diff = $this->getDiff($event->end_date, $timezone);
         
@@ -92,6 +108,10 @@ class AuthService {
         if($exist){
           $user->events()->where('event_uid', $event->uid)->update(['logged_at' => now()]);
         }else{
+          $count = $event->users->count();
+          
+          if($count >= $company->limit_users) throw new ApiException("limit_users_reached", 409);
+
           $user->events()->create([
             'event_uid' => $event->uid, 
             'logged_at' => now(), 

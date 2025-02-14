@@ -70,6 +70,21 @@ class Company extends Authenticatable implements JWTSubject
         return $events > 0;
     }
 
+    public function getActiveEventAttribute()
+    {
+       return $this->events()->activeEvent($this->timezone->name)->first();
+    }
+
+    public function getNextEventAttribute()
+    {
+       return $this->events()->firstNextEvent($this->timezone->name)->first();
+    }
+
+    public function getLimitUsersAttribute()
+    {
+       return $this->pricing_plan->limit_users;
+    }
+
     protected function casts(): array
     {
         return [

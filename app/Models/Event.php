@@ -40,8 +40,8 @@ class Event extends Model
         ->whereMonth('st_date', Carbon::now()->month);
     }
 
-    public function scopeFirstNextEvent($query)  { 
-        $query->where('st_date', '>', Carbon::now())
+    public function scopeFirstNextEvent($query, $tz)  { 
+        $query->where('st_date', '>', Carbon::now($tz))
             ->orderBy('st_date', 'asc');
     }
 

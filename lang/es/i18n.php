@@ -75,5 +75,6 @@ return [
   'email_required' => 'El email es requerido.',
   'not_aviable_user' => 'No tienes permisos para ver este usuario.',
   'event_not_active_or_next' => 'No existe ningún evento activo o próximo.',
+  'limit_users_reached' => 'El evento ha alcanzado el límite de usuarios.',
 
 ];
