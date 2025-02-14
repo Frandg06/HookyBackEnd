@@ -42,7 +42,6 @@ class AuthService {
         $user = User::create($data);
         
         $count = $event->users()->count();
-        Log::info("count: " . $count);
 
         if($count >= $company->limit_users) throw new ApiException("limit_users_reached", 409);
 
@@ -109,7 +108,7 @@ class AuthService {
           $user->events()->where('event_uid', $event->uid)->update(['logged_at' => now()]);
         }else{
           $count = $event->users->count();
-          
+
           if($count >= $company->limit_users) throw new ApiException("limit_users_reached", 409);
 
           $user->events()->create([
