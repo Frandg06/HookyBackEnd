@@ -74,5 +74,7 @@ return [
   'notification_ko' => 'Beim Senden der Benachrichtigung ist ein Fehler aufgetreten.',
   'email_required' => 'Die E-Mail-Adresse ist erforderlich.',
   'not_aviable_user' => 'Sie haben keine Berechtigung, diesen Benutzer zu sehen.',
+  'event_not_active_or_next' => 'Es gibt kein aktives oder bevorstehendes Event.',
+  'limit_users_reached' => 'Das Event hat die maximale Anzahl an Teilnehmern erreicht.',
 
 ];
