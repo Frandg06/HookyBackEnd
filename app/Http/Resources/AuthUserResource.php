@@ -73,7 +73,6 @@ class AuthUserResource extends JsonResource
                 'like' => $this->notifications()->where('event_uid', $this->event_uid)->where('type_id', NotificationsType::LIKE_TYPE)->where('read_at', null)->count(),
                 'superlike' => $this->notifications()->where('event_uid', $this->event_uid)->where('type_id', NotificationsType::SUPER_LIKE_TYPE)->where('read_at', null)->count(),
                 'hook' => $this->notifications()->where('event_uid', $this->event_uid)->where('type_id', NotificationsType::HOOK_TYPE)->where('read_at', null)->count(),
-                'message' => 1
             ],
             "next_event" => [
                 'exists' => $now->lt($this->auth_event->event->st_date) ? true : null,

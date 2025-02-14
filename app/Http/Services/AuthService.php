@@ -60,7 +60,6 @@ class AuthService {
 
         return $token;
         
-
       } catch (ApiException $e) { 
         DB::rollBack();
         throw new ApiException($e->getMessage(), $e->getCode());
