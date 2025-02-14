@@ -10,7 +10,7 @@ Route::prefix('auth')->group(function () {
     Route::put('/password/reset', [AuthController::class, 'setNewPassword']);
 
     Route::middleware(['auth:api', 'jwt.verify'])->group(function () {
-      Route::post('/logout', [AuthController::class, 'logout'])->middleware(['event']);
+      Route::post('/logout', [AuthController::class, 'logout']);
       Route::get('/me', [AuthController::class, 'me']);
     });
 });
