@@ -126,7 +126,7 @@ class ImagesService {
       if(!$remove) throw new ApiException('image_delete_ko', 500);
 
       DB::commit();
-      
+
       return true; 
     } catch (ApiException $e) {
       DB::rollBack();
@@ -167,7 +167,10 @@ class ImagesService {
     
     $rotate = 0;
 
-    if($data['width'] == $img->height()) {
+    $size = $img->size();
+    $ratio = $size->aspectRatio();
+
+    if($data['width'] == $img->height() && $ratio != 1) {
       $rotate = -90;
     }
 
