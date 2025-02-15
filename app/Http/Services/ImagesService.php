@@ -161,6 +161,9 @@ class ImagesService {
 
     $img = $manager->read($image);
 
+    $all = $img->exif();
+    Log::info($all);
+
     return $img->scale(width: 500)->toWebP(80); 
   }
   
