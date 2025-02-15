@@ -153,7 +153,10 @@ class ImagesService {
 
   private function optimize($image) 
   {
-
+    $default = getimagesize($image);
+    
+    Log::info("Default Width: " . $default[0] . " Height: " . $default[1]);
+    
     $manager = new ImageManager(
        Driver::class,
        autoOrientation: false,
