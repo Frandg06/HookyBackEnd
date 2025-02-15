@@ -161,15 +161,17 @@ class ImagesService {
     );
    
     $img = $manager->read($image);
-   
+    
+    $rotate = 0;
+
     if($data['width'] == $img->height()) {
       Log::info("Entra aqui a que si");
-      $img->rotate(-90); 
+      $rotate = -90;
     }
     
     Log::info("Width: " . $img->width() . " Height: " . $img->height());
 
-    return $img->scale(width: 500)->toWebP(80); 
+    return $img->scale(width: 500)->rotate($rotate)->toWebP(80); 
   }
   
 }

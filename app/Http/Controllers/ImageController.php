@@ -20,7 +20,12 @@ class ImageController extends Controller
         ]);
 
         $image = $request->file('image');
-        $response = $this->imageService->store($image);
+        $original_data = [
+            'width' => $request->width,
+            'height' => $request->height,
+        ];
+        
+        $response = $this->imageService->store($image, $original_data);
 
         return response()->json(["success" => true, "resp" =>  $response], 200);
     }
