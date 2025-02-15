@@ -153,18 +153,7 @@ class ImagesService {
   {
     $img = Image::read($image);
 
-    $ogWidth = $img->width();
-    $ogHeight = $img->height();
-
-    $aspectRatio = $ogWidth / $ogHeight;
-
-    $newHeight = 500 / $aspectRatio;
-
-    if($ogHeight < $newHeight) return $img->toWebp(80);
-
-    Log::alert("Height: " . $ogHeight . " Width: " . $ogWidth . " AspectRatio: " . $aspectRatio. " NewHeight: " . $newHeight);
-
-    return $img->resize(500, $newHeight)->toWebP(80);
+    return $img->scale(width: 500)->toWebP(80); 
   }
   
 }
