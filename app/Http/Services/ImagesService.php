@@ -163,6 +163,7 @@ class ImagesService {
     $img = $manager->read($image);
    
     if($data['width'] == $img->height()) {
+      Log::info("Entra aqui a que si");
       $img->rotate(-90); 
     }
     
