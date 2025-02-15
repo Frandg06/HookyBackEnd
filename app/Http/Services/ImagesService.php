@@ -84,6 +84,7 @@ class ImagesService {
  
   public function delete($uid) 
   {
+    DB::beginTransaction();
     try {
 
       $user = request()->user();
@@ -97,7 +98,7 @@ class ImagesService {
       if(!$delete) throw new ApiException('i18n.image_delete_ko', 500);
       
       $imageToDelete->delete();
-      
+      DB::commit();
       return true;
 
     } catch (ApiException $e) {
@@ -124,6 +125,8 @@ class ImagesService {
 
       if(!$remove) throw new ApiException('image_delete_ko', 500);
 
+      DB::commit();
+      
       return true; 
     } catch (ApiException $e) {
       DB::rollBack();
@@ -165,11 +168,8 @@ class ImagesService {
     $rotate = 0;
 
     if($data['width'] == $img->height()) {
-      Log::info("Entra aqui a que si");
       $rotate = -90;
     }
-    
-    Log::info("Width: " . $img->width() . " Height: " . $img->height());
 
     return $img->scale(width: 500)->rotate($rotate)->toWebP(80); 
   }
