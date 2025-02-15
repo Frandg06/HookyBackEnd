@@ -42,7 +42,7 @@ class UserService
       }else {
         $users = User::getUsersToInteract($authUser, $usersWithInteraction, $usersWithoutInteraction);
       }
-      Log::info("users: " . count($users));
+      
       $newUsersWithInteractions = [];
 
       foreach ($users as $userToInsert) {  

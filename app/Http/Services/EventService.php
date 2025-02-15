@@ -19,8 +19,7 @@ class EventService
       $st_date = Carbon::parse($data['st_date']);
       $end_date = Carbon::parse($data['end_date']);
       $diff = $st_date->diffInHours($end_date);
-      
-      Log::info("EventController->store", ['company' => $company]);
+    
       if($company->checkEventInSameDay($st_date)) throw new ApiException("event_same_day", 409);
       if(!$company->checkEventLimit()) throw new ApiException("event_limit_reached", 409);
       
