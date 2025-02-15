@@ -151,7 +151,7 @@ class AuthUserService {
         if($user->userImages()->count() === 0){
             if(count($files) < 3 || count($files) > 3) throw new ApiException("invalid_image_count", 400);
             foreach ($files as $file) {
-                $imageService->store($file);
+                $imageService->store($file['file'], $file['data']);
             }
         }
 

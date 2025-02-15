@@ -145,10 +145,30 @@ class AuthUserController extends Controller
 
     private function parseCompleteFiles($data) 
     {
+        $size = json_decode($data["userImagesSizes"], true);
+        
         return [
-            $data["userImages0"],
-            $data["userImages1"],
-            $data["userImages2"],
+            [
+                "file" => $data["userImages0"], 
+                "data" => [
+                    "width" =>  $size[0]['width'],
+                    "height" =>  $size[0]['height']
+                ]
+            ],
+            [
+                "file" => $data["userImages1"], 
+                "data" => [
+                    "width" =>  $size[1]['width'],
+                    "height" =>  $size[1]['height']
+                ]
+            ],
+            [
+                "file" => $data["userImages2"], 
+                "data" => [
+                    "width" =>  $size[2]['width'],
+                    "height" =>  $size[2]['height']
+                ]
+            ],     
         ];
     }
 
