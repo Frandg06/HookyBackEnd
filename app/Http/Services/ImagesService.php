@@ -7,6 +7,8 @@ use App\Models\UserImage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 use Intervention\Image\Laravel\Facades\Image;
 
 class ImagesService {
@@ -151,9 +153,15 @@ class ImagesService {
 
   private function optimize($image) 
   {
-    $img = Image::read($image);
 
-    return $img->orient()->scale(width: 500)->toWebP(80); 
+    $manager = new ImageManager(
+      Driver::class,
+      autoOrientation: false,
+   );
+
+    $img = $manager->read($image);
+
+    return $img->scale(width: 500)->toWebP(80); 
   }
   
 }
