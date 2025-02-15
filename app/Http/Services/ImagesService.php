@@ -13,7 +13,7 @@ use Intervention\Image\Laravel\Facades\Image;
 
 class ImagesService {
 
-  public function store($img) 
+  public function store($img, $data) 
   {
     DB::beginTransaction();
     try {
@@ -28,7 +28,7 @@ class ImagesService {
 
       if($img->getSize() > 1024 * 1024 * 10) throw new ApiException('images_size_ko', 409);
 
-      $image = $this->optimize($img);
+      $image = $this->optimize($img, $data);
 
       $newImage = $user->userImages()->create([
         'order' => $user->userImages()->count() + 1,
@@ -54,7 +54,7 @@ class ImagesService {
     }
   }
 
-  public function update($img_uid, $img)
+  public function update($img_uid, $img, $data)
   {
     DB::beginTransaction();
     try {
@@ -64,7 +64,7 @@ class ImagesService {
 
       if(!$delete) throw new ApiException('delete_image_unexpected_error', 500);
       
-      $store = $this->store($img);
+      $store = $this->store($img, $data);
 
       if(!$store) throw new ApiException('store_image_unexpected_error', 500);
       
@@ -151,11 +151,8 @@ class ImagesService {
     }
   }
 
-  private function optimize($image) 
+  private function optimize($image, $data) 
   {
-    $default = getimagesize($image);
-    
-    Log::info("Default Width: " . $default[0] . " Height: " . $default[1]);
     
     $manager = new ImageManager(
        Driver::class,
@@ -165,10 +162,11 @@ class ImagesService {
    
     $img = $manager->read($image);
    
+    if($data['width'] == $img->height()) {
+      $img->rotate(-90); 
+    }
+    
     Log::info("Width: " . $img->width() . " Height: " . $img->height());
-    $all = $img->exif();
-
-    Log::info(json_encode($all));
 
     return $img->scale(width: 500)->toWebP(80); 
   }

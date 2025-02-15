@@ -45,8 +45,10 @@ class ImageController extends Controller
 
         $uid = $request->uid;
         $image = $request->file('image');
+        $original_data = $request->only('width', 'height');
+
         
-        $response = $this->imageService->update($uid, $image);
+        $response = $this->imageService->update($uid, $image, $original_data);
         return response()->json(["success" => true, "resp" =>  $response], 200);
     }
 
