@@ -155,15 +155,17 @@ class ImagesService {
   {
 
     $manager = new ImageManager(
-      Driver::class,
-      autoOrientation: false,
-   );
-
+       Driver::class,
+       autoOrientation: false,
+       strip: true
+    );
+   
     $img = $manager->read($image);
-
+   
+    Log::info("Width: " . $img->width() . " Height: " . $img->height());
     $all = $img->exif();
-    Log::info(json_encode($all));
 
+    Log::info(json_encode($all));
 
     return $img->scale(width: 500)->toWebP(80); 
   }
