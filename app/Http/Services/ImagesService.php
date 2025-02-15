@@ -153,7 +153,7 @@ class ImagesService {
   {
     $img = Image::read($image);
 
-    return $img->scale(width: 500)->toWebP(80); 
+    return $img->orient()->scale(width: 500)->toWebP(80); 
   }
   
 }
