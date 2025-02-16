@@ -103,7 +103,7 @@ class Company extends Authenticatable implements JWTSubject
         ->join('users', 'user_events.user_uid', '=', 'users.uid')
         ->select('users.*')
         ->orderBy('users.created_at', 'desc')
-        // ->limit(5)
+        ->limit(5)
         ->pluck('users.uid');
         $users = User::whereIn('uid', $ids)->get();
         
