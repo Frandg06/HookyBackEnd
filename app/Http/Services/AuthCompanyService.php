@@ -3,7 +3,9 @@ namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
 use App\Models\Company;
+use App\Models\CompanyPasswordResetToken;
 use App\Models\TimeZone;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -71,5 +73,83 @@ class AuthCompanyService {
         throw new ApiException("login_ko", 500);
       }
      
+    }
+
+    public function passwordReset(String $email) 
+    {
+      DB::beginTransaction();
+      try {
+        if(!$email) throw new ApiException('email_required', 400);
+
+        $company = Company::where('email', $email)->first();
+
+        if(!$company) throw new ApiException('user_not_found', 404);
+        
+        $token = uniqid(rand(), true);
+
+        $already_used = CompanyPasswordResetToken::where('email', $company->email)->get();
+
+        foreach ($already_used as $token) {
+            $token->delete();
+        }
+
+        $password_token = CompanyPasswordResetToken::create([
+            'email' => $company->email,
+            'token' => base64_encode($token),
+            'expires_at' => now()->addMinutes(15)
+        ]);
+
+        $url = config('app.admin_url') . '/password/new?token=' . $password_token->token;
+
+
+        $template = view('emails.recovery_password_app', [
+            'link' => $url,
+            'name' => $company->name,
+        ])->render();
+        
+        $emailService = new EmailService();
+        $emailService->sendEmail($company, __('i18n.password_reset_subject'), $template);
+        
+        DB::commit();
+
+        return true;
+
+      } catch (ApiException $e) { 
+        DB::rollBack();
+        throw new ApiException($e->getMessage(), $e->getCode());
+      } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+        throw new ApiException("unexpected_error", 500);
+      }
+    }
+     
+    public function setNewPassword(Array $data) {
+      DB::beginTransaction();
+      try {
+        $token_model = CompanyPasswordResetToken::where('token', $data['token'])->first();
+
+        if(!$token_model) throw new ApiException('token_not_found', 404);
+        
+        if(now()->greaterThan(Carbon::parse($token_model->expires_at))) throw new ApiException('token_expired', 404);
+        
+        $company = $token_model->company;
+        
+        $company->update([
+          'password' => bcrypt($data['password'])
+        ]);
+        
+        $token_model->delete();
+        DB::commit();
+        return true;
+
+      } catch (ApiException $e) { 
+        DB::rollBack();
+        throw new ApiException($e->getMessage(), $e->getCode());
+      } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+        throw new ApiException("unexpected_error", 500);
+      }
     }
 }

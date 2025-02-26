@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterCompanyRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Services\AuthCompanyService;
 use App\Http\Services\EmailService;
 use Illuminate\Http\Request;
@@ -46,5 +47,21 @@ class AuthCompanyController extends Controller
         Auth::logout();
 
         return response()->json(["success" => true, 'message' => __('i18n.logged_out')], 200);
+    }
+
+    public function passwordReset(Request $request)
+    {
+        $email = $request->email;        
+        $this->authService->passwordReset($email);
+
+        return response()->json(["message" => __('i18n.password_reset_email'), "success" => true], 200);
+    }
+
+    public function setNewPassword(ResetPasswordRequest $request) 
+    {
+        $validated = $request->only('token', 'password');
+        $this->authService->setNewPassword($validated);
+
+        return response()->json(["message" => __('i18n.password_reset_email'), "success" => true], 200);
     }
 }
