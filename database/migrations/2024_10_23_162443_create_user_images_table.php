@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('user_images', function (Blueprint $table) {
             $table->id();
             $table->uuid('uid')->unique();
-            $table->string('user_uid');
+            $table->uuid('user_uid');
             $table->string('name')->nullable();
             $table->string('type')->nullable();
             $table->integer('size')->nullable();
