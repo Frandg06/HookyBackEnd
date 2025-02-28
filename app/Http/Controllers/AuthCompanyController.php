@@ -8,6 +8,7 @@ use App\Http\Services\AuthCompanyService;
 use App\Http\Services\EmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AuthCompanyController extends Controller
 {
@@ -36,9 +37,13 @@ class AuthCompanyController extends Controller
 
     public function me() 
     {
-        $company = request()->user()->resource();
+        try {
+            $company = request()->user()->resource();
+            return response()->json(["resp" => $company, "success" => true], 200); 
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+        }
 
-        return response()->json(["resp" => $company, "success" => true], 200); 
     }
 
     public function logout() 
