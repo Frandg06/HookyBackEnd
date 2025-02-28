@@ -42,6 +42,7 @@ class AuthCompanyController extends Controller
             return response()->json(["resp" => $company, "success" => true], 200); 
         } catch (\Exception $e) {
             Log::error($e->getMessage());
+            return response()->json(["message" => __('i18n.error'), "success" => false], 500);
         }
 
     }
