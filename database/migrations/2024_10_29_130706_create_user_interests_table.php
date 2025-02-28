@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('user_interests', function (Blueprint $table) {
             $table->id();
-            $table->string('user_uid');
+            $table->uuid('user_uid');
             $table->unsignedBigInteger('interest_id');
             $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
             $table->foreign('interest_id')->references('id')->on('interests')->onDelete('cascade');
