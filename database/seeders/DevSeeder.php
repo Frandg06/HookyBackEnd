@@ -29,28 +29,28 @@ class DevSeeder extends Seeder
         $sex = rand(1, 2);
         $orient = rand(1, 3);
 
-        for($i = 0; $i < 3000; $i++) {
-            User::create([
-                'name' => fake()->name(),
-                'surnames' => fake()->name(),
-                'email' => fake()->unique()->safeEmail(),
-                'password' => Hash::make('a'),
-                "gender_id" => $sex,
-                "sexual_orientation_id" => $orient,
-                "role_id" => Role::USER,
-                "city" => fake()->city(),
-                "born_date" => fake()->date(),
-                "ig" => fake()->name(),
-                "tw" => fake()->name(),
-                "description" => fake()->paragraph(),
-            ]);
+        // for($i = 0; $i < 3000; $i++) {
+        //     User::create([
+        //         'name' => fake()->name(),
+        //         'surnames' => fake()->name(),
+        //         'email' => fake()->unique()->safeEmail(),
+        //         'password' => Hash::make('a'),
+        //         "gender_id" => $sex,
+        //         "sexual_orientation_id" => $orient,
+        //         "role_id" => Role::USER,
+        //         "city" => fake()->city(),
+        //         "born_date" => fake()->date(),
+        //         "ig" => fake()->name(),
+        //         "tw" => fake()->name(),
+        //         "description" => fake()->paragraph(),
+        //     ]);
 
-        }
+        // }
         
 
         
         User::all()->each(function ($user)  {
-            $randomEvents = Event::inRansomOrder()->first();
+            $randomEvents = Event::first();
             $interests = Interest::inRandomOrder()->limit(3)->pluck('id');
             $user->interestBelongsToMany()->attach($interests);
 
