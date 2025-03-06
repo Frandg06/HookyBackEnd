@@ -30,6 +30,7 @@ class AuthCompanyResource extends JsonResource
             ]
         ];
 
+
         return [
             'uid' => $this->uid,
             'name' => $this->name,
@@ -48,14 +49,15 @@ class AuthCompanyResource extends JsonResource
             'qr_url' => config("filesystems.disks.r2.url") . 'qr/' . $this->uid . '.png',
             'link' => $this->link,
             'users_incomes' => $arrayUsersIncome,
-            'last_five_users' => $this->last_five_users,
+            'recent_entries_count' => $this->recent_entries,
+            // 'last_five_users' => $this->last_five_users,
             'last_event' => $this->last_event ? [
                 "total_users" => $this->last_event->total_users,
                 "incomes" => $this->last_event->total_incomes,
                 "hooks" => $this->last_event->hooks,
                 "tickets" => $this->last_event->tickets()->count(),
                 "avg_age" => round($this->last_event->avg_age),
-                "male_female" => $this->last_event->percents,
+                "percents" => $this->last_event->percents,
                 "name" => $this->last_event->name,
                 "date" => $this->last_event->st_date
             ] : null,

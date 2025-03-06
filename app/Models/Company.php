@@ -96,6 +96,12 @@ class Company extends Authenticatable implements JWTSubject
         ->count('user_events.user_uid');
     }
 
+    public function scopeUsers($query) {
+        return $query->events()
+        ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
+        ->distinct('user_events.user_uid');
+    }
+
     public function getLastFiveUsersAttribute() {
         
         $ids = $this->events()
@@ -108,6 +114,17 @@ class Company extends Authenticatable implements JWTSubject
         $users = User::whereIn('uid', $ids)->get();
         
         return UsersToTableResource::collection($users);
+    }
+
+    public function getRecentEntriesAttribute() {
+        return $this->events()
+        ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
+        ->selectRaw('DATE_TRUNC(\'hour\', user_events.logged_at) as hour, COUNT(DISTINCT user_events.user_uid) as count')
+        ->where('user_events.logged_at', '>=', now($this->timezone->name)->subHours(8))
+        ->where('user_events.logged_at', '<=', now($this->timezone->name))
+        ->groupByRaw('DATE_TRUNC(\'hour\', user_events.logged_at)')
+        ->orderByRaw('DATE_TRUNC(\'hour\', user_events.logged_at)')
+        ->pluck('count');
     }
 
     protected function casts(): array

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Log;
 
 class Event extends Model
 {
@@ -89,15 +88,18 @@ class Event extends Model
     public function getAvgAgeAttribute() {
         return $this->users()
             ->join('users', 'user_events.user_uid', '=', 'users.uid')
-            ->selectRaw('AVG(TIMESTAMPDIFF(YEAR, users.born_date, CURDATE())) as avg_age')
+            ->selectRaw('AVG(EXTRACT(YEAR FROM AGE(users.born_date))) as avg_age')
             ->value('avg_age');
     }
 
-    public function getPercentsAttribute(): string {
+    public function getPercentsAttribute(): array {
 
         $total = $this->users()->count();
 
-        if($total == 0) return 0;
+        if($total == 0) return [
+            'males' => 0,
+            'females' => 0,
+        ];
 
         $males = $this->users()
             ->join('users', 'user_events.user_uid', '=', 'users.uid')
@@ -109,11 +111,11 @@ class Event extends Model
             ->where('users.gender_id', Gender::FEMALE)
             ->count() ;
 
-        $male_percentage = round(($males / $total) * 100);
-        $female_percentage = round(($females / $total )* 100);
 
-
-        return $male_percentage . " / " . $female_percentage . " %";  
+        return [
+            'males' => $males,
+            'females' => $females,
+        ];
     }
 
     public function getHooksAttribute()  { 
