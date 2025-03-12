@@ -113,6 +113,28 @@ class Company extends Authenticatable implements JWTSubject
         ];
     }
 
+    public function getTotalTicketsAttribute($query) {
+        $query = $this->tickets()
+            ->where('redeemed', true);
+
+        $ticketCurrentMonth = (clone $query)->whereBetween('redeemed_at', [
+            now($this->timezone->name)->startOfMonth(),
+            now($this->timezone->name)->endOfMonth()
+        ])->count();
+
+        $tickeLastMonth = (clone $query)->whereBetween('redeemed_at', [
+            now($this->timezone->name)->subMonth()->startOfMonth(),
+            now($this->timezone->name)->subMonth()->endOfMonth()
+        ])->count();
+                
+        
+        return [
+            'count' => $query->count(),
+            'ticket_last_month' =>  $tickeLastMonth,
+            'ticket_current_month' => $ticketCurrentMonth,
+        ];
+    }
+
     public function scopeUsers($query) {
         return $query->events()
         ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
