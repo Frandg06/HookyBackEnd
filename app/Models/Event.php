@@ -67,6 +67,9 @@ class Event extends Model
                 $sub->where('st_date', '<', now($timezone))
                 ->where('end_date', '>', now($timezone));
             })
+            ->orWhere(function ($sub) use ($timezone) {
+                $sub->where('st_date', '<', now($timezone));
+            })
             ->orderBy('st_date', 'desc');
     }
 
