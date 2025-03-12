@@ -91,10 +91,26 @@ class Company extends Authenticatable implements JWTSubject
     }
 
     public function getTotalUsersAttribute() {
-        return $this->events()
-        ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
-        ->distinct('user_events.user_uid')
-        ->count('user_events.user_uid');
+        $query = $this->events()
+            ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
+            ->distinct('user_events.user_uid');
+
+        $userCurrentMonth = (clone $query)->whereBetween('user_events.logged_at', [
+            now($this->timezone->name)->startOfMonth(),
+            now($this->timezone->name)->endOfMonth()
+        ])->count('user_events.user_uid');
+
+        $userLastMonth = (clone $query)->whereBetween('user_events.logged_at', [
+            now($this->timezone->name)->subMonth()->startOfMonth(),
+            now($this->timezone->name)->subMonth()->endOfMonth()
+        ])->count('user_events.user_uid');
+                
+        
+        return [
+            'count' => $query->count('user_events.user_uid'),
+            'user_last_month' =>  $userLastMonth,
+            'user_current_month' => $userCurrentMonth,
+        ];
     }
 
     public function scopeUsers($query) {

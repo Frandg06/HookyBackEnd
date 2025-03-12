@@ -54,7 +54,6 @@ class AuthCompanyResource extends JsonResource
             'link' => $this->link,
             'users_incomes' => $this->last_seven_events,
             'recent_entries_count' => $recent_entries,
-            // 'last_five_users' => $this->last_five_users,
             'last_event' => $this->last_event ? [
                 "total_users" => $this->last_event->total_users,
                 "incomes" => $this->last_event->total_incomes,
