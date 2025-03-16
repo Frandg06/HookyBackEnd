@@ -24,9 +24,11 @@ Route::prefix('company')->group(function () {
         Route::put('/update', [CompanyController::class, 'update']);
         Route::get('/auth', [AuthCompanyController::class, 'me']);
         Route::post('/logout', [AuthCompanyController::class, 'logout']);
+        Route::get('/events', [EventController::class, 'getEvents']);
         Route::post('/event', [EventController::class, 'store']);
         Route::post('/tickets', [TicketController::class, 'generateTickets']);
         Route::get('/tickets', [TicketController::class, 'index']);
+
     });
     
 });

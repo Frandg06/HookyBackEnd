@@ -37,6 +37,8 @@ class EventService
         'timezone' => $data['timezone'],
         'likes' => $data['likes'],
         'super_likes' => $data['superlikes'],
+        'name' => $data['name'],
+        'colors' => $data['colors'],
       ]);
 
       DB::commit();
