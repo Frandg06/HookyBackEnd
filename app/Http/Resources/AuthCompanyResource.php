@@ -15,21 +15,25 @@ class AuthCompanyResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $arrayUsersIncome = [
-            "labels" => ['06/09', '17/09', '31/10', '31/12', '06/01', '15/03', '27/4'],  
-            "event_names" => ['Sabado', 'Jueves Universitario', 'Halloween', 'Noche Vieja', 'Reyes', 'Carnaval', 'Genarin'], 
-            "data" => [
-                 [
-                    "name" => "Usuarios",
-                    "data"=> [1300, 2100, 3200, 2300, 1200, 1500, 2700]
-                ], 
-                [
-                    "name" => "Ingresos",
-                    "data"=> [1231, 3434, 2320, 1200, 1500, 2700, 3200]
-                ], 
-            ]
-        ];
+        $hoursForRecentEntries = [];
 
+        for($i = 9; $i >= 0; $i--) {
+            $hoursForRecentEntries[] = now($this->timezone->name)->subHours($i)->startOfHour()->format('H:i');
+        }
+
+        $hourMap = [];
+        foreach ($this->recent_entries as $entry) {
+            $hourMap[$entry["hour"]] = $entry["count"];
+        }
+
+        // Construir el array completo con las horas faltantes
+        $recent_entries = [];
+        foreach ($hoursForRecentEntries as $hour) {
+            $recent_entries[] = [
+                "hour" => $hour,
+                "count" => $hourMap[$hour] ?? 0
+            ];
+        }
 
         return [
             'uid' => $this->uid,
@@ -42,15 +46,12 @@ class AuthCompanyResource extends JsonResource
             'average_ticket_price' => $this->average_ticket_price,
             'timezone_uid' => $this->timezone_uid,
             'timezone_string' => $this->timezone->name,
-            'next_event' => $this->events()->firstNextEvent($this->timezone->name)->first(),
-            'tickets_count_this_month' => $this->tickets()->ticketsCountThisMonth()->count() ?? 0,
+            'total_tickets' => $this->total_tickets,
             'total_users' => $this->total_users,
-            'tickets_last_month' => $this->tickets()->ticketsCountLastMonth()->count(),
             'qr_url' => config("filesystems.disks.r2.url") . 'qr/' . $this->uid . '.png',
             'link' => $this->link,
-            'users_incomes' => $arrayUsersIncome,
-            'recent_entries_count' => $this->recent_entries,
-            // 'last_five_users' => $this->last_five_users,
+            'users_incomes' => $this->last_seven_events,
+            'recent_entries_count' => $recent_entries,
             'last_event' => $this->last_event ? [
                 "total_users" => $this->last_event->total_users,
                 "incomes" => $this->last_event->total_incomes,

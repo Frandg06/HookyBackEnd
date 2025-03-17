@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Http\Resources\AuthCompanyResource;
 use App\Http\Resources\UsersToTableResource;
 use App\Models\Traits\HasUid;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -54,9 +55,9 @@ class Company extends Authenticatable implements JWTSubject
         return $this->belongsTo(PricingPlan::class, 'pricing_plan_uid', 'uid');
     }
 
-    public function checkEventLimit() {
-        $events = $this->events()->nextMontEvents()->count();
+    public function checkEventLimit($st_date) {
         $limit = $this->pricing_plan->limit_events;
+        $events = $this->events()->whereDate('st_date', '>=', $st_date->startOfMonth())->whereDate('st_date', '<=', $st_date->endOfMonth())->count();
         return $events < $limit;
     }
 
@@ -64,8 +65,19 @@ class Company extends Authenticatable implements JWTSubject
         return AuthCompanyResource::make($this);
     }
 
-    public function checkEventInSameDay($date) {
-        $events = $this->events()->eventInSameDay($date)->count();
+    public function checkEveventsInSameTime($st_date, $end_date) {
+        $events = $this->events()
+            ->where(function ($query) use ($st_date) {
+                $query->whereDate('st_date', '>=', $st_date)
+                ->whereDate('end_date', '<=', $st_date);
+            })
+            ->orWhere(function ($query) use ($end_date) {
+                $query->whereDate('st_date', '>=', $end_date)
+                ->whereDate('end_date', '<=', $end_date);
+            })->count();
+            // TODO
+            // Si el evento enviuenve a otro evento por fechas
+
         return $events > 0;
     }
 
@@ -90,10 +102,48 @@ class Company extends Authenticatable implements JWTSubject
     }
 
     public function getTotalUsersAttribute() {
-        return $this->events()
-        ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
-        ->distinct('user_events.user_uid')
-        ->count('user_events.user_uid');
+        $query = $this->events()
+            ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
+            ->distinct('user_events.user_uid');
+
+        $userCurrentMonth = (clone $query)->whereBetween('user_events.logged_at', [
+            now($this->timezone->name)->startOfMonth(),
+            now($this->timezone->name)->endOfMonth()
+        ])->count('user_events.user_uid');
+
+        $userLastMonth = (clone $query)->whereBetween('user_events.logged_at', [
+            now($this->timezone->name)->subMonth()->startOfMonth(),
+            now($this->timezone->name)->subMonth()->endOfMonth()
+        ])->count('user_events.user_uid');
+                
+        
+        return [
+            'count' => $query->count('user_events.user_uid'),
+            'user_last_month' =>  $userLastMonth,
+            'user_current_month' => $userCurrentMonth,
+        ];
+    }
+
+    public function getTotalTicketsAttribute($query) {
+        $query = $this->tickets()
+            ->where('redeemed', true);
+
+        $ticketCurrentMonth = (clone $query)->whereBetween('redeemed_at', [
+            now($this->timezone->name)->startOfMonth(),
+            now($this->timezone->name)->endOfMonth()
+        ])->count();
+
+        $tickeLastMonth = (clone $query)->whereBetween('redeemed_at', [
+            now($this->timezone->name)->subMonth()->startOfMonth(),
+            now($this->timezone->name)->subMonth()->endOfMonth()
+        ])->count();
+                
+        
+        return [
+            'count' => $query->count(),
+            'ticket_last_month' =>  $tickeLastMonth,
+            'ticket_current_month' => $ticketCurrentMonth,
+        ];
     }
 
     public function scopeUsers($query) {
@@ -118,13 +168,43 @@ class Company extends Authenticatable implements JWTSubject
 
     public function getRecentEntriesAttribute() {
         return $this->events()
-        ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
-        ->selectRaw('DATE_TRUNC(\'hour\', user_events.logged_at) as hour, COUNT(DISTINCT user_events.user_uid) as count')
-        ->where('user_events.logged_at', '>=', now($this->timezone->name)->subHours(8))
-        ->where('user_events.logged_at', '<=', now($this->timezone->name))
-        ->groupByRaw('DATE_TRUNC(\'hour\', user_events.logged_at)')
-        ->orderByRaw('DATE_TRUNC(\'hour\', user_events.logged_at)')
-        ->pluck('count');
+            ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
+            ->selectRaw("TO_CHAR(DATE_TRUNC('hour', user_events.logged_at), 'HH24:MI') as hour, COUNT(DISTINCT user_events.user_uid) as count")
+            ->where('user_events.logged_at', '>=', now($this->timezone->name)->subHours(8))
+            ->where('user_events.logged_at', '<=', now($this->timezone->name))
+            ->groupByRaw("DATE_TRUNC('hour', user_events.logged_at)")
+            ->orderByRaw("DATE_TRUNC('hour', user_events.logged_at)")
+            ->get();
+
+    }
+    public function getLastSevenEventsAttribute() {
+        $events = $this->events()
+            ->where('st_date', '<=', now($this->timezone->name))
+            ->orderBy('st_date', 'desc')
+            ->limit(7)
+            ->get();
+
+        return [
+            'labels' => $events->map(function ($event) {
+                return Carbon::parse($event->st_date)->format('d/m/Y');
+            }),
+            'event_names' => $events->pluck('name')->toArray(),
+            'data' => [
+                [
+                    "name" => "Usuarios",
+                    "data"=> $events->map(function ($event) {
+                        return $event->users()->count();
+                    })
+                ],
+                [
+                    "name" => "Ingresos",
+                    "data"=> $events->map(function ($event) {
+                        return $event->total_incomes;
+                    })
+                ],
+            ]
+        ];
+
     }
 
     protected function casts(): array

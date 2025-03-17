@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Filterable;
 use App\Models\Traits\HasUid;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -11,9 +12,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Event extends Model
 {
-    use HasUid;
+    use HasUid, Filterable;
 
-    protected $fillable = ['uid', 'st_date', 'end_date', 'company_uid', 'timezone', 'likes', 'super_likes']; 
+    protected $fillable = ['uid', 'st_date', 'end_date', 'company_uid', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'emoji']; 
     protected $hidden = ['created_at', 'updated_at', 'id'];
 
     public function company(): BelongsTo {
@@ -66,6 +67,9 @@ class Event extends Model
         return $query->where(function ($sub) use ($timezone) {
                 $sub->where('st_date', '<', now($timezone))
                 ->where('end_date', '>', now($timezone));
+            })
+            ->orWhere(function ($sub) use ($timezone) {
+                $sub->where('st_date', '<', now($timezone));
             })
             ->orderBy('st_date', 'desc');
     }

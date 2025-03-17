@@ -26,7 +26,7 @@ class CreateEventRequest extends FormRequest
             'end_date' => 'nullable|date',
             'timezone' => 'required|string',
             'likes' => 'required|integer',
-            'superlikes' => 'required|integer',
+            'super_likes' => 'required|integer',
         ];
     }
 }
