@@ -21,7 +21,7 @@ class EventController extends Controller
 
     public function store(CreateEventRequest $request)
     {  
-        $validated = $request->only('st_date', 'end_date', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'emoji');
+        $validated = $request->only('st_date', 'end_date', 'timezone', 'likes', 'super_likes', 'name', 'colors');
         $event = $this->eventService->store($validated);
     
         return response()->json(['success' => true, 'resp' => $event], 200);
@@ -33,7 +33,7 @@ class EventController extends Controller
 
         $events =   $company->events()
                     ->filter($filter)
-                    ->get(['name', 'st_date as start', 'end_date as end', 'colors', 'uid', 'emoji']);
+                    ->get(['name', 'st_date as start', 'end_date as end', 'colors', 'uid']);
 
         return response()->json(['success' => true, 'resp' => $events], 200);
     }
@@ -52,7 +52,7 @@ class EventController extends Controller
     public function updateEvent(Request $request, $uuid)
     {
         $company = request()->user();
-        $validated = $request->only('st_date', 'end_date', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'emoji');
+        $validated = $request->only('st_date', 'end_date', 'timezone', 'likes', 'super_likes', 'name', 'colors');
         Log::info($request->all());
         $event =   $company->events()->where('uid', $uuid)->update($validated);
 
