@@ -14,7 +14,7 @@ class Event extends Model
 {
     use HasUid, Filterable;
 
-    protected $fillable = ['uid', 'st_date', 'end_date', 'company_uid', 'timezone', 'likes', 'super_likes', 'name', 'colors']; 
+    protected $fillable = ['uid', 'st_date', 'end_date', 'company_uid', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'emoji']; 
     protected $hidden = ['created_at', 'updated_at', 'id'];
 
     public function company(): BelongsTo {

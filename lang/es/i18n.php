@@ -76,5 +76,5 @@ return [
   'not_aviable_user' => 'No tienes permisos para ver este usuario.',
   'event_not_active_or_next' => 'No existe ningún evento activo o próximo.',
   'limit_users_reached' => 'El evento ha alcanzado el límite de usuarios.',
-
+  'event_at_same_time' => 'No puede haber más de un evento en la misma hora.',
 ];

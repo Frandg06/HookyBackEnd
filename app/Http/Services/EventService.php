@@ -14,38 +14,24 @@ class EventService
     DB::beginTransaction();
     try {
       $company = request()->user();
-      $nowInstance = Carbon::now()->setTimezone($data['timezone']);
-      $now = Carbon::parse($nowInstance);
+      $now = now($data['timezone']);
       $st_date = Carbon::parse($data['st_date']);
       $end_date = Carbon::parse($data['end_date']);
       $diff = $st_date->diffInHours($end_date);
     
-      if($company->checkEventInSameDay($st_date)) throw new ApiException("event_same_day", 409);
-      if(!$company->checkEventLimit()) throw new ApiException("event_limit_reached", 409);
+      if($company->checkEveventsInSameTime($st_date, $end_date)) throw new ApiException("event_at_same_time", 409);
+      if(!$company->checkEventLimit($st_date)) throw new ApiException("event_limit_reached", 409);
       
       if($st_date < $now) throw new ApiException("start_date_past", 409);
       if($diff < 0) return throw new ApiException("end_date_before_start", 409);
       if($diff > 12) return throw new ApiException("event_duration_exceeded", 409);
       if($diff < 2) return throw new ApiException("event_duration_too_short", 409);
 
-      $st_date_parse = Carbon::parse($data['st_date']); 
-      $end_date_parse = $end_date;
-
-      $company->events()->create([
-        'st_date' => $st_date_parse->format('Y-m-d H:i'),
-        'end_date' => $end_date_parse->format('Y-m-d H:i'),
-        'timezone' => $data['timezone'],
-        'likes' => $data['likes'],
-        'super_likes' => $data['superlikes'],
-        'name' => $data['name'],
-        'colors' => $data['colors'],
-      ]);
+      $event = $company->events()->create($data);
 
       DB::commit();
 
-      $last_event = $company->events()->firstNextEvent($company->timezone->name)->first();
-
-      return $last_event;
+      return $event;
     } catch (ApiException $e) {
       DB::rollBack();
       throw new ApiException($e->getMessage(), $e->getCode());
