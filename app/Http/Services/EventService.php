@@ -41,5 +41,37 @@ class EventService
       throw new ApiException("create_event_ko", 500);
     }
   }
+
+  public function getCalendarEvents(array $dates)
+  {
+    DB::beginTransaction();
+    try {
+      $company = request()->user();
+      $events = [];
+      foreach ($dates as $date) {
+        $start = Carbon::parse($date)->startOfMonth();
+        $end = Carbon::parse($date)->endOfMonth();
+
+        $query = $company->events()
+          ->where(function ($query) use ($start, $end) {
+            $query->whereDate('st_date', '>=', $start)
+                  ->where('st_date', '<=', $end);
+          })->orWhere(function ($query) use ($start, $end) {
+            $query->whereDate('end_date', '>=', $start)
+                  ->where('end_date', '<=', $end);
+          })->get(['name', 'st_date as start', 'end_date as end', 'colors', 'uid'])->toArray();
+
+        $events = array_merge($events, $query);
+      }
+      
+      DB::commit();
+
+      return $events;
+    } catch (\Exception $e) {
+      DB::rollBack();
+      Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+      throw new ApiException("get_calendar_events_ko", 500);
+    }
+  }
   
 }

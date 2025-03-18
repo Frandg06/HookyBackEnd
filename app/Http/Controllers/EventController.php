@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ApiException;
 use App\Http\Filters\EventFilter;
 use App\Http\Requests\CreateEventRequest;
 use App\Http\Services\EventService;
@@ -27,14 +28,11 @@ class EventController extends Controller
         return response()->json(['success' => true, 'resp' => $event], 200);
     }
 
-    public function getCalendarEvents(EventFilter $filter)
+    public function getCalendarEvents(Request $request)
     {
-        $company = request()->user();
-
-        $events =   $company->events()
-                    ->filter($filter)
-                    ->get(['name', 'st_date as start', 'end_date as end', 'colors', 'uid']);
-
+        if(!$request->has('dates')) return response()->json(['error' => true, 'message' => 'dates_not_provided'], 400);
+        $dates = explode(',', $request->dates);
+        $events = $this->eventService->getCalendarEvents($dates);
         return response()->json(['success' => true, 'resp' => $events], 200);
     }
 
