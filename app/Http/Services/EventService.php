@@ -53,13 +53,9 @@ class EventService
         $end = Carbon::parse($date)->endOfMonth();
 
         $query = $company->events()
-          ->where(function ($query) use ($start, $end) {
-            $query->whereDate('st_date', '>=', $start)
-                  ->where('st_date', '<=', $end);
-          })->orWhere(function ($query) use ($start, $end) {
-            $query->whereDate('end_date', '>=', $start)
-                  ->where('end_date', '<=', $end);
-          })->get(['name', 'st_date as start', 'end_date as end', 'colors', 'uid'])->toArray();
+                    ->whereDate('st_date', '>=', $start)
+                    ->whereDate('st_date', '<=', $end)
+                    ->get(['name', 'st_date as start', 'end_date as end', 'colors', 'uid'])->toArray();
 
         $events = array_merge($events, $query);
       }

@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\Company;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -31,6 +32,9 @@ class JwtVerifyCompanyMiddleware
         if(!$user) {
             return response()->json(['message' => 'No existe una sesion activa', 'type' => 'AuthException'], 401);
         }
+
+        Config::set('app.timezone', $user->timezone->name ?? 'Europe/Madrid');
+        date_default_timezone_set($user->timezone->name ?? 'Europe/Madrid');
 
         return $next($request);
     }
