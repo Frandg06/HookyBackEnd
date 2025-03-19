@@ -29,6 +29,7 @@ Route::prefix('company')->group(function () {
         Route::post('/events', [EventController::class, 'store']);
         Route::put('/events/{uuid}', [EventController::class, 'updateEvent']);
         Route::get('/events/{uuid}', [EventController::class, 'getEventsByUuid']);
+        Route::delete('/events/{uuid}', [EventController::class, 'deleteEventById']);
         Route::post('/tickets', [TicketController::class, 'generateTickets']);
         Route::get('/tickets', [TicketController::class, 'index']);
 

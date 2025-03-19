@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ApiException;
 use App\Http\Filters\EventFilter;
 use App\Http\Requests\CreateEventRequest;
 use App\Http\Services\EventService;
 use App\Models\Event;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 
 class EventController extends Controller
@@ -27,14 +30,14 @@ class EventController extends Controller
         return response()->json(['success' => true, 'resp' => $event], 200);
     }
 
-    public function getCalendarEvents(EventFilter $filter)
+    public function getCalendarEvents(Request $request): JsonResponse
     {
-        $company = request()->user();
+        if(!$request->has('dates')) {
+            return response()->json(['error' => true, 'message' => 'dates_not_provided'], 400);
+        }
 
-        $events =   $company->events()
-                    ->filter($filter)
-                    ->get(['name', 'st_date as start', 'end_date as end', 'colors', 'uid']);
-
+        $dates = explode(',', $request->dates);
+        $events = $this->eventService->getCalendarEvents($dates);
         return response()->json(['success' => true, 'resp' => $events], 200);
     }
 
@@ -63,5 +66,25 @@ class EventController extends Controller
         $company = request()->user();
         $event =   $company->events()->where('uid', $uuid)->first();
         return response()->json(['success' => true, 'resp' => $event], 200);
+    }
+
+    public function deleteEventById($uuid) : JsonResponse
+    {
+        $company = request()->user();
+        $event = $company->events()->where('uid', $uuid)->first();
+
+        if(!$event) {
+            return response()->json(['error' => true, 'message' => __('i18n.event_not_found')], 404);
+        }
+        
+        $st_date = Carbon::parse($event->st_date);
+
+        if($st_date->isPast()) {
+            return response()->json(['error' => true, 'message' => __('i18n.event_cant_delete')], 409);
+        }
+
+        $event->delete();
+
+        return response()->json(['success' => true, 'message' => __('i18n.event_deleted')], 200);
     }
 }
