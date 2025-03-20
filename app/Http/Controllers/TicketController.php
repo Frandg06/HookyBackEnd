@@ -31,7 +31,7 @@ class TicketController extends Controller
 
     public function generateTickets(CreateTicketRequest $request) 
     {
-        $data = $request->only(['count', 'likes', 'superlikes']);
+        $data = $request->only(['count', 'likes', 'superlikes', 'event_uid']);
 
         $tickets = $this->ticketService->generateTickets($data);
             

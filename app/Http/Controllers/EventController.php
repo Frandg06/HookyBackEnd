@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
+use Intervention\Image\Colors\Rgb\Channels\Red;
 
 class EventController extends Controller
 {
@@ -41,13 +42,14 @@ class EventController extends Controller
         return response()->json(['success' => true, 'resp' => $events], 200);
     }
 
-    public function getEvents(EventFilter $filter)
+    public function getEvents(EventFilter $filter, Request $request)
     {
         $company = request()->user();
 
+
         $events =   $company->events()
                     ->filter($filter)
-                    ->paginate(10);
+                    ->paginate($request->limit ?? 1);
 
         return response()->json(['success' => true, 'resp' => $events], 200);
     }

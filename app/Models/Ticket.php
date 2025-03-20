@@ -22,10 +22,6 @@ class Ticket extends Model
     ];
     protected $hidden = [ 'updated_at', 'id'];
 
-    public function ticketsRedeem() : HasMany {
-        return $this->hasMany(TicketRedeem::class, 'ticket_uid', 'uid');
-    }
-
     public function scopeTicketsCountThisMonth($query): Builder {
         return $query->where('redeemed', true)
         ->whereDate('redeemed_at', Carbon::now()->format('Y-m-d'));

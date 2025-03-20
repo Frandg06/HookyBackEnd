@@ -16,6 +16,10 @@ class TicketService
         try {
             
             $company = request()->user();
+
+            $event = $company->events()->where('uid', $data['event_uid'])->first();
+            
+            if (!$event) throw new ApiException("event_not_found", 400);
             if (!is_numeric($data['count'])) throw new ApiException("tickets_not_numeric", 400);
             if ($data['count'] < 1) throw new ApiException("tickets_minimum", 400);
             if ($data['count'] > 1000) throw new ApiException("tickets_maximum", 400);
@@ -28,6 +32,7 @@ class TicketService
                 $tickets[] = [
                     'uid' => (string) Str::uuid(), 
                     'company_uid' => $company->uid,
+                    'event_uid' => $data['event_uid'],
                     'code' => $code,
                     'redeemed' => false,
                     'likes' => $data['likes'],

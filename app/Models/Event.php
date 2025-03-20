@@ -26,7 +26,7 @@ class Event extends Model
     }
 
     public function tickets(): HasMany {
-        return $this->hasMany(TicketRedeem::class, 'event_uid', 'uid');
+        return $this->hasMany(Ticket::class, 'event_uid', 'uid');
     }
 
     public function notifications(): HasMany
