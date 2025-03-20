@@ -22,6 +22,7 @@ return new class extends Migration
             $table->dateTime('redeemed_at')->nullable();
             $table->integer('likes')->default(5);
             $table->integer('super_likes')->default(1);
+            $table->integer('price')->default(0);
             $table->timestamps();
             $table->foreign('company_uid')->references('uid')->on('companies')->onDelete('cascade');
             $table->foreign('event_uid')->references('uid')->on('events')->onDelete('cascade');

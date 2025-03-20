@@ -19,6 +19,18 @@ class EventFactory extends Factory
     
     public function definition(): array
     {
+
+        $colors = [
+            '#38bdf8,#0369a1',
+            '#6ee7b7,#059669',
+            '#fb923c,#ea580c',
+            '#a5b4fc,#4f46e5',
+            '#fca5a5,#dc2626',
+            '#d8b4fe,#9333ea',
+            '#fde047,#ca8a04',
+        ];
+
+
         return [
             'uid' => fake()->uuid(),
             'name' => fake()->name(),
@@ -28,6 +40,7 @@ class EventFactory extends Factory
             'timezone' => 'Europe/Madrid',
             'likes' => fake()->numberBetween(1, 100),
             'super_likes' => fake()->numberBetween(1, 100),
+            'colors' => $colors[rand(0, count($colors) - 1)]
         ];
     }
 }

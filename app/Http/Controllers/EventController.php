@@ -50,6 +50,7 @@ class EventController extends Controller
         $events =   $company->events()
                     ->with(['users', 'tickets'])
                     ->filter($filter)
+                    ->orderBy('st_date', 'desc')
                     ->paginate($request->limit ?? 10);
 
         return response()->json(['success' => true, 'resp' => $events], 200);

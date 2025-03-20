@@ -2,6 +2,7 @@
 
 namespace App\Http\Filters;
 
+use App\Models\Gender;
 use App\Models\Interaction;
 
 class EventFilter extends QueryFilter
@@ -64,13 +65,13 @@ class EventFilter extends QueryFilter
       });
     }
 
-    public function earningMin(string $value) {
+    public function earningsMin(string $value) {
       return $this->builder
       ->whereIn('events.uid', function ($query) use ($value) {
         $query->select('tickets.event_uid')
             ->from('tickets')
             ->groupBy('tickets.event_uid')
-            ->havingRaw('SUM(CASE WHEN tickets.redeemed = 1 THEN tickets.price ELSE 0 END) >= ?', [$value]);
+            ->havingRaw('SUM(CASE WHEN tickets.redeemed = TRUE THEN tickets.price ELSE 0 END) >= ?', [$value]);
       });
     }
 
@@ -80,7 +81,7 @@ class EventFilter extends QueryFilter
         $query->select('tickets.event_uid')
             ->from('tickets')
             ->groupBy('tickets.event_uid')
-            ->havingRaw('SUM(CASE WHEN tickets.redeemed = 1 THEN tickets.price ELSE 0 END) <= ?', [$value]);
+            ->havingRaw('SUM(CASE WHEN tickets.redeemed = TRUE THEN tickets.price ELSE 0 END) <= ?', [$value]);
       });
     }
 
@@ -103,6 +104,25 @@ class EventFilter extends QueryFilter
             ->havingRaw('COUNT(users_interactions.interaction_id) <= ?', [$value]);
       });
     }
+
+    public function percentages(string $value) {
+      
+      $gender = $value == 'males' ? Gender::MALE : Gender::FEMALE;
+      $genderToCompare = $value == 'males' ? Gender::FEMALE : Gender::MALE;
+
+      return $this->builder
+          ->whereIn('events.uid', function ($query) use ($gender, $genderToCompare) {
+              $query->select('user_events.event_uid')
+                  ->from('user_events')
+                  ->join('users', 'users.uid', '=', 'user_events.user_uid') // Relación con users
+                  ->groupBy('user_events.event_uid')
+                  ->havingRaw(
+                      'SUM(CASE WHEN users.gender_id = ? THEN 1 ELSE 0 END) > SUM(CASE WHEN users.gender_id = ? THEN 1 ELSE 0 END)',
+                      [$gender, $genderToCompare]
+                  );
+          });
+   }
+  
 
 
 

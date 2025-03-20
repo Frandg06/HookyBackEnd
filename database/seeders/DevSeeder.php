@@ -10,6 +10,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Models\UserEvent;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
@@ -30,29 +31,36 @@ class DevSeeder extends Seeder
 
         Event::factory()->count(93)->create();
 
+        DB::table('events') 
+        ->update([
+            'end_date' => DB::raw("st_date + INTERVAL '5 hours'")
+        ]);
+
         Event::all()->each(function ($event)  {
 
-          $userCount = rand(20, 50);
-
           $tickets = [];  
-            $count = fake()->numberBetween(1, 300);
-            while (count($tickets) < $count) {
-                $code = strtoupper(Str::random(6));
+          $ticketCount = rand(20, 50);
+          
+          while (count($tickets) < $ticketCount) {
+            $code = strtoupper(Str::random(6));
+            
+            $tickets[] = [
+              'uid' => (string) Str::uuid(), 
+              'company_uid' => $event->company->uid,
+              'event_uid' => $event->uid,
+              'code' => $code,
+              'redeemed' => true,
+              'price' => rand(3, 6),
+              'likes' => fake()->numberBetween(1, 100),
+              'super_likes' => fake()->numberBetween(1, 100),
+              'created_at' => now(),
+              'updated_at' => now(),
+            ];
+          }
+          
+          Ticket::insert($tickets);
 
-                $tickets[] = [
-                    'uid' => (string) Str::uuid(), 
-                    'company_uid' => $event->company->uid,
-                    'event_uid' => $event->uid,
-                    'code' => $code,
-                    'redeemed' => true,
-                    'likes' => fake()->numberBetween(1, 100),
-                    'super_likes' => fake()->numberBetween(1, 100),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-
-            Ticket::insert($tickets);
+          $userCount = rand(20, 50);
 
           User::factory()->count($userCount)->create()->each(function($user) use ($event) {
                 UserEvent::create([
