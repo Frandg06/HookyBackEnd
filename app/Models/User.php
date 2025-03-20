@@ -158,7 +158,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->role_id == Role::PREMIUM ? true : false;
     }
 
-    public function getMatchGenderAttribute(): array {
+    public function getMatchGenderAttribute() {
         switch($this->sexual_orientation_id){
             case SexualOrientation::BISEXUAL:
                 return [Gender::MALE, Gender::FEMALE];

@@ -48,8 +48,9 @@ class EventController extends Controller
 
 
         $events =   $company->events()
+                    ->with(['users', 'tickets'])
                     ->filter($filter)
-                    ->paginate($request->limit ?? 1);
+                    ->paginate($request->limit ?? 10);
 
         return response()->json(['success' => true, 'resp' => $events], 200);
     }

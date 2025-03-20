@@ -16,8 +16,12 @@ class EventFilter extends QueryFilter
       return $this->builder->where('name', 'like', '%' . $value . '%');
     }
 
-    public function stDate(string $value) {
+    public function stDateAfter(string $value) {
       return $this->builder->where('st_date', '>=', $value);
+    }
+
+    public function stDateBefore(string $value) {
+      return $this->builder->where('st_date', '<=', $value);
     }
 
     public function peopleCountMin(string $value) {
@@ -57,6 +61,26 @@ class EventFilter extends QueryFilter
             ->from('tickets')
             ->groupBy('tickets.event_uid')
             ->havingRaw('COUNT(tickets.redeemed) <= ?', [$value]);
+      });
+    }
+
+    public function earningMin(string $value) {
+      return $this->builder
+      ->whereIn('events.uid', function ($query) use ($value) {
+        $query->select('tickets.event_uid')
+            ->from('tickets')
+            ->groupBy('tickets.event_uid')
+            ->havingRaw('SUM(CASE WHEN tickets.redeemed = 1 THEN tickets.price ELSE 0 END) >= ?', [$value]);
+      });
+    }
+
+    public function earningsMax(string $value) {
+      return $this->builder
+      ->whereIn('events.uid', function ($query) use ($value) {
+        $query->select('tickets.event_uid')
+            ->from('tickets')
+            ->groupBy('tickets.event_uid')
+            ->havingRaw('SUM(CASE WHEN tickets.redeemed = 1 THEN tickets.price ELSE 0 END) <= ?', [$value]);
       });
     }
 

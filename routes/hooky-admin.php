@@ -5,8 +5,12 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\TicketController;
+use App\Models\Event;
 use App\Models\Ticket;
+use App\Models\User;
+use App\Models\UserEvent;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 /*
 /*
     Todas las peticiones deben de llevar los headers
@@ -33,6 +37,6 @@ Route::prefix('company')->group(function () {
         Route::delete('/events/{uuid}', [EventController::class, 'deleteEventById']);
         Route::post('/tickets', [TicketController::class, 'generateTickets']);
         Route::get('/tickets', [TicketController::class, 'index']);
-
     });
+
 });

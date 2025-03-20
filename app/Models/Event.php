@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Traits\Filterable;
 use App\Models\Traits\HasUid;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Event extends Model
 {
-    use HasUid, Filterable;
+    use HasUid, Filterable, HasFactory;
 
     protected $fillable = ['uid', 'st_date', 'end_date', 'company_uid', 'timezone', 'likes', 'super_likes', 'name', 'colors']; 
     protected $hidden = ['created_at', 'updated_at', 'id'];
