@@ -23,20 +23,22 @@ class Notification extends Model
         "updated_at",
     ];
 
-    public function user(): BelongsTo {
+    public function user(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'user_uid', 'uid');
     }
 
-    public function emitter_user(): BelongsTo { 
+    public function emitter_user(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'emitter_uid', 'uid');
     }
 
-    public static function scopeGetLikeAndSuperLikeNotify($query, $reciber, $emitter, $event) {
+    public static function scopeGetLikeAndSuperLikeNotify($query, $reciber, $emitter, $event)
+    {
         $query->where('user_uid', $reciber)
-        ->where('emitter_uid', $emitter)
-        ->where('event_uid', $event)
-        ->whereIn('type_id', [NotificationsType::LIKE_TYPE, NotificationsType::SUPER_LIKE_TYPE])
-        ->first(); 
-
+            ->where('emitter_uid', $emitter)
+            ->where('event_uid', $event)
+            ->whereIn('type_id', [NotificationsType::LIKE_TYPE, NotificationsType::SUPER_LIKE_TYPE])
+            ->first();
     }
 }

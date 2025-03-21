@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
@@ -10,162 +11,159 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
-class AuthUserService {
+class AuthUserService
+{
 
-    public function update($data) {
-      DB::beginTransaction();
-      try {
-        $user = request()->user();
-        
-        $existingUser = User::where('email', $data['email'])->whereNot('uid', $user->uid)->first();
+  public function update($data)
+  {
+    DB::beginTransaction();
+    try {
+      $user = request()->user();
 
-        if($existingUser) throw new ApiException("user_exists", 409);
+      $existingUser = User::where('email', $data['email'])->whereNot('uid', $user->uid)->first();
 
-        $user->update($data);
+      if ($existingUser) throw new ApiException("user_exists", 409);
 
-        if( isset($user['gender_id']) || isset($user['sexual_orientation_id'] )) {
-          $user->interactions()->delete();
-        }
-        
-        DB::commit();
+      $user->update($data);
 
-        return $user->resource();
-
-      } catch (ApiException $e) {
-        DB::rollBack();
-        throw new ApiException($e->getMessage(), $e->getCode());
-      } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new ApiException("update_company_ko");
+      if (isset($user['gender_id']) || isset($user['sexual_orientation_id'])) {
+        $user->interactions()->delete();
       }
 
+      DB::commit();
+
+      return $user->resource();
+    } catch (ApiException $e) {
+      DB::rollBack();
+      throw new ApiException($e->getMessage(), $e->getCode());
+    } catch (\Exception $e) {
+      DB::rollBack();
+      Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+      throw new ApiException("update_company_ko");
     }
+  }
 
-    public function updatePassword($data) {
-      DB::beginTransaction();
-      try {
-        $user = request()->user();
+  public function updatePassword($data)
+  {
+    DB::beginTransaction();
+    try {
+      $user = request()->user();
 
-        if(!Hash::check($data['old_password'], $user->password)) throw new ApiException("actual_password_ko", 400);
+      if (!Hash::check($data['old_password'], $user->password)) throw new ApiException("actual_password_ko", 400);
 
-        $user->password = bcrypt($data['password']);
-        $user->save();
+      $user->password = bcrypt($data['password']);
+      $user->save();
 
-        DB::commit();
-      
-        return $user->resource();
+      DB::commit();
 
-      } catch (ApiException $e) {
-        DB::rollBack();
-        throw new ApiException($e->getMessage());
-      } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new ApiException("update_password_ko", 500);
-      }
+      return $user->resource();
+    } catch (ApiException $e) {
+      DB::rollBack();
+      throw new ApiException($e->getMessage());
+    } catch (\Exception $e) {
+      DB::rollBack();
+      Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+      throw new ApiException("update_password_ko", 500);
     }
+  }
 
-    public function updateInterest($newInterests) 
-    {
-      DB::beginTransaction();
-      try {
-        $user = request()->user();
-        $hasInterest = $user->interests()->get()->pluck('interest_id')->toArray();
-  
-        foreach ($newInterests as $item) {
-          if(!in_array($item, $hasInterest)) {
-            $user->interests()->create([
-              'interest_id' => $item
-            ]);
-          }
+  public function updateInterest($newInterests)
+  {
+    DB::beginTransaction();
+    try {
+      $user = request()->user();
+      $hasInterest = $user->interests()->get()->pluck('interest_id')->toArray();
+
+      foreach ($newInterests as $item) {
+        if (!in_array($item, $hasInterest)) {
+          $user->interests()->create([
+            'interest_id' => $item
+          ]);
         }
-  
-        foreach ($hasInterest as $item) {
-          if(!in_array($item, $newInterests)) {
-            $user->interests()->where('interest_id', $item)->delete();
-          }
-        }
-        
-        DB::commit();
-  
-        return $user->resource();
-
-      } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new ApiException("update_user_interest_ko", 500); 
       }
-  
-    }
 
-    public function getNotifications() {
-      DB::beginTransaction();
-      try {
-        $user = request()->user();
-
-        $usersHook = $user->notifications()->where('type_id', NotificationsType::HOOK_TYPE)->where('event_uid', $user->event_uid)->get();
-
-        $userLikes = $user->notifications()->where('type_id', NotificationsType::LIKE_TYPE)->where('event_uid', $user->event_uid)->get();
-        
-        $likes_count = $userLikes->count();
-
-        if($user->role_id == Role::PREMIUM) {
-          $likes = NotificationUserResource::collection($userLikes);
-        } else {
-          $likes['images'] = $userLikes->take(7)->map(function ($u) use ($user) {
-            return $u->user->userImages()->first()->web_url;
-          });
-          $likes['count'] = $likes_count;
+      foreach ($hasInterest as $item) {
+        if (!in_array($item, $newInterests)) {
+          $user->interests()->where('interest_id', $item)->delete();
         }
-
-        $userSuperLikes =  $user->notifications()->where('type_id', NotificationsType::SUPER_LIKE_TYPE)->where('event_uid', $user->event_uid)->get();
-
-        $data = [
-          "likes" => $likes,
-          "super_likes" => NotificationUserResource::collection($userSuperLikes),
-          "hooks" => NotificationUserResource::collection($usersHook)
-        ];
-
-        DB::commit();
-
-        return $data;
-
-      }catch (\Exception $e) {
-        DB::rollBack();
-        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new ApiException( 'get_notifications_ko', 500);
       }
-      
+
+      DB::commit();
+
+      return $user->resource();
+    } catch (\Exception $e) {
+      DB::rollBack();
+      Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+      throw new ApiException("update_user_interest_ko", 500);
     }
+  }
 
-    public function completeRegisterData($info, $files, $interests) {
-      DB::beginTransaction();
-      try {
-        $user = request()->user();
-        $this->update($info);
-        $this->updateInterest($interests);
-        
-        $imageService = new ImagesService();
+  public function getNotifications()
+  {
+    DB::beginTransaction();
+    try {
+      $user = request()->user();
 
-        if($user->userImages()->count() === 0){
-            if(count($files) < 3 || count($files) > 3) throw new ApiException("invalid_image_count", 400);
-            foreach ($files as $file) {
-                $imageService->store($file['file'], $file['data']);
-            }
+      $usersHook = $user->notifications()->where('type_id', NotificationsType::HOOK_TYPE)->where('event_uid', $user->event_uid)->get();
+
+      $userLikes = $user->notifications()->where('type_id', NotificationsType::LIKE_TYPE)->where('event_uid', $user->event_uid)->get();
+
+      $likes_count = $userLikes->count();
+
+      if ($user->role_id == Role::PREMIUM) {
+        $likes = NotificationUserResource::collection($userLikes);
+      } else {
+        $likes['images'] = $userLikes->take(7)->map(function ($u) use ($user) {
+          return $u->user->userImages()->first()->web_url;
+        });
+        $likes['count'] = $likes_count;
+      }
+
+      $userSuperLikes =  $user->notifications()->where('type_id', NotificationsType::SUPER_LIKE_TYPE)->where('event_uid', $user->event_uid)->get();
+
+      $data = [
+        "likes" => $likes,
+        "super_likes" => NotificationUserResource::collection($userSuperLikes),
+        "hooks" => NotificationUserResource::collection($usersHook)
+      ];
+
+      DB::commit();
+
+      return $data;
+    } catch (\Exception $e) {
+      DB::rollBack();
+      Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+      throw new ApiException('get_notifications_ko', 500);
+    }
+  }
+
+  public function completeRegisterData($info, $files, $interests)
+  {
+    DB::beginTransaction();
+    try {
+      $user = request()->user();
+      $this->update($info);
+      $this->updateInterest($interests);
+
+      $imageService = new ImagesService();
+
+      if ($user->userImages()->count() === 0) {
+        if (count($files) < 3 || count($files) > 3) throw new ApiException("invalid_image_count", 400);
+        foreach ($files as $file) {
+          $imageService->store($file['file'], $file['data']);
         }
-
-        DB::commit();
-
-        return $user->resource();
-
-      }catch (ApiException $e) {
-        DB::rollBack();
-        throw new ApiException($e->getMessage(), $e->getCode());
-      } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-        throw new ApiException("update_company_ko", 500);
       }
+
+      DB::commit();
+
+      return $user->resource();
+    } catch (ApiException $e) {
+      DB::rollBack();
+      throw new ApiException($e->getMessage(), $e->getCode());
+    } catch (\Exception $e) {
+      DB::rollBack();
+      Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+      throw new ApiException("update_company_ko", 500);
     }
+  }
 }

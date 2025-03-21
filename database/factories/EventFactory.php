@@ -16,7 +16,7 @@ class EventFactory extends Factory
      * @return array<string, mixed>
      */
     protected $model = Event::class;
-    
+
     public function definition(): array
     {
 
@@ -35,7 +35,7 @@ class EventFactory extends Factory
             'uid' => fake()->uuid(),
             'name' => fake()->name(),
             'company_uid' => '1d59e992-7865-41c5-ad7d-d271ccf4e7fc',
-            'st_date' => fake()->dateTimeInInterval('-1 year', '+1 year'), 
+            'st_date' => fake()->dateTimeInInterval('-1 year', '+1 year'),
             'end_date' => fake()->dateTimeInInterval('-1 year', '+1 year'),
             'timezone' => 'Europe/Madrid',
             'likes' => fake()->numberBetween(1, 100),

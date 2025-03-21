@@ -11,6 +11,6 @@ class Role extends Model
     public const PREMIUM = 3;
 
     protected $fillable = ['id', 'name'];
-    
+
     use HasFactory;
 }

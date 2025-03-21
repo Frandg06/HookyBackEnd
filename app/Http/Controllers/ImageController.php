@@ -9,12 +9,14 @@ class ImageController extends Controller
 {
     protected $imageService;
 
-    public function __construct(ImagesService $imageService) {
+    public function __construct(ImagesService $imageService)
+    {
         $this->imageService = $imageService;
     }
 
-    public function store(Request $request) {
-        
+    public function store(Request $request)
+    {
+
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5000'
         ]);
@@ -24,24 +26,26 @@ class ImageController extends Controller
             'width' => $request->width,
             'height' => $request->height,
         ];
-        
+
         $response = $this->imageService->store($image, $original_data);
 
         return response()->json(["success" => true, "resp" =>  $response], 200);
     }
 
-    public function delete(Request $request) {
+    public function delete(Request $request)
+    {
 
         $request->validate(["uid" => "required|string"]);
 
         $uid = $request->uid;
-        
+
         $this->imageService->delete($uid);
 
         return response()->json(["success" => true, "resp" =>  "Image delete successfully"], 200);
     }
 
-    public function update(Request $request) {
+    public function update(Request $request)
+    {
 
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5000',
@@ -55,17 +59,19 @@ class ImageController extends Controller
             'height' => $request->height,
         ];
 
-        
+
         $response = $this->imageService->update($uid, $image, $original_data);
         return response()->json(["success" => true, "resp" =>  $response], 200);
     }
 
-    public function deleteUserImages()  {
+    public function deleteUserImages()
+    {
         $response = $this->imageService->deleteUserImages();
         return response()->json(["success" => true, "resp" =>  "Image delete successfully"], 200);
     }
 
-    public function deleteAll() {
+    public function deleteAll()
+    {
         try {
             $response = $this->imageService->deleteAll();
             return response()->json(["success" => true, "resp" =>  "All images deleted successfully"], 200);

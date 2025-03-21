@@ -16,5 +16,4 @@ class NotificationsType extends Model
     const MESSAGE_TYPE_STR = "message";
 
     protected $fillable = ['id', 'name'];
-
 }

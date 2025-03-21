@@ -20,14 +20,14 @@ class CheckEventIsActiveMiddleware
         $authEvent = $request->user()->auth_event;
 
         $tz = $authEvent->event->timezone;
-        
+
         $now =  now($tz);
 
         $end_date = Carbon::parse($authEvent->event->end_date);
 
-        if($now->gt($end_date))  return response()->json(["error" => true, "message" => "El evento no está activo", "type" => "AuthException"], 401);
+        if ($now->gt($end_date))  return response()->json(["error" => true, "message" => "El evento no está activo", "type" => "AuthException"], 401);
 
-        if($now->lt($authEvent->event->st_date))  {
+        if ($now->lt($authEvent->event->st_date)) {
             return response()->json(["error" => true, "message" => "El evento no ha comenzado"], 409);
         };
 

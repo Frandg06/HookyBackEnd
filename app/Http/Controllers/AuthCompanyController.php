@@ -14,20 +14,21 @@ class AuthCompanyController extends Controller
 {
     protected $authService, $emailService;
 
-    public function __construct(AuthCompanyService $authService, EmailService $emailService) { 
+    public function __construct(AuthCompanyService $authService, EmailService $emailService)
+    {
         $this->authService = $authService;
         $this->emailService = $emailService;
     }
 
-    public function register(RegisterCompanyRequest $request) 
-    {  
-        $validated = $request->only('name', 'email', 'phone', 'address', 'city', 'country', 'password');    
+    public function register(RegisterCompanyRequest $request)
+    {
+        $validated = $request->only('name', 'email', 'phone', 'address', 'city', 'country', 'password');
         $response = $this->authService->register($validated);
-        
+
         return response()->json(["success" => true, "access_token" =>  $response], 200);
     }
 
-    public function login(Request $request) 
+    public function login(Request $request)
     {
         $data = $request->only('email', 'password');
         $response = $this->authService->login($data);
@@ -35,19 +36,18 @@ class AuthCompanyController extends Controller
         return response()->json(["success" => true, "access_token" =>  $response], 200);
     }
 
-    public function me() 
+    public function me()
     {
         try {
             $company = request()->user()->resource();
-            return response()->json(["resp" => $company, "success" => true], 200); 
+            return response()->json(["resp" => $company, "success" => true], 200);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return response()->json(["message" => __('i18n.error'), "success" => false], 500);
         }
-
     }
 
-    public function logout() 
+    public function logout()
     {
         Auth::invalidate(true);
         Auth::logout();
@@ -57,13 +57,13 @@ class AuthCompanyController extends Controller
 
     public function passwordReset(Request $request)
     {
-        $email = $request->email;        
+        $email = $request->email;
         $this->authService->passwordReset($email);
 
         return response()->json(["message" => __('i18n.password_reset_email'), "success" => true], 200);
     }
 
-    public function setNewPassword(ResetPasswordRequest $request) 
+    public function setNewPassword(ResetPasswordRequest $request)
     {
         $validated = $request->only('token', 'password');
         $this->authService->setNewPassword($validated);

@@ -20,21 +20,24 @@ class Ticket extends Model
         'super_likes',
         'likes'
     ];
-    protected $hidden = [ 'updated_at', 'id'];
+    protected $hidden = ['updated_at', 'id'];
 
-    public function scopeTicketsCountThisMonth($query): Builder {
+    public function scopeTicketsCountThisMonth($query): Builder
+    {
         return $query->where('redeemed', true)
-        ->whereDate('redeemed_at', Carbon::now()->format('Y-m-d'));
+            ->whereDate('redeemed_at', Carbon::now()->format('Y-m-d'));
     }
 
-    public function scopeTicketsCountLastMonth($query): Builder {
+    public function scopeTicketsCountLastMonth($query): Builder
+    {
         return $query->where('redeemed', true)
-        ->whereDate('redeemed_at', Carbon::now()->subMonth()->format('Y-m-d'));   
+            ->whereDate('redeemed_at', Carbon::now()->subMonth()->format('Y-m-d'));
     }
 
-    public function scopeGetTicketByCompanyEventAndCode($query,$company_uid, $code) {
+    public function scopeGetTicketByCompanyEventAndCode($query, $company_uid, $code)
+    {
         return $query->where('company_uid', $company_uid)
-        ->where('code', $code)
-        ->where('redeemed', false);
+            ->where('code', $code)
+            ->where('redeemed', false);
     }
 }

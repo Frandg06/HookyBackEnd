@@ -19,10 +19,10 @@ class LangMiddleware
     {
         $lang = $request->header('X-Locale');
 
-        if($lang == 'br') $lang = 'pt';
+        if ($lang == 'br') $lang = 'pt';
 
         App::setLocale($lang ?? 'es');
-        
+
         return $next($request);
     }
 }

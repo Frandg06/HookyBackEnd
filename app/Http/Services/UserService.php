@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
@@ -18,36 +19,38 @@ class UserService
 {
   protected $notificationService, $wsChatService;
 
-  public function __construct(NotificationService $notificationService ,WsChatService $wsChatService) {
+  public function __construct(NotificationService $notificationService, WsChatService $wsChatService)
+  {
     $this->notificationService = $notificationService;
     $this->wsChatService = $wsChatService;
   }
 
-  public function getUsers() {
+  public function getUsers()
+  {
     DB::beginTransaction();
     try {
 
-      
+
       $authUser = request()->user();
       Log::info("authUser->uid: " . $authUser->uid);
       // usuarios ya obtenidos previamente con lo que no se ha interactuado en el evento actual
       $usersWithoutInteraction = $authUser->interactions()->usersWithoutInteraction($authUser->event_uid);
-      
+
       // usuarios que se han cargado previamente y que se ha interactuado en el evento actual
       $usersWithInteraction = $authUser->interactions()->usersWithInteraction($authUser->event_uid);
 
       // obtener los usuarios que se van a interactuar que esten en el evento que no se haya interactuado con ellos
-      if($authUser->sexual_orientation_id == SexualOrientation::BISEXUAL) {
+      if ($authUser->sexual_orientation_id == SexualOrientation::BISEXUAL) {
         $users = User::getBisexualUsersToInteract($authUser, $usersWithInteraction, $usersWithoutInteraction);
-      }else {
+      } else {
         $users = User::getUsersToInteract($authUser, $usersWithInteraction, $usersWithoutInteraction);
       }
-      
+
       $newUsersWithInteractions = [];
 
-      foreach ($users as $userToInsert) {  
-        if(UsersInteraction::where('user_uid', $authUser->uid)->where('interaction_user_uid', $userToInsert->uid)->count() > 0) continue;
-      
+      foreach ($users as $userToInsert) {
+        if (UsersInteraction::where('user_uid', $authUser->uid)->where('interaction_user_uid', $userToInsert->uid)->count() > 0) continue;
+
         $newUsersWithInteractions[] = [
           'user_uid' => $authUser->uid,
           'interaction_user_uid' => $userToInsert->uid,
@@ -58,11 +61,10 @@ class UserService
       }
 
       UsersInteraction::insert($newUsersWithInteractions);
-      
+
       DB::commit();
 
       return UserResource::collection($users);
-
     } catch (\Exception $e) {
       DB::rollBack();
       Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
@@ -70,19 +72,20 @@ class UserService
     }
   }
 
-  public function setInteraction($uid, $interaction) {
+  public function setInteraction($uid, $interaction)
+  {
     DB::beginTransaction();
     try {
       $authUser = request()->user();
-      
+
       $search = UsersInteraction::where('user_uid', $authUser->uid)
         ->where('interaction_user_uid', $uid)
         ->where('event_uid', $authUser->event_uid)
         ->first();
 
-      if(!empty($search)) {
+      if (!empty($search)) {
         $search->update(['interaction_id' => $interaction]);
-      }else {
+      } else {
         UsersInteraction::create([
           'user_uid' => $authUser->uid,
           'interaction_user_uid' => $uid,
@@ -90,14 +93,14 @@ class UserService
           'event_uid' => $authUser->event_uid
         ]);
       }
-      
+
       $authUser->refreshInteractions($interaction);
-      
+
       $checkHook =  UsersInteraction::checkHook($uid, $authUser->uid, $authUser->event_uid);
 
-      if($checkHook) {
+      if ($checkHook) {
         $existLike = Notification::getLikeAndSuperLikeNotify($authUser->uid, $uid, $authUser->event_uid);
-        if($existLike) $existLike->delete();
+        if ($existLike) $existLike->delete();
 
         $type = NotificationsType::HOOK_TYPE;
         $type_str = NotificationsType::HOOK_TYPE_STR;
@@ -106,53 +109,49 @@ class UserService
         $this->publishNotificationForUser($uid, $authUser->uid, $authUser->event_uid, $type, $type_str);
 
         $this->wsChatService->storeChat($authUser->uid, $uid, $authUser->event_uid);
+      } elseif (in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
 
-      }elseif(in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
-        
         $type = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE : NotificationsType::SUPER_LIKE_TYPE;
         $type_str = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE_STR : NotificationsType::SUPER_LIKE_TYPE_STR;
         $this->publishNotificationForUser($uid, $authUser->uid, $authUser->event_uid, $type, $type_str);
-
       }
 
       $remainingUsers = $authUser->remainingUsersToInteract();
       $remainingUsersCount = $remainingUsers->count();
-      
+
       $response = [
         "super_like_credits" => $authUser->super_like_credits,
         "like_credits" => $authUser->like_credits,
       ];
 
-      if($remainingUsersCount <= 10) {
+      if ($remainingUsersCount <= 10) {
         $refetch = $this->getUsers();
-        if(count($refetch) != $remainingUsersCount) {
+        if (count($refetch) != $remainingUsersCount) {
           $response['remaining_users'] = $refetch;
         }
       }
-      
+
       DB::commit();
 
       return $response;
-      
     } catch (\Exception $e) {
       DB::rollBack();
       Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-      throw new ApiException('set_interaction_ko', 500); 
+      throw new ApiException('set_interaction_ko', 500);
     }
   }
 
   private function publishNotificationForUser($reciber, $emiter, $event, $type, $type_str)
   {
-      $notification = [
-          'user_uid'    => $reciber,
-          'emitter_uid' => $emiter,
-          'event_uid'   => $event,
-          'type_id'     => $type,
-          'type_str'    => $type_str,
-          'read_at'     => null,
-      ];
+    $notification = [
+      'user_uid'    => $reciber,
+      'emitter_uid' => $emiter,
+      'event_uid'   => $event,
+      'type_id'     => $type,
+      'type_str'    => $type_str,
+      'read_at'     => null,
+    ];
 
-      $this->notificationService->publishNotification($notification);
+    $this->notificationService->publishNotification($notification);
   }
-  
 }

@@ -35,65 +35,73 @@ class Company extends Authenticatable implements JWTSubject
         'average_ticket_price',
     ];
 
-    public function events() : HasMany {
+    public function events(): HasMany
+    {
         return $this->hasMany(Event::class, 'company_uid', 'uid');
     }
-    
-    public function tickets() : HasMany {
+
+    public function tickets(): HasMany
+    {
         return $this->hasMany(Ticket::class, 'company_uid', 'uid');
     }
 
-    public function getlinkAttribute() {
+    public function getlinkAttribute()
+    {
         return config("app.front_url") . "/?company=" . Crypt::encrypt($this->uid);
     }
 
-    public function timezone() : BelongsTo {
+    public function timezone(): BelongsTo
+    {
         return $this->belongsTo(TimeZone::class, 'timezone_uid', 'uid');
     }
 
-    public function pricing_plan() : BelongsTo {
+    public function pricing_plan(): BelongsTo
+    {
         return $this->belongsTo(PricingPlan::class, 'pricing_plan_uid', 'uid');
     }
 
-    public function checkEventLimit($st_date) {
+    public function checkEventLimit($st_date)
+    {
         $limit = $this->pricing_plan->limit_events;
         $events = $this->events()->whereDate('st_date', '>=', $st_date->startOfMonth())->whereDate('st_date', '<=', $st_date->endOfMonth())->count();
         return $events < $limit;
     }
 
-    public function scopeResource() {
+    public function scopeResource()
+    {
         return AuthCompanyResource::make($this);
     }
 
-    public function checkEveventsInSameTime($st_date, $end_date) {
+    public function checkEveventsInSameTime($st_date, $end_date)
+    {
         $events = $this->events()
             ->where(function ($query) use ($st_date) {
                 $query->whereDate('st_date', '>=', $st_date)
-                ->whereDate('end_date', '<=', $st_date);
+                    ->whereDate('end_date', '<=', $st_date);
             })
             ->orWhere(function ($query) use ($end_date) {
                 $query->whereDate('st_date', '>=', $end_date)
-                ->whereDate('end_date', '<=', $end_date);
+                    ->whereDate('end_date', '<=', $end_date);
             })->count();
-            // TODO
-            // Si el evento enviuenve a otro evento por fechas
+        // TODO
+        // Si el evento enviuenve a otro evento por fechas
 
         return $events > 0;
     }
 
     public function getActiveEventAttribute()
     {
-       return $this->events()->activeEvent($this->timezone->name)->first();
+        return $this->events()->activeEvent($this->timezone->name)->first();
     }
 
     public function getNextEventAttribute()
     {
-       return $this->events()->firstNextEvent($this->timezone->name)->first();
+        return $this->events()->firstNextEvent($this->timezone->name)->first();
     }
 
     public function getLimitUsersAttribute()
     {
-       return $this->pricing_plan->limit_users;
+        return $this->pricing_plan->limit_users;
     }
 
     public function getLastEventAttribute()
@@ -101,7 +109,8 @@ class Company extends Authenticatable implements JWTSubject
         return $this->events()->lastEvent($this->timezone->name)->first();
     }
 
-    public function getTotalUsersAttribute() {
+    public function getTotalUsersAttribute()
+    {
         $query = $this->events()
             ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
             ->distinct('user_events.user_uid');
@@ -115,8 +124,8 @@ class Company extends Authenticatable implements JWTSubject
             now($this->timezone->name)->subMonth()->startOfMonth(),
             now($this->timezone->name)->subMonth()->endOfMonth()
         ])->count('user_events.user_uid');
-                
-        
+
+
         return [
             'count' => $query->count('user_events.user_uid'),
             'user_last_month' =>  $userLastMonth,
@@ -124,7 +133,8 @@ class Company extends Authenticatable implements JWTSubject
         ];
     }
 
-    public function getTotalTicketsAttribute($query) {
+    public function getTotalTicketsAttribute($query)
+    {
         $query = $this->tickets()
             ->where('redeemed', true);
 
@@ -137,8 +147,8 @@ class Company extends Authenticatable implements JWTSubject
             now($this->timezone->name)->subMonth()->startOfMonth(),
             now($this->timezone->name)->subMonth()->endOfMonth()
         ])->count();
-                
-        
+
+
         return [
             'count' => $query->count(),
             'ticket_last_month' =>  $tickeLastMonth,
@@ -146,27 +156,30 @@ class Company extends Authenticatable implements JWTSubject
         ];
     }
 
-    public function scopeUsers($query) {
+    public function scopeUsers($query)
+    {
         return $query->events()
-        ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
-        ->distinct('user_events.user_uid');
+            ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
+            ->distinct('user_events.user_uid');
     }
 
-    public function getLastFiveUsersAttribute() {
-        
+    public function getLastFiveUsersAttribute()
+    {
+
         $ids = $this->events()
-        ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
-        ->join('users', 'user_events.user_uid', '=', 'users.uid')
-        ->select('users.*')
-        ->orderBy('users.created_at', 'desc')
-        ->limit(5)
-        ->pluck('users.uid');
+            ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
+            ->join('users', 'user_events.user_uid', '=', 'users.uid')
+            ->select('users.*')
+            ->orderBy('users.created_at', 'desc')
+            ->limit(5)
+            ->pluck('users.uid');
         $users = User::whereIn('uid', $ids)->get();
-        
+
         return UsersToTableResource::collection($users);
     }
 
-    public function getRecentEntriesAttribute() {
+    public function getRecentEntriesAttribute()
+    {
         return $this->events()
             ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
             ->selectRaw("TO_CHAR(DATE_TRUNC('hour', user_events.logged_at), 'HH24:MI') as hour, COUNT(DISTINCT user_events.user_uid) as count")
@@ -175,9 +188,9 @@ class Company extends Authenticatable implements JWTSubject
             ->groupByRaw("DATE_TRUNC('hour', user_events.logged_at)")
             ->orderByRaw("DATE_TRUNC('hour', user_events.logged_at)")
             ->get();
-
     }
-    public function getLastSevenEventsAttribute() {
+    public function getLastSevenEventsAttribute()
+    {
         $events = $this->events()
             ->where('st_date', '<=', now($this->timezone->name))
             ->orderBy('st_date', 'desc')
@@ -192,19 +205,18 @@ class Company extends Authenticatable implements JWTSubject
             'data' => [
                 [
                     "name" => "Usuarios",
-                    "data"=> $events->map(function ($event) {
+                    "data" => $events->map(function ($event) {
                         return $event->users()->count();
                     })
                 ],
                 [
                     "name" => "Ingresos",
-                    "data"=> $events->map(function ($event) {
+                    "data" => $events->map(function ($event) {
                         return $event->total_incomes;
                     })
                 ],
             ]
         ];
-
     }
 
     protected function casts(): array
@@ -214,11 +226,13 @@ class Company extends Authenticatable implements JWTSubject
         ];
     }
 
-    public function getJWTIdentifier() {
+    public function getJWTIdentifier()
+    {
         return $this->getKey();
     }
 
-    public function getJWTCustomClaims() {
+    public function getJWTCustomClaims()
+    {
         return [
             'uid' => $this->uid,
         ];

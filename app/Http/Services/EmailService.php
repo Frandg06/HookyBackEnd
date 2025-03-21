@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Services;
 
 use SendGrid;
@@ -10,20 +11,22 @@ class EmailService
 
     public function __construct()
     {
-      $this->sender = new SendGrid(env('SENDGRID_API_KEY')); 
+        $this->sender = new SendGrid(env('SENDGRID_API_KEY'));
     }
 
-    public function sendEmail($user, $subject, $template) {
+    public function sendEmail($user, $subject, $template)
+    {
 
         $email = new Mail();
-       
+
         $email->setFrom('admin@hookyapp.es', 'Hooky!');
         $email->setSubject($subject);
         $email->addTo($user->email, $user->name);
         $email->addContent(
-          "text/html", $template
-      );
-        
+            "text/html",
+            $template
+        );
+
         try {
             $response = $this->sender->send($email);
             return $response;
@@ -31,5 +34,4 @@ class EmailService
             return $e->getMessage();
         }
     }
-
 }

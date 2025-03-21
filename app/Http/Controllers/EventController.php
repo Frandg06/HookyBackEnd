@@ -2,38 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\ApiException;
 use App\Http\Filters\EventFilter;
 use App\Http\Requests\CreateEventRequest;
 use App\Http\Services\EventService;
-use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
-use Intervention\Image\Colors\Rgb\Channels\Red;
 
 class EventController extends Controller
 {
     private EventService $eventService;
-    
+
     public function __construct(EventService $eventService)
     {
-        $this->eventService = $eventService;    
+        $this->eventService = $eventService;
     }
 
     public function store(CreateEventRequest $request)
-    {  
+    {
         $validated = $request->only('st_date', 'end_date', 'timezone', 'likes', 'super_likes', 'name', 'colors');
         $event = $this->eventService->store($validated);
-    
+
         return response()->json(['success' => true, 'resp' => $event], 200);
     }
 
     public function getCalendarEvents(Request $request): JsonResponse
     {
-        if(!$request->has('dates')) {
+        if (!$request->has('dates')) {
             return response()->json(['error' => true, 'message' => 'dates_not_provided'], 400);
         }
 
@@ -47,11 +43,11 @@ class EventController extends Controller
         $company = request()->user();
 
 
-        $events =   $company->events()
-                    ->with(['users', 'tickets'])
-                    ->filter($filter)
-                    ->orderBy('st_date', 'desc')
-                    ->paginate($request->limit ?? 10);
+        $events = $company->events()
+            ->with(['users', 'tickets'])
+            ->filter($filter)
+            ->orderBy('st_date', 'desc')
+            ->paginate($request->limit ?? 10);
 
         return response()->json(['success' => true, 'resp' => $events], 200);
     }
@@ -66,24 +62,25 @@ class EventController extends Controller
         return response()->json(['success' => true, 'resp' => $event], 200);
     }
 
-    public function getEventsByUuid($uuid) : JsonResponse{
+    public function getEventsByUuid($uuid): JsonResponse
+    {
         $company = request()->user();
         $event =   $company->events()->where('uid', $uuid)->first();
         return response()->json(['success' => true, 'resp' => $event], 200);
     }
 
-    public function deleteEventById($uuid) : JsonResponse
+    public function deleteEventById($uuid): JsonResponse
     {
         $company = request()->user();
         $event = $company->events()->where('uid', $uuid)->first();
 
-        if(!$event) {
+        if (!$event) {
             return response()->json(['error' => true, 'message' => __('i18n.event_not_found')], 404);
         }
-        
+
         $st_date = Carbon::parse($event->st_date);
 
-        if($st_date->isPast()) {
+        if ($st_date->isPast()) {
             return response()->json(['error' => true, 'message' => __('i18n.event_cant_delete')], 409);
         }
 

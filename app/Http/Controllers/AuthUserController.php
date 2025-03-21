@@ -17,7 +17,7 @@ class AuthUserController extends Controller
 {
     protected $authUserService, $userService, $imageService, $notificationService;
 
-    public function __construct(AuthUserService $authUserService, UserService $userService, ImagesService $imageService, NotificationService $notificationService) 
+    public function __construct(AuthUserService $authUserService, UserService $userService, ImagesService $imageService, NotificationService $notificationService)
     {
         $this->authUserService = $authUserService;
         $this->userService = $userService;
@@ -25,18 +25,18 @@ class AuthUserController extends Controller
         $this->notificationService = $notificationService;
     }
 
-    public function update(CompleteDataRequest $request) 
+    public function update(CompleteDataRequest $request)
     {
         $data = $request->all();
-      
+
         $response = $this->authUserService->update($data);
-        return response()->json(["success" => true, "resp" =>  $response], 200);             
+        return response()->json(["success" => true, "resp" =>  $response], 200);
     }
 
-    public function completeRegisterData(CompleteAuthUserRequest $request) 
-    {     
+    public function completeRegisterData(CompleteAuthUserRequest $request)
+    {
         $data = $request->all();
-        $info = $this->parseCompleteData($data);   
+        $info = $this->parseCompleteData($data);
         $files = $this->parseCompleteFiles($data);
         $interests = $this->parseCompleteInterests($data);
 
@@ -44,18 +44,17 @@ class AuthUserController extends Controller
         return response()->json(["success" => true, "resp" => $response], 200);
     }
 
-    public function updatePassword(Request $request) 
+    public function updatePassword(Request $request)
     {
         $request->validate([
             'old_password' => 'required',
             'password' => 'required|min:8|confirmed',
         ]);
-        
+
         $data = $request->only('old_password', 'password');
-        $response =$this->authUserService->updatePassword($data);
+        $response = $this->authUserService->updatePassword($data);
 
         return response()->json(["success" => true, "resp" => $response], 200);
-     
     }
 
     public function updateInterest(Request $request)
@@ -66,17 +65,17 @@ class AuthUserController extends Controller
 
         $interests = $request->interests;
         $response = $this->authUserService->updateInterest($interests);
-        
+
         return response()->json(["success" => true, "resp" => $response], 200);
     }
 
-    public function getNotifications() 
+    public function getNotifications()
     {
         $response = $this->authUserService->getNotifications();
         return response()->json(["success" => true, "resp" => $response], 200);
     }
 
-    public function readNotificationsByType($type) 
+    public function readNotificationsByType($type)
     {
         $response = $this->notificationService->readNotificationsByType($type);
         return response()->json(["success" => true, "resp" => $response], 200);
@@ -85,7 +84,7 @@ class AuthUserController extends Controller
     public function getUsers()
     {
         $response = $this->userService->getUsers();
-        return response()->json(["resp" => $response, "success" => true], 200); 
+        return response()->json(["resp" => $response, "success" => true], 200);
     }
 
     public function getUserToConfirm(Request $request, $uid)
@@ -95,10 +94,10 @@ class AuthUserController extends Controller
         $isLike = UsersInteraction::checkIsLike($uid, $user);
 
         $isSuperlike = UsersInteraction::checkIsSuperLike($uid, $user);
-        
-        if(!$user->is_premium && !$isSuperlike) return response()->json(["success" => false, "message" => __('i18n.not_aviable_user'), "type" => "RoleException"], 401);
-        
-        if(!$isLike || !$isSuperlike) return response()->json(["success" => false, "message" => __('i18n.not_aviable_user'), "type" => "RoleException"], 401);
+
+        if (!$user->is_premium && !$isSuperlike) return response()->json(["success" => false, "message" => __('i18n.not_aviable_user'), "type" => "RoleException"], 401);
+
+        if (!$isLike || !$isSuperlike) return response()->json(["success" => false, "message" => __('i18n.not_aviable_user'), "type" => "RoleException"], 401);
 
         $user = User::where('uid', $uid)->first();
 
@@ -110,8 +109,8 @@ class AuthUserController extends Controller
         $user = $request->user();
 
         $isHook = UsersInteraction::checkHook($user->uid, $uid, $user->event_uid);
-                    
-        if(!$isHook) return response()->json(["success" => false, "message" => __('i18n.not_aviable_user'), "type" => "RoleException"], 401);
+
+        if (!$isHook) return response()->json(["success" => false, "message" => __('i18n.not_aviable_user'), "type" => "RoleException"], 401);
 
         $user = User::where('uid', $uid)->first();
 
@@ -124,10 +123,10 @@ class AuthUserController extends Controller
         $response = $this->userService->setInteraction($uid, $interaction);
 
         return response()->json(["success" => true, "resp" => $response], 200);
-        
     }
-    
-    private function parseCompleteData($data) {
+
+    private function parseCompleteData($data)
+    {
         return [
             "born_date" => $data["born_date"],
             "city" => $data["city"],
@@ -143,36 +142,36 @@ class AuthUserController extends Controller
         ];
     }
 
-    private function parseCompleteFiles($data) 
+    private function parseCompleteFiles($data)
     {
         $size = json_decode($data["userImagesSizes"], true);
-        
+
         return [
             [
-                "file" => $data["userImages0"], 
+                "file" => $data["userImages0"],
                 "data" => [
                     "width" =>  $size[0]['width'],
                     "height" =>  $size[0]['height']
                 ]
             ],
             [
-                "file" => $data["userImages1"], 
+                "file" => $data["userImages1"],
                 "data" => [
                     "width" =>  $size[1]['width'],
                     "height" =>  $size[1]['height']
                 ]
             ],
             [
-                "file" => $data["userImages2"], 
+                "file" => $data["userImages2"],
                 "data" => [
                     "width" =>  $size[2]['width'],
                     "height" =>  $size[2]['height']
                 ]
-            ],     
+            ],
         ];
     }
 
-    private function parseCompleteInterests($data) 
+    private function parseCompleteInterests($data)
     {
         return explode(',', $data["interests"]);
     }

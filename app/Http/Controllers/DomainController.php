@@ -7,12 +7,14 @@ use App\Models\TimeZone;
 
 class DomainController extends Controller
 {
-    public function getInterests() {
+    public function getInterests()
+    {
         $insterest = Interest::all();
         return response()->json($insterest);
     }
 
-    public function getTimeZones() {
+    public function getTimeZones()
+    {
         $timezones = TimeZone::all();
         return response()->json($timezones);
     }
