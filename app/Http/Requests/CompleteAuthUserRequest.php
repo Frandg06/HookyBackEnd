@@ -22,17 +22,17 @@ class CompleteAuthUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "born_date" => "required|date",
-            "city" => "required|string|min:2",
-            "description" => "nullable|string",
-            "email" => "required|email",
-            "gender_id" => "required|exists:genders,id",
-            "ig" => "nullable|string|min:2",
-            "interests" => "required|string",
-            "name" => "required|string|min:2",
-            "sexual_orientation_id" => "required|exists:sexual_orientations,id",
-            "surnames" => "required|string|min:2",
-            "tw" => "nullable|string|min:2",
+            'born_date' => 'required|date',
+            'city' => 'required|string|min:2',
+            'description' => 'nullable|string',
+            'email' => 'required|email',
+            'gender_id' => 'required|exists:genders,id',
+            'ig' => 'nullable|string|min:2',
+            'interests' => 'required|string',
+            'name' => 'required|string|min:2',
+            'sexual_orientation_id' => 'required|exists:sexual_orientations,id',
+            'surnames' => 'required|string|min:2',
+            'tw' => 'nullable|string|min:2',
         ];
     }
 }

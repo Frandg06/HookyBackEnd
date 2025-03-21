@@ -14,9 +14,9 @@ class InteractionSeeder extends Seeder
     public function run(): void
     {
         $interactions = [
-            "super_like",
-            "like",
-            "dislike",
+            'super_like',
+            'like',
+            'dislike',
         ];
 
         foreach ($interactions as $interaction) {

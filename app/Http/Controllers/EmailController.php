@@ -14,12 +14,14 @@ class EmailController extends Controller
     {
         $email = $request->email;
 
-        if (!$email) return response()->json(['message' => 'El email es obligatorio', "error" => true], 400);
+        if (!$email) {
+            return response()->json(['message' => 'El email es obligatorio', 'error' => true], 400);
+        }
 
         WaitlistEmail::create([
-            "email" => $email
+            'email' => $email
         ]);
 
-        return response()->json(['success' => true, "message" => "Se ha incluido el email a la lista de espera"]);
+        return response()->json(['success' => true, 'message' => 'Se ha incluido el email a la lista de espera']);
     }
 }

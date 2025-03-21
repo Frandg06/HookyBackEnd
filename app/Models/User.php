@@ -202,8 +202,8 @@ class User extends Authenticatable implements JWTSubject
 
     public function scopeGetUsersToInteract($query, $authUser, $usersWithInteraction, $usersWithoutInteraction)
     {
-        return $query->whereIn("gender_id", $authUser->match_gender)
-            ->whereIn("sexual_orientation_id", [$authUser->sexual_orientation_id, SexualOrientation::BISEXUAL])
+        return $query->whereIn('gender_id', $authUser->match_gender)
+            ->whereIn('sexual_orientation_id', [$authUser->sexual_orientation_id, SexualOrientation::BISEXUAL])
             ->whereHas('events', function ($query) use ($authUser) {
                 $query->where('event_uid', $authUser->event_uid);
             })->eligibleUsers($authUser, $usersWithInteraction, $usersWithoutInteraction);
@@ -237,7 +237,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return $query->whereNot('uid', $authUser->uid)
             ->whereNotIn('uid', $usersWithInteraction)
-            ->whereRaw("
+            ->whereRaw('
             EXISTS (
                 SELECT 1 
                 FROM user_interests 
@@ -245,8 +245,8 @@ class User extends Authenticatable implements JWTSubject
                 GROUP BY user_interests.user_uid 
                 HAVING COUNT(user_interests.user_uid) BETWEEN 3 AND 6
             )
-        ")
-            ->whereRaw("
+        ')
+            ->whereRaw('
             EXISTS (
                 SELECT 1 
                 FROM user_images 
@@ -254,7 +254,7 @@ class User extends Authenticatable implements JWTSubject
                 GROUP BY user_images.user_uid 
                 HAVING COUNT(user_images.user_uid) = 3
             )
-        ")
+        ')
             ->orWhereIn('uid', $usersWithoutInteraction)
             ->orderBy('created_at', 'asc')
             ->orderBy('id', 'asc')

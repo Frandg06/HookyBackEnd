@@ -9,6 +9,6 @@ Route::post('/password/email', [AuthController::class, 'passwordReset']);
 Route::put('/password/reset', [AuthController::class, 'setNewPassword']);
 
 Route::middleware(['auth:api', 'jwt.verify'])->group(function () {
-  Route::post('/logout', [AuthController::class, 'logout']);
-  Route::get('/me', [AuthController::class, 'me']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/me', [AuthController::class, 'me']);
 });

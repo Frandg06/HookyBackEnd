@@ -112,10 +112,12 @@ class Event extends Model
 
         $total = $this->users()->count();
 
-        if ($total == 0) return [
-            'males' => 0,
-            'females' => 0,
-        ];
+        if ($total == 0) {
+            return [
+                'males' => 0,
+                'females' => 0,
+            ];
+        }
 
         $males = $this->users()
             ->join('users', 'user_events.user_uid', '=', 'users.uid')

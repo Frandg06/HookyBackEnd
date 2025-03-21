@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Str;
 
-
 class DevSeeder extends Seeder
 {
     /**
@@ -24,53 +23,55 @@ class DevSeeder extends Seeder
      */
     public function run(): void
     {
-        if(env('APP_ENV') !== 'local') return;
+        if (env('APP_ENV') !== 'local') {
+            return;
+        }
 
         $this->call(EventsMockSeeder::class);
         $this->call(UserMockSeeder::class);
 
         Event::factory()->count(93)->create();
 
-        DB::table('events') 
+        DB::table('events')
         ->update([
             'end_date' => DB::raw("st_date + INTERVAL '5 hours'")
         ]);
 
-        Event::all()->each(function ($event)  {
+        Event::all()->each(function ($event) {
 
-          $tickets = [];  
-          $ticketCount = rand(20, 50);
+            $tickets = [];
+            $ticketCount = rand(20, 50);
           
-          while (count($tickets) < $ticketCount) {
-            $code = strtoupper(Str::random(6));
+            while (count($tickets) < $ticketCount) {
+                $code = strtoupper(Str::random(6));
             
-            $tickets[] = [
-              'uid' => (string) Str::uuid(), 
-              'company_uid' => $event->company->uid,
-              'event_uid' => $event->uid,
-              'code' => $code,
-              'redeemed' => true,
-              'price' => rand(3, 6),
-              'likes' => fake()->numberBetween(1, 100),
-              'super_likes' => fake()->numberBetween(1, 100),
-              'created_at' => now(),
-              'updated_at' => now(),
-            ];
-          }
+                $tickets[] = [
+                  'uid' => (string) Str::uuid(),
+                  'company_uid' => $event->company->uid,
+                  'event_uid' => $event->uid,
+                  'code' => $code,
+                  'redeemed' => true,
+                  'price' => rand(3, 6),
+                  'likes' => fake()->numberBetween(1, 100),
+                  'super_likes' => fake()->numberBetween(1, 100),
+                  'created_at' => now(),
+                  'updated_at' => now(),
+                ];
+            }
           
-          Ticket::insert($tickets);
+            Ticket::insert($tickets);
 
-          $userCount = rand(20, 50);
+            $userCount = rand(20, 50);
 
-          User::factory()->count($userCount)->create()->each(function($user) use ($event) {
+            User::factory()->count($userCount)->create()->each(function ($user) use ($event) {
                 UserEvent::create([
                   'user_uid' => $user->uid,
                   'event_uid' => $event->uid,
-                  'logged_at' => fake()->dateTimeInInterval('-12 hours', '+15 hours'),  
+                  'logged_at' => fake()->dateTimeInInterval('-12 hours', '+15 hours'),
                   'super_likes' => $event->super_likes,
                   'likes' => $event->likes,
                 ]);
-          });
+            });
 
         
         });
@@ -84,31 +85,31 @@ class DevSeeder extends Seeder
         //     $user->interestBelongsToMany()->attach($interests);
 
 
-            // for($i = 0; $i < 3; $i++) {
+        // for($i = 0; $i < 3; $i++) {
 
-            //     $imageData = file_get_contents("https://picsum.photos/500/900");
+        //     $imageData = file_get_contents("https://picsum.photos/500/900");
                 
-            //     $img = Image::read($imageData);
+        //     $img = Image::read($imageData);
     
-            //     $ogWidth = $img->width();
-            //     $ogHeight = $img->height();
+        //     $ogWidth = $img->width();
+        //     $ogHeight = $img->height();
                 
-            //     $aspectRatio = $ogWidth / $ogHeight;
+        //     $aspectRatio = $ogWidth / $ogHeight;
     
-            //     $newHeight = 500 / $aspectRatio;
+        //     $newHeight = 500 / $aspectRatio;
     
     
-            //     $processedImage = $img->resize(500, $newHeight)->toWebP(80);
+        //     $processedImage = $img->resize(500, $newHeight)->toWebP(80);
                 
-            //     $newImage = $user->userImages()->create([
-            //       'order' => $user->userImages()->count() + 1,
-            //       'name' => "databnaseSeeder",
-            //       'size' => "34886",
-            //       'type' => "image/png",
-            //     ]);
+        //     $newImage = $user->userImages()->create([
+        //       'order' => $user->userImages()->count() + 1,
+        //       'name' => "databnaseSeeder",
+        //       'size' => "34886",
+        //       'type' => "image/png",
+        //     ]);
         
-            //     Storage::disk('r2')->put($newImage->url, $processedImage);
-            // }
+        //     Storage::disk('r2')->put($newImage->url, $processedImage);
+        // }
 
         // });
     }

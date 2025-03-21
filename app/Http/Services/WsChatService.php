@@ -37,7 +37,7 @@ class WsChatService
                 'Accept' => 'application/json'
             ])->post($chat_url, $data);
         } catch (\Exception $e) {
-            Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
+            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
             throw new \Exception(__('i18n.ws_chat_ko'));
         }
     }

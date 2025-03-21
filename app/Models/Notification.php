@@ -11,16 +11,16 @@ class Notification extends Model
     use HasUid;
 
     protected $fillable = [
-        "id",
-        "uid",
-        "user_uid",
-        "emitter_uid",
-        "event_uid",
-        "type_id",
-        "msg",
-        "read_at",
-        "created_at",
-        "updated_at",
+        'id',
+        'uid',
+        'user_uid',
+        'emitter_uid',
+        'event_uid',
+        'type_id',
+        'msg',
+        'read_at',
+        'created_at',
+        'updated_at',
     ];
 
     public function user(): BelongsTo

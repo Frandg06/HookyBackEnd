@@ -52,7 +52,7 @@ class UsersInteraction extends Model
     {
         return $query->where('user_uid', $reciber)
             ->where('interaction_user_uid', $emitter)
-            ->whereIn('interaction_id',  [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
+            ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
             ->whereExists(function ($query) use ($reciber, $emitter, $event) {
                 $query->from('users_interactions')
                     ->where('user_uid', $emitter)

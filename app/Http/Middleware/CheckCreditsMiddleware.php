@@ -26,7 +26,9 @@ class CheckCreditsMiddleware
             $error = true;
         }
 
-        if ($error) return response()->json(["error" => false, "message" => "No tienes suficiente creditos para hacer esa interacción"], 400);
+        if ($error) {
+            return response()->json(['error' => false, 'message' => 'No tienes suficiente creditos para hacer esa interacción'], 400);
+        }
 
         return $next($request);
     }

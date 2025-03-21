@@ -19,10 +19,18 @@ class TicketService
 
             $event = $company->events()->where('uid', $data['event_uid'])->first();
 
-            if (!$event) throw new ApiException("event_not_found", 400);
-            if (!is_numeric($data['count'])) throw new ApiException("tickets_not_numeric", 400);
-            if ($data['count'] < 1) throw new ApiException("tickets_minimum", 400);
-            if ($data['count'] > 1000) throw new ApiException("tickets_maximum", 400);
+            if (!$event) {
+                throw new ApiException('event_not_found', 400);
+            }
+            if (!is_numeric($data['count'])) {
+                throw new ApiException('tickets_not_numeric', 400);
+            }
+            if ($data['count'] < 1) {
+                throw new ApiException('tickets_minimum', 400);
+            }
+            if ($data['count'] > 1000) {
+                throw new ApiException('tickets_maximum', 400);
+            }
 
 
             $tickets = [];
@@ -47,16 +55,16 @@ class TicketService
             DB::commit();
 
             return [
-                "all_tickets" => $company->tickets()->paginate(10),
-                "company_tickets" => $company->tickets()->limit(5)->orderBy('redeemed_at', 'desc')->get()
+                'all_tickets' => $company->tickets()->paginate(10),
+                'company_tickets' => $company->tickets()->limit(5)->orderBy('redeemed_at', 'desc')->get()
             ];
         } catch (ApiException $e) {
             DB::rollBack();
             throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException("generate_tickets_ko", 500);
+            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
+            throw new ApiException('generate_tickets_ko', 500);
         }
     }
 
@@ -71,7 +79,9 @@ class TicketService
 
             $ticket = Ticket::getTicketByCompanyEventAndCode($company_uid, $code)->first();
 
-            if (!$ticket) throw new ApiException("ticket_invalid", 400);
+            if (!$ticket) {
+                throw new ApiException('ticket_invalid', 400);
+            }
 
 
             $ticket->ticketsRedeem()->create([
@@ -83,8 +93,8 @@ class TicketService
             $tz = $user->events()->activeEventData()->event->timezone;
 
             $ticket->update([
-                "redeemed" => true,
-                "redeemed_at" => now($tz)
+                'redeemed' => true,
+                'redeemed_at' => now($tz)
             ]);
 
             $user->events()->update([
@@ -95,13 +105,13 @@ class TicketService
             DB::commit();
 
             return [
-                "user_total" => [
-                    "super_like_credits" => $user->super_like_credits,
-                    "like_credits" => $user->like_credits,
+                'user_total' => [
+                    'super_like_credits' => $user->super_like_credits,
+                    'like_credits' => $user->like_credits,
                 ],
-                "ticket_add" => [
-                    "super_likes" => $ticket->super_likes,
-                    "likes" => $ticket->likes,
+                'ticket_add' => [
+                    'super_likes' => $ticket->super_likes,
+                    'likes' => $ticket->likes,
                 ]
             ];
         } catch (ApiException $e) {
@@ -109,8 +119,8 @@ class TicketService
             throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Error en " . __CLASS__ . "->" . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException("generate_tickets_ko", 500);
+            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
+            throw new ApiException('generate_tickets_ko', 500);
         }
     }
 }

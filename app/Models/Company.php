@@ -47,7 +47,7 @@ class Company extends Authenticatable implements JWTSubject
 
     public function getlinkAttribute()
     {
-        return config("app.front_url") . "/?company=" . Crypt::encrypt($this->uid);
+        return config('app.front_url') . '/?company=' . Crypt::encrypt($this->uid);
     }
 
     public function timezone(): BelongsTo
@@ -204,14 +204,14 @@ class Company extends Authenticatable implements JWTSubject
             'event_names' => $events->pluck('name')->toArray(),
             'data' => [
                 [
-                    "name" => "Usuarios",
-                    "data" => $events->map(function ($event) {
+                    'name' => 'Usuarios',
+                    'data' => $events->map(function ($event) {
                         return $event->users()->count();
                     })
                 ],
                 [
-                    "name" => "Ingresos",
-                    "data" => $events->map(function ($event) {
+                    'name' => 'Ingresos',
+                    'data' => $events->map(function ($event) {
                         return $event->total_incomes;
                     })
                 ],

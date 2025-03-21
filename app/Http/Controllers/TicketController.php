@@ -22,9 +22,9 @@ class TicketController extends Controller
 
             $tickets = $request->user()->tickets()->paginate(10);
 
-            return response()->json(["resp" => $tickets, "success" => true], 200);
+            return response()->json(['resp' => $tickets, 'success' => true], 200);
         } catch (\Exception $e) {
-            return response()->json(["error" => true, "message" => __('i18n.unexpected_error')], 500);
+            return response()->json(['error' => true, 'message' => __('i18n.unexpected_error')], 500);
         }
     }
 
@@ -34,7 +34,7 @@ class TicketController extends Controller
 
         $tickets = $this->ticketService->generateTickets($data);
 
-        return response()->json(["resp" => $tickets, "success" => true], 200);
+        return response()->json(['resp' => $tickets, 'success' => true], 200);
     }
 
     public function redeem(Request $request)
@@ -42,6 +42,6 @@ class TicketController extends Controller
         $code = $request->code;
         $ticket = $this->ticketService->redeem($code);
 
-        return response()->json(["resp" => $ticket, "success" => true], 200);
+        return response()->json(['resp' => $ticket, 'success' => true], 200);
     }
 }

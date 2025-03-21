@@ -23,7 +23,7 @@ class EmailService
         $email->setSubject($subject);
         $email->addTo($user->email, $user->name);
         $email->addContent(
-            "text/html",
+            'text/html',
             $template
         );
 
