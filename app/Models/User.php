@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Http\Resources\AuthUserResource;
 use App\Http\Resources\UsersToTableResource;
+use App\Models\Traits\Filterable;
 use App\Models\Traits\HasUid;
+use App\Models\Traits\Sortable;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +17,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable, HasUid;
+    use HasFactory, Notifiable, HasUid, Filterable, Sortable;
 
     protected $table = 'users';
     protected $primaryKey = 'uid';
@@ -42,12 +44,12 @@ class User extends Authenticatable implements JWTSubject
         'super_like_credits',
         'tw',
         'ig',
+        'role_id',
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
-        'role_id',
         'updated_at',
         'created_at',
     ];

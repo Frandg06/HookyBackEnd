@@ -16,6 +16,11 @@ class Event extends Model
 {
     use HasUid, Filterable, Sortable, HasFactory;
 
+    protected $table = 'events';
+    protected $primaryKey = 'uid';
+    protected $keyType = 'string';
+    public $incrementing = false;
+
     protected $fillable = ['uid', 'st_date', 'end_date', 'company_uid', 'timezone', 'likes', 'super_likes', 'name', 'colors'];
     protected $hidden = ['created_at', 'updated_at', 'id'];
 
@@ -27,6 +32,11 @@ class Event extends Model
     public function users(): HasMany
     {
         return $this->hasMany(UserEvent::class, 'event_uid', 'uid');
+    }
+
+    public function users2(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_events', 'event_uid', 'user_uid');
     }
 
     public function tickets(): HasMany

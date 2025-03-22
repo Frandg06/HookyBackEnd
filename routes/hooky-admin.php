@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthCompanyController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CompanyUsersController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
@@ -23,4 +24,9 @@ Route::middleware(['auth:company', 'jwt.verify.company'])->group(function () {
     Route::delete('/events/{uuid}', [EventController::class, 'deleteEventById']);
     Route::post('/tickets', [TicketController::class, 'generateTickets']);
     Route::get('/tickets', [TicketController::class, 'index']);
+
+    Route::prefix('users')->group(function () {
+        Route::get('/', [CompanyUsersController::class, 'getUsers']);
+        Route::get('/{event_uid}', [CompanyUsersController::class, 'getEventUsers']);
+    });
 });
