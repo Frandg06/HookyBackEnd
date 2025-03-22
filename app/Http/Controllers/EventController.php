@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Filters\EventFilter;
+use App\Http\Orders\EventOrdenator;
 use App\Http\Requests\CreateEventRequest;
 use App\Http\Services\EventService;
 use Carbon\Carbon;
@@ -38,7 +39,7 @@ class EventController extends Controller
         return response()->json(['success' => true, 'resp' => $events], 200);
     }
 
-    public function getEvents(EventFilter $filter, Request $request)
+    public function getEvents(EventFilter $filter, EventOrdenator $order, Request $request): JsonResponse
     {
         $company = request()->user();
 
@@ -46,7 +47,7 @@ class EventController extends Controller
         $events = $company->events()
             ->with(['users', 'tickets'])
             ->filter($filter)
-            ->orderBy('st_date', 'desc')
+            ->sort($order)
             ->paginate($request->limit ?? 10);
 
         return response()->json(['success' => true, 'resp' => $events], 200);
