@@ -11,6 +11,7 @@ Route::middleware(['api', 'lang'])->group(function () {
     Route::prefix('auth')->group(base_path('routes/hooky-auth.php'));
     Route::prefix('company')->group(base_path('routes/hooky-admin.php'));
     Route::middleware(['auth:api', 'event', 'jwt.verify'])->group(base_path('routes/hooky-app.php'));
+    Route::prefix('export')->group(base_path('routes/export.php'));
 
     Route::post('/user/complete', [AuthUserController::class, 'completeRegisterData'])->middleware(['auth:api', 'jwt.verify']);
 

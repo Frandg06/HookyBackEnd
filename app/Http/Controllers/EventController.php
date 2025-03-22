@@ -64,4 +64,10 @@ class EventController extends Controller
         $this->eventService->delete($uuid);
         return response()->json(['success' => true, 'message' => __('i18n.event_deleted')], 200);
     }
+
+    public function getExportEvents(EventFilter $filter, EventOrdenator $order, Request $request): JsonResponse
+    {
+        $events = $this->eventService->getExportEvents($filter, $order, $request->limit);
+        return response()->json(['success' => true, 'resp' => $events], 200);
+    }
 }

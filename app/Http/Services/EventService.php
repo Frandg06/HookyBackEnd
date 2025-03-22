@@ -6,6 +6,7 @@ use App\Exceptions\ApiException;
 use App\Http\Filters\EventFilter;
 use App\Http\Orders\EventOrdenator;
 use App\Http\Resources\EventResource;
+use App\Http\Resources\Exports\EventExportResource;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -165,6 +166,26 @@ class EventService
         } catch (\Exception $e) {
             Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
             throw new ApiException('update_event_ko', 500);
+        }
+    }
+
+    public function getExportEvents(EventFilter $filtrer, EventOrdenator $ordenator)
+    {
+
+        $company = request()->user();
+
+        try {
+
+            $events = $company->events()
+                ->with(['users', 'tickets'])
+                ->filter($filtrer)
+                ->sort($ordenator)
+                ->get(['name', 'st_date', 'end_date', 'colors', 'likes', 'super_likes']);
+
+            return  EventExportResource::collection($events);
+        } catch (\Exception $e) {
+            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
+            throw new ApiException('get_events_ko', 500);
         }
     }
 }
