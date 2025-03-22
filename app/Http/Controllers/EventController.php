@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Filters\EventFilter;
 use App\Http\Orders\EventOrdenator;
 use App\Http\Requests\CreateEventRequest;
+use App\Http\Resources\EventResource;
 use App\Http\Services\EventService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -41,52 +42,26 @@ class EventController extends Controller
 
     public function getEvents(EventFilter $filter, EventOrdenator $order, Request $request): JsonResponse
     {
-        $company = request()->user();
-
-
-        $events = $company->events()
-            ->with(['users', 'tickets'])
-            ->filter($filter)
-            ->sort($order)
-            ->paginate($request->limit ?? 10);
-
+        $events = $this->eventService->getEvents($filter, $order, $request->limit);
         return response()->json(['success' => true, 'resp' => $events], 200);
     }
 
     public function updateEvent(Request $request, $uuid)
     {
-        $company = request()->user();
         $validated = $request->only('st_date', 'end_date', 'timezone', 'likes', 'super_likes', 'name', 'colors');
-        Log::info($request->all());
-        $event =   $company->events()->where('uid', $uuid)->update($validated);
-
+        $event = $this->eventService->update($validated, $uuid);
         return response()->json(['success' => true, 'resp' => $event], 200);
     }
 
     public function getEventsByUuid($uuid): JsonResponse
     {
-        $company = request()->user();
-        $event =   $company->events()->where('uid', $uuid)->first();
+        $event =  $this->eventService->show($uuid);
         return response()->json(['success' => true, 'resp' => $event], 200);
     }
 
     public function deleteEventById($uuid): JsonResponse
     {
-        $company = request()->user();
-        $event = $company->events()->where('uid', $uuid)->first();
-
-        if (!$event) {
-            return response()->json(['error' => true, 'message' => __('i18n.event_not_found')], 404);
-        }
-
-        $st_date = Carbon::parse($event->st_date);
-
-        if ($st_date->isPast()) {
-            return response()->json(['error' => true, 'message' => __('i18n.event_cant_delete')], 409);
-        }
-
-        $event->delete();
-
+        $this->eventService->delete($uuid);
         return response()->json(['success' => true, 'message' => __('i18n.event_deleted')], 200);
     }
 }

@@ -3,6 +3,9 @@
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
+use App\Http\Filters\EventFilter;
+use App\Http\Orders\EventOrdenator;
+use App\Http\Resources\EventResource;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -44,7 +47,7 @@ class EventService
 
             DB::commit();
 
-            return $event;
+            return EventResource::make($event);
         } catch (ApiException $e) {
             DB::rollBack();
             throw new ApiException($e->getMessage(), $e->getCode());
@@ -66,9 +69,9 @@ class EventService
                 $end = Carbon::parse($date)->endOfMonth();
 
                 $query = $company->events()
-                  ->whereDate('st_date', '>=', $start)
-                  ->whereDate('st_date', '<=', $end)
-                  ->get(['name', 'st_date as start', 'end_date as end', 'colors', 'uid'])->toArray();
+                    ->whereDate('st_date', '>=', $start)
+                    ->whereDate('st_date', '<=', $end)
+                    ->get(['name', 'st_date as start', 'end_date as end', 'colors', 'uid'])->toArray();
 
                 $events = array_merge($events, $query);
             }
@@ -80,6 +83,88 @@ class EventService
             DB::rollBack();
             Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
             throw new ApiException('get_calendar_events_ko', 500);
+        }
+    }
+
+    public function getEvents(EventFilter $filtrer, EventOrdenator $ordenator, $limit = 10): array
+    {
+
+        $company = request()->user();
+
+        try {
+
+            $events = $company->events()
+                ->with(['users', 'tickets'])
+                ->filter($filtrer)
+                ->sort($ordenator)
+                ->paginate($limit);
+
+            return  [
+                'data' => EventResource::collection($events),
+                'current_page' => $events->currentPage(),
+                'last_page' => $events->lastPage(),
+                'total' => $events->total(),
+                'per_page' => $events->perPage(),
+            ];
+        } catch (\Exception $e) {
+            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
+            throw new ApiException('get_events_ko', 500);
+        }
+    }
+
+    public function update(array $data, $uuid): EventResource
+    {
+        try {
+            $company = request()->user();
+
+            $event = $company->events()->where('uid', $uuid)->first();
+
+            if (!$event) throw new ApiException('event_not_found', 404);
+
+            $event->update($data);
+
+            return EventResource::make($event);
+        } catch (\Exception $e) {
+            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
+            throw new ApiException('update_event_ko', 500);
+        }
+    }
+
+    public function show(string $uuid): EventResource
+    {
+        try {
+            $company = request()->user();
+
+            $event =   $company->events()->where('uid', $uuid)->first();
+
+            if (!$event) throw new ApiException('event_not_found', 404);
+
+            return EventResource::make($event);
+        } catch (\Exception $e) {
+            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
+            throw new ApiException('update_event_ko', 500);
+        }
+    }
+
+    public function delete(string $uuid): bool
+    {
+        try {
+
+            $company = request()->user();
+            $event = $company->events()->where('uid', $uuid)->first();
+
+            if (!$event) throw new ApiException('event_not_found', 404);
+
+            $st_date = Carbon::parse($event->st_date);
+
+            if ($st_date->isPast()) throw new ApiException('event_is_past', 409);
+
+            $event->delete();
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
+            throw new ApiException('update_event_ko', 500);
         }
     }
 }
