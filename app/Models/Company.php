@@ -73,12 +73,17 @@ class Company extends Authenticatable implements JWTSubject
         return AuthCompanyResource::make($this);
     }
 
-    public function scopeUsers()
+    public function users()
     {
-        return $this->join('user_events', 'events.uid', '=', 'user_events.event_uid')
-            ->join('users', 'user_events.user_uid', '=', 'users.uid')
-            ->select('users.*')
-            ->distinct('users.uid');
+        return User::whereIn('uid', function ($query) {
+            $query->select('user_uid')
+                ->from('user_events')
+                ->whereIn('event_uid', function ($q) {
+                    $q->select('uid')
+                        ->from('events')
+                        ->where('company_uid', $this->uid);
+                });
+        });
     }
 
     public function checkEveventsInSameTime($st_date, $end_date)

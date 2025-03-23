@@ -2,30 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
+
 abstract class Controller
 {
-  public function __construct() {}
-
-  private function reponseChecked($response, $customRespKey, $code)
+  public function company()
   {
-    if (isset($response['error']) && $response['error']) {
-      return $this->responseError($response['message'], $response['code']);
-    }
-    return $this->responseSucces($response, $customRespKey, $code);
+    return request()->user();
   }
 
-  private function responseSucces($response, $customRespKey, $code)
+  public function user()
   {
-    return response()->json(['success' => true, $customRespKey => $response], $code);
-  }
-
-  public function responseError($message, $code = 400)
-  {
-    return response()->json(['error' => true, 'message' => $message], $code);
+    return request()->user();
   }
 
   public function response($data, $customRespKey = 'resp', $code = 200)
   {
     return $this->reponseChecked($data, $customRespKey, $code);
+  }
+
+  public function log($message = '', $data = [])
+  {
+    Log::debug($message, $data);
+  }
+
+
+  private function reponseChecked($response, $customRespKey, $code)
+  {
+    if (isset($response['error']) && $response['error']) {
+      return $this->returnError($response['message'], $response['code']);
+    }
+    return $this->returnSucces($response, $customRespKey, $code);
+  }
+
+  private function returnSucces($response, $customRespKey, $code)
+  {
+    return response()->json(['success' => true, $customRespKey => $response], $code);
+  }
+
+  private function returnError($message, $code = 400)
+  {
+    return response()->json(['error' => true, 'message' => $message], $code);
   }
 }

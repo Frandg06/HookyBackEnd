@@ -2,16 +2,35 @@
 
 namespace App\Http\Services;
 
-use App\Exceptions\ApiException;
 use App\Http\Filters\UserFilter;
 use App\Http\Orders\UserOrdenator;
 use App\Http\Resources\EventUsersResource;
 use App\Http\Resources\Exports\EventUsersExportResource;
 use App\Models\Event;
-use Illuminate\Support\Facades\Log;
 
 class CompanyUsersService extends Service
 {
+
+  public function getUsers(UserFilter $filter, UserOrdenator $order): array
+  {
+    try {
+      $company = $this->company();
+      $this->log('Company: ' . $company->name);
+      $users = $company->users()->filter($filter)->sort($order)->paginate(10);
+
+      return [
+        'data' => EventUsersResource::collection($users),
+        'current_page' => $users->currentPage(),
+        'last_page' => $users->lastPage(),
+        'total' => $users->total(),
+        'per_page' => $users->perPage(),
+      ];
+    } catch (\Exception $e) {
+      $this->logError($e, __CLASS__, __FUNCTION__);
+      return $this->responseError('get_users_ko', 500);
+    }
+  }
+
   public function getEventUsers(UserFilter $filter, UserOrdenator $order, $event_uid): array
   {
     try {

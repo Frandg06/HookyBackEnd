@@ -2,9 +2,10 @@
 
 namespace App\Http\Services;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 
-abstract class Service
+abstract class Service extends Controller
 {
   public function __construct() {}
 
@@ -20,10 +21,5 @@ abstract class Service
   public function logError($error, $class, $function)
   {
     Log::error('Error en ' . $class . '->' . $function, ['exception' => $error]);
-  }
-
-  public function debug($message = '', $data = [])
-  {
-    Log::debug($message, $data);
   }
 }

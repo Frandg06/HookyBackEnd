@@ -26,7 +26,7 @@ Route::middleware(['auth:company', 'jwt.verify.company'])->group(function () {
     Route::get('/tickets', [TicketController::class, 'index']);
 
     Route::prefix('users')->group(function () {
-        Route::get('/', [CompanyUsersController::class, 'getUsers']);
+        Route::get('', [CompanyUsersController::class, 'getUsers']);
         Route::get('/{event_uid}', [CompanyUsersController::class, 'getEventUsers']);
     });
 });

@@ -12,7 +12,11 @@ class CompanyUsersController extends Controller
 
     public function __construct(private readonly CompanyUsersService $companyUsersService) {}
 
-    public function getUsers(Request $request) {}
+    public function getUsers(UserFilter $filter, UserOrdenator $order)
+    {
+        $response = $this->companyUsersService->getUsers($filter, $order,);
+        return $this->response($response);
+    }
 
     public function getEventUsers(UserFilter $filter, UserOrdenator $order, $event_uid)
     {
