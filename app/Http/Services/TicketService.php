@@ -8,30 +8,22 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class TicketService
+class TicketService extends Service
 {
-    public function generateTickets($data)
+    public function generateTickets(array $data): array
     {
         DB::beginTransaction();
         try {
 
-            $company = request()->user();
+            $event = $this->company()->events()->where('uid', $data['event_uid'])->first();
 
-            $event = $company->events()->where('uid', $data['event_uid'])->first();
+            if (!$event) return $this->responseError('event_not_found', 400);
 
-            if (!$event) {
-                throw new ApiException('event_not_found', 400);
-            }
-            if (!is_numeric($data['count'])) {
-                throw new ApiException('tickets_not_numeric', 400);
-            }
-            if ($data['count'] < 1) {
-                throw new ApiException('tickets_minimum', 400);
-            }
-            if ($data['count'] > 1000) {
-                throw new ApiException('tickets_maximum', 400);
-            }
+            if (!is_numeric($data['count'])) $this->responseError('tickets_not_numeric', 400);
 
+            if ($data['count'] < 1) $this->responseError('tickets_minimum', 400);
+
+            if ($data['count'] > 1000) $this->responseError('tickets_maximum', 400);
 
             $tickets = [];
 
@@ -39,7 +31,7 @@ class TicketService
                 $code = strtoupper(Str::random(6));
                 $tickets[] = [
                     'uid' => (string) Str::uuid(),
-                    'company_uid' => $company->uid,
+                    'company_uid' => $this->company()->uid,
                     'event_uid' => $data['event_uid'],
                     'code' => $code,
                     'redeemed' => false,
@@ -54,28 +46,21 @@ class TicketService
 
             DB::commit();
 
-            return [
-                'all_tickets' => $company->tickets()->paginate(10),
-                'company_tickets' => $company->tickets()->limit(5)->orderBy('redeemed_at', 'desc')->get()
-            ];
-        } catch (ApiException $e) {
-            DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
+            return  $this->company()->tickets()->paginate(10);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('generate_tickets_ko', 500);
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('generate_tickets_ko', 500);
         }
     }
 
-    public function redeem($code)
+    public function redeem(string $code)
     {
         DB::beginTransaction();
         try {
-            $user = request()->user();
 
-            $company_uid = $user->company_uid;
-            $event_uid = $user->event_uid;
+            $company_uid = $this->user()->company_uid;
+            $event_uid = $this->user()->event_uid;
 
             $ticket = Ticket::getTicketByCompanyEventAndCode($company_uid, $code)->first();
 
@@ -85,29 +70,29 @@ class TicketService
 
 
             $ticket->ticketsRedeem()->create([
-                'user_uid' => $user->uid,
+                'user_uid' => $this->user()->uid,
                 'event_uid' => $event_uid,
                 'company_uid' => $company_uid,
             ]);
 
-            $tz = $user->events()->activeEventData()->event->timezone;
+            $tz = $this->user()->events()->activeEventData()->event->timezone;
 
             $ticket->update([
                 'redeemed' => true,
                 'redeemed_at' => now($tz)
             ]);
 
-            $user->events()->update([
-                'likes' => $user->like_credits + $ticket->likes,
-                'super_likes' => $user->super_like_credits + $ticket->super_likes
+            $this->user()->events()->update([
+                'likes' => $this->user()->like_credits + $ticket->likes,
+                'super_likes' => $this->user()->super_like_credits + $ticket->super_likes
             ]);
 
             DB::commit();
 
             return [
                 'user_total' => [
-                    'super_like_credits' => $user->super_like_credits,
-                    'like_credits' => $user->like_credits,
+                    'super_like_credits' => $this->user()->super_like_credits,
+                    'like_credits' => $this->user()->like_credits,
                 ],
                 'ticket_add' => [
                     'super_likes' => $ticket->super_likes,
