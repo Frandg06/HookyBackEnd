@@ -4,6 +4,7 @@ namespace App\Http\Filters;
 
 use App\Models\Gender;
 use App\Models\Role;
+use Illuminate\Support\Facades\Log;
 
 class UserFilter extends QueryFilter
 {
@@ -51,4 +52,22 @@ class UserFilter extends QueryFilter
 
     return $this->builder->where('role_id', $roleCode);
   }
+
+  // public function consuptionMin(int $value)
+  // {
+  //   return $this->builder->whereHas('tickets', function ($query) use ($value) {
+  //     $query->where('redeemed', true)
+  //       ->groupBy('user_uid', 'tickets.id')
+  //       ->havingRaw('SUM(price) >= ?', [$value]);
+  //   });
+  // }
+
+  // public function consuptionMax(int $value)
+  // {
+  //   return $this->builder->whereHas('tickets', function ($query) use ($value) {
+  //     $query->where('redeemed', true)
+  //       ->groupBy('user_uid', 'tickets.id')
+  //       ->havingRaw('SUM(price) <= ?', [$value]);
+  //   });
+  // }
 }
