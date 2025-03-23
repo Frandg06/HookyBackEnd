@@ -4,8 +4,7 @@ use App\Models\SexualOrientation;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,9 +12,9 @@ return new class extends Migration
     {
 
         $arr = [
-            ["id" => 1, "name" => "Bisexual" ],
-            ["id" => 2, "name" => "Heterosexual" ],
-            ["id" => 3, "name" => "Homosexual" ],
+            ['id' => 1, 'name' => 'Bisexual' ],
+            ['id' => 2, 'name' => 'Heterosexual' ],
+            ['id' => 3, 'name' => 'Homosexual' ],
         ];
         
         foreach ($arr as $item) {

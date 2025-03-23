@@ -18,27 +18,27 @@ class Ticket extends Model
         'redeemed',
         'redeemed_at',
         'super_likes',
-        'likes'
+        'likes',
+        'user_uid',
     ];
-    protected $hidden = [ 'updated_at', 'id'];
+    protected $hidden = ['updated_at', 'id'];
 
-    public function ticketsRedeem() : HasMany {
-        return $this->hasMany(TicketRedeem::class, 'ticket_uid', 'uid');
-    }
-
-    public function scopeTicketsCountThisMonth($query): Builder {
+    public function scopeTicketsCountThisMonth($query): Builder
+    {
         return $query->where('redeemed', true)
-        ->whereDate('redeemed_at', Carbon::now()->format('Y-m-d'));
+            ->whereDate('redeemed_at', Carbon::now()->format('Y-m-d'));
     }
 
-    public function scopeTicketsCountLastMonth($query): Builder {
+    public function scopeTicketsCountLastMonth($query): Builder
+    {
         return $query->where('redeemed', true)
-        ->whereDate('redeemed_at', Carbon::now()->subMonth()->format('Y-m-d'));   
+            ->whereDate('redeemed_at', Carbon::now()->subMonth()->format('Y-m-d'));
     }
 
-    public function scopeGetTicketByCompanyEventAndCode($query,$company_uid, $code) {
+    public function scopeGetTicketByCompanyEventAndCode($query, $company_uid, $code)
+    {
         return $query->where('company_uid', $company_uid)
-        ->where('code', $code)
-        ->where('redeemed', false);
+            ->where('code', $code)
+            ->where('redeemed', false);
     }
 }

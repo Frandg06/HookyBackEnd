@@ -19,7 +19,8 @@ class CompanyPasswordResetToken extends Model
 
     public $timestamps = false;
 
-    public function company() :BelongsTo {
+    public function company(): BelongsTo
+    {
         return $this->belongsTo(Company::class, 'email', 'email');
     }
 }

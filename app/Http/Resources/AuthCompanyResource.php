@@ -17,21 +17,21 @@ class AuthCompanyResource extends JsonResource
     {
         $hoursForRecentEntries = [];
 
-        for($i = 9; $i >= 0; $i--) {
+        for ($i = 9; $i >= 0; $i--) {
             $hoursForRecentEntries[] = now($this->timezone->name)->subHours($i)->startOfHour()->format('H:i');
         }
 
         $hourMap = [];
         foreach ($this->recent_entries as $entry) {
-            $hourMap[$entry["hour"]] = $entry["count"];
+            $hourMap[$entry['hour']] = $entry['count'];
         }
 
         // Construir el array completo con las horas faltantes
         $recent_entries = [];
         foreach ($hoursForRecentEntries as $hour) {
             $recent_entries[] = [
-                "hour" => $hour,
-                "count" => $hourMap[$hour] ?? 0
+                'hour' => $hour,
+                'count' => $hourMap[$hour] ?? 0
             ];
         }
 
@@ -48,19 +48,19 @@ class AuthCompanyResource extends JsonResource
             'timezone_string' => $this->timezone->name,
             'total_tickets' => $this->total_tickets,
             'total_users' => $this->total_users,
-            'qr_url' => config("filesystems.disks.r2.url") . 'qr/' . $this->uid . '.png',
+            'qr_url' => config('filesystems.disks.r2.url') . 'qr/' . $this->uid . '.png',
             'link' => $this->link,
             'users_incomes' => $this->last_seven_events,
             'recent_entries_count' => $recent_entries,
             'last_event' => $this->last_event ? [
-                "total_users" => $this->last_event->total_users,
-                "incomes" => $this->last_event->total_incomes,
-                "hooks" => $this->last_event->hooks,
-                "tickets" => $this->last_event->tickets()->count(),
-                "avg_age" => round($this->last_event->avg_age),
-                "percents" => $this->last_event->percents,
-                "name" => $this->last_event->name,
-                "date" => $this->last_event->st_date
+                'total_users' => $this->last_event->total_users,
+                'incomes' => $this->last_event->total_incomes,
+                'hooks' => $this->last_event->hooks,
+                'tickets' => $this->last_event->tickets()->count(),
+                'avg_age' => round($this->last_event->avg_age),
+                'percents' => $this->last_event->percents,
+                'name' => $this->last_event->name,
+                'date' => $this->last_event->st_date
             ] : null,
         ];
     }

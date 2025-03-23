@@ -14,60 +14,63 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    protected $authService, $userService, $imageService, $emailService;
+    protected $authService;
+    protected $userService;
+    protected $imageService;
+    protected $emailService;
 
-    public function __construct(AuthService $authService, UserService $userService, ImagesService $imageService, EmailService $emailService) { 
+    public function __construct(AuthService $authService, UserService $userService, ImagesService $imageService, EmailService $emailService)
+    {
         $this->authService = $authService;
         $this->userService = $userService;
         $this->imageService = $imageService;
         $this->emailService = $emailService;
     }
 
-    public function register(RegisterRequest $request) 
+    public function register(RegisterRequest $request)
     {
         $data = $request->only('name', 'surnames', 'email', 'password', 'company_uid');
         $response = $this->authService->register($data);
 
-        return response()->json(["success" => true, "access_token" => $response], 200);
-
+        return response()->json(['success' => true, 'access_token' => $response], 200);
     }
 
-    public function login(LoginRequest $request) 
+    public function login(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
         $company_uid = $request->company_uid;
-        
+
         $response = $this->authService->login($credentials, $company_uid);
-        return response()->json(["success" => true, "access_token" => $response], 200);
+        return response()->json(['success' => true, 'access_token' => $response], 200);
     }
 
-    public function logout() 
+    public function logout()
     {
         Auth::invalidate(true);
         Auth::logout();
-        return response()->json(["success" => true, 'message' => __('i18n.logged_out')], 200);
+        return response()->json(['success' => true, 'message' => __('i18n.logged_out')], 200);
     }
 
-    public function me() 
+    public function me()
     {
         $user = request()->user()->resource();
 
-        return response()->json(["resp" => $user, "success" => true], 200);   
+        return response()->json(['resp' => $user, 'success' => true], 200);
     }
 
     public function passwordReset(Request $request)
     {
-        $email = $request->email;        
+        $email = $request->email;
         $this->authService->passwordReset($email);
 
-        return response()->json(["message" => __('i18n.password_reset_email'), "success" => true], 200);
+        return response()->json(['message' => __('i18n.password_reset_email'), 'success' => true], 200);
     }
 
-    public function setNewPassword(ResetPasswordRequest $request) 
+    public function setNewPassword(ResetPasswordRequest $request)
     {
         $validated = $request->only('token', 'password');
         $this->authService->setNewPassword($validated);
 
-        return response()->json(["message" => __('i18n.password_reset_email'), "success" => true], 200);
+        return response()->json(['message' => __('i18n.password_reset_email'), 'success' => true], 200);
     }
 }

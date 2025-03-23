@@ -3,17 +3,16 @@
 use App\Models\Interaction;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         $interactions = [
-            "super_like",
-            "like",
-            "dislike",
+            'super_like',
+            'like',
+            'dislike',
         ];
 
         foreach ($interactions as $interaction) {
@@ -29,7 +28,7 @@ return new class extends Migration
     public function down(): void
     {
         Interaction::all()->each(function ($item) {
-           $item->delete();
+            $item->delete();
         });
     }
 };

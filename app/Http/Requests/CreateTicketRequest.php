@@ -25,6 +25,7 @@ class CreateTicketRequest extends FormRequest
             'count' => 'required|numeric|min:1|max:1000',
             'likes' => 'required|numeric|min:1|max:100',
             'superlikes' => 'required|numeric|min:0|max:100',
+            'event_uid' => 'required|string'
         ];
     }
 }
