@@ -4,9 +4,11 @@ namespace App\Http\Services;
 
 use App\Http\Filters\UserFilter;
 use App\Http\Orders\UserOrdenator;
+use App\Http\Resources\CompanyUsersResource;
 use App\Http\Resources\EventUsersResource;
-use App\Http\Resources\Exports\EventUsersExportResource;
+use App\Http\Resources\Exports\CompanyUsersExportResource;
 use App\Models\Event;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CompanyUsersService extends Service
 {
@@ -14,12 +16,10 @@ class CompanyUsersService extends Service
   public function getUsers(UserFilter $filter, UserOrdenator $order): array
   {
     try {
-      $company = $this->company();
-      $this->log('Company: ' . $company->name);
-      $users = $company->users()->filter($filter)->sort($order)->paginate(10);
+      $users = $this->company()->users()->filter($filter)->sort($order)->paginate(10);
 
       return [
-        'data' => EventUsersResource::collection($users),
+        'data' => CompanyUsersResource::collection($users),
         'current_page' => $users->currentPage(),
         'last_page' => $users->lastPage(),
         'total' => $users->total(),
@@ -31,7 +31,7 @@ class CompanyUsersService extends Service
     }
   }
 
-  public function getEventUsers(UserFilter $filter, UserOrdenator $order, $event_uid): array
+  public function getEventUsers(UserFilter $filter, UserOrdenator $order, string $event_uid): array
   {
     try {
       $event =  Event::find($event_uid);
@@ -52,8 +52,7 @@ class CompanyUsersService extends Service
     }
   }
 
-
-  public function getEventUsersExport(UserFilter $filter, $event_uid)
+  public function getEventUsersExport(UserFilter $filter, string $event_uid): AnonymousResourceCollection|array
   {
     try {
 
@@ -63,7 +62,18 @@ class CompanyUsersService extends Service
 
       $users = $users->users2()->filter($filter)->get();
 
-      return EventUsersExportResource::collection($users);
+      return CompanyUsersExportResource::collection($users);
+    } catch (\Exception $e) {
+      $this->logError($e, __CLASS__, __FUNCTION__);
+      return $this->responseError('get_users_export_ko', 500);
+    }
+  }
+
+  public function getUsersExport(UserFilter $filter, UserOrdenator $order): AnonymousResourceCollection|array
+  {
+    try {
+      $users = $this->company()->users()->filter($filter)->sort($order)->get();
+      return CompanyUsersExportResource::collection($users);
     } catch (\Exception $e) {
       $this->logError($e, __CLASS__, __FUNCTION__);
       return $this->responseError('get_users_export_ko', 500);

@@ -10,12 +10,7 @@ class UserFilter extends QueryFilter
 {
   public function name(string $value)
   {
-    return $this->builder->where('name', 'like', '%' . $value . '%');
-  }
-
-  public function surnames(string $value)
-  {
-    return $this->builder->where('surnames', 'like', '%' . $value . '%');
+    return $this->builder->whereRaw("LOWER(name || ' ' || surnames) LIKE ?", ['%' . strtolower($value) . '%']);
   }
 
   public function ageMin(int $age)
@@ -43,7 +38,10 @@ class UserFilter extends QueryFilter
 
   public function socials(string $name)
   {
-    return $this->builder->where('tw', 'like', '%' . $name . '%')->orWhere('ig', 'like', '%' . $name . '%');
+    return $this->builder->where(function ($query) use ($name) {
+      $query->where('tw', 'like', '%' . $name . '%')
+        ->orWhere('ig', 'like', '%' . $name . '%');
+    });
   }
 
   public function role(string $role)

@@ -8,13 +8,13 @@ use App\Models\TimeZone;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class CompanyService
+class CompanyService extends Service
 {
     public function update(array $data)
     {
         DB::beginTransaction();
         try {
-            $company = request()->user();
+            $company = $this->company();
 
             $timezone_uid = TimeZone::where('name', $data['timezone_string'])->first()->uid;
 

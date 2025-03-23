@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 
 abstract class Controller
 {
-  public function company()
+  public function company(): Company
   {
     return request()->user();
   }
 
-  public function user()
+  public function user(): User
   {
     return request()->user();
   }

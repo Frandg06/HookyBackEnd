@@ -7,25 +7,26 @@ use App\Http\Orders\EventOrdenator;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\Exports\EventExportResource;
 use Carbon\Carbon;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
 
 class EventService extends Service
 {
 
-    public function store(array $data)
+    public function store(array $data): EventResource|array
     {
         DB::beginTransaction();
         try {
-            $company = request()->user();
+
             $now = now($data['timezone']);
             $st_date = Carbon::parse($data['st_date']);
             $end_date = Carbon::parse($data['end_date']);
             $diff = $st_date->diffInHours($end_date);
 
-            if ($company->checkEveventsInSameTime($st_date, $end_date)) {
+            if ($this->company()->checkEveventsInSameTime($st_date, $end_date)) {
                 return $this->responseError('event_at_same_time', 409);
             }
-            if (!$company->checkEventLimit($st_date)) {
+            if (!$this->company()->checkEventLimit($st_date)) {
                 return $this->responseError('event_limit_reached', 409);
             }
 
@@ -42,7 +43,7 @@ class EventService extends Service
                 return $this->responseError('event_duration_too_short', 409);
             }
 
-            $event = $company->events()->create($data);
+            $event = $this->company()->events()->create($data);
 
             DB::commit();
 
@@ -54,16 +55,15 @@ class EventService extends Service
         }
     }
 
-    public function getCalendarEvents(array $dates)
+    public function getCalendarEvents(array $dates): array
     {
         try {
-            $company = request()->user();
             $events = [];
             foreach ($dates as $date) {
                 $start = Carbon::parse($date)->startOfMonth();
                 $end = Carbon::parse($date)->endOfMonth();
 
-                $query = $company->events()
+                $query = $this->company()->events()
                     ->whereDate('st_date', '>=', $start)
                     ->whereDate('st_date', '<=', $end)
                     ->get(['name', 'st_date as start', 'end_date as end', 'colors', 'uid'])->toArray();
@@ -79,11 +79,8 @@ class EventService extends Service
 
     public function getEvents(EventFilter $filtrer, EventOrdenator $ordenator, $limit = 10): array
     {
-
-        $company = request()->user();
-
         try {
-            $events = $company->events()
+            $events = $this->company()->events()
                 ->with(['users', 'tickets'])
                 ->filter($filtrer)
                 ->sort($ordenator)
@@ -102,12 +99,10 @@ class EventService extends Service
         }
     }
 
-    public function update(array $data, $uuid)
+    public function update(array $data, string $uuid): EventResource|array
     {
         try {
-            $company = request()->user();
-
-            $event = $company->events()->where('uid', $uuid)->first();
+            $event = $this->company()->events()->where('uid', $uuid)->first();
 
             if (!$event) $this->responseError('event_not_found', 404);
 
@@ -116,32 +111,28 @@ class EventService extends Service
             return EventResource::make($event);
         } catch (\Exception $e) {
             $this->logError($e, __CLASS__, __FUNCTION__);
-            $this->responseError('update_event_ko', 500);
+            return $this->responseError('update_event_ko', 500);
         }
     }
 
-    public function show(string $uuid)
+    public function show(string $uuid): EventResource|array
     {
         try {
-            $company = request()->user();
-
-            $event =   $company->events()->where('uid', $uuid)->first();
+            $event = $this->company()->events()->where('uid', $uuid)->first();
 
             if (!$event) $this->responseError('event_not_found', 404);
 
             return EventResource::make($event);
         } catch (\Exception $e) {
             $this->logError($e, __CLASS__, __FUNCTION__);
-            $this->responseError('update_event_ko', 500);
+            return $this->responseError('update_event_ko', 500);
         }
     }
 
-    public function delete(string $uuid)
+    public function delete(string $uuid): bool|array
     {
         try {
-
-            $company = request()->user();
-            $event = $company->events()->where('uid', $uuid)->first();
+            $event = $this->company()->events()->where('uid', $uuid)->first();
 
             if (!$event) $this->responseError('event_not_found', 404);
 
@@ -154,18 +145,14 @@ class EventService extends Service
             return true;
         } catch (\Exception $e) {
             $this->logError($e, __CLASS__, __FUNCTION__);
-            $this->responseError('update_event_ko', 500);
+            return $this->responseError('update_event_ko', 500);
         }
     }
 
-    public function getExportEvents(EventFilter $filtrer, EventOrdenator $ordenator)
+    public function getExportEvents(EventFilter $filtrer, EventOrdenator $ordenator): AnonymousResourceCollection|array
     {
-
-        $company = request()->user();
-
         try {
-
-            $events = $company->events()
+            $events = $this->company()->events()
                 ->with(['users', 'tickets'])
                 ->filter($filtrer)
                 ->sort($ordenator)
@@ -174,7 +161,7 @@ class EventService extends Service
             return  EventExportResource::collection($events);
         } catch (\Exception $e) {
             $this->logError($e, __CLASS__, __FUNCTION__);
-            $this->responseError('get_events_ko', 500);
+            return $this->responseError('get_events_ko', 500);
         }
     }
 }
