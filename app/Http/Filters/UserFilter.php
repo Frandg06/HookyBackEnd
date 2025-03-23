@@ -17,13 +17,13 @@ class UserFilter extends QueryFilter
     return $this->builder->where('surnames', 'like', '%' . $value . '%');
   }
 
-  public function olderThan(int $age)
+  public function ageMin(int $age)
   {
     $date = now()->subYears($age)->format('Y-m-d');
     return $this->builder->whereDate('born_date', '<=', $date);
   }
 
-  public function youngerThan(int $age)
+  public function ageMax(int $age)
   {
     $date = now()->subYears($age)->format('Y-m-d');
     return $this->builder->where('born_date', '>=', $date);

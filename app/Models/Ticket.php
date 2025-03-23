@@ -18,7 +18,8 @@ class Ticket extends Model
         'redeemed',
         'redeemed_at',
         'super_likes',
-        'likes'
+        'likes',
+        'user_uid',
     ];
     protected $hidden = ['updated_at', 'id'];
 
