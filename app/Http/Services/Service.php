@@ -8,7 +8,7 @@ abstract class Service
 {
   public function __construct() {}
 
-  public function responseError($message, $code = 400)
+  public function responseError($message, $code = 400): array
   {
     return [
       'message' => __('i18n.' . $message),
@@ -18,8 +18,12 @@ abstract class Service
   }
 
   public function logError($error, $class, $function)
-
   {
     Log::error('Error en ' . $class . '->' . $function, ['exception' => $error]);
+  }
+
+  public function debug($message = '', $data = [])
+  {
+    Log::debug($message, $data);
   }
 }
