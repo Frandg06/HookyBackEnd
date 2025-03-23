@@ -18,7 +18,7 @@ class AuthCompanyResource extends JsonResource
         $hoursForRecentEntries = [];
 
         for ($i = 9; $i >= 0; $i--) {
-            $hoursForRecentEntries[] = now($this->timezone->name)->subHours($i)->startOfHour()->format('H:i');
+            $hoursForRecentEntries[] = now()->subHours($i)->startOfHour()->format('H:i');
         }
 
         $hourMap = [];
@@ -50,7 +50,7 @@ class AuthCompanyResource extends JsonResource
             'total_users' => $this->total_users,
             'qr_url' => config('filesystems.disks.r2.url') . 'qr/' . $this->uid . '.png',
             'link' => $this->link,
-            'users_incomes' => $this->last_seven_events,
+            'users_incomes' => $this->lastSevenEvents,
             'recent_entries_count' => $recent_entries,
             'last_event' => $this->last_event ? [
                 'total_users' => $this->last_event->total_users,

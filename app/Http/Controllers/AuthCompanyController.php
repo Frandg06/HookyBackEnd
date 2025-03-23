@@ -25,26 +25,24 @@ class AuthCompanyController extends Controller
     {
         $validated = $request->only('name', 'email', 'phone', 'address', 'city', 'country', 'password');
         $response = $this->authService->register($validated);
-
-        return response()->json(['success' => true, 'access_token' =>  $response], 200);
+        return $this->response($response, 'access_token');
     }
 
     public function login(Request $request)
     {
         $data = $request->only('email', 'password');
         $response = $this->authService->login($data);
-
-        return response()->json(['success' => true, 'access_token' =>  $response], 200);
+        return $this->response($response, 'access_token');
     }
 
     public function me()
     {
         try {
             $company = request()->user()->resource();
-            return response()->json(['resp' => $company, 'success' => true], 200);
+            return $this->response($company);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
-            return response()->json(['message' => __('i18n.error'), 'success' => false], 500);
+            $this->response(['message' => __('i18n.error'), 'error' => true, 'code' => 500]);
         }
     }
 
@@ -60,15 +58,13 @@ class AuthCompanyController extends Controller
     {
         $email = $request->email;
         $this->authService->passwordReset($email);
-
-        return response()->json(['message' => __('i18n.password_reset_email'), 'success' => true], 200);
+        $this->response(true);
     }
 
     public function setNewPassword(ResetPasswordRequest $request)
     {
         $validated = $request->only('token', 'password');
         $this->authService->setNewPassword($validated);
-
-        return response()->json(['message' => __('i18n.password_reset_email'), 'success' => true], 200);
+        $this->response(true);
     }
 }

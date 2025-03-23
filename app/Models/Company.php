@@ -73,6 +73,14 @@ class Company extends Authenticatable implements JWTSubject
         return AuthCompanyResource::make($this);
     }
 
+    public function scopeUsers()
+    {
+        return $this->join('user_events', 'events.uid', '=', 'user_events.event_uid')
+            ->join('users', 'user_events.user_uid', '=', 'users.uid')
+            ->select('users.*')
+            ->distinct('users.uid');
+    }
+
     public function checkEveventsInSameTime($st_date, $end_date)
     {
         $events = $this->events()
@@ -117,18 +125,18 @@ class Company extends Authenticatable implements JWTSubject
             ->distinct('user_events.user_uid');
 
         $userCurrentMonth = (clone $query)->whereBetween('user_events.logged_at', [
-            now($this->timezone->name)->startOfMonth(),
-            now($this->timezone->name)->endOfMonth()
+            now()->startOfMonth(),
+            now()->endOfMonth()
         ])->count('user_events.user_uid');
 
         $userLastMonth = (clone $query)->whereBetween('user_events.logged_at', [
-            now($this->timezone->name)->subMonth()->startOfMonth(),
-            now($this->timezone->name)->subMonth()->endOfMonth()
+            now()->subMonth()->startOfMonth(),
+            now()->subMonth()->endOfMonth()
         ])->count('user_events.user_uid');
 
 
         return [
-            'count' => $query->count('user_events.user_uid'),
+            'count' => $userCurrentMonth,
             'user_last_month' =>  $userLastMonth,
             'user_current_month' => $userCurrentMonth,
         ];
@@ -136,47 +144,24 @@ class Company extends Authenticatable implements JWTSubject
 
     public function getTotalTicketsAttribute($query)
     {
-        $query = $this->tickets()
-            ->where('redeemed', true);
+        $query = $this->tickets()->where('redeemed', true);
 
         $ticketCurrentMonth = (clone $query)->whereBetween('redeemed_at', [
-            now($this->timezone->name)->startOfMonth(),
-            now($this->timezone->name)->endOfMonth()
+            now()->startOfMonth(),
+            now()->endOfMonth()
         ])->count();
 
         $tickeLastMonth = (clone $query)->whereBetween('redeemed_at', [
-            now($this->timezone->name)->subMonth()->startOfMonth(),
-            now($this->timezone->name)->subMonth()->endOfMonth()
+            now()->subMonth()->startOfMonth(),
+            now()->subMonth()->endOfMonth()
         ])->count();
 
 
         return [
-            'count' => $query->count(),
+            'count' => $ticketCurrentMonth,
             'ticket_last_month' =>  $tickeLastMonth,
             'ticket_current_month' => $ticketCurrentMonth,
         ];
-    }
-
-    public function scopeUsers($query)
-    {
-        return $query->events()
-            ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
-            ->distinct('user_events.user_uid');
-    }
-
-    public function getLastFiveUsersAttribute()
-    {
-
-        $ids = $this->events()
-            ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
-            ->join('users', 'user_events.user_uid', '=', 'users.uid')
-            ->select('users.*')
-            ->orderBy('users.created_at', 'desc')
-            ->limit(5)
-            ->pluck('users.uid');
-        $users = User::whereIn('uid', $ids)->get();
-
-        return UsersToTableResource::collection($users);
     }
 
     public function getRecentEntriesAttribute()
@@ -184,8 +169,8 @@ class Company extends Authenticatable implements JWTSubject
         return $this->events()
             ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
             ->selectRaw("TO_CHAR(DATE_TRUNC('hour', user_events.logged_at), 'HH24:MI') as hour, COUNT(DISTINCT user_events.user_uid) as count")
-            ->where('user_events.logged_at', '>=', now($this->timezone->name)->subHours(8))
-            ->where('user_events.logged_at', '<=', now($this->timezone->name))
+            ->where('user_events.logged_at', '>=', now()->subHours(8))
+            ->where('user_events.logged_at', '<=', now())
             ->groupByRaw("DATE_TRUNC('hour', user_events.logged_at)")
             ->orderByRaw("DATE_TRUNC('hour', user_events.logged_at)")
             ->get();
@@ -193,7 +178,7 @@ class Company extends Authenticatable implements JWTSubject
     public function getLastSevenEventsAttribute()
     {
         $events = $this->events()
-            ->where('st_date', '<=', now($this->timezone->name))
+            ->where('st_date', '<=', now())
             ->orderBy('st_date', 'desc')
             ->limit(7)
             ->get();

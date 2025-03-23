@@ -6,17 +6,17 @@ abstract class Controller
 {
   public function __construct() {}
 
-  private function reponseChecked($response)
+  private function reponseChecked($response, $customRespKey, $code)
   {
     if (isset($response['error']) && $response['error']) {
       return $this->responseError($response['message'], $response['code']);
     }
-    return $this->responseSucces($response);
+    return $this->responseSucces($response, $customRespKey, $code);
   }
 
-  private function responseSucces($resp, $code = 200)
+  private function responseSucces($response, $customRespKey, $code)
   {
-    return response()->json(['success' => true, 'resp' => $resp], $code);
+    return response()->json(['success' => true, $customRespKey => $response], $code);
   }
 
   public function responseError($message, $code = 400)
@@ -24,8 +24,8 @@ abstract class Controller
     return response()->json(['error' => true, 'message' => $message], $code);
   }
 
-  public function response($data)
+  public function response($data, $customRespKey = 'resp', $code = 200)
   {
-    return $this->reponseChecked($data);
+    return $this->reponseChecked($data, $customRespKey, $code);
   }
 }
