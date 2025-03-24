@@ -6,43 +6,25 @@ use App\Exceptions\ApiException;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class TicketService extends Service
 {
-    public function generateTickets(array $data): array
+    public function generateTickets(array $data, string $uuid)
     {
         DB::beginTransaction();
         try {
 
-            $event = $this->company()->events()->where('uid', $data['event_uid'])->first();
-
-            if (!$event) return $this->responseError('event_not_found', 400);
-
-            if (!is_numeric($data['count'])) $this->responseError('tickets_not_numeric', 400);
-
-            if ($data['count'] < 1) $this->responseError('tickets_minimum', 400);
-
-            if ($data['count'] > 1000) $this->responseError('tickets_maximum', 400);
-
-            $tickets = [];
-
-            while (count($tickets) < $data['count']) {
-                $code = strtoupper(Str::random(6));
-                $tickets[] = [
-                    'uid' => (string) Str::uuid(),
-                    'company_uid' => $this->company()->uid,
-                    'event_uid' => $data['event_uid'],
-                    'code' => $code,
-                    'redeemed' => false,
-                    'likes' => $data['likes'],
-                    'super_likes' => $data['superlikes'],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-
-            Ticket::insert($tickets);
+            Ticket::factory()->count($data['count'])->create([
+                'company_uid' => $this->company()->uid,
+                'event_uid' => $uuid,
+                'redeemed' => false,
+                'likes' => $data['likes'],
+                'super_likes' => $data['superlikes'],
+                'created_at' => now(),
+                'updated_at' => now(),
+                'user_uid' => null,
+                'redeemed_at' => null
+            ]);
 
             DB::commit();
 

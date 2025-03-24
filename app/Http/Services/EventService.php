@@ -164,4 +164,19 @@ class EventService extends Service
             return $this->responseError('get_events_ko', 500);
         }
     }
+
+    public function getEventsFillable(EventFilter $filter)
+    {
+        try {
+            $events = $this->company()->events()
+                ->select(['name', 'uid'])
+                ->filter($filter)
+                ->get();
+
+            return $events;
+        } catch (\Exception $e) {
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('get_events_ko', 500);
+        }
+    }
 }

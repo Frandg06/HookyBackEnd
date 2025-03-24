@@ -64,4 +64,10 @@ class EventController extends Controller
         $response = $this->eventService->getExportEvents($filter, $order, $request->limit);
         return $this->response($response);
     }
+
+    public function getEventsFillable(EventFilter $filter): JsonResponse
+    {
+        $response = $this->eventService->getEventsFillable($filter);
+        return $this->response($response);
+    }
 }

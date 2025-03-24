@@ -59,7 +59,7 @@ return [
   'create_event_ko' => 'Ocurrió un error al crear el evento.',
   'tickets_not_numeric' => 'El número de tickets debe ser un número.',
   'tickets_minimum' => 'El número de tickets debe ser mayor a 1.',
-  'tickets_maximum' => 'El número de tickets no puede ser mayor a 1000.',
+  'tickets_maximum' => 'Solo se pueden generar un maximo de 3000 tickets a la vez.',
   'ticket_invalid' => 'El código ya ha sido canjeado o no existe.',
   'timezone_not_found' => 'No existe el timezone seleccionado.',
   'update_company_ko' => 'Ocurrió un error al actualizar los datos.',

@@ -28,13 +28,13 @@ class TicketController extends Controller
         }
     }
 
-    public function generateTickets(CreateTicketRequest $request)
+    public function generateTickets(CreateTicketRequest $request, string $uuid)
     {
-        $data = $request->only(['count', 'likes', 'superlikes', 'event_uid']);
+        $data = $request->only(['count', 'likes', 'superlikes']);
 
-        $tickets = $this->ticketService->generateTickets($data);
+        $tickets = $this->ticketService->generateTickets($data, $uuid);
 
-        return response()->json(['resp' => $tickets, 'success' => true], 200);
+        return $this->response($tickets);
     }
 
     public function redeem(Request $request)
