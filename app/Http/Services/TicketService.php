@@ -9,6 +9,19 @@ use Illuminate\Support\Facades\Log;
 
 class TicketService extends Service
 {
+    public function getTickets($filter)
+    {
+        $tickets = $this->company()->tickets()->paginate(10);
+
+        return  [
+            'data' => $tickets->items(),
+            'current_page' => $tickets->currentPage(),
+            'last_page' => $tickets->lastPage(),
+            'total' => $tickets->total(),
+            'per_page' => $tickets->perPage(),
+        ];
+    }
+
     public function generateTickets(array $data, string $uuid)
     {
         DB::beginTransaction();

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Traits\HasUid;
+use App\Models\Traits\Sortable;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ticket extends Model
 {
-    use HasUid, HasFactory;
+    use HasUid, HasFactory, Sortable, Sortable;
 
     protected $fillable = [
         'company_uid',
@@ -21,6 +22,9 @@ class Ticket extends Model
         'super_likes',
         'likes',
         'user_uid',
+        'event_uid',
+        'name',
+        'price',
     ];
 
     protected $hidden = [
