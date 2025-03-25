@@ -29,7 +29,6 @@ class Ticket extends Model
 
     protected $hidden = [
         'updated_at',
-        'id'
     ];
 
     public function scopeTicketsCountThisMonth($query): Builder

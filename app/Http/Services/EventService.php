@@ -169,7 +169,7 @@ class EventService extends Service
     {
         try {
             $events = $this->company()->events()
-                ->select(['name', 'uid'])
+                ->select(['name as label', 'uid as value'])
                 ->filter($filter)
                 ->get();
 

@@ -33,6 +33,8 @@ class TicketService extends Service
                 'redeemed' => false,
                 'likes' => $data['likes'],
                 'super_likes' => $data['superlikes'],
+                'name' => $data['name'],
+                'price' => $data['price'],
                 'created_at' => now(),
                 'updated_at' => now(),
                 'user_uid' => null,

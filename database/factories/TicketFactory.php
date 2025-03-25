@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -25,6 +26,9 @@ class TicketFactory extends Factory
             'super_likes' => $this->faker->numberBetween(0, 100),
             'likes' => $this->faker->numberBetween(0, 100),
             'user_uid' => null,
+            'event_uid' => $this->faker->uuid,
+            'name' => $this->faker->name,
+            'price' => $this->faker->randomFloat(2, 0, 100),
         ];
     }
 }
