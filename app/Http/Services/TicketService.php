@@ -3,15 +3,18 @@
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
+use App\Http\Filters\TicketFilter;
+use App\Models\Event;
 use App\Models\Ticket;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class TicketService extends Service
 {
-    public function getTickets($filter)
+    public function getTickets(TicketFilter $filter)
     {
-        $tickets = $this->company()->tickets()->paginate(10);
+        $tickets = $this->company()->tickets()->filter($filter)->paginate(10);
 
         return  [
             'data' => $tickets->items(),
@@ -26,6 +29,16 @@ class TicketService extends Service
     {
         DB::beginTransaction();
         try {
+
+            $event = Event::find($uuid);
+
+            // if (Carbon::parse($event->end_date)->isPast()) {
+            //     return $this->responseError('event_is_past', 400);
+            // }
+
+            if ($event->tickets->count() > $event->company->pricing_plan->ticket_limit) {
+                return $this->responseError('tickets_limit_exceeded', 400);
+            }
 
             Ticket::factory()->count($data['count'])->create([
                 'company_uid' => $this->company()->uid,

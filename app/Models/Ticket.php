@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Filterable;
 use App\Models\Traits\HasUid;
 use App\Models\Traits\Sortable;
 use Carbon\Carbon;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ticket extends Model
 {
-    use HasUid, HasFactory, Sortable, Sortable;
+    use HasUid, HasFactory, Sortable, Filterable;
 
     protected $fillable = [
         'company_uid',
