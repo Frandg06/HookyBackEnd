@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Filters\TicketFilter;
+use App\Http\Orders\TicketOrdenator;
 use App\Http\Requests\CreateTicketRequest;
 use App\Http\Services\TicketService;
 use Illuminate\Http\Request;
@@ -17,15 +18,10 @@ class TicketController extends Controller
         $this->ticketService = $ticketService;
     }
 
-    public function getTickets(TicketFilter $filter)
+    public function getTickets(TicketFilter $filter, TicketOrdenator $order)
     {
-        try {
-
-            $tickets = $this->ticketService->getTickets($filter);
-            return response()->json(['resp' => $tickets, 'success' => true], 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => true, 'message' => __('i18n.unexpected_error')], 500);
-        }
+        $tickets = $this->ticketService->getTickets($filter, $order);
+        return $this->response($tickets);
     }
 
     public function generateTickets(CreateTicketRequest $request, string $uuid)

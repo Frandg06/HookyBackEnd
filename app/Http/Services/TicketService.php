@@ -4,6 +4,9 @@ namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
 use App\Http\Filters\TicketFilter;
+use App\Http\Orders\TicketOrdenator;
+use App\Http\Resources\TicketCollection;
+use App\Http\Resources\TicketResource;
 use App\Models\Event;
 use App\Models\Ticket;
 use Carbon\Carbon;
@@ -12,17 +15,26 @@ use Illuminate\Support\Facades\Log;
 
 class TicketService extends Service
 {
-    public function getTickets(TicketFilter $filter)
+    public function getTickets(TicketFilter $filter, TicketOrdenator $order)
     {
-        $tickets = $this->company()->tickets()->filter($filter)->paginate(10);
+        try {
 
-        return  [
-            'data' => $tickets->items(),
-            'current_page' => $tickets->currentPage(),
-            'last_page' => $tickets->lastPage(),
-            'total' => $tickets->total(),
-            'per_page' => $tickets->perPage(),
-        ];
+            $tickets = $this->company()->tickets()->filter($filter)->sort($order)->paginate(10);
+            $data = TicketResource::collection($tickets);
+            return [
+                "data" => $data,
+                "current_page" => $tickets->currentPage(),
+                "from" => $tickets->firstItem(),
+                "last_page" => $tickets->lastPage(),
+                "path" => $tickets->path(),
+                "per_page" => $tickets->perPage(),
+                "to" => $tickets->lastItem(),
+                "total" => $tickets->total()
+            ];
+        } catch (\Exception $e) {
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('get_tickets_ko', 500);
+        }
     }
 
     public function generateTickets(array $data, string $uuid)
@@ -32,9 +44,9 @@ class TicketService extends Service
 
             $event = Event::find($uuid);
 
-            // if (Carbon::parse($event->end_date)->isPast()) {
-            //     return $this->responseError('event_is_past', 400);
-            // }
+            if (Carbon::parse($event->end_date)->isPast()) {
+                return $this->responseError('event_is_past', 400);
+            }
 
             if ($event->tickets->count() > $event->company->pricing_plan->ticket_limit) {
                 return $this->responseError('tickets_limit_exceeded', 400);

@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ticket extends Model
@@ -49,5 +50,10 @@ class Ticket extends Model
         return $query->where('company_uid', $company_uid)
             ->where('code', $code)
             ->where('redeemed', false);
+    }
+
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(Event::class, 'event_uid', 'uid');
     }
 }
