@@ -7,7 +7,6 @@ use App\Http\Orders\TicketOrdenator;
 use App\Http\Requests\CreateTicketRequest;
 use App\Http\Services\TicketService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class TicketController extends Controller
 {
