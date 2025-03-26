@@ -95,27 +95,6 @@ class EventFilter extends QueryFilter
       });
   }
 
-  public function hooksMin(string $value)
-  {
-    return $this->builder
-      ->whereIn('events.uid', function ($query) use ($value) {
-        $query->select('user_events.event_uid')
-          ->from('user_events')
-          ->groupBy('user_events.event_uid')
-          ->havingRaw('COUNT(user_events.user_uid) >= ?', [$value]);
-      });
-  }
-
-  public function hooksMax(string $value)
-  {
-    return $this->builder
-      ->whereIn('events.uid', function ($query) use ($value) {
-        $query->select('users_interactions.event_uid')
-          ->from('users_interactions')
-          ->groupBy('users_interactions.event_uid')
-          ->havingRaw('COUNT(users_interactions.interaction_id) <= ?', [$value]);
-      });
-  }
 
   public function percentages(string $value)
   {
@@ -127,7 +106,7 @@ class EventFilter extends QueryFilter
       ->whereIn('events.uid', function ($query) use ($gender, $genderToCompare) {
         $query->select('user_events.event_uid')
           ->from('user_events')
-          ->join('users', 'users.uid', '=', 'user_events.user_uid') // Relación con users
+          ->join('users', 'users.uid', '=', 'user_events.user_uid')
           ->groupBy('user_events.event_uid')
           ->havingRaw(
             'SUM(CASE WHEN users.gender_id = ? THEN 1 ELSE 0 END) > SUM(CASE WHEN users.gender_id = ? THEN 1 ELSE 0 END)',

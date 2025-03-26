@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\Log;
 
 class TicketService extends Service
 {
-    public function getTickets(TicketFilter $filter, TicketOrdenator $order)
+    public function getTickets(TicketFilter $filter, TicketOrdenator $order, int $limit)
     {
         try {
-            $tickets = $this->company()->tickets()->filter($filter)->sort($order)->paginate(10);
+            $tickets = $this->company()->tickets()->filter($filter)->sort($order)->paginate($limit);
             $data = TicketResource::collection($tickets);
             return [
                 "data" => $data,

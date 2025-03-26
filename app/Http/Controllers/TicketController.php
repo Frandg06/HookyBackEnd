@@ -18,9 +18,9 @@ class TicketController extends Controller
         $this->ticketService = $ticketService;
     }
 
-    public function getTickets(TicketFilter $filter, TicketOrdenator $order)
+    public function getTickets(TicketFilter $filter, TicketOrdenator $order, Request $request)
     {
-        $tickets = $this->ticketService->getTickets($filter, $order);
+        $tickets = $this->ticketService->getTickets($filter, $order, $request->limit ?? 10);
         return $this->response($tickets);
     }
 
