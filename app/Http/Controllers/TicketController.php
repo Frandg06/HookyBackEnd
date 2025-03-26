@@ -38,4 +38,10 @@ class TicketController extends Controller
 
         return response()->json(['resp' => $ticket, 'success' => true], 200);
     }
+
+    public function getTicketsToExport(TicketFilter $filter, TicketOrdenator $order)
+    {
+        $tickets = $this->ticketService->getTicketsToExport($filter, $order);
+        return $this->response($tickets);
+    }
 }

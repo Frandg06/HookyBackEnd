@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Exceptions\ApiException;
 use App\Http\Filters\TicketFilter;
 use App\Http\Orders\TicketOrdenator;
+use App\Http\Resources\Exports\TicketExportResource;
 use App\Http\Resources\TicketCollection;
 use App\Http\Resources\TicketResource;
 use App\Models\Event;
@@ -18,7 +19,6 @@ class TicketService extends Service
     public function getTickets(TicketFilter $filter, TicketOrdenator $order)
     {
         try {
-
             $tickets = $this->company()->tickets()->filter($filter)->sort($order)->paginate(10);
             $data = TicketResource::collection($tickets);
             return [
@@ -128,6 +128,17 @@ class TicketService extends Service
             DB::rollBack();
             Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
             throw new ApiException('generate_tickets_ko', 500);
+        }
+    }
+
+    public function getTicketsToExport(TicketFilter $filter, TicketOrdenator $order)
+    {
+        try {
+            $tickets = $this->company()->tickets()->filter($filter)->sort($order)->get();
+            return TicketExportResource::collection($tickets);
+        } catch (\Exception $e) {
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('get_tickets_ko', 500);
         }
     }
 }
