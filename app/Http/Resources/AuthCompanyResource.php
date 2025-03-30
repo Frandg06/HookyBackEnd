@@ -52,8 +52,6 @@ class AuthCompanyResource extends JsonResource
             'users' => $this->total_users,
             'incomes' => $this->incomes,
             'tickets' => $this->tickets->where('redeemed_at', '>=', now()->startOfDay())->count(),
-
-            'users_incomes' => $this->lastSevenEvents,
             'recent_entries_count' => $recent_entries,
             'last_event' => EventResource::make($this->last_event),
         ];

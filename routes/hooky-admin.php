@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthCompanyController;
+use App\Http\Controllers\ChartsController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanyUsersController;
 use App\Http\Controllers\EventController;
@@ -35,4 +36,5 @@ Route::middleware(['auth:company', 'jwt.verify.company'])->group(function () {
         Route::get('/users/{event_uid}', [CompanyUsersController::class, 'getEventUsersExport']);
         Route::get('/users', [CompanyUsersController::class, 'getUsersExport']);
     });
+    Route::get('/charts/users_incomes', [ChartsController::class, 'getUserIncomesData']);
 });
