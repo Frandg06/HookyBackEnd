@@ -21,13 +21,13 @@ class EventFactory extends Factory
     {
 
         $colors = [
-            '#38bdf8,#0369a1',
-            '#6ee7b7,#059669',
-            '#fb923c,#ea580c',
-            '#a5b4fc,#4f46e5',
-            '#fca5a5,#dc2626',
-            '#d8b4fe,#9333ea',
-            '#fde047,#ca8a04',
+            'label-sky',
+            'label-emerald',
+            'label-orange',
+            'label-indigo',
+            'label-red',
+            'label-purple',
+            'label-yellow',
         ];
 
 

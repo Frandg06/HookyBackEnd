@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('events', function (Blueprint $table) {
-            $table->string('colors')->default('#38bdf8,#0369a1');
+            $table->string('colors')->default('label-sky');
         });
     }
 

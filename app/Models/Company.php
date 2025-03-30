@@ -61,10 +61,15 @@ class Company extends Authenticatable implements JWTSubject
         return $this->belongsTo(PricingPlan::class, 'pricing_plan_uid', 'uid');
     }
 
-    public function checkEventLimit($st_date)
+    public function checkEventLimit($st_date, $uid)
     {
         $limit = $this->pricing_plan->limit_events;
-        $events = $this->events()->whereDate('st_date', '>=', $st_date->startOfMonth())->whereDate('st_date', '<=', $st_date->endOfMonth())->count();
+        $events = $this->events()
+            ->when($uid, function ($query) use ($uid) {
+                $query->whereNot('uid', $uid);
+            })
+            ->whereDate('st_date', '>=', $st_date->startOfMonth())
+            ->whereDate('st_date', '<=', $st_date->endOfMonth())->count();
         return $events < $limit;
     }
 
@@ -86,20 +91,21 @@ class Company extends Authenticatable implements JWTSubject
         });
     }
 
-    public function checkEveventsInSameTime($st_date, $end_date)
+    public function checkEveventsInSameTime($st_date, $end_date, $uid)
     {
         $events = $this->events()
-            ->where(function ($query) use ($st_date) {
-                $query->whereDate('st_date', '>=', $st_date)
-                    ->whereDate('end_date', '<=', $st_date);
+            ->when($uid, function ($query) use ($uid) {
+                $query->whereNot('uid', $uid);
             })
-            ->orWhere(function ($query) use ($end_date) {
-                $query->whereDate('st_date', '>=', $end_date)
-                    ->whereDate('end_date', '<=', $end_date);
+            ->where(function ($query) use ($st_date, $end_date) {
+                $query->where(function ($query2) use ($st_date) {
+                    $query2->whereDate('st_date', '>=', $st_date)
+                        ->whereDate('end_date', '<=', $st_date);
+                })->orWhere(function ($query3) use ($end_date) {
+                    $query3->whereDate('st_date', '>=', $end_date)
+                        ->whereDate('end_date', '<=', $end_date);
+                });
             })->count();
-        // TODO
-        // Si el evento enviuenve a otro evento por fechas
-
         return $events > 0;
     }
 

@@ -29,6 +29,9 @@ class UpdateEventRequest extends FormRequest
             'super_likes' => 'nullable|numeric',
             'name' => 'nullable|string',
             'colors' => 'nullable|string',
+            'st_hour' => 'nullable|date_format:H:i',
+            'end_hour' => 'nullable|date_format:H:i',
+            'uid' => 'nullable|string',
         ];
     }
 }

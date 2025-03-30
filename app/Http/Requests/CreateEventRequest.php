@@ -27,6 +27,10 @@ class CreateEventRequest extends FormRequest
             'timezone' => 'required|string',
             'likes' => 'required|integer',
             'super_likes' => 'required|integer',
+            'name' => 'required|string|max:255',
+            'colors' => 'required|string|max:16',
+            'st_hour' => 'required|date_format:H:i',
+            'end_hour' => 'required|date_format:H:i',
         ];
     }
 }

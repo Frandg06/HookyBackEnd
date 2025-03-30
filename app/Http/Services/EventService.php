@@ -17,31 +17,12 @@ class EventService extends Service
     {
         DB::beginTransaction();
         try {
+            $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
+            $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
 
-            $now = now($data['timezone']);
-            $st_date = Carbon::parse($data['st_date']);
-            $end_date = Carbon::parse($data['end_date']);
-            $diff = $st_date->diffInHours($end_date);
+            $validator = $this->validateEvent($data['st_date'], $data['end_date'], null);
 
-            if ($this->company()->checkEveventsInSameTime($st_date, $end_date)) {
-                return $this->responseError('event_at_same_time', 409);
-            }
-            if (!$this->company()->checkEventLimit($st_date)) {
-                return $this->responseError('event_limit_reached', 409);
-            }
-
-            if ($st_date < $now) {
-                return $this->responseError('start_date_past', 409);
-            }
-            if ($diff < 0) {
-                return $this->responseError('end_date_before_start', 409);
-            }
-            if ($diff > 12) {
-                return $this->responseError('event_duration_exceeded', 409);
-            }
-            if ($diff < 2) {
-                return $this->responseError('event_duration_too_short', 409);
-            }
+            if ($validator !== true)  return $validator;
 
             $event = $this->company()->events()->create($data);
 
@@ -105,6 +86,12 @@ class EventService extends Service
             $event = $this->company()->events()->where('uid', $uuid)->first();
 
             if (!$event) $this->responseError('event_not_found', 404);
+
+            $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
+            $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
+            $validator = $this->validateEvent($data['st_date'], $data['end_date'], $uuid);
+
+            if ($validator !== true)  return $validator;
 
             $event->update($data);
 
@@ -178,5 +165,35 @@ class EventService extends Service
             $this->logError($e, __CLASS__, __FUNCTION__);
             return $this->responseError('get_events_ko', 500);
         }
+    }
+
+    private function validateEvent($st_date, $end_date, $event): bool|array
+    {
+        $now = now();
+        $st_date = Carbon::parse($st_date);
+        $end_date = Carbon::parse($end_date);
+        $diff = $st_date->diffInHours($end_date);
+
+        if ($this->company()->checkEveventsInSameTime($st_date, $end_date, $event)) {
+            return $this->responseError('event_at_same_time', 409);
+        }
+        if (!$this->company()->checkEventLimit($st_date, $event)) {
+            return $this->responseError('event_limit_reached', 409);
+        }
+
+        if ($st_date < $now) {
+            return $this->responseError('start_date_past', 409);
+        }
+        if ($diff < 0) {
+            return $this->responseError('end_date_before_start', 409);
+        }
+        if ($diff > 12) {
+            return $this->responseError('event_duration_exceeded', 409);
+        }
+        if ($diff < 2) {
+            return $this->responseError('event_duration_too_short', 409);
+        }
+
+        return true;
     }
 }
