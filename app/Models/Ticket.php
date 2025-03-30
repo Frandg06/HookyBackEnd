@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Filterable;
 use App\Models\Traits\HasUid;
+use App\Models\Traits\Sortable;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ticket extends Model
 {
-    use HasUid;
+    use HasUid, HasFactory, Sortable, Filterable;
 
     protected $fillable = [
         'company_uid',
@@ -20,8 +24,14 @@ class Ticket extends Model
         'super_likes',
         'likes',
         'user_uid',
+        'event_uid',
+        'name',
+        'price',
     ];
-    protected $hidden = ['updated_at', 'id'];
+
+    protected $hidden = [
+        'updated_at',
+    ];
 
     public function scopeTicketsCountThisMonth($query): Builder
     {
@@ -40,5 +50,10 @@ class Ticket extends Model
         return $query->where('company_uid', $company_uid)
             ->where('code', $code)
             ->where('redeemed', false);
+    }
+
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(Event::class, 'event_uid', 'uid');
     }
 }

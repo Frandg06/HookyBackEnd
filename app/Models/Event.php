@@ -102,18 +102,17 @@ class Event extends Model
 
     public function getTotalUsersAttribute()
     {
-        return $this->users()->count();
+        return $this->users2()->count();
     }
 
     public function getTotalIncomesAttribute()
     {
-        return $this->tickets()->count() * $this->company->average_ticket_price;
+        return $this->tickets()->where('redeemed', true)->sum('price');
     }
 
     public function getAvgAgeAttribute()
     {
-        return $this->users()
-            ->join('users', 'user_events.user_uid', '=', 'users.uid')
+        return $this->users2()
             ->selectRaw('AVG(EXTRACT(YEAR FROM AGE(users.born_date))) as avg_age')
             ->value('avg_age');
     }
@@ -121,7 +120,7 @@ class Event extends Model
     public function getPercentsAttribute(): array
     {
 
-        $total = $this->users()->count();
+        $total = $this->users2()->count();
 
         if ($total == 0) {
             return [
@@ -130,13 +129,11 @@ class Event extends Model
             ];
         }
 
-        $males = $this->users()
-            ->join('users', 'user_events.user_uid', '=', 'users.uid')
+        $males = $this->users2()
             ->where('users.gender_id', Gender::MALE)
             ->count();
 
-        $females = $this->users()
-            ->join('users', 'user_events.user_uid', '=', 'users.uid')
+        $females = $this->users2()
             ->where('users.gender_id', Gender::FEMALE)
             ->count();
 

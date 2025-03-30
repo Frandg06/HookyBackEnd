@@ -4,14 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table('events', function (Blueprint $table) {
-            $table->string('colors')->default('label-sky');
+        Schema::table('tickets', function (Blueprint $table) {
+            $table->string('name')->nullable();
         });
     }
 
@@ -20,8 +21,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('events', function (Blueprint $table) {
-            $table->dropColumn('colors');
+        Schema::table('tickets', function (Blueprint $table) {
+            $table->dropColumn('name');
         });
     }
 };

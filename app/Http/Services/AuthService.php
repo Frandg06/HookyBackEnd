@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class AuthService
+class AuthService extends Service
 {
 
-    public function register($data)
+    public function register(array $data): string
     {
         DB::beginTransaction();
         try {
@@ -57,10 +57,10 @@ class AuthService
             }
 
             $user->events()->create([
-              'event_uid' => $event->uid,
-              'logged_at' => now(),
-              'likes' => $event->likes,
-              'super_likes' => $event->super_likes
+                'event_uid' => $event->uid,
+                'logged_at' => now(),
+                'likes' => $event->likes,
+                'super_likes' => $event->super_likes
             ]);
 
             $diff = $this->getDiff($event->end_date, $timezone);
@@ -80,7 +80,7 @@ class AuthService
         }
     }
 
-    public function login($data, $company_uid)
+    public function login(array $data, string $company_uid): string
     {
         DB::beginTransaction();
         try {
@@ -129,10 +129,10 @@ class AuthService
                 }
 
                 $user->events()->create([
-                  'event_uid' => $event->uid,
-                  'logged_at' => now(),
-                  'likes' => $event->likes,
-                  'super_likes' => $event->super_likes
+                    'event_uid' => $event->uid,
+                    'logged_at' => now(),
+                    'likes' => $event->likes,
+                    'super_likes' => $event->super_likes
                 ]);
             }
 
@@ -149,7 +149,7 @@ class AuthService
         }
     }
 
-    public function passwordReset(String $email)
+    public function passwordReset(string $email): bool
     {
         DB::beginTransaction();
         try {
@@ -172,17 +172,17 @@ class AuthService
             }
 
             $password_token = PasswordResetToken::create([
-              'email' => $user->email,
-              'token' => base64_encode($token),
-              'expires_at' => now()->addMinutes(15)
+                'email' => $user->email,
+                'token' => base64_encode($token),
+                'expires_at' => now()->addMinutes(15)
             ]);
 
             $url = config('app.front_url') . '/auth/password/new?token=' . $password_token->token;
 
 
             $template = view('emails.recovery_password_app', [
-              'link' => $url,
-              'name' => $user->name,
+                'link' => $url,
+                'name' => $user->name,
             ])->render();
 
             $emailService = new EmailService();
@@ -201,7 +201,7 @@ class AuthService
         }
     }
 
-    public function setNewPassword(array $data)
+    public function setNewPassword(array $data): bool
     {
         DB::beginTransaction();
         try {
@@ -218,7 +218,7 @@ class AuthService
             $user = $token_model->user;
 
             $user->update([
-              'password' => bcrypt($data['password'])
+                'password' => bcrypt($data['password'])
             ]);
 
             $token_model->delete();

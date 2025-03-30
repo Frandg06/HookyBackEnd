@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-class AuthCompanyService
+class AuthCompanyService extends Service
 {
 
-    public function register($data)
+    public function register(array $data): string
     {
         DB::beginTransaction();
         try {
@@ -55,7 +55,7 @@ class AuthCompanyService
         }
     }
 
-    public function login($data)
+    public function login(array $data): string
     {
         try {
 
@@ -78,7 +78,7 @@ class AuthCompanyService
         }
     }
 
-    public function passwordReset(String $email)
+    public function passwordReset(string $email): bool
     {
         DB::beginTransaction();
         try {
@@ -101,17 +101,17 @@ class AuthCompanyService
             }
 
             $password_token = CompanyPasswordResetToken::create([
-              'email' => $company->email,
-              'token' => base64_encode($token),
-              'expires_at' => now()->addMinutes(15)
+                'email' => $company->email,
+                'token' => base64_encode($token),
+                'expires_at' => now()->addMinutes(15)
             ]);
 
             $url = config('app.admin_url') . '/password/new?token=' . $password_token->token;
 
 
             $template = view('emails.recovery_password_app', [
-              'link' => $url,
-              'name' => $company->name,
+                'link' => $url,
+                'name' => $company->name,
             ])->render();
 
             $emailService = new EmailService();
@@ -130,7 +130,7 @@ class AuthCompanyService
         }
     }
 
-    public function setNewPassword(array $data)
+    public function setNewPassword(array $data): bool
     {
         DB::beginTransaction();
         try {
@@ -147,7 +147,7 @@ class AuthCompanyService
             $company = $token_model->company;
 
             $company->update([
-              'password' => bcrypt($data['password'])
+                'password' => bcrypt($data['password'])
             ]);
 
             $token_model->delete();

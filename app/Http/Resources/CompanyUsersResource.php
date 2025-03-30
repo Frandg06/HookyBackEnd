@@ -4,9 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Log;
 
-class EventUsersResource extends JsonResource
+class CompanyUsersResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -25,7 +24,7 @@ class EventUsersResource extends JsonResource
             'age' => $this->age,
             'role_id' => $this->role_id,
             'gender_id' => $this->gender_id,
-            'consumption' => $this->tickets()->where('event_uid', $request->event_uid)->where('redeemed', true)->sum('price'),
+            'consumption' => $this->tickets()->where('redeemed', true)->sum('price'),
         ];
     }
 }

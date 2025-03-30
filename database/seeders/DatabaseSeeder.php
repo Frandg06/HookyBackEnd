@@ -21,9 +21,9 @@ class DatabaseSeeder extends Seeder
 
         $company = Company::create([
             'uid' => '1d59e992-7865-41c5-ad7d-d271ccf4e7fc',
-            'name'=> 'Studio54',
-            'email'=> 'test@test.es',
-            'password'=> 'a',
+            'name' => 'Studio54',
+            'email' => 'test@test.es',
+            'password' => 'a',
             'timezone_uid' => TimeZone::find(2)->uid,
             'pricing_plan_uid' => \App\Models\PricingPlan::find(1)->uid
         ]);
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
 
         Storage::disk('r2')->put('hooky/qr/' . $company->uid . '.png', $response->body());
 
-        
+
         $this->call(DevSeeder::class);
     }
 }

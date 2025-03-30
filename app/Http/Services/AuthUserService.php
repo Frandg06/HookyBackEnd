@@ -11,22 +11,20 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
-class AuthUserService
+class AuthUserService extends Service
 {
 
-    public function update($data)
+    public function update(array $data)
     {
         DB::beginTransaction();
-        try {
-            $user = request()->user();
-
-            $existingUser = User::where('email', $data['email'])->whereNot('uid', $user->uid)->first();
+        try {;
+            $existingUser = User::where('email', $data['email'])->whereNot('uid', $this->user()->uid)->first();
 
             if ($existingUser) {
                 throw new ApiException('user_exists', 409);
             }
 
-            $user->update($data);
+            $this->user()->update($data);
 
             if (isset($user['gender_id']) || isset($user['sexual_orientation_id'])) {
                 $user->interactions()->delete();
@@ -34,7 +32,7 @@ class AuthUserService
 
             DB::commit();
 
-            return $user->resource();
+            return $this->user()->resource();
         } catch (ApiException $e) {
             DB::rollBack();
             throw new ApiException($e->getMessage(), $e->getCode());
@@ -45,22 +43,20 @@ class AuthUserService
         }
     }
 
-    public function updatePassword($data)
+    public function updatePassword(array $data)
     {
         DB::beginTransaction();
         try {
-            $user = request()->user();
-
-            if (!Hash::check($data['old_password'], $user->password)) {
+            if (!Hash::check($data['old_password'], $this->user()->password)) {
                 throw new ApiException('actual_password_ko', 400);
             }
 
-            $user->password = bcrypt($data['password']);
-            $user->save();
+            $this->user()->password = bcrypt($data['password']);
+            $this->user()->save();
 
             DB::commit();
 
-            return $user->resource();
+            return $this->user()->resource();
         } catch (ApiException $e) {
             DB::rollBack();
             throw new ApiException($e->getMessage());
@@ -71,30 +67,29 @@ class AuthUserService
         }
     }
 
-    public function updateInterest($newInterests)
+    public function updateInterest(array $newInterests)
     {
         DB::beginTransaction();
         try {
-            $user = request()->user();
-            $hasInterest = $user->interests()->get()->pluck('interest_id')->toArray();
+            $hasInterest = $this->user()->interests()->get()->pluck('interest_id')->toArray();
 
             foreach ($newInterests as $item) {
                 if (!in_array($item, $hasInterest)) {
-                    $user->interests()->create([
-                      'interest_id' => $item
+                    $this->user()->interests()->create([
+                        'interest_id' => $item
                     ]);
                 }
             }
 
             foreach ($hasInterest as $item) {
                 if (!in_array($item, $newInterests)) {
-                    $user->interests()->where('interest_id', $item)->delete();
+                    $this->user()->interests()->where('interest_id', $item)->delete();
                 }
             }
 
             DB::commit();
 
-            return $user->resource();
+            return $this->user()->resource();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
@@ -126,9 +121,9 @@ class AuthUserService
             $userSuperLikes =  $user->notifications()->where('type_id', NotificationsType::SUPER_LIKE_TYPE)->where('event_uid', $user->event_uid)->get();
 
             $data = [
-              'likes' => $likes,
-              'super_likes' => NotificationUserResource::collection($userSuperLikes),
-              'hooks' => NotificationUserResource::collection($usersHook)
+                'likes' => $likes,
+                'super_likes' => NotificationUserResource::collection($userSuperLikes),
+                'hooks' => NotificationUserResource::collection($usersHook)
             ];
 
             DB::commit();

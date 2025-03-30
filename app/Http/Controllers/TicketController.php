@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Filters\TicketFilter;
+use App\Http\Orders\TicketOrdenator;
 use App\Http\Requests\CreateTicketRequest;
 use App\Http\Services\TicketService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class TicketController extends Controller
 {
@@ -16,25 +17,17 @@ class TicketController extends Controller
         $this->ticketService = $ticketService;
     }
 
-    public function index(Request $request)
+    public function getTickets(TicketFilter $filter, TicketOrdenator $order, Request $request)
     {
-        try {
-
-            $tickets = $request->user()->tickets()->paginate(10);
-
-            return response()->json(['resp' => $tickets, 'success' => true], 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => true, 'message' => __('i18n.unexpected_error')], 500);
-        }
+        $tickets = $this->ticketService->getTickets($filter, $order, $request->limit ?? 10);
+        return $this->response($tickets);
     }
 
-    public function generateTickets(CreateTicketRequest $request)
+    public function generateTickets(CreateTicketRequest $request, string $uuid)
     {
-        $data = $request->only(['count', 'likes', 'superlikes', 'event_uid']);
-
-        $tickets = $this->ticketService->generateTickets($data);
-
-        return response()->json(['resp' => $tickets, 'success' => true], 200);
+        $data = $request->safe()->only(['count', 'likes', 'superlikes', 'name', 'price']);
+        $tickets = $this->ticketService->generateTickets($data, $uuid);
+        return $this->response($tickets);
     }
 
     public function redeem(Request $request)
@@ -43,5 +36,11 @@ class TicketController extends Controller
         $ticket = $this->ticketService->redeem($code);
 
         return response()->json(['resp' => $ticket, 'success' => true], 200);
+    }
+
+    public function getTicketsToExport(TicketFilter $filter, TicketOrdenator $order)
+    {
+        $tickets = $this->ticketService->getTicketsToExport($filter, $order);
+        return $this->response($tickets);
     }
 }

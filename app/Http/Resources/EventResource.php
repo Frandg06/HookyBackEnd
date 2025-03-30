@@ -19,16 +19,20 @@ class EventResource extends JsonResource
             'id' => $this->id,
             'uid' => $this->uid,
             'name' => $this->name,
-            'st_date' => $this->st_date,
-            'end_date' => $this->end_date,
+            'st_date' => date('Y-m-d H:i', strtotime($this->st_date)),
+            'end_date' => date('Y-m-d H:i', strtotime($this->end_date)),
             'timezone' => $this->timezone,
             'likes' => $this->likes,
             'super_likes' => $this->super_likes,
             'colors' => $this->colors,
             'users_count' => $this->users()->count(),
-            'redeemed_tickets' => $this->tickets()->where('redeemed', true)->count(),
+            'incomes' => $this->tickets()->where('redeemed', true)->sum('price'),
+            'tickets' => $this->tickets()->where('redeemed', true)->count(),
             'males' => $this->users()->getMales()->count(),
             'females' => $this->users()->getMales()->count(),
+            'hooks' => $this->hooks,
+            'avg_age' => round($this->avg_age),
+
         ];
     }
 }

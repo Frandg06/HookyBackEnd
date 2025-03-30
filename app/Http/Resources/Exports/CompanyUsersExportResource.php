@@ -5,7 +5,7 @@ namespace App\Http\Resources\Exports;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class EventUsersExportResource extends JsonResource
+class CompanyUsersExportResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

@@ -20,7 +20,6 @@ return new class extends Migration {
             $table->string('city')->nullable();
             $table->string('country')->nullable();
             $table->string('password');
-            $table->float('average_ticket_price')->default(0);
             $table->uuid('timezone_uid')->nullable();
             $table->uuid('pricing_plan_uid')->nullable();
             $table->timestamps();

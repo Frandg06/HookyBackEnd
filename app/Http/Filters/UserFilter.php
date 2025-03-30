@@ -4,17 +4,13 @@ namespace App\Http\Filters;
 
 use App\Models\Gender;
 use App\Models\Role;
+use Illuminate\Support\Facades\Log;
 
 class UserFilter extends QueryFilter
 {
   public function name(string $value)
   {
-    return $this->builder->where('name', 'like', '%' . $value . '%');
-  }
-
-  public function surnames(string $value)
-  {
-    return $this->builder->where('surnames', 'like', '%' . $value . '%');
+    return $this->builder->whereRaw("LOWER(name || ' ' || surnames) LIKE ?", ['%' . strtolower($value) . '%']);
   }
 
   public function ageMin(int $age)
@@ -42,7 +38,10 @@ class UserFilter extends QueryFilter
 
   public function socials(string $name)
   {
-    return $this->builder->where('tw', 'like', '%' . $name . '%')->orWhere('ig', 'like', '%' . $name . '%');
+    return $this->builder->where(function ($query) use ($name) {
+      $query->where('tw', 'like', '%' . $name . '%')
+        ->orWhere('ig', 'like', '%' . $name . '%');
+    });
   }
 
   public function role(string $role)
@@ -51,4 +50,22 @@ class UserFilter extends QueryFilter
 
     return $this->builder->where('role_id', $roleCode);
   }
+
+  // public function consuptionMin(int $value)
+  // {
+  //   return $this->builder->whereHas('tickets', function ($query) use ($value) {
+  //     $query->where('redeemed', true)
+  //       ->groupBy('user_uid', 'tickets.id')
+  //       ->havingRaw('SUM(price) >= ?', [$value]);
+  //   });
+  // }
+
+  // public function consuptionMax(int $value)
+  // {
+  //   return $this->builder->whereHas('tickets', function ($query) use ($value) {
+  //     $query->where('redeemed', true)
+  //       ->groupBy('user_uid', 'tickets.id')
+  //       ->havingRaw('SUM(price) <= ?', [$value]);
+  //   });
+  // }
 }

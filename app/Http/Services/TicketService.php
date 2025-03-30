@@ -3,79 +3,86 @@
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
+use App\Http\Filters\TicketFilter;
+use App\Http\Orders\TicketOrdenator;
+use App\Http\Resources\Exports\TicketExportResource;
+use App\Http\Resources\TicketCollection;
+use App\Http\Resources\TicketResource;
+use App\Models\Event;
 use App\Models\Ticket;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
-class TicketService
+class TicketService extends Service
 {
-    public function generateTickets($data)
+    public function getTickets(TicketFilter $filter, TicketOrdenator $order, int $limit)
     {
-        DB::beginTransaction();
         try {
-
-            $company = request()->user();
-
-            $event = $company->events()->where('uid', $data['event_uid'])->first();
-
-            if (!$event) {
-                throw new ApiException('event_not_found', 400);
-            }
-            if (!is_numeric($data['count'])) {
-                throw new ApiException('tickets_not_numeric', 400);
-            }
-            if ($data['count'] < 1) {
-                throw new ApiException('tickets_minimum', 400);
-            }
-            if ($data['count'] > 1000) {
-                throw new ApiException('tickets_maximum', 400);
-            }
-
-
-            $tickets = [];
-
-            while (count($tickets) < $data['count']) {
-                $code = strtoupper(Str::random(6));
-                $tickets[] = [
-                    'uid' => (string) Str::uuid(),
-                    'company_uid' => $company->uid,
-                    'event_uid' => $data['event_uid'],
-                    'code' => $code,
-                    'redeemed' => false,
-                    'likes' => $data['likes'],
-                    'super_likes' => $data['superlikes'],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-
-            Ticket::insert($tickets);
-
-            DB::commit();
-
+            $tickets = $this->company()->tickets()->filter($filter)->sort($order)->paginate($limit);
+            $data = TicketResource::collection($tickets);
             return [
-                'all_tickets' => $company->tickets()->paginate(10),
-                'company_tickets' => $company->tickets()->limit(5)->orderBy('redeemed_at', 'desc')->get()
+                "data" => $data,
+                "current_page" => $tickets->currentPage(),
+                "from" => $tickets->firstItem(),
+                "last_page" => $tickets->lastPage(),
+                "path" => $tickets->path(),
+                "per_page" => $tickets->perPage(),
+                "to" => $tickets->lastItem(),
+                "total" => $tickets->total()
             ];
-        } catch (ApiException $e) {
-            DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('generate_tickets_ko', 500);
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('get_tickets_ko', 500);
         }
     }
 
-    public function redeem($code)
+    public function generateTickets(array $data, string $uuid)
     {
         DB::beginTransaction();
         try {
-            $user = request()->user();
 
-            $company_uid = $user->company_uid;
-            $event_uid = $user->event_uid;
+            $event = Event::find($uuid);
+
+            if (Carbon::parse($event->end_date)->isPast()) {
+                return $this->responseError('event_is_past', 400);
+            }
+
+            if ($event->tickets->count() > $event->company->pricing_plan->ticket_limit) {
+                return $this->responseError('tickets_limit_exceeded', 400);
+            }
+
+            Ticket::factory()->count($data['count'])->create([
+                'company_uid' => $this->company()->uid,
+                'event_uid' => $uuid,
+                'redeemed' => false,
+                'likes' => $data['likes'],
+                'super_likes' => $data['superlikes'],
+                'name' => $data['name'],
+                'price' => $data['price'],
+                'created_at' => now(),
+                'updated_at' => now(),
+                'user_uid' => null,
+                'redeemed_at' => null
+            ]);
+
+            DB::commit();
+
+            return  $this->company()->tickets()->paginate(10);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('generate_tickets_ko', 500);
+        }
+    }
+
+    public function redeem(string $code)
+    {
+        DB::beginTransaction();
+        try {
+
+            $company_uid = $this->user()->company_uid;
+            $event_uid = $this->user()->event_uid;
 
             $ticket = Ticket::getTicketByCompanyEventAndCode($company_uid, $code)->first();
 
@@ -85,29 +92,29 @@ class TicketService
 
 
             $ticket->ticketsRedeem()->create([
-                'user_uid' => $user->uid,
+                'user_uid' => $this->user()->uid,
                 'event_uid' => $event_uid,
                 'company_uid' => $company_uid,
             ]);
 
-            $tz = $user->events()->activeEventData()->event->timezone;
+            $tz = $this->user()->events()->activeEventData()->event->timezone;
 
             $ticket->update([
                 'redeemed' => true,
                 'redeemed_at' => now($tz)
             ]);
 
-            $user->events()->update([
-                'likes' => $user->like_credits + $ticket->likes,
-                'super_likes' => $user->super_like_credits + $ticket->super_likes
+            $this->user()->events()->update([
+                'likes' => $this->user()->like_credits + $ticket->likes,
+                'super_likes' => $this->user()->super_like_credits + $ticket->super_likes
             ]);
 
             DB::commit();
 
             return [
                 'user_total' => [
-                    'super_like_credits' => $user->super_like_credits,
-                    'like_credits' => $user->like_credits,
+                    'super_like_credits' => $this->user()->super_like_credits,
+                    'like_credits' => $this->user()->like_credits,
                 ],
                 'ticket_add' => [
                     'super_likes' => $ticket->super_likes,
@@ -121,6 +128,17 @@ class TicketService
             DB::rollBack();
             Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
             throw new ApiException('generate_tickets_ko', 500);
+        }
+    }
+
+    public function getTicketsToExport(TicketFilter $filter, TicketOrdenator $order)
+    {
+        try {
+            $tickets = $this->company()->tickets()->filter($filter)->sort($order)->get();
+            return TicketExportResource::collection($tickets);
+        } catch (\Exception $e) {
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('get_tickets_ko', 500);
         }
     }
 }

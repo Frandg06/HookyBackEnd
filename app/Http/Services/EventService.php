@@ -2,99 +2,66 @@
 
 namespace App\Http\Services;
 
-use App\Exceptions\ApiException;
 use App\Http\Filters\EventFilter;
 use App\Http\Orders\EventOrdenator;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\Exports\EventExportResource;
 use Carbon\Carbon;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
-class EventService
+class EventService extends Service
 {
 
-    public function store(array $data)
+    public function store(array $data): EventResource|array
     {
         DB::beginTransaction();
         try {
-            $company = request()->user();
-            $now = now($data['timezone']);
-            $st_date = Carbon::parse($data['st_date']);
-            $end_date = Carbon::parse($data['end_date']);
-            $diff = $st_date->diffInHours($end_date);
+            $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
+            $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
 
-            if ($company->checkEveventsInSameTime($st_date, $end_date)) {
-                throw new ApiException('event_at_same_time', 409);
-            }
-            if (!$company->checkEventLimit($st_date)) {
-                throw new ApiException('event_limit_reached', 409);
-            }
+            $validator = $this->validateEvent($data['st_date'], $data['end_date'], null);
 
-            if ($st_date < $now) {
-                throw new ApiException('start_date_past', 409);
-            }
-            if ($diff < 0) {
-                return throw new ApiException('end_date_before_start', 409);
-            }
-            if ($diff > 12) {
-                return throw new ApiException('event_duration_exceeded', 409);
-            }
-            if ($diff < 2) {
-                return throw new ApiException('event_duration_too_short', 409);
-            }
+            if ($validator !== true)  return $validator;
 
-            $event = $company->events()->create($data);
+            $event = $this->company()->events()->create($data);
 
             DB::commit();
 
             return EventResource::make($event);
-        } catch (ApiException $e) {
-            DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('create_event_ko', 500);
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('create_event_ko', 409);
         }
     }
 
-    public function getCalendarEvents(array $dates)
+    public function getCalendarEvents(array $dates): array
     {
-        DB::beginTransaction();
         try {
-            $company = request()->user();
             $events = [];
             foreach ($dates as $date) {
                 $start = Carbon::parse($date)->startOfMonth();
                 $end = Carbon::parse($date)->endOfMonth();
 
-                $query = $company->events()
+                $query = $this->company()->events()
                     ->whereDate('st_date', '>=', $start)
                     ->whereDate('st_date', '<=', $end)
                     ->get(['name', 'st_date as start', 'end_date as end', 'colors', 'uid'])->toArray();
 
                 $events = array_merge($events, $query);
             }
-
-            DB::commit();
-
             return $events;
         } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('get_calendar_events_ko', 500);
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('get_calendar_events_ko', 409);
         }
     }
 
     public function getEvents(EventFilter $filtrer, EventOrdenator $ordenator, $limit = 10): array
     {
-
-        $company = request()->user();
-
         try {
-
-            $events = $company->events()
+            $events = $this->company()->events()
                 ->with(['users', 'tickets'])
                 ->filter($filtrer)
                 ->sort($ordenator)
@@ -108,75 +75,71 @@ class EventService
                 'per_page' => $events->perPage(),
             ];
         } catch (\Exception $e) {
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('get_events_ko', 500);
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('get_events_ko', 409);
         }
     }
 
-    public function update(array $data, $uuid): EventResource
+    public function update(array $data, string $uuid): EventResource|array
     {
         try {
-            $company = request()->user();
+            $event = $this->company()->events()->where('uid', $uuid)->first();
 
-            $event = $company->events()->where('uid', $uuid)->first();
+            if (!$event) $this->responseError('event_not_found', 404);
 
-            if (!$event) throw new ApiException('event_not_found', 404);
+            $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
+            $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
+            $validator = $this->validateEvent($data['st_date'], $data['end_date'], $uuid);
+
+            if ($validator !== true)  return $validator;
 
             $event->update($data);
 
             return EventResource::make($event);
         } catch (\Exception $e) {
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('update_event_ko', 500);
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('update_event_ko', 500);
         }
     }
 
-    public function show(string $uuid): EventResource
+    public function show(string $uuid): EventResource|array
     {
         try {
-            $company = request()->user();
+            $event = $this->company()->events()->where('uid', $uuid)->first();
 
-            $event =   $company->events()->where('uid', $uuid)->first();
-
-            if (!$event) throw new ApiException('event_not_found', 404);
+            if (!$event) $this->responseError('event_not_found', 404);
 
             return EventResource::make($event);
         } catch (\Exception $e) {
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('update_event_ko', 500);
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('update_event_ko', 500);
         }
     }
 
-    public function delete(string $uuid): bool
+    public function delete(string $uuid): bool|array
     {
         try {
+            $event = $this->company()->events()->where('uid', $uuid)->first();
 
-            $company = request()->user();
-            $event = $company->events()->where('uid', $uuid)->first();
-
-            if (!$event) throw new ApiException('event_not_found', 404);
+            if (!$event) $this->responseError('event_not_found', 404);
 
             $st_date = Carbon::parse($event->st_date);
 
-            if ($st_date->isPast()) throw new ApiException('event_is_past', 409);
+            if ($st_date->isPast()) $this->responseError('event_is_past', 409);
 
             $event->delete();
 
             return true;
         } catch (\Exception $e) {
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('update_event_ko', 500);
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('update_event_ko', 500);
         }
     }
 
-    public function getExportEvents(EventFilter $filtrer, EventOrdenator $ordenator)
+    public function getExportEvents(EventFilter $filtrer, EventOrdenator $ordenator): AnonymousResourceCollection|array
     {
-
-        $company = request()->user();
-
         try {
-
-            $events = $company->events()
+            $events = $this->company()->events()
                 ->with(['users', 'tickets'])
                 ->filter($filtrer)
                 ->sort($ordenator)
@@ -184,8 +147,53 @@ class EventService
 
             return  EventExportResource::collection($events);
         } catch (\Exception $e) {
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('get_events_ko', 500);
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('get_events_ko', 500);
         }
+    }
+
+    public function getEventsFillable(EventFilter $filter)
+    {
+        try {
+            $events = $this->company()->events()
+                ->select(['name as label', 'uid as value'])
+                ->filter($filter)
+                ->get();
+
+            return $events;
+        } catch (\Exception $e) {
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('get_events_ko', 500);
+        }
+    }
+
+    private function validateEvent($st_date, $end_date, $event): bool|array
+    {
+        $now = now();
+        $st_date = Carbon::parse($st_date);
+        $end_date = Carbon::parse($end_date);
+        $diff = $st_date->diffInHours($end_date);
+
+        if ($this->company()->checkEveventsInSameTime($st_date, $end_date, $event)) {
+            return $this->responseError('event_at_same_time', 409);
+        }
+        if (!$this->company()->checkEventLimit($st_date, $event)) {
+            return $this->responseError('event_limit_reached', 409);
+        }
+
+        if ($st_date < $now) {
+            return $this->responseError('start_date_past', 409);
+        }
+        if ($diff < 0) {
+            return $this->responseError('end_date_before_start', 409);
+        }
+        if ($diff > 12) {
+            return $this->responseError('event_duration_exceeded', 409);
+        }
+        if ($diff < 2) {
+            return $this->responseError('event_duration_too_short', 409);
+        }
+
+        return true;
     }
 }

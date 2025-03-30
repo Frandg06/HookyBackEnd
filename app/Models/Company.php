@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Log;
@@ -33,7 +34,6 @@ class Company extends Authenticatable implements JWTSubject
         'country',
         'password',
         'timezone_uid',
-        'average_ticket_price',
     ];
 
     public function events(): HasMany
@@ -61,10 +61,15 @@ class Company extends Authenticatable implements JWTSubject
         return $this->belongsTo(PricingPlan::class, 'pricing_plan_uid', 'uid');
     }
 
-    public function checkEventLimit($st_date)
+    public function checkEventLimit($st_date, $uid)
     {
         $limit = $this->pricing_plan->limit_events;
-        $events = $this->events()->whereDate('st_date', '>=', $st_date->startOfMonth())->whereDate('st_date', '<=', $st_date->endOfMonth())->count();
+        $events = $this->events()
+            ->when($uid, function ($query) use ($uid) {
+                $query->whereNot('uid', $uid);
+            })
+            ->whereDate('st_date', '>=', $st_date->startOfMonth())
+            ->whereDate('st_date', '<=', $st_date->endOfMonth())->count();
         return $events < $limit;
     }
 
@@ -73,20 +78,34 @@ class Company extends Authenticatable implements JWTSubject
         return AuthCompanyResource::make($this);
     }
 
-    public function checkEveventsInSameTime($st_date, $end_date)
+    public function users()
+    {
+        return User::whereIn('uid', function ($query) {
+            $query->select('user_uid')
+                ->from('user_events')
+                ->whereIn('event_uid', function ($q) {
+                    $q->select('uid')
+                        ->from('events')
+                        ->where('company_uid', $this->uid);
+                });
+        });
+    }
+
+    public function checkEveventsInSameTime($st_date, $end_date, $uid)
     {
         $events = $this->events()
-            ->where(function ($query) use ($st_date) {
-                $query->whereDate('st_date', '>=', $st_date)
-                    ->whereDate('end_date', '<=', $st_date);
+            ->when($uid, function ($query) use ($uid) {
+                $query->whereNot('uid', $uid);
             })
-            ->orWhere(function ($query) use ($end_date) {
-                $query->whereDate('st_date', '>=', $end_date)
-                    ->whereDate('end_date', '<=', $end_date);
+            ->where(function ($query) use ($st_date, $end_date) {
+                $query->where(function ($query2) use ($st_date) {
+                    $query2->whereDate('st_date', '>=', $st_date)
+                        ->whereDate('end_date', '<=', $st_date);
+                })->orWhere(function ($query3) use ($end_date) {
+                    $query3->whereDate('st_date', '>=', $end_date)
+                        ->whereDate('end_date', '<=', $end_date);
+                });
             })->count();
-        // TODO
-        // Si el evento enviuenve a otro evento por fechas
-
         return $events > 0;
     }
 
@@ -116,107 +135,44 @@ class Company extends Authenticatable implements JWTSubject
             ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
             ->distinct('user_events.user_uid');
 
-        $userCurrentMonth = (clone $query)->whereBetween('user_events.logged_at', [
-            now($this->timezone->name)->startOfMonth(),
-            now($this->timezone->name)->endOfMonth()
-        ])->count('user_events.user_uid');
 
-        $userLastMonth = (clone $query)->whereBetween('user_events.logged_at', [
-            now($this->timezone->name)->subMonth()->startOfMonth(),
-            now($this->timezone->name)->subMonth()->endOfMonth()
+        $actual_data = (clone $query)->whereBetween('user_events.created_at', [
+            now()->subMonths(6)->format('Y-m-d H:i:s'),
+            now()->format('Y-m-d H:i:s')
         ])->count('user_events.user_uid');
 
 
+        $usersLastSixMonths = (clone $query)->whereBetween('user_events.created_at', [
+            now()->subMonths(12)->format('Y-m-d H:i:s'),
+            now()->subMonth(6)->format('Y-m-d H:i:s')
+        ])->count('user_events.user_uid');
+
+        $percentage = $actual_data / ($usersLastSixMonths || 1) * 100;
+
         return [
-            'count' => $query->count('user_events.user_uid'),
-            'user_last_month' =>  $userLastMonth,
-            'user_current_month' => $userCurrentMonth,
+            'data' =>  $actual_data,
+            'percentage' => $percentage,
         ];
     }
 
-    public function getTotalTicketsAttribute($query)
+    public function getIncomesAttribute($query)
     {
-        $query = $this->tickets()
-            ->where('redeemed', true);
+        $query = $this->tickets()->where('redeemed', true);
 
-        $ticketCurrentMonth = (clone $query)->whereBetween('redeemed_at', [
-            now($this->timezone->name)->startOfMonth(),
-            now($this->timezone->name)->endOfMonth()
-        ])->count();
+        $actual_data = (clone $query)->whereBetween('redeemed_at', [
+            now()->subMonth(6),
+            now()
+        ])->sum('price');
 
-        $tickeLastMonth = (clone $query)->whereBetween('redeemed_at', [
-            now($this->timezone->name)->subMonth()->startOfMonth(),
-            now($this->timezone->name)->subMonth()->endOfMonth()
-        ])->count();
+        $past_incomes = (clone $query)->whereBetween('redeemed_at', [
+            now()->subMonth(12),
+            now()->subMonth(6),
+        ])->sum('price');
 
-
+        $percentage = $actual_data / ($past_incomes || 1) * 100;
         return [
-            'count' => $query->count(),
-            'ticket_last_month' =>  $tickeLastMonth,
-            'ticket_current_month' => $ticketCurrentMonth,
-        ];
-    }
-
-    public function scopeUsers($query)
-    {
-        return $query->events()
-            ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
-            ->distinct('user_events.user_uid');
-    }
-
-    public function getLastFiveUsersAttribute()
-    {
-
-        $ids = $this->events()
-            ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
-            ->join('users', 'user_events.user_uid', '=', 'users.uid')
-            ->select('users.*')
-            ->orderBy('users.created_at', 'desc')
-            ->limit(5)
-            ->pluck('users.uid');
-        $users = User::whereIn('uid', $ids)->get();
-
-        return UsersToTableResource::collection($users);
-    }
-
-    public function getRecentEntriesAttribute()
-    {
-        return $this->events()
-            ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
-            ->selectRaw("TO_CHAR(DATE_TRUNC('hour', user_events.logged_at), 'HH24:MI') as hour, COUNT(DISTINCT user_events.user_uid) as count")
-            ->where('user_events.logged_at', '>=', now($this->timezone->name)->subHours(8))
-            ->where('user_events.logged_at', '<=', now($this->timezone->name))
-            ->groupByRaw("DATE_TRUNC('hour', user_events.logged_at)")
-            ->orderByRaw("DATE_TRUNC('hour', user_events.logged_at)")
-            ->get();
-    }
-    public function getLastSevenEventsAttribute()
-    {
-        $events = $this->events()
-            ->where('st_date', '<=', now($this->timezone->name))
-            ->orderBy('st_date', 'desc')
-            ->limit(7)
-            ->get();
-
-        return [
-            'labels' => $events->map(function ($event) {
-                return Carbon::parse($event->st_date)->format('d/m/Y');
-            }),
-            'event_names' => $events->pluck('name')->toArray(),
-            'data' => [
-                [
-                    'name' => 'Usuarios',
-                    'data' => $events->map(function ($event) {
-                        return $event->users()->count();
-                    })
-                ],
-                [
-                    'name' => 'Ingresos',
-                    'data' => $events->map(function ($event) {
-                        return $event->total_incomes;
-                    })
-                ],
-            ]
+            'data' =>  $actual_data,
+            'percentage' => $percentage,
         ];
     }
 
