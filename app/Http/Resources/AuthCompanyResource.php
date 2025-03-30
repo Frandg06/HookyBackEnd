@@ -15,25 +15,6 @@ class AuthCompanyResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $hoursForRecentEntries = [];
-
-        for ($i = 9; $i >= 0; $i--) {
-            $hoursForRecentEntries[] = now()->subHours($i)->startOfHour()->format('H:i');
-        }
-
-        $hourMap = [];
-        foreach ($this->recent_entries as $entry) {
-            $hourMap[$entry['hour']] = $entry['count'];
-        }
-
-        // Construir el array completo con las horas faltantes
-        $recent_entries = [];
-        foreach ($hoursForRecentEntries as $hour) {
-            $recent_entries[] = [
-                'hour' => $hour,
-                'count' => $hourMap[$hour] ?? 0
-            ];
-        }
 
         return [
             'uid' => $this->uid,
@@ -52,7 +33,6 @@ class AuthCompanyResource extends JsonResource
             'users' => $this->total_users,
             'incomes' => $this->incomes,
             'tickets' => $this->tickets->where('redeemed_at', '>=', now()->startOfDay())->count(),
-            'recent_entries_count' => $recent_entries,
             'last_event' => EventResource::make($this->last_event),
         ];
     }

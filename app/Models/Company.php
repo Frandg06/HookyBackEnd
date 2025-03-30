@@ -176,47 +176,6 @@ class Company extends Authenticatable implements JWTSubject
         ];
     }
 
-    public function getRecentEntriesAttribute()
-    {
-        return $this->events()
-            ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
-            ->selectRaw("TO_CHAR(DATE_TRUNC('hour', user_events.logged_at), 'HH24:MI') as hour, COUNT(DISTINCT user_events.user_uid) as count")
-            ->where('user_events.logged_at', '>=', now()->subHours(8))
-            ->where('user_events.logged_at', '<=', now())
-            ->groupByRaw("DATE_TRUNC('hour', user_events.logged_at)")
-            ->orderByRaw("DATE_TRUNC('hour', user_events.logged_at)")
-            ->get();
-    }
-    public function getLastSevenEventsAttribute()
-    {
-        $events = $this->events()
-            ->where('st_date', '<=', now())
-            ->orderBy('st_date', 'desc')
-            ->limit(7)
-            ->get();
-
-        return [
-            'labels' => $events->map(function ($event) {
-                return Carbon::parse($event->st_date)->format('d/m/Y');
-            }),
-            'event_names' => $events->pluck('name')->toArray(),
-            'data' => [
-                [
-                    'name' => 'Usuarios',
-                    'data' => $events->map(function ($event) {
-                        return $event->users()->count();
-                    })
-                ],
-                [
-                    'name' => 'Ingresos',
-                    'data' => $events->map(function ($event) {
-                        return $event->total_incomes;
-                    })
-                ],
-            ]
-        ];
-    }
-
     protected function casts(): array
     {
         return [
