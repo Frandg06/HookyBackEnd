@@ -66,13 +66,12 @@ class ChartsController extends Controller
 
     public function getAverageAge(Request $request)
     {
-        $event = $this->company()->last_event;
-
+        $uid = $request->uid ?? $this->company()->last_event->uid;
 
         $ageGroups = DB::table('user_events')
             ->join('events', 'user_events.event_uid', '=', 'events.uid')
             ->join('users', 'user_events.user_uid', '=', 'users.uid')
-            ->where('events.uid', $event->uid)
+            ->where('events.uid', $uid)
             ->whereNotNull('users.born_date')
             ->selectRaw("
                 CASE
