@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $company = Company::create([
-            'uid' => '3333dbce-508d-4c64-a8aa-ede97081576f',
+            'uid' => '54ce8856-fb28-4ff9-bae5-6ed039829959',
             'name' => 'Scrapworld',
             'email' => 'fdiez86@gmail.com',
             'password' => '234Karatedo',
