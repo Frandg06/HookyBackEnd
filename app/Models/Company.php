@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Log;
@@ -33,7 +34,6 @@ class Company extends Authenticatable implements JWTSubject
         'country',
         'password',
         'timezone_uid',
-        'average_ticket_price',
     ];
 
     public function events(): HasMany
@@ -135,43 +135,44 @@ class Company extends Authenticatable implements JWTSubject
             ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
             ->distinct('user_events.user_uid');
 
-        $userCurrentMonth = (clone $query)->whereBetween('user_events.logged_at', [
-            now()->startOfMonth(),
-            now()->endOfMonth()
+
+        $actual_data = (clone $query)->whereBetween('user_events.created_at', [
+            now()->subMonths(6)->format('Y-m-d H:i:s'),
+            now()->format('Y-m-d H:i:s')
         ])->count('user_events.user_uid');
 
-        $userLastMonth = (clone $query)->whereBetween('user_events.logged_at', [
-            now()->subMonth()->startOfMonth(),
-            now()->subMonth()->endOfMonth()
+
+        $usersLastSixMonths = (clone $query)->whereBetween('user_events.created_at', [
+            now()->subMonths(12)->format('Y-m-d H:i:s'),
+            now()->subMonth(6)->format('Y-m-d H:i:s')
         ])->count('user_events.user_uid');
 
+        $percentage = $actual_data / ($usersLastSixMonths || 1) * 100;
 
         return [
-            'count' => $userCurrentMonth,
-            'user_last_month' =>  $userLastMonth,
-            'user_current_month' => $userCurrentMonth,
+            'data' =>  $actual_data,
+            'percentage' => $percentage,
         ];
     }
 
-    public function getTotalTicketsAttribute($query)
+    public function getIncomesAttribute($query)
     {
         $query = $this->tickets()->where('redeemed', true);
 
-        $ticketCurrentMonth = (clone $query)->whereBetween('redeemed_at', [
-            now()->startOfMonth(),
-            now()->endOfMonth()
-        ])->count();
+        $actual_data = (clone $query)->whereBetween('redeemed_at', [
+            now()->subMonth(6),
+            now()
+        ])->sum('price');
 
-        $tickeLastMonth = (clone $query)->whereBetween('redeemed_at', [
-            now()->subMonth()->startOfMonth(),
-            now()->subMonth()->endOfMonth()
-        ])->count();
+        $past_incomes = (clone $query)->whereBetween('redeemed_at', [
+            now()->subMonth(12),
+            now()->subMonth(6),
+        ])->sum('price');
 
-
+        $percentage = $actual_data / ($past_incomes || 1) * 100;
         return [
-            'count' => $ticketCurrentMonth,
-            'ticket_last_month' =>  $tickeLastMonth,
-            'ticket_current_month' => $ticketCurrentMonth,
+            'data' =>  $actual_data,
+            'percentage' => $percentage,
         ];
     }
 

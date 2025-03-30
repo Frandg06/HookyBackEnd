@@ -26,9 +26,13 @@ class EventResource extends JsonResource
             'super_likes' => $this->super_likes,
             'colors' => $this->colors,
             'users_count' => $this->users()->count(),
-            'redeemed_tickets' => $this->tickets()->where('redeemed', true)->count(),
+            'incomes' => $this->tickets()->where('redeemed', true)->sum('price'),
+            'tickets' => $this->tickets()->where('redeemed', true)->count(),
             'males' => $this->users()->getMales()->count(),
             'females' => $this->users()->getMales()->count(),
+            'hooks' => $this->hooks,
+            'avg_age' => round($this->avg_age),
+
         ];
     }
 }

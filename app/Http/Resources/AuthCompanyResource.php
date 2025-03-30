@@ -43,25 +43,19 @@ class AuthCompanyResource extends JsonResource
             'address' => $this->address,
             'city' => $this->city,
             'country' => $this->country,
-            'average_ticket_price' => $this->average_ticket_price,
+            'cif' => $this->cif,
+            'website' => $this->website,
             'timezone_uid' => $this->timezone_uid,
             'timezone_string' => $this->timezone->name,
-            'total_tickets' => $this->total_tickets,
-            'total_users' => $this->total_users,
             'qr_url' => config('filesystems.disks.r2.url') . 'qr/' . $this->uid . '.png',
             'link' => $this->link,
+            'users' => $this->total_users,
+            'incomes' => $this->incomes,
+            'tickets' => $this->tickets->where('redeemed_at', '>=', now()->startOfDay())->count(),
+
             'users_incomes' => $this->lastSevenEvents,
             'recent_entries_count' => $recent_entries,
-            'last_event' => $this->last_event ? [
-                'total_users' => $this->last_event->total_users,
-                'incomes' => $this->last_event->total_incomes,
-                'hooks' => $this->last_event->hooks,
-                'tickets' => $this->last_event->tickets()->count(),
-                'avg_age' => round($this->last_event->avg_age),
-                'percents' => $this->last_event->percents,
-                'name' => $this->last_event->name,
-                'date' => $this->last_event->st_date
-            ] : null,
+            'last_event' => EventResource::make($this->last_event),
         ];
     }
 }
