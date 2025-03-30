@@ -20,13 +20,23 @@ class DatabaseSeeder extends Seeder
         Storage::disk('r2')->deleteDirectory('hooky/qr');
 
         $company = Company::create([
-            'uid' => '1d59e992-7865-41c5-ad7d-d271ccf4e7fc',
+            'uid' => '3333dbce-508d-4c64-a8aa-ede97081576f',
             'name' => 'Studio54',
             'email' => 'test@test.es',
             'password' => 'a',
             'timezone_uid' => TimeZone::find(2)->uid,
             'pricing_plan_uid' => \App\Models\PricingPlan::find(1)->uid
         ]);
+
+        $company = Company::create([
+            'uid' => '3333dbce-508d-4c64-a8aa-ede97081576f',
+            'name' => 'Scrapworld',
+            'email' => 'fdiez86@gmail.com',
+            'password' => '234Karatedo',
+            'timezone_uid' => TimeZone::find(2)->uid,
+            'pricing_plan_uid' => \App\Models\PricingPlan::find(4)->uid
+        ]);
+
 
         $response = Http::get('https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . $company->link);
 
