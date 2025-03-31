@@ -6,7 +6,9 @@ use App\Http\Filters\TicketFilter;
 use App\Http\Orders\TicketOrdenator;
 use App\Http\Requests\CreateTicketRequest;
 use App\Http\Services\TicketService;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class TicketController extends Controller
 {
@@ -42,5 +44,11 @@ class TicketController extends Controller
     {
         $tickets = $this->ticketService->getTicketsToExport($filter, $order);
         return $this->response($tickets);
+    }
+
+    public function getQrCode(string $uuid)
+    {
+        $qr = $this->ticketService->getQrCode($uuid);
+        return response($qr)->header('Content-Type', 'image/svg+xml');
     }
 }

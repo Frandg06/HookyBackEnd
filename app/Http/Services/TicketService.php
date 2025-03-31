@@ -14,6 +14,7 @@ use App\Models\Ticket;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class TicketService extends Service
 {
@@ -140,6 +141,37 @@ class TicketService extends Service
         } catch (\Exception $e) {
             $this->logError($e, __CLASS__, __FUNCTION__);
             return $this->responseError('get_tickets_ko', 500);
+        }
+    }
+
+    public function getQrCode(string $uuid)
+    {
+        DB::beginTransaction();
+        try {
+
+            $ticket = Ticket::where('event_uid', $uuid)
+                ->where('redeemed', false)
+                ->where("generated", false)
+                ->inRandomOrder()
+                ->first();
+
+            if (!$ticket) {
+                return $this->responseError('ticket_not_found', 404);
+            }
+
+            $url = config('app.front_url') . '/redeem?code=' . $ticket->code;
+
+            $qrCode = QrCode::size(300)->generate($url);
+
+            $ticket->update(['generated' => true]);
+
+            DB::commit();
+
+            return $qrCode;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('get_qr_code_ko', 500);
         }
     }
 }

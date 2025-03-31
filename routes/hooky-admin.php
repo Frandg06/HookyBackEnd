@@ -23,8 +23,11 @@ Route::middleware(['auth:company', 'jwt.verify.company'])->group(function () {
     Route::put('/events/{uuid}', [EventController::class, 'updateEvent']);
     Route::get('/events/{uuid}', [EventController::class, 'getEventsByUuid']);
     Route::delete('/events/{uuid}', [EventController::class, 'deleteEventById']);
+    Route::get('/events/{uuid}/tickets/qr', [TicketController::class, 'getQrCode']);
     Route::post('/tickets/{uuid}', [TicketController::class, 'generateTickets']);
     Route::get('/tickets', [TicketController::class, 'getTickets']);
+
+
 
     Route::prefix('users')->group(function () {
         Route::get('', [CompanyUsersController::class, 'getUsers']);
