@@ -39,4 +39,5 @@ Route::middleware(['auth:company', 'jwt.verify.company'])->group(function () {
     Route::get('/charts/users_incomes', [ChartsController::class, 'getUserIncomesData']);
     Route::get('/charts/recent_entries', [ChartsController::class, 'getUsersEntries']);
     Route::get('/charts/avg_age', [ChartsController::class, 'getAverageAge']);
+    Route::get('/charts/users_incomes/{uid}', [ChartsController::class, 'getUserIncomesFromEvent']);
 });
