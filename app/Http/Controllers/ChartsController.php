@@ -77,29 +77,41 @@ class ChartsController extends Controller
     {
         $uid = $request->uid ?? $this->company()->last_event->uid;
 
+        $predefinedAgeGroups = ['18-22', '23-27', '28-32', '33-37', '38+'];
+
         $ageGroups = DB::table('user_events')
             ->join('events', 'user_events.event_uid', '=', 'events.uid')
             ->join('users', 'user_events.user_uid', '=', 'users.uid')
             ->where('events.uid', $uid)
             ->whereNotNull('users.born_date')
             ->selectRaw("
-                CASE
-                    WHEN EXTRACT(YEAR FROM AGE(users.born_date)) BETWEEN 18 AND 22 THEN '18-22'
-                    WHEN EXTRACT(YEAR FROM AGE(users.born_date)) BETWEEN 23 AND 27 THEN '23-27'
-                    WHEN EXTRACT(YEAR FROM AGE(users.born_date)) BETWEEN 28 AND 32 THEN '28-32'
-                    WHEN EXTRACT(YEAR FROM AGE(users.born_date)) BETWEEN 33 AND 37 THEN '33-37'
-                    ELSE '38+'
-                END AS age_group,
-                COUNT(*) AS total
+            CASE
+                WHEN EXTRACT(YEAR FROM AGE(users.born_date)) BETWEEN 18 AND 22 THEN '18-22'
+                WHEN EXTRACT(YEAR FROM AGE(users.born_date)) BETWEEN 23 AND 27 THEN '23-27'
+                WHEN EXTRACT(YEAR FROM AGE(users.born_date)) BETWEEN 28 AND 32 THEN '28-32'
+                WHEN EXTRACT(YEAR FROM AGE(users.born_date)) BETWEEN 33 AND 37 THEN '33-37'
+                ELSE '38+'
+            END AS age_group,
+            COUNT(*) AS total
             ")
             ->groupBy('age_group')
             ->orderBy('age_group')
             ->get();
 
+        // Asegurar que todos los rangos de edad estén presentes
+        $completeAgeGroups = collect($predefinedAgeGroups)->map(function ($group) use ($ageGroups) {
+            $found = $ageGroups->firstWhere('age_group', $group);
+            return [
+                'age_group' => $group,
+                'total' => $found ? $found->total : 0
+            ];
+        });
+
+        $ageGroups = collect($completeAgeGroups);
+
         return $this->response([
             'labels' => $ageGroups->pluck('age_group'),
             'data' => $ageGroups->pluck('total'),
-            'total' => $ageGroups->sum('total'),
         ]);
     }
 }
