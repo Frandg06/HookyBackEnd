@@ -26,8 +26,8 @@ class TicketController extends Controller
     public function generateTickets(CreateTicketRequest $request, string $uuid)
     {
         $data = $request->safe()->only(['count', 'likes', 'superlikes', 'name', 'price']);
-        $tickets = $this->ticketService->generateTickets($data, $uuid);
-        return $this->response($tickets);
+        $response = $this->ticketService->generateTickets($data, $uuid);
+        return $this->response($response);
     }
 
     public function redeem(Request $request)

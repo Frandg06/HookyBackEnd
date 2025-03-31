@@ -28,6 +28,7 @@ class EventResource extends JsonResource
             'users_count' => $this->users()->count(),
             'incomes' => $this->tickets()->where('redeemed', true)->sum('price'),
             'tickets' => $this->tickets()->where('redeemed', true)->count(),
+            'tickets_total' => $this->tickets()->count(),
             'males' => $this->users()->getMales()->count(),
             'females' => $this->users()->getMales()->count(),
             'hooks' => $this->hooks,

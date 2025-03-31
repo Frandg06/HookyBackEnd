@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Exceptions\ApiException;
 use App\Http\Filters\TicketFilter;
 use App\Http\Orders\TicketOrdenator;
+use App\Http\Resources\EventResource;
 use App\Http\Resources\Exports\TicketExportResource;
 use App\Http\Resources\TicketCollection;
 use App\Http\Resources\TicketResource;
@@ -68,7 +69,7 @@ class TicketService extends Service
 
             DB::commit();
 
-            return  $this->company()->tickets()->paginate(10);
+            return EventResource::make($event->refresh());
         } catch (\Exception $e) {
             DB::rollBack();
             $this->logError($e, __CLASS__, __FUNCTION__);

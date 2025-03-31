@@ -14,6 +14,7 @@ class ChartsController extends Controller
     {
         $events = $this->company()->events()
             ->withCount('users2')
+            ->where('st_date', '<=', now())
             ->orderBy('st_date', 'desc')
             ->take($request->limit ?? 15)
             ->get()
