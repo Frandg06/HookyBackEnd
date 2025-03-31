@@ -29,7 +29,7 @@ class ChartUserAndIncomesResource extends JsonResource
                 [
                     'name' => 'Ingresos',
                     'data' => $this->map(function ($event) {
-                        return $event->total_incomes;
+                        return isset($event->total_incomes) ? $event->total_incomes : 0;
                     })->values()->toArray()
                 ],
             ]

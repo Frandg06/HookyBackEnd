@@ -19,6 +19,15 @@ class ChartsController extends Controller
             ->get()
             ->reverse();
 
+        if ($events->count() < $request->limit && $events->count() > 0) {
+            $emptyCollect = collect();
+
+            for ($i = $events->count(); $i < $request->limit; $i++) {
+                $events->push($emptyCollect);
+            }
+        }
+
+
         $events = ChartUserAndIncomesResource::make($events);
         return $this->response($events);
     }
