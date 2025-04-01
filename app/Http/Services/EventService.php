@@ -169,21 +169,9 @@ class EventService extends Service
         }
     }
 
-    public function getTicketDispatcher(string $token)
+    public function getTicketDispatcher(Event $event)
     {
         try {
-            $decryptString = Crypt::decryptString($token);
-            $decodedToken = json_decode($decryptString, true);
-
-            $event = Event::where('uid', $decodedToken['event_uid'])->where('code', $decodedToken['code'])->first();
-
-            return $this->responseError('event_not_found', 404);
-
-            $end_date = Carbon::parse($event->end_date);
-
-            if ($end_date->isPast()) return $this->responseError('event_is_past', 409);
-
-
             $tickets_types = $event->tickets()->select('name')->distinct()->get();
 
             return $tickets_types;

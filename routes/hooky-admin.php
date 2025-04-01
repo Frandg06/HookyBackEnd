@@ -13,7 +13,8 @@ Route::post('/login', [AuthCompanyController::class, 'login']);
 Route::post('/password/email', [AuthCompanyController::class, 'passwordReset']);
 Route::post('/password/new', [AuthCompanyController::class, 'setNewPassword']);
 
-Route::post('/event/dispatcher', [EventController::class, 'getTicketDispatcher']);
+Route::post('/event/dispatcher', [EventController::class, 'getTicketDispatcher'])->middleware('auth.event');
+Route::post('/event/dispatcher/qr', [TicketController::class, 'getQrCode'])->middleware('auth.event');
 
 Route::middleware(['auth:company', 'jwt.verify.company'])->group(function () {
     Route::put('/update', [CompanyController::class, 'update']);
@@ -25,7 +26,6 @@ Route::middleware(['auth:company', 'jwt.verify.company'])->group(function () {
     Route::put('/events/{uuid}', [EventController::class, 'updateEvent']);
     Route::get('/events/{uuid}', [EventController::class, 'getEventsByUuid']);
     Route::delete('/events/{uuid}', [EventController::class, 'deleteEventById']);
-    Route::get('/events/{uuid}/tickets/qr', [TicketController::class, 'getQrCode']);
     Route::post('/tickets/{uuid}', [TicketController::class, 'generateTickets']);
     Route::get('/tickets', [TicketController::class, 'getTickets']);
 

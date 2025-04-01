@@ -144,14 +144,15 @@ class TicketService extends Service
         }
     }
 
-    public function getQrCode(string $uuid)
+    public function getQrCode(Event $event, string $type)
     {
         DB::beginTransaction();
         try {
 
-            $ticket = Ticket::where('event_uid', $uuid)
+            $ticket = Ticket::where('event_uid', $event->uid)
                 ->where('redeemed', false)
                 ->where("generated", false)
+                ->whereRaw('LOWER(name) = ?', [strtolower($type)])
                 ->inRandomOrder()
                 ->first();
 

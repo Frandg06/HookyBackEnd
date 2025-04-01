@@ -73,8 +73,8 @@ class EventController extends Controller
 
     public function getTicketDispatcher(Request $request): JsonResponse
     {
-        $validated = $request->validate(['token' => 'required']);
-        $response = $this->eventService->getTicketDispatcher($validated['token']);
+        $event = $request->event;
+        $response = $this->eventService->getTicketDispatcher($event);
         return $this->response($response);
     }
 }

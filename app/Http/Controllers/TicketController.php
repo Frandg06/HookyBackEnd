@@ -46,9 +46,11 @@ class TicketController extends Controller
         return $this->response($tickets);
     }
 
-    public function getQrCode(string $uuid)
+    public function getQrCode(Request $request)
     {
-        $qr = $this->ticketService->getQrCode($uuid);
+        $event = $request->event;
+        $type = $request->type;
+        $qr = $this->ticketService->getQrCode($event, $type);
         return response($qr)->header('Content-Type', 'image/svg+xml');
     }
 }
