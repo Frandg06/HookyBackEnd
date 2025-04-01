@@ -71,10 +71,10 @@ class EventController extends Controller
         return $this->response($response);
     }
 
-    public function loginEvent(Request $request, string $uid): JsonResponse
+    public function getTicketDispatcher(Request $request): JsonResponse
     {
-        $validated = $request->validate(['code' => 'required']);
-        $response = $this->eventService->loginEvent($validated['code'], $uid);
+        $validated = $request->validate(['token' => 'required']);
+        $response = $this->eventService->getTicketDispatcher($validated['token']);
         return $this->response($response);
     }
 }

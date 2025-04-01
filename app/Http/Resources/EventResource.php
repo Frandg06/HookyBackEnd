@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Models\Gender;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Crypt;
 
 class EventResource extends JsonResource
 {
@@ -15,6 +16,12 @@ class EventResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
+        $token = json_encode([
+            'event_uid' => $this->uid,
+            'code' => $this->code,
+        ]);
+
         return [
             'id' => $this->id,
             'uid' => $this->uid,
@@ -34,6 +41,7 @@ class EventResource extends JsonResource
             'hooks' => $this->hooks,
             'avg_age' => round($this->avg_age),
             'code' => $this->code,
+            'dispatcher_token' => $this->code ? Crypt::encryptString($token) : null,
 
         ];
     }

@@ -6,8 +6,10 @@ use App\Http\Filters\EventFilter;
 use App\Http\Orders\EventOrdenator;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\Exports\EventExportResource;
+use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 
 class EventService extends Service
@@ -167,19 +169,24 @@ class EventService extends Service
         }
     }
 
-    public function loginEvent(string $code, string $uid): bool|array
+    public function getTicketDispatcher(string $token)
     {
         try {
-            $event = $this->company()->events()->where('uid', $uid)->where('code', $code)->first();
+            $decryptString = Crypt::decryptString($token);
+            $decodedToken = json_decode($decryptString, true);
 
-            if (!$event) return $this->responseError('event_not_found', 404);
+            $event = Event::where('uid', $decodedToken['event_uid'])->where('code', $decodedToken['code'])->first();
 
-            return [
-                'st_date' => $event->st_date,
-                'end_date' => $event->end_date,
-                'name' => $event->name,
-                'uid' => $event->uid,
-            ];
+            return $this->responseError('event_not_found', 404);
+
+            $end_date = Carbon::parse($event->end_date);
+
+            if ($end_date->isPast()) return $this->responseError('event_is_past', 409);
+
+
+            $tickets_types = $event->tickets()->select('name')->distinct()->get();
+
+            return $tickets_types;
         } catch (\Exception $e) {
             $this->logError($e, __CLASS__, __FUNCTION__);
             return $this->responseError('update_event_ko', 500);

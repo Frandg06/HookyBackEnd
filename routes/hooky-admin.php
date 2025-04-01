@@ -13,7 +13,7 @@ Route::post('/login', [AuthCompanyController::class, 'login']);
 Route::post('/password/email', [AuthCompanyController::class, 'passwordReset']);
 Route::post('/password/new', [AuthCompanyController::class, 'setNewPassword']);
 
-Route::post('event/{uid}/login', [EventController::class, 'loginEvent']);
+Route::post('/event/dispatcher', [EventController::class, 'getTicketDispatcher']);
 
 Route::middleware(['auth:company', 'jwt.verify.company'])->group(function () {
     Route::put('/update', [CompanyController::class, 'update']);
