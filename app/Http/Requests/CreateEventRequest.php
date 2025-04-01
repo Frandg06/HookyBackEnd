@@ -31,6 +31,7 @@ class CreateEventRequest extends FormRequest
             'colors' => 'required|string|max:16',
             'st_hour' => 'required|date_format:H:i',
             'end_hour' => 'required|date_format:H:i',
+            'code' => 'nullable|string|max:12',
         ];
     }
 }

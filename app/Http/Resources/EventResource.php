@@ -33,6 +33,7 @@ class EventResource extends JsonResource
             'females' => $this->users()->getMales()->count(),
             'hooks' => $this->hooks,
             'avg_age' => round($this->avg_age),
+            'code' => $this->code,
 
         ];
     }

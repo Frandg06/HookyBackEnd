@@ -167,6 +167,25 @@ class EventService extends Service
         }
     }
 
+    public function loginEvent(string $code, string $uid): bool|array
+    {
+        try {
+            $event = $this->company()->events()->where('uid', $uid)->where('code', $code)->first();
+
+            if (!$event) return $this->responseError('event_not_found', 404);
+
+            return [
+                'st_date' => $event->st_date,
+                'end_date' => $event->end_date,
+                'name' => $event->name,
+                'uid' => $event->uid,
+            ];
+        } catch (\Exception $e) {
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('update_event_ko', 500);
+        }
+    }
+
     private function validateEvent($st_date, $end_date, $event): bool|array
     {
         $now = now();
