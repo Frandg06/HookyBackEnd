@@ -8,25 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class NotificationService
+class NotificationService extends Service
 {
-    public function publishNotification($data)
-    {
-        try {
-            Notification::create($data);
-
-            $sendData = [
-                'userToNotify' => $data['user_uid'],
-                'type_id'      => $data['type_id'],
-                'type_str'     => $data['type_str']
-            ];
-
-            $this->emitNotification($sendData);
-        } catch (\Exception $e) {
-            throw new ApiException('notification_ko', 500);
-        }
-    }
-
     public function readNotificationsByType($type)
     {
         DB::beginTransaction();

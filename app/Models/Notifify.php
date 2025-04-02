@@ -45,6 +45,52 @@ class Notifify
     return $this->attributes;
   }
 
+  public function dualEmit()
+  {
+    $this->emit();
+    $this->getReverse();
+    $this->emit();
+  }
+
+  public function dualEmitWithSave()
+  {
+    $this->emit();
+    $this->save();
+    $this->getReverse();
+    $this->emit();
+    $this->save();
+  }
+
+  public function save()
+  {
+    Notification::create([
+      'event_uid' => request()->user()->event->uid,
+      'user_uid' => $this->reciber_uid,
+      'emitter_uid' => $this->sender_uid,
+      'type_id' => $this->type_id,
+    ]);
+  }
+
+  public function emit()
+  {
+    $url = config('services.ws_api.notify_url');
+
+    Http::withHeaders([
+      'Authorization' => 'Bearer ' . request()->bearerToken(),
+      'Accept' => 'application/json'
+    ])->post($url, $this->toArray());
+  }
+
+  public function getReverse()
+  {
+    $reversed = $this->attributes;
+
+    $reversed['sender_uid'] = $this->reciber_uid;
+    $reversed['reciber_uid'] = $this->sender_uid;
+
+    $this->attributes = $reversed;
+  }
+
   private function getMessage()
   {
     return match ($this->type_id) {

@@ -6,10 +6,10 @@ use App\Exceptions\ApiException;
 use App\Http\Resources\UserResource;
 use App\Http\Services\NotificationService;
 use App\Http\Services\WsChatService;
-use App\Models\Chat;
 use App\Models\Interaction;
 use App\Models\Notification;
 use App\Models\NotificationsType;
+use App\Models\Notifify;
 use App\Models\SexualOrientation;
 use App\Models\User;
 use App\Models\UsersInteraction;
@@ -109,10 +109,17 @@ class UserService extends Service
                 }
 
                 $type = NotificationsType::HOOK_TYPE;
-                $type_str = NotificationsType::HOOK_TYPE_STR;
 
-                $this->publishNotificationForUser($userUid, $uid, $eventUid, $type, $type_str);
-                $this->publishNotificationForUser($uid, $userUid, $eventUid, $type, $type_str);
+                $notify = new Notifify([
+                    'reciber_uid' => $uid,
+                    'type_id' => $type,
+                    'sender_uid' => $userUid,
+                    'payload' => [
+                        'chat_created' => true,
+                    ]
+                ]);
+
+                $notify->dualEmitWithSave();
 
                 // Creo el chat 
                 $chat = $this->chatService->store($userUid, $uid, $eventUid);
@@ -120,9 +127,16 @@ class UserService extends Service
                 $isLike = $interaction == Interaction::LIKE_ID;
 
                 $type = $isLike ? NotificationsType::LIKE_TYPE : NotificationsType::SUPER_LIKE_TYPE;
-                $type_str = $isLike ? NotificationsType::LIKE_TYPE_STR : NotificationsType::SUPER_LIKE_TYPE_STR;
 
-                $this->publishNotificationForUser($uid, $userUid, $eventUid, $type, $type_str);
+                $notify = new Notifify([
+                    'reciber_uid' => $uid,
+                    'type_id' => $type,
+                    'sender_uid' => $userUid,
+
+                ]);
+
+                $notify->emit();
+                $notify->save();
             }
 
             $remainingUsers = $this->user()->remainingUsersToInteract();
@@ -154,19 +168,5 @@ class UserService extends Service
             Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
             throw new ApiException('set_interaction_ko', 500);
         }
-    }
-
-    private function publishNotificationForUser($reciber, $emiter, $event, $type, $type_str)
-    {
-        $notification = [
-            'user_uid'    => $reciber,
-            'emitter_uid' => $emiter,
-            'event_uid'   => $event,
-            'type_id'     => $type,
-            'type_str'    => $type_str,
-            'read_at'     => null,
-        ];
-
-        $this->notificationService->publishNotification($notification);
     }
 }
