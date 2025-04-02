@@ -25,7 +25,10 @@ class EventUsersResource extends JsonResource
             'age' => $this->age,
             'role_id' => $this->role_id,
             'gender_id' => $this->gender_id,
-            'consumption' => $this->tickets()->where('event_uid', $request->event_uid)->where('redeemed', true)->sum('price'),
+            'consumption' => $this->tickets()
+                ->where('event_uid', $request->event_uid)
+                ->where('redeemed', true)
+                ->sum('price'),
         ];
     }
 }

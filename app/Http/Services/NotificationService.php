@@ -10,17 +10,15 @@ use Illuminate\Support\Facades\Log;
 
 class NotificationService
 {
-
     public function publishNotification($data)
     {
         try {
-
             Notification::create($data);
 
             $sendData = [
-              'userToNotify' => $data['user_uid'],
-              'type_id'      => $data['type_id'],
-              'type_str'     => $data['type_str']
+                'userToNotify' => $data['user_uid'],
+                'type_id'      => $data['type_id'],
+                'type_str'     => $data['type_str']
             ];
 
             $this->emitNotification($sendData);
@@ -57,8 +55,8 @@ class NotificationService
             $notify_url = config('services.ws_api.notify_url');
 
             Http::withHeaders([
-              'Authorization' => 'Bearer ' . request()->bearerToken(),
-              'Accept' => 'application/json'
+                'Authorization' => 'Bearer ' . request()->bearerToken(),
+                'Accept' => 'application/json'
             ])->post($notify_url, $data);
         } catch (\Exception $e) {
             throw new ApiException('notification_ko', 500);

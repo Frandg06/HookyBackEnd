@@ -7,7 +7,6 @@ use App\Http\Filters\TicketFilter;
 use App\Http\Orders\TicketOrdenator;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\Exports\TicketExportResource;
-use App\Http\Resources\TicketCollection;
 use App\Http\Resources\TicketResource;
 use App\Models\Event;
 use App\Models\Ticket;
@@ -43,7 +42,6 @@ class TicketService extends Service
     {
         DB::beginTransaction();
         try {
-
             $event = Event::find($uuid);
 
             if (Carbon::parse($event->end_date)->isPast()) {
@@ -82,7 +80,6 @@ class TicketService extends Service
     {
         DB::beginTransaction();
         try {
-
             $company_uid = $this->user()->company_uid;
             $event_uid = $this->user()->event_uid;
 
@@ -148,7 +145,6 @@ class TicketService extends Service
     {
         DB::beginTransaction();
         try {
-
             $ticket = Ticket::where('event_uid', $event->uid)
                 ->where('redeemed', false)
                 ->where("generated", false)

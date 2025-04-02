@@ -14,12 +14,10 @@ use Illuminate\Support\Facades\Log;
 
 class AuthService extends Service
 {
-
     public function register(array $data): string
     {
         DB::beginTransaction();
         try {
-
             $user = User::where('email', $data['email'])->first();
 
             if ($user) {
@@ -84,7 +82,6 @@ class AuthService extends Service
     {
         DB::beginTransaction();
         try {
-
             $company_uid = Crypt::decrypt($company_uid);
 
             $company = Company::find($company_uid);

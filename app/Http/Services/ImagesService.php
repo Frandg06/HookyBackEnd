@@ -13,12 +13,10 @@ use Intervention\Image\Laravel\Facades\Image;
 
 class ImagesService
 {
-
     public function store($img, $data)
     {
         DB::beginTransaction();
         try {
-
             $user = request()->user();
 
             if ($user->userImages()->count() == 3) {
@@ -36,10 +34,10 @@ class ImagesService
             $image = $this->optimize($img, $data);
 
             $newImage = $user->userImages()->create([
-              'order' => $user->userImages()->count() + 1,
-              'name' => $img->getClientOriginalName(),
-              'size' => $img->getSize(),
-              'type' => $img->getMimeType(),
+                'order' => $user->userImages()->count() + 1,
+                'name' => $img->getClientOriginalName(),
+                'size' => $img->getSize(),
+                'type' => $img->getMimeType(),
             ]);
 
             $storage = Storage::disk('r2')->put($newImage->url, $image);
@@ -95,7 +93,6 @@ class ImagesService
     {
         DB::beginTransaction();
         try {
-
             $user = request()->user();
 
             $imageToDelete = $user->userImages()->where('uid', $uid)->first();

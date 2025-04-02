@@ -30,8 +30,6 @@ class UserService
     {
         DB::beginTransaction();
         try {
-
-
             $authUser = request()->user();
             Log::info('authUser->uid: ' . $authUser->uid);
             // usuarios ya obtenidos previamente con lo que no se ha interactuado en el evento actual
@@ -55,11 +53,11 @@ class UserService
                 }
 
                 $newUsersWithInteractions[] = [
-                  'user_uid' => $authUser->uid,
-                  'interaction_user_uid' => $userToInsert->uid,
-                  'interaction_id' => null,
-                  'event_uid' => $authUser->event_uid,
-                  'created_at' => now()
+                    'user_uid' => $authUser->uid,
+                    'interaction_user_uid' => $userToInsert->uid,
+                    'interaction_id' => null,
+                    'event_uid' => $authUser->event_uid,
+                    'created_at' => now()
                 ];
             }
 
@@ -82,18 +80,18 @@ class UserService
             $authUser = request()->user();
 
             $search = UsersInteraction::where('user_uid', $authUser->uid)
-              ->where('interaction_user_uid', $uid)
-              ->where('event_uid', $authUser->event_uid)
-              ->first();
+                ->where('interaction_user_uid', $uid)
+                ->where('event_uid', $authUser->event_uid)
+                ->first();
 
             if (!empty($search)) {
                 $search->update(['interaction_id' => $interaction]);
             } else {
                 UsersInteraction::create([
-                  'user_uid' => $authUser->uid,
-                  'interaction_user_uid' => $uid,
-                  'interaction_id' => $interaction,
-                  'event_uid' => $authUser->event_uid
+                    'user_uid' => $authUser->uid,
+                    'interaction_user_uid' => $uid,
+                    'interaction_id' => $interaction,
+                    'event_uid' => $authUser->event_uid
                 ]);
             }
 
@@ -115,7 +113,6 @@ class UserService
 
                 $this->wsChatService->storeChat($authUser->uid, $uid, $authUser->event_uid);
             } elseif (in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
-
                 $type = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE : NotificationsType::SUPER_LIKE_TYPE;
                 $type_str = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE_STR : NotificationsType::SUPER_LIKE_TYPE_STR;
                 $this->publishNotificationForUser($uid, $authUser->uid, $authUser->event_uid, $type, $type_str);
@@ -125,8 +122,8 @@ class UserService
             $remainingUsersCount = $remainingUsers->count();
 
             $response = [
-              'super_like_credits' => $authUser->super_like_credits,
-              'like_credits' => $authUser->like_credits,
+                'super_like_credits' => $authUser->super_like_credits,
+                'like_credits' => $authUser->like_credits,
             ];
 
             if ($remainingUsersCount <= 10) {
@@ -149,12 +146,12 @@ class UserService
     private function publishNotificationForUser($reciber, $emiter, $event, $type, $type_str)
     {
         $notification = [
-          'user_uid'    => $reciber,
-          'emitter_uid' => $emiter,
-          'event_uid'   => $event,
-          'type_id'     => $type,
-          'type_str'    => $type_str,
-          'read_at'     => null,
+            'user_uid'    => $reciber,
+            'emitter_uid' => $emiter,
+            'event_uid'   => $event,
+            'type_id'     => $type,
+            'type_str'    => $type_str,
+            'read_at'     => null,
         ];
 
         $this->notificationService->publishNotification($notification);
