@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Exceptions;
 
 use Exception;
@@ -12,13 +13,4 @@ class ApiException extends Exception
     {
         parent::__construct($message, $code, $previous);
     }
-
-    public function render() : JsonResponse
-    {
-        return response()->json([
-          'error' => true,
-          'message' => __('i18n.' . $this->getMessage()),
-        ], $this->getCode());
-    }
-
 }

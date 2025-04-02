@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,5 +28,23 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             return response()->json(['message' => 'No existe una sesion activa', 'type' => 'AuthException'], 401);
+        });
+        $exceptions->render(function (ApiException $e, Request $request) {
+            return response()->json([
+                'error' => true,
+                'message' => __('i18n.' . $e->getMessage()),
+            ], $e->getCode());
+        });
+        $exceptions->render(function (ValidationException $e, Request $request) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->validator->errors()
+            ], 422);
+        });
+        $exceptions->render(function (Exception $e, Request $request) {
+            return response()->json([
+                'error' => true,
+                'message' => __('i18n.unexpected_error'),
+            ], 500);
         });
     })->create();
