@@ -77,30 +77,29 @@ class UserService extends Service
     {
         DB::beginTransaction();
         try {
-            $authUser = request()->user();
 
-            $search = UsersInteraction::where('user_uid', $authUser->uid)
+            $search = UsersInteraction::where('user_uid', $this->user()->uid)
                 ->where('interaction_user_uid', $uid)
-                ->where('event_uid', $authUser->event_uid)
+                ->where('event_uid', $this->user()->event->uid)
                 ->first();
 
             if (!empty($search)) {
                 $search->update(['interaction_id' => $interaction]);
             } else {
                 UsersInteraction::create([
-                    'user_uid' => $authUser->uid,
+                    'user_uid' => $this->user()->uid,
                     'interaction_user_uid' => $uid,
                     'interaction_id' => $interaction,
-                    'event_uid' => $authUser->event_uid
+                    'event_uid' => $this->user()->event->uid
                 ]);
             }
 
-            $authUser->refreshInteractions($interaction);
+            $this->user()->refreshInteractions($interaction);
 
-            $checkHook =  UsersInteraction::checkHook($uid, $authUser->uid, $authUser->event_uid);
+            $checkHook =  UsersInteraction::checkHook($uid, $this->user()->uid, $this->user()->event->uid);
 
             if ($checkHook) {
-                $existLike = Notification::getLikeAndSuperLikeNotify($authUser->uid, $uid, $authUser->event_uid);
+                $existLike = Notification::getLikeAndSuperLikeNotify($this->user()->uid, $uid, $this->user()->event->uid);
                 if ($existLike) {
                     $existLike->delete();
                 }
@@ -108,22 +107,22 @@ class UserService extends Service
                 $type = NotificationsType::HOOK_TYPE;
                 $type_str = NotificationsType::HOOK_TYPE_STR;
 
-                $this->publishNotificationForUser($authUser->uid, $uid, $authUser->event_uid, $type, $type_str);
-                $this->publishNotificationForUser($uid, $authUser->uid, $authUser->event_uid, $type, $type_str);
+                $this->publishNotificationForUser($this->user()->uid, $uid, $this->user()->event->uid, $type, $type_str);
+                $this->publishNotificationForUser($uid, $this->user()->uid, $this->user()->event->uid, $type, $type_str);
 
-                $this->wsChatService->storeChat($authUser->uid, $uid, $authUser->event_uid);
+                $this->wsChatService->storeChat($this->user()->uid, $uid, $this->user()->event->uid);
             } elseif (in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
                 $type = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE : NotificationsType::SUPER_LIKE_TYPE;
                 $type_str = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE_STR : NotificationsType::SUPER_LIKE_TYPE_STR;
-                $this->publishNotificationForUser($uid, $authUser->uid, $authUser->event_uid, $type, $type_str);
+                $this->publishNotificationForUser($uid, $this->user()->uid, $this->user()->event->uid, $type, $type_str);
             }
 
-            $remainingUsers = $authUser->remainingUsersToInteract();
+            $remainingUsers = $this->user()->remainingUsersToInteract();
             $remainingUsersCount = $remainingUsers->count();
 
             $response = [
-                'super_like_credits' => $authUser->event->super_likes,
-                'like_credits' => $authUser->event->likes,
+                'super_like_credits' => $this->user()->event->super_likes,
+                'like_credits' => $this->user()->event->likes,
             ];
 
             if ($remainingUsersCount <= 10) {

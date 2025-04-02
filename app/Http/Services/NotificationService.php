@@ -59,8 +59,8 @@ class NotificationService
                 'Accept' => 'application/json'
             ])->post($notify_url, $data);
         } catch (\Exception $e) {
-            throw new ApiException('notification_ko', 500);
             Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
+            throw new ApiException($e);
         }
     }
 }
