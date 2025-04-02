@@ -160,13 +160,13 @@ class TicketService extends Service
 
             $url = config('app.front_url') . '/redeem?code=' . $ticket->code;
 
-            $qrCode = QrCode::size(150)->generate($url);
+            // $qrCode = QrCode::size(150)->generate($url);
 
             $ticket->update(['generated' => true]);
 
             DB::commit();
 
-            return $qrCode;
+            return true;
         } catch (\Exception $e) {
             DB::rollBack();
             $this->logError($e, __CLASS__, __FUNCTION__);
