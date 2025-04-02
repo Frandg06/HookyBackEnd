@@ -20,6 +20,13 @@ class ChatController extends Controller
                 $query->where('user1_uid', $this->user()->uid)
                     ->orWhere('user2_uid', $this->user()->uid);
             })
+            ->orderBy(function ($query) {
+                $query->select('created_at')
+                    ->from('chat_messages')
+                    ->whereColumn('chat_messages.chat_uid', 'chats.uid')
+                    ->orderBy('created_at', 'desc')
+                    ->limit(1);
+            }, 'desc')
             ->get();
 
         $response = ChatPreviewResource::collection($chats);
