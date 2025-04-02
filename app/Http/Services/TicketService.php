@@ -50,7 +50,7 @@ class TicketService extends Service
                 return $this->responseError('event_is_past', 400);
             }
 
-            if ($event->tickets->count() > $event->company->pricing_plan->ticket_limit) {
+            if ($event->tickets->count() > $event->company->pricingPlan->ticket_limit) {
                 return $this->responseError('tickets_limit_exceeded', 400);
             }
 
