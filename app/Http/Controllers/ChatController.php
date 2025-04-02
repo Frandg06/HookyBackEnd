@@ -5,78 +5,42 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ChatPreviewResource;
 use App\Http\Resources\ChatResource;
 use App\Http\Resources\MessageResource;
+use App\Http\Services\ChatService;
 use App\Models\Chat;
 use App\Models\ChatMessage;
+use App\Models\ChatNotify;
+use App\Models\Notifify;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 
 class ChatController extends Controller
 {
+    protected $chatService;
 
-    public function retrieve(Request $request)
+    public function __construct(ChatService $chatService)
     {
-        $chats = Chat::where('event_uid', $this->user()->event->uid)
-            ->where(function ($query) {
-                $query->where('user1_uid', $this->user()->uid)
-                    ->orWhere('user2_uid', $this->user()->uid);
-            })
-            ->orderBy(function ($query) {
-                $query->select('created_at')
-                    ->from('chat_messages')
-                    ->whereColumn('chat_messages.chat_uid', 'chats.uid')
-                    ->orderBy('created_at', 'desc')
-                    ->limit(1);
-            }, 'desc')
-            ->get();
+        $this->chatService = $chatService;
+    }
 
-        $response = ChatPreviewResource::collection($chats);
+    public function retrieve()
+    {
+        $response = $this->chatService->retrieve($this->user());
 
         return $this->response($response);
     }
 
     public function show(string $uid)
     {
-        $chat = Chat::where('event_uid', $this->user()->event->uid)
-            ->where(function ($query) {
-                $query->where('user1_uid', $this->user()->uid)
-                    ->orWhere('user2_uid', $this->user()->uid);
-            })
-            ->where('uid', $uid)
-            ->firstOrFail();
-
-        $resource = ChatResource::make($chat);
-
-        return $this->response($resource);
+        $response = $this->chatService->show($uid);
+        return $this->response($response);
     }
 
     public function sendMessage(Request $request, string $uid)
     {
-
         $request->validate([
             'message' => 'required|string|max:255',
         ]);
 
-        $chat = Chat::findOrFail($uid);
-
-        $userToSend = $this->user()->uid === $chat->user1_uid ? $chat->user2_uid : $chat->user1_uid;
-
-        $message = $chat->messages()->create([
-            'chat_uid' => $uid,
-            'sender_uid' => $this->user()->uid,
-            'message' => $request->message,
-        ]);
-
-        $response = MessageResource::make($message);
-
-        $url = config('services.ws_api.send_message');
-
-        Http::withHeaders([
-            'Authorization' => 'Bearer ' . request()->bearerToken(),
-            'Accept' => 'application/json'
-        ])->post($url, [
-            'message' => $response,
-            'reciverUid' => $userToSend,
-        ]);
+        $response = $this->chatService->sendMessage($uid, $request->message);
 
         return $this->response($response);
     }
@@ -84,11 +48,7 @@ class ChatController extends Controller
 
     public function readMessage(string $uid)
     {
-        $messages = ChatMessage::where('chat_uid', $uid)
-            ->where('sender_uid', '!=', $this->user()->uid)
-            ->where('read_at', false)
-            ->update(['read_at' => true]);
-
+        $this->chatService->read($uid);
         return $this->response(['success' => true]);
     }
 }

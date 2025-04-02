@@ -77,4 +77,10 @@ return [
   'event_not_active_or_next' => 'No existe ningún evento activo o próximo.',
   'limit_users_reached' => 'El evento ha alcanzado el límite de usuarios.',
   'event_at_same_time' => 'No puede haber más de un evento en la misma hora.',
+  'notify' => [
+    'base' => 'Has recibido un :interaction.',
+    'hook' => 'Has hecho un Hook.',
+    'message' => ':username te ha enviado un mensaje.',
+  ]
+
 ];
