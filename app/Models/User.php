@@ -133,7 +133,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
-    public function getEventAttribute(): Event
+    public function getEventAttribute()
     {
         return $this->eventsBelongsToMany()->first();
     }

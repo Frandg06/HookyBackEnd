@@ -6,10 +6,12 @@ use App\Exceptions\ApiException;
 use App\Models\Company;
 use App\Models\PasswordResetToken;
 use App\Models\User;
+use App\Models\UserEvent;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class AuthService extends Service
@@ -104,15 +106,16 @@ class AuthService extends Service
                 throw new ApiException('event_not_active', 404);
             }
 
-            $diff = $this->getDiff($event->end_date, $timezone);
 
-            $token = Auth::setTTL($diff)->attempt($data);
+            $user = User::where('email', $data['email'])->first();
 
-            if (!$token) {
-                throw new ApiException('credentials_ko', 401);
+            if (!$user) {
+                throw new ApiException('user_not_found', 404);
             }
 
-            $user = $this->user();
+            if (!Hash::check($data['password'], $user->password)) {
+                throw new ApiException('credentials_ko', 401);
+            }
 
             $exist = $user->events()->where('event_uid', $event->uid)->exists();
 
@@ -125,7 +128,8 @@ class AuthService extends Service
                     throw new ApiException('limit_users_reached', 409);
                 }
 
-                $user->events()->create([
+                UserEvent::create([
+                    'user_uid' => $user->uid,
                     'event_uid' => $event->uid,
                     'logged_at' => now(),
                     'likes' => $event->likes,
@@ -133,11 +137,19 @@ class AuthService extends Service
                 ]);
             }
 
+            $diff = $this->getDiff($event->end_date, $timezone);
+            $token = Auth::setTTL($diff)->attempt($data);
+
+            if (!$token) {
+                throw new ApiException('credentials_ko', 401);
+            }
+
             DB::commit();
 
             return $token;
         } catch (ApiException $e) {
             DB::rollBack();
+            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
             throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
             DB::rollBack();

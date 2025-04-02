@@ -25,7 +25,7 @@ class AuthUserResource extends JsonResource
             'id' => $this->id,
             'uid' => $this->uid,
             'event_uid' => $this->event->uid,
-            'active' => $this->event,
+            'company' => $this->event->company->name,
             'gender_id' => $this->gender_id,
             'sexual_orientation_id' => $this->sexual_orientation_id,
             'premium' => $this->role_id == Role::PREMIUM ? true : false,
