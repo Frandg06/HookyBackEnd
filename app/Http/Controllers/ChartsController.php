@@ -76,7 +76,7 @@ class ChartsController extends Controller
 
     public function getAverageAge(Request $request)
     {
-        $uid = $request->uid ?? $this->company()->last_event->uid;
+        $uid = $request->uid ?? $this->company()->last_event?->uid;
 
         $predefinedAgeGroups = ['18-22', '23-27', '28-32', '33-37', '38+'];
 

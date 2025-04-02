@@ -23,7 +23,7 @@ class CreateEventRequest extends FormRequest
     {
         return [
             'st_date' => 'required|date',
-            'end_date' => 'nullable|date',
+            'end_date' => 'required|date',
             'timezone' => 'required|string',
             'likes' => 'required|integer',
             'super_likes' => 'required|integer',

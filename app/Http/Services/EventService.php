@@ -197,6 +197,7 @@ class EventService extends Service
     private function validateEvent($st_date, $end_date, $event): bool|array
     {
         $now = now();
+        $this->log($now);
         $st_date = Carbon::parse($st_date);
         $end_date = Carbon::parse($end_date);
         $diff = $st_date->diffInHours($end_date);
@@ -208,7 +209,10 @@ class EventService extends Service
             return $this->responseError('event_limit_reached', 409);
         }
 
-        if ($st_date < $now) {
+        if ($st_date->isPast()) {
+            return $this->responseError('start_date_past', 409);
+        }
+        if ($end_date->isPast()) {
             return $this->responseError('start_date_past', 409);
         }
         if ($diff < 0) {
