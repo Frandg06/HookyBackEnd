@@ -17,19 +17,17 @@ class CheckEventIsActiveMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $authEvent = $request->user();
+        $user = $request->user();
 
-        $tz = $authEvent->event->timezone;
+        $tz = $user->event->timezone;
 
         $now =  now($tz);
 
-        $end_date = Carbon::parse($authEvent->event->end_date);
-
-        if ($now->gt($end_date)) {
+        if ($now->gt($user->event->end_date)) {
             return response()->json(['error' => true, 'message' => 'El evento no está activo', 'type' => 'AuthException'], 401);
         }
 
-        if ($now->lt($authEvent->event->st_date)) {
+        if ($now->lt($user->event->st_date)) {
             return response()->json(['error' => true, 'message' => 'El evento no ha comenzado'], 409);
         };
 

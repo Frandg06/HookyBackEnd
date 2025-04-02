@@ -27,4 +27,11 @@ class LoginRequest extends FormRequest
             'company_uid' => ['required', 'string'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'company_uid.required' => 'Es necesario registrarse/iniciar sesion desde el link que proporcionó la empresa',
+        ];
+    }
 }

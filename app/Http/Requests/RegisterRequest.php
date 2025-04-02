@@ -38,6 +38,7 @@ class RegisterRequest extends FormRequest
             'email.email' => 'Email is invalid',
             'password.required' => 'Password is required',
             'password.min' => 'Password must be at least 8 characters',
+            'company_uid.required' => 'Es necesario registrarse/iniciar sesion desde el link que proporcionó la empresa',
         ];
     }
 }
