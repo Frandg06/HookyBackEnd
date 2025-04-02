@@ -16,6 +16,7 @@ return new class extends Migration
             $table->uuid('uid')->unique();
             $table->uuid('chat_uid')->index();
             $table->uuid('sender_uid')->index();
+            $table->text('message');
             $table->boolean('read_at')->default(false);
             $table->timestamps();
             $table->foreign('chat_uid')->references('uid')->on('chats')->onDelete('cascade');

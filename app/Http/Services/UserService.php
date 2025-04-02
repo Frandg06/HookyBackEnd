@@ -6,6 +6,7 @@ use App\Exceptions\ApiException;
 use App\Http\Resources\UserResource;
 use App\Http\Services\NotificationService;
 use App\Http\Services\WsChatService;
+use App\Models\Chat;
 use App\Models\Interaction;
 use App\Models\Notification;
 use App\Models\NotificationsType;
@@ -19,11 +20,13 @@ class UserService extends Service
 {
     protected $notificationService;
     protected $wsChatService;
+    protected $chatService;
 
-    public function __construct(NotificationService $notificationService, WsChatService $wsChatService)
+    public function __construct(NotificationService $notificationService, WsChatService $wsChatService, ChatService $chatService)
     {
         $this->notificationService = $notificationService;
         $this->wsChatService = $wsChatService;
+        $this->chatService = $chatService;
     }
 
     public function getUsers()
@@ -78,28 +81,29 @@ class UserService extends Service
         DB::beginTransaction();
         try {
 
-            $search = UsersInteraction::where('user_uid', $this->user()->uid)
-                ->where('interaction_user_uid', $uid)
-                ->where('event_uid', $this->user()->event->uid)
-                ->first();
-
-            if (!empty($search)) {
-                $search->update(['interaction_id' => $interaction]);
-            } else {
-                UsersInteraction::create([
-                    'user_uid' => $this->user()->uid,
+            $user = $this->user();
+            $eventUid = $user->event->uid;
+            $userUid = $user->uid;
+            // Busco si previamente se habia creado la plantilla de interacciones
+            UsersInteraction::updateOrCreate(
+                [
+                    'user_uid' => $userUid,
                     'interaction_user_uid' => $uid,
-                    'interaction_id' => $interaction,
-                    'event_uid' => $this->user()->event->uid
-                ]);
-            }
-
+                    'event_uid' => $eventUid
+                ],
+                [
+                    'interaction_id' => $interaction
+                ]
+            );
+            // Actualizo los likes y super likes restantes
             $this->user()->refreshInteractions($interaction);
 
-            $checkHook =  UsersInteraction::checkHook($uid, $this->user()->uid, $this->user()->event->uid);
+            // Compruebo si es un hook
+            $checkHook =  UsersInteraction::checkHook($uid, $userUid, $eventUid);
 
             if ($checkHook) {
-                $existLike = Notification::getLikeAndSuperLikeNotify($this->user()->uid, $uid, $this->user()->event->uid);
+                // Si lo es y existe la interacción como like la elimino
+                $existLike = Notification::getLikeAndSuperLikeNotify($userUid, $uid, $eventUid);
                 if ($existLike) {
                     $existLike->delete();
                 }
@@ -107,14 +111,20 @@ class UserService extends Service
                 $type = NotificationsType::HOOK_TYPE;
                 $type_str = NotificationsType::HOOK_TYPE_STR;
 
-                $this->publishNotificationForUser($this->user()->uid, $uid, $this->user()->event->uid, $type, $type_str);
-                $this->publishNotificationForUser($uid, $this->user()->uid, $this->user()->event->uid, $type, $type_str);
+                $this->publishNotificationForUser($userUid, $uid, $eventUid, $type, $type_str);
+                $this->publishNotificationForUser($uid, $userUid, $eventUid, $type, $type_str);
 
-                $this->wsChatService->storeChat($this->user()->uid, $uid, $this->user()->event->uid);
+                // Creo el chat 
+                $chat = $this->chatService->store($userUid, $uid, $eventUid);
+
+                $this->wsChatService->storeChat($userUid, $uid, $eventUid);
             } elseif (in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
-                $type = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE : NotificationsType::SUPER_LIKE_TYPE;
-                $type_str = ($interaction == Interaction::LIKE_ID) ? NotificationsType::LIKE_TYPE_STR : NotificationsType::SUPER_LIKE_TYPE_STR;
-                $this->publishNotificationForUser($uid, $this->user()->uid, $this->user()->event->uid, $type, $type_str);
+                $isLike = $interaction == Interaction::LIKE_ID;
+
+                $type = $isLike ? NotificationsType::LIKE_TYPE : NotificationsType::SUPER_LIKE_TYPE;
+                $type_str = $isLike ? NotificationsType::LIKE_TYPE_STR : NotificationsType::SUPER_LIKE_TYPE_STR;
+
+                $this->publishNotificationForUser($uid, $userUid, $eventUid, $type, $type_str);
             }
 
             $remainingUsers = $this->user()->remainingUsersToInteract();
@@ -130,6 +140,10 @@ class UserService extends Service
                 if (count($refetch) != $remainingUsersCount) {
                     $response['remaining_users'] = $refetch;
                 }
+            }
+
+            if (isset($chat)) {
+                $response['chat'] = $chat;
             }
 
             DB::commit();
