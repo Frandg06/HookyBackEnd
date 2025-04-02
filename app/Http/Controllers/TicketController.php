@@ -51,6 +51,6 @@ class TicketController extends Controller
         $event = $request->event;
         $type = $request->type;
         $qr = $this->ticketService->getQrCode($event, $type);
-        return response($qr);
+        return $this->response($qr);
     }
 }

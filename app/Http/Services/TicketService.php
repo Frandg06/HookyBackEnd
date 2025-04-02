@@ -13,7 +13,6 @@ use App\Models\Ticket;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Str;
 
 class TicketService extends Service
@@ -160,13 +159,11 @@ class TicketService extends Service
 
             $url = config('app.front_url') . '/redeem?code=' . $ticket->code;
 
-            // $qrCode = QrCode::size(150)->generate($url);
-
             $ticket->update(['generated' => true]);
 
             DB::commit();
 
-            return true;
+            return $url;
         } catch (\Exception $e) {
             DB::rollBack();
             $this->logError($e, __CLASS__, __FUNCTION__);
