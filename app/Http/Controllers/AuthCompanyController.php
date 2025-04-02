@@ -54,6 +54,17 @@ class AuthCompanyController extends Controller
         return response()->json(['success' => true, 'message' => __('i18n.logged_out')], 200);
     }
 
+    public function updatePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'old_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+
+        $response = $this->authService->updatePassword($validated);
+        return $this->response($response);
+    }
+
     public function passwordReset(Request $request)
     {
         $email = $request->email;

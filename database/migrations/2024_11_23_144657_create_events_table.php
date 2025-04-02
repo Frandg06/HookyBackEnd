@@ -20,6 +20,8 @@ return new class extends Migration {
             $table->string('timezone');
             $table->integer('likes');
             $table->integer('super_likes');
+            $table->string('colors')->default('label-sky');
+            $table->string('code')->nullable();
             $table->foreign('company_uid')->references('uid')->on('companies')->onDelete('cascade');
             $table->timestamps();
         });

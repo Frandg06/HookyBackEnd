@@ -21,7 +21,7 @@ class Event extends Model
     protected $keyType = 'string';
     public $incrementing = false;
 
-    protected $fillable = ['uid', 'st_date', 'end_date', 'company_uid', 'timezone', 'likes', 'super_likes', 'name', 'colors'];
+    protected $fillable = ['uid', 'st_date', 'end_date', 'company_uid', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'code'];
     protected $hidden = ['created_at', 'updated_at', 'id'];
 
     public function company(): BelongsTo
@@ -64,8 +64,8 @@ class Event extends Model
 
     public function scopeActiveEvent($query, $timezone)
     {
-        return $query->where('st_date', '<', Carbon::now($timezone))
-            ->where('end_date', '>', Carbon::now($timezone))
+        return $query->where('st_date', '<', now($timezone))
+            ->where('end_date', '>', now($timezone))
             ->orderBy('st_date', 'asc');
     }
 

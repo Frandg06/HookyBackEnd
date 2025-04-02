@@ -16,6 +16,8 @@ return new class extends Migration {
             $table->uuid('company_uid')->index();
             $table->uuid('event_uid')->nullable()->index();
             $table->uuid('user_uid')->nullable()->index();
+            $table->string('name')->nullable();
+            $table->boolean('generated')->default(false);
             $table->string('code');
             $table->boolean('redeemed')->default(false);
             $table->dateTime('redeemed_at')->nullable();

@@ -78,6 +78,31 @@ class AuthCompanyService extends Service
         }
     }
 
+    public function updatePassword(array $data)
+    {
+        DB::beginTransaction();
+        try {
+            $company = $this->company();
+
+            if (!$company) {
+                return $this->responseError('user_not_found', 404);
+            }
+            if (!Hash::check($data['old_password'], $company->password)) {
+                return $this->responseError('passwords_dont_match', 404);
+            }
+            $company->update([
+                'password' => bcrypt($data['new_password'])
+            ]);
+            DB::commit();
+
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('unexpected_error', 500);
+        }
+    }
+
     public function passwordReset(string $email): bool
     {
         DB::beginTransaction();

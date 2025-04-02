@@ -34,7 +34,7 @@ class EventFactory extends Factory
         return [
             'uid' => fake()->uuid(),
             'name' => fake()->name(),
-            'company_uid' => '1d59e992-7865-41c5-ad7d-d271ccf4e7fc',
+            'company_uid' => '54ce8856-fb28-4ff9-bae5-6ed039829959',
             'st_date' => fake()->dateTimeInInterval('-1 year', '+1 year'),
             'end_date' => fake()->dateTimeInInterval('-1 year', '+1 year'),
             'timezone' => 'Europe/Madrid',

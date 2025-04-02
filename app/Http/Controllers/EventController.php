@@ -21,7 +21,7 @@ class EventController extends Controller
 
     public function store(CreateEventRequest $request)
     {
-        $validated = $request->only('st_date', 'end_date', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'st_hour', 'end_hour');
+        $validated = $request->safe()->only('st_date', 'end_date', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'st_hour', 'end_hour');
         $response = $this->eventService->store($validated);
         return $this->response($response);
     }
@@ -68,6 +68,13 @@ class EventController extends Controller
     public function getEventsFillable(EventFilter $filter): JsonResponse
     {
         $response = $this->eventService->getEventsFillable($filter);
+        return $this->response($response);
+    }
+
+    public function getTicketDispatcher(Request $request): JsonResponse
+    {
+        $event = $request->event;
+        $response = $this->eventService->getTicketDispatcher($event);
         return $this->response($response);
     }
 }

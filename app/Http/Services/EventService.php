@@ -6,9 +6,12 @@ use App\Http\Filters\EventFilter;
 use App\Http\Orders\EventOrdenator;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\Exports\EventExportResource;
+use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class EventService extends Service
 {
@@ -19,6 +22,7 @@ class EventService extends Service
         try {
             $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
             $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
+            $data['code'] = Str::uuid();
 
             $validator = $this->validateEvent($data['st_date'], $data['end_date'], null);
 
@@ -89,6 +93,7 @@ class EventService extends Service
 
             $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
             $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
+            $data['code'] = Str::uuid();
             $validator = $this->validateEvent($data['st_date'], $data['end_date'], $uuid);
 
             if ($validator !== true)  return $validator;
@@ -164,6 +169,18 @@ class EventService extends Service
         } catch (\Exception $e) {
             $this->logError($e, __CLASS__, __FUNCTION__);
             return $this->responseError('get_events_ko', 500);
+        }
+    }
+
+    public function getTicketDispatcher(Event $event)
+    {
+        try {
+            $tickets_types = $event->tickets()->select('name')->distinct()->get();
+
+            return $tickets_types;
+        } catch (\Exception $e) {
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('update_event_ko', 500);
         }
     }
 

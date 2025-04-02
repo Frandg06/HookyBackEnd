@@ -34,6 +34,8 @@ class Company extends Authenticatable implements JWTSubject
         'country',
         'password',
         'timezone_uid',
+        'website',
+        'cif',
     ];
 
     public function events(): HasMany
@@ -159,7 +161,7 @@ class Company extends Authenticatable implements JWTSubject
     {
         $query = $this->tickets()->where('redeemed', true);
 
-        $actual_data = (clone $query)->whereBetween('redeemed_at', [
+        $actual_data = (clone $query)->whereBetween('redeemed_at',  [
             now()->subMonth(6),
             now()
         ])->sum('price');

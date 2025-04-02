@@ -5,6 +5,7 @@ namespace App\Http\Services;
 use App\Exceptions\ApiException;
 use App\Http\Filters\TicketFilter;
 use App\Http\Orders\TicketOrdenator;
+use App\Http\Resources\EventResource;
 use App\Http\Resources\Exports\TicketExportResource;
 use App\Http\Resources\TicketCollection;
 use App\Http\Resources\TicketResource;
@@ -13,6 +14,7 @@ use App\Models\Ticket;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class TicketService extends Service
 {
@@ -68,7 +70,7 @@ class TicketService extends Service
 
             DB::commit();
 
-            return  $this->company()->tickets()->paginate(10);
+            return EventResource::make($event->refresh());
         } catch (\Exception $e) {
             DB::rollBack();
             $this->logError($e, __CLASS__, __FUNCTION__);
@@ -139,6 +141,38 @@ class TicketService extends Service
         } catch (\Exception $e) {
             $this->logError($e, __CLASS__, __FUNCTION__);
             return $this->responseError('get_tickets_ko', 500);
+        }
+    }
+
+    public function getQrCode(Event $event, string $type)
+    {
+        DB::beginTransaction();
+        try {
+
+            $ticket = Ticket::where('event_uid', $event->uid)
+                ->where('redeemed', false)
+                ->where("generated", false)
+                ->whereRaw('LOWER(name) = ?', [strtolower($type)])
+                ->inRandomOrder()
+                ->first();
+
+            if (!$ticket) {
+                return $this->responseError('ticket_not_found', 404);
+            }
+
+            $url = config('app.front_url') . '/redeem?code=' . $ticket->code;
+
+            $qrCode = QrCode::size(300)->generate($url);
+
+            $ticket->update(['generated' => true]);
+
+            DB::commit();
+
+            return $qrCode;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->logError($e, __CLASS__, __FUNCTION__);
+            return $this->responseError('get_qr_code_ko', 500);
         }
     }
 }

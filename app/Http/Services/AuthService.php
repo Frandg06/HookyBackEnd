@@ -87,7 +87,7 @@ class AuthService extends Service
 
             $company_uid = Crypt::decrypt($company_uid);
 
-            $company = Company::where('uid', $company_uid)->first();
+            $company = Company::find($company_uid);
 
             if (!$company) {
                 throw new ApiException('company_not_exists', 404);
@@ -115,7 +115,7 @@ class AuthService extends Service
                 throw new ApiException('credentials_ko', 401);
             }
 
-            $user = request()->user();
+            $user = $this->user();
 
             $exist = $user->events()->where('event_uid', $event->uid)->exists();
 

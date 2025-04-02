@@ -14,7 +14,7 @@ abstract class Service extends Controller
     return [
       'message' => __('i18n.' . $message),
       'error' => true,
-      'code' => $code
+      'code' => $code,
     ];
   }
 

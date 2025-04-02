@@ -31,7 +31,8 @@ class UpdateEventRequest extends FormRequest
             'colors' => 'nullable|string',
             'st_hour' => 'nullable|date_format:H:i',
             'end_hour' => 'nullable|date_format:H:i',
-            'uid' => 'nullable|string',
+            'uid' => 'required|string',
+            'code' => 'nullable|string|max:12',
         ];
     }
 }

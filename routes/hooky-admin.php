@@ -13,7 +13,11 @@ Route::post('/login', [AuthCompanyController::class, 'login']);
 Route::post('/password/email', [AuthCompanyController::class, 'passwordReset']);
 Route::post('/password/new', [AuthCompanyController::class, 'setNewPassword']);
 
+Route::post('/event/dispatcher', [EventController::class, 'getTicketDispatcher'])->middleware('auth.event');
+Route::post('/event/dispatcher/qr', [TicketController::class, 'getQrCode'])->middleware('auth.event');
+
 Route::middleware(['auth:company', 'jwt.verify.company'])->group(function () {
+    Route::post('/update-password', [AuthCompanyController::class, 'updatePassword']);
     Route::put('/update', [CompanyController::class, 'update']);
     Route::get('/auth', [AuthCompanyController::class, 'me']);
     Route::post('/logout', [AuthCompanyController::class, 'logout']);
@@ -25,6 +29,8 @@ Route::middleware(['auth:company', 'jwt.verify.company'])->group(function () {
     Route::delete('/events/{uuid}', [EventController::class, 'deleteEventById']);
     Route::post('/tickets/{uuid}', [TicketController::class, 'generateTickets']);
     Route::get('/tickets', [TicketController::class, 'getTickets']);
+
+
 
     Route::prefix('users')->group(function () {
         Route::get('', [CompanyUsersController::class, 'getUsers']);
@@ -39,4 +45,5 @@ Route::middleware(['auth:company', 'jwt.verify.company'])->group(function () {
     Route::get('/charts/users_incomes', [ChartsController::class, 'getUserIncomesData']);
     Route::get('/charts/recent_entries', [ChartsController::class, 'getUsersEntries']);
     Route::get('/charts/avg_age', [ChartsController::class, 'getAverageAge']);
+    Route::get('/charts/users_incomes/{uid}', [ChartsController::class, 'getUserIncomesFromEvent']);
 });
