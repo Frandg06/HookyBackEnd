@@ -28,12 +28,12 @@ class ChatPreviewResource extends JsonResource
                 'image' => $this->user2->userImages()->first()->web_url,
             ],
             'event_uid' => $this->event_uid,
-            'last_message' => [
+            'last_message' =>  $this->lastMessage() ? [
                 'message' => $this->lastMessage()->message,
                 'sender_uid' => $this->lastMessage()->sender_uid,
                 'read_at' => $this->lastMessage()->read_at,
                 'created_at' => Carbon::parse($this->lastMessage()->created_at)->diffForHumans(),
-            ],
+            ] : null,
         ];
     }
 }

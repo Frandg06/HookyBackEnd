@@ -2,8 +2,10 @@
 
 namespace App\Http\Services;
 
+use App\Http\Resources\ChatPreviewResource;
 use App\Models\Chat;
 use Throwable;
+use Illuminate\Support\Facades\Http;
 
 class ChatService extends Service
 {
@@ -34,8 +36,7 @@ class ChatService extends Service
         'event_uid' => $event,
         'created_at' => now()
       ]);
-
-      return $chat;
+      return ChatPreviewResource::make($chat);
     } catch (Throwable $e) {
       $this->logError($e, __CLASS__, __FUNCTION__);
       $this->responseError('Error storing chat data', 500);

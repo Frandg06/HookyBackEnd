@@ -30,7 +30,7 @@ return [
 
     'ws_api' => [
         'notify_url' => env('WS_API_URL') . '/notify',
-        'chat_url' => env('WS_API_URL') . '/chat',
+        'send_message' => env('WS_API_URL') . '/chat/send',
     ],
 
     'slack' => [

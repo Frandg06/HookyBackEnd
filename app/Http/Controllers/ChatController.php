@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ChatPreviewResource;
 use App\Http\Resources\ChatResource;
+use App\Http\Resources\MessageResource;
 use App\Models\Chat;
 use App\Models\ChatMessage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class ChatController extends Controller
 {
@@ -49,15 +51,31 @@ class ChatController extends Controller
 
         $chat = Chat::findOrFail($uid);
 
-        $chat->messages()->create([
+        $userToSend = $this->user()->uid === $chat->user1_uid ? $chat->user2_uid : $chat->user1_uid;
+
+        $message = $chat->messages()->create([
             'chat_uid' => $uid,
             'sender_uid' => $this->user()->uid,
             'message' => $request->message,
         ]);
 
+        $response = MessageResource::make($message);
+
+        $url = config('services.ws_api.send_message');
+
+
+        Http::withHeaders([
+            'Authorization' => 'Bearer ' . request()->bearerToken(),
+            'Accept' => 'application/json'
+        ])->post($url, [
+            'message' => $response,
+            'reciverUid' => $userToSend,
+        ]);
+
+
         // Logic to send message goes here
 
-        return $this->response(['success' => true]);
+        return $this->response($response);
     }
 
 
