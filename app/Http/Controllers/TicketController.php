@@ -52,7 +52,7 @@ class TicketController extends Controller
         $type = $request->type;
         $qr = $this->ticketService->getQrCode($event, $type);
         return response($qr)->header('Content-Type', 'image/svg+xml')
-            ->header('Access-Control-Allow-Origin', 'https://admin.hookyapp.es')
+            ->header('Access-Control-Allow-Origin', ['https://admin.hookyapp.es', 'https://api.hookyapp.es', 'https://hookybackend-master-dol5s1.laravel.cloud'])
             ->header('Access-Control-Allow-Methods', 'GET, OPTIONS')
             ->header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization');
     }
