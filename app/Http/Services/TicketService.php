@@ -94,7 +94,7 @@ class TicketService extends Service
                 throw new ApiException('ticket_invalid', 400);
             }
 
-            $tz = $this->user()->events()->activeEventData()->event->timezone;
+            $tz = $this->user()->event->timezone;
 
             $ticket->update([
                 'user_uid' => $this->user()->uid,
