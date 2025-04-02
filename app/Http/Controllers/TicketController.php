@@ -52,8 +52,8 @@ class TicketController extends Controller
         $type = $request->type;
         $qr = $this->ticketService->getQrCode($event, $type);
         return response($qr)->header('Content-Type', 'image/svg+xml')
-            ->header('Access-Control-Allow-Origin', '*')
-            ->header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-            ->header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization');;
+            ->header('Access-Control-Allow-Origin', 'https://admin.hookyapp.es')
+            ->header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+            ->header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization');
     }
 }
