@@ -83,8 +83,7 @@ class TicketService extends Service
     {
         DB::beginTransaction();
         try {
-            $company_uid = $this->user()->company_uid;
-            $event_uid = $this->user()->event_uid;
+            $event_uid = $this->user()->event->uid;
 
             $ticket = Ticket::where('code', $code)
                 ->where('event_uid', $event_uid)
