@@ -13,11 +13,10 @@ use Illuminate\Support\Facades\Log;
 
 class AuthUserService extends Service
 {
-
     public function update(array $data)
     {
         DB::beginTransaction();
-        try {;
+        try {
             $existingUser = User::where('email', $data['email'])->whereNot('uid', $this->user()->uid)->first();
 
             if ($existingUser) {

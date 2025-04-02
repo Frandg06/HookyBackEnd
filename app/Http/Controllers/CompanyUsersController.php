@@ -9,8 +9,12 @@ use Illuminate\Http\Request;
 
 class CompanyUsersController extends Controller
 {
+    protected $companyUsersService;
 
-    public function __construct(private readonly CompanyUsersService $companyUsersService) {}
+    public function __construct(CompanyUsersService $companyUsersService)
+    {
+        $this->companyUsersService = $companyUsersService;
+    }
 
     public function getUsers(UserFilter $filter, UserOrdenator $order)
     {

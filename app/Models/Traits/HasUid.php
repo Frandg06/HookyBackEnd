@@ -12,7 +12,7 @@ trait HasUid
             if ($model->uid) {
                 return;
             }
-            
+
             $model->uid = Str::uuid();
         });
     }

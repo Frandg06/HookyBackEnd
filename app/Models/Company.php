@@ -18,7 +18,8 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class Company extends Authenticatable implements JWTSubject
 {
-    use HasFactory, HasUid;
+    use HasFactory;
+    use HasUid;
 
     protected $table = 'companies';
     protected $primaryKey = 'uid';
@@ -58,14 +59,14 @@ class Company extends Authenticatable implements JWTSubject
         return $this->belongsTo(TimeZone::class, 'timezone_uid', 'uid');
     }
 
-    public function pricing_plan(): BelongsTo
+    public function pricingPlan(): BelongsTo
     {
         return $this->belongsTo(PricingPlan::class, 'pricing_plan_uid', 'uid');
     }
 
     public function checkEventLimit($st_date, $uid)
     {
-        $limit = $this->pricing_plan->limit_events;
+        $limit = $this->pricingPlan->limit_events;
         $events = $this->events()
             ->when($uid, function ($query) use ($uid) {
                 $query->whereNot('uid', $uid);
@@ -123,7 +124,7 @@ class Company extends Authenticatable implements JWTSubject
 
     public function getLimitUsersAttribute()
     {
-        return $this->pricing_plan->limit_users;
+        return $this->pricingPlan->limit_users;
     }
 
     public function getLastEventAttribute()
@@ -161,7 +162,7 @@ class Company extends Authenticatable implements JWTSubject
     {
         $query = $this->tickets()->where('redeemed', true);
 
-        $actual_data = (clone $query)->whereBetween('redeemed_at',  [
+        $actual_data = (clone $query)->whereBetween('redeemed_at', [
             now()->subMonth(6),
             now()
         ])->sum('price');

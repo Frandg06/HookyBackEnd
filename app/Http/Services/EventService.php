@@ -9,13 +9,11 @@ use App\Http\Resources\Exports\EventExportResource;
 use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class EventService extends Service
 {
-
     public function store(array $data): EventResource|array
     {
         DB::beginTransaction();
@@ -26,7 +24,9 @@ class EventService extends Service
 
             $validator = $this->validateEvent($data['st_date'], $data['end_date'], null);
 
-            if ($validator !== true)  return $validator;
+            if ($validator !== true) {
+                return $validator;
+            }
 
             $event = $this->company()->events()->create($data);
 
@@ -89,14 +89,18 @@ class EventService extends Service
         try {
             $event = $this->company()->events()->where('uid', $uuid)->first();
 
-            if (!$event) $this->responseError('event_not_found', 404);
+            if (!$event) {
+                $this->responseError('event_not_found', 404);
+            }
 
             $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
             $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
             $data['code'] = Str::uuid();
             $validator = $this->validateEvent($data['st_date'], $data['end_date'], $uuid);
 
-            if ($validator !== true)  return $validator;
+            if ($validator !== true) {
+                return $validator;
+            }
 
             $event->update($data);
 
@@ -112,7 +116,9 @@ class EventService extends Service
         try {
             $event = $this->company()->events()->where('uid', $uuid)->first();
 
-            if (!$event) $this->responseError('event_not_found', 404);
+            if (!$event) {
+                $this->responseError('event_not_found', 404);
+            }
 
             return EventResource::make($event);
         } catch (\Exception $e) {
@@ -126,11 +132,15 @@ class EventService extends Service
         try {
             $event = $this->company()->events()->where('uid', $uuid)->first();
 
-            if (!$event) $this->responseError('event_not_found', 404);
+            if (!$event) {
+                $this->responseError('event_not_found', 404);
+            }
 
             $st_date = Carbon::parse($event->st_date);
 
-            if ($st_date->isPast()) $this->responseError('event_is_past', 409);
+            if ($st_date->isPast()) {
+                $this->responseError('event_is_past', 409);
+            }
 
             $event->delete();
 

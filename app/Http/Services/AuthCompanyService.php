@@ -16,12 +16,10 @@ use Illuminate\Support\Facades\Storage;
 
 class AuthCompanyService extends Service
 {
-
     public function register(array $data): string
     {
         DB::beginTransaction();
         try {
-
             $company = Company::where('email', $data['email'])->first();
 
             if ($company) {
@@ -58,7 +56,6 @@ class AuthCompanyService extends Service
     public function login(array $data): string
     {
         try {
-
             $company = Company::where('email', $data['email'])->first();
 
             if (!$company || !Hash::check($data['password'], $company->password)) {
