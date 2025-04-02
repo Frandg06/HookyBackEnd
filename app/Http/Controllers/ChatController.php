@@ -2,14 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ChatPreviewResource;
-use App\Http\Resources\ChatResource;
-use App\Http\Resources\MessageResource;
 use App\Http\Services\ChatService;
-use App\Models\Chat;
-use App\Models\ChatMessage;
-use App\Models\ChatNotify;
-use App\Models\Notifify;
 use Illuminate\Http\Request;
 
 class ChatController extends Controller
