@@ -129,9 +129,11 @@ class UserService extends Service
             $remainingUsersCount = $remainingUsers->count();
 
             $response = [
-                'super_like_credits' => $this->user()->event->super_likes,
-                'like_credits' => $this->user()->event->likes,
+                'super_like_credits' => $this->user()->super_likes,
+                'like_credits' => $this->user()->likes,
             ];
+
+            Log::alert($response);
 
             if ($remainingUsersCount <= 10) {
                 $refetch = $this->getUsers();

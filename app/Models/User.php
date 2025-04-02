@@ -162,6 +162,16 @@ class User extends Authenticatable implements JWTSubject
         return $this->userImages()->count() == 3 ? true : false;
     }
 
+    public function getLikesAttribute(): int
+    {
+        return $this->events()->where('event_uid', $this->event->uid)->first()->likes;
+    }
+
+    public function getSuperLikesAttribute(): int
+    {
+        return $this->events()->where('event_uid', $this->event->uid)->first()->super_likes;
+    }
+
     public function getDataInterestAttribute(): bool
     {
         return $this->interests()->count() >= 3 ? true : false;
@@ -283,12 +293,15 @@ class User extends Authenticatable implements JWTSubject
 
     public function refreshInteractions($interaction)
     {
+        $eventPivot = $this->events()->where('event_uid', $this->event->uid)->first();
+        Log::info('likes', [$eventPivot->likes]);
+        Log::info('likes', [$eventPivot->super_likes]);
         if ($interaction == Interaction::LIKE_ID) {
-            $this->event->update([
+            $eventPivot->update([
                 'likes' => $this->likes - 1
             ]);
         } elseif ($interaction == Interaction::SUPER_LIKE_ID) {
-            $this->event->update([
+            $eventPivot->update([
                 'super_likes' => $this->super_likes - 1
             ]);
         }
