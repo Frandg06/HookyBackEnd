@@ -63,7 +63,6 @@ class ChatController extends Controller
 
         $url = config('services.ws_api.send_message');
 
-
         Http::withHeaders([
             'Authorization' => 'Bearer ' . request()->bearerToken(),
             'Accept' => 'application/json'
@@ -71,9 +70,6 @@ class ChatController extends Controller
             'message' => $response,
             'reciverUid' => $userToSend,
         ]);
-
-
-        // Logic to send message goes here
 
         return $this->response($response);
     }

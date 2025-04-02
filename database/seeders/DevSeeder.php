@@ -78,10 +78,16 @@ class DevSeeder extends Seeder
 
 
         User::all()->each(function ($user) {
-            $randomEvents = Event::inRandomOrder()->first();
+            $event = Event::first();
             $interests = Interest::inRandomOrder()->limit(3)->pluck('id');
             $user->interestBelongsToMany()->attach($interests);
-
+            UserEvent::create([
+                'user_uid' => $user->uid,
+                'event_uid' => $event->uid,
+                'logged_at' => fake()->dateTimeInInterval('-12 hours', '+15 hours'),
+                'super_likes' => $event->super_likes,
+                'likes' => $event->likes,
+            ]);
 
             for ($i = 0; $i < 3; $i++) {
 

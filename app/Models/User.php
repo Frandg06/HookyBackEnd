@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
@@ -165,6 +167,19 @@ class User extends Authenticatable implements JWTSubject
         return $this->interests()->count() >= 3 ? true : false;
     }
 
+    public function getUnreadChatsAttribute(): int
+    {
+        return ChatMessage::whereNot('sender_uid', $this->uid)
+            ->where('read_at', false)
+            ->whereHas('chat', function ($query) {
+                $query->where('event_uid', $this->event->uid)
+                    ->where(function ($query2) {
+                        $query2->where('user2_uid', $this->uid)
+                            ->orWhere('user1_uid', $this->uid);
+                    });
+            })->count();
+    }
+
     public function getCompleteRegisterAttribute(): bool
     {
         if ($this->data_complete && $this->data_images && $this->data_interest) {
@@ -270,7 +285,7 @@ class User extends Authenticatable implements JWTSubject
     {
         if ($interaction == Interaction::LIKE_ID) {
             $this->event->update([
-                'likes' => $this->event->likes - 1
+                'likes' => $this->likes - 1
             ]);
         } elseif ($interaction == Interaction::SUPER_LIKE_ID) {
             $this->event->update([
