@@ -9,7 +9,6 @@ use SendGrid\Mail\Mail;
 
 class EmailController extends Controller
 {
-
     public function storeWaitlist(Request $request)
     {
         $email = $request->email;

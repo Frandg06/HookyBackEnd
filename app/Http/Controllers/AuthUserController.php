@@ -9,7 +9,6 @@ use App\Http\Services\AuthUserService;
 use App\Http\Services\ImagesService;
 use App\Http\Services\NotificationService;
 use App\Http\Services\UserService;
-use App\Models\Role;
 use App\Models\User;
 use App\Models\UsersInteraction;
 
@@ -20,8 +19,12 @@ class AuthUserController extends Controller
     protected $imageService;
     protected $notificationService;
 
-    public function __construct(AuthUserService $authUserService, UserService $userService, ImagesService $imageService, NotificationService $notificationService)
-    {
+    public function __construct(
+        AuthUserService $authUserService,
+        UserService $userService,
+        ImagesService $imageService,
+        NotificationService $notificationService
+    ) {
         $this->authUserService = $authUserService;
         $this->userService = $userService;
         $this->imageService = $imageService;
@@ -99,11 +102,19 @@ class AuthUserController extends Controller
         $isSuperlike = UsersInteraction::checkIsSuperLike($uid, $user);
 
         if (!$user->is_premium && !$isSuperlike) {
-            return response()->json(['success' => false, 'message' => __('i18n.not_aviable_user'), 'type' => 'RoleException'], 401);
+            return response()->json([
+                'success' => false,
+                'message' => __('i18n.not_aviable_user'),
+                'type' => 'RoleException'
+            ], 401);
         }
 
         if (!$isLike || !$isSuperlike) {
-            return response()->json(['success' => false, 'message' => __('i18n.not_aviable_user'), 'type' => 'RoleException'], 401);
+            return response()->json([
+                'success' => false,
+                'message' => __('i18n.not_aviable_user'),
+                'type' => 'RoleException'
+            ], 401);
         }
 
         $user = User::where('uid', $uid)->first();
@@ -118,7 +129,11 @@ class AuthUserController extends Controller
         $isHook = UsersInteraction::checkHook($user->uid, $uid, $user->event_uid);
 
         if (!$isHook) {
-            return response()->json(['success' => false, 'message' => __('i18n.not_aviable_user'), 'type' => 'RoleException'], 401);
+            return response()->json([
+                'success' => false,
+                'message' => __('i18n.not_aviable_user'),
+                'type' => 'RoleException'
+            ], 401);
         }
 
         $user = User::where('uid', $uid)->first();
