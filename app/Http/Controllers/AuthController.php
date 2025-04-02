@@ -19,8 +19,12 @@ class AuthController extends Controller
     protected $imageService;
     protected $emailService;
 
-    public function __construct(AuthService $authService, UserService $userService, ImagesService $imageService, EmailService $emailService)
-    {
+    public function __construct(
+        AuthService $authService,
+        UserService $userService,
+        ImagesService $imageService,
+        EmailService $emailService
+    ) {
         $this->authService = $authService;
         $this->userService = $userService;
         $this->imageService = $imageService;

@@ -13,11 +13,10 @@ use Illuminate\Support\Facades\Log;
 
 class AuthUserService extends Service
 {
-
     public function update(array $data)
     {
         DB::beginTransaction();
-        try {;
+        try {
             $existingUser = User::where('email', $data['email'])->whereNot('uid', $this->user()->uid)->first();
 
             if ($existingUser) {
@@ -103,9 +102,14 @@ class AuthUserService extends Service
         try {
             $user = request()->user();
 
-            $usersHook = $user->notifications()->where('type_id', NotificationsType::HOOK_TYPE)->where('event_uid', $user->event_uid)->get();
 
-            $userLikes = $user->notifications()->where('type_id', NotificationsType::LIKE_TYPE)->where('event_uid', $user->event_uid)->get();
+            $notifications = $user->notifications()->where('event_uid', $user->event->uid)->get();
+
+            $usersHook = $notifications->where('type_id', NotificationsType::HOOK_TYPE);
+
+            $userLikes = $notifications->where('type_id', NotificationsType::LIKE_TYPE);
+
+            $userSuperLikes =  $notifications->where('type_id', NotificationsType::SUPER_LIKE_TYPE);;
 
             $likes_count = $userLikes->count();
 
@@ -118,7 +122,6 @@ class AuthUserService extends Service
                 $likes['count'] = $likes_count;
             }
 
-            $userSuperLikes =  $user->notifications()->where('type_id', NotificationsType::SUPER_LIKE_TYPE)->where('event_uid', $user->event_uid)->get();
 
             $data = [
                 'likes' => $likes,

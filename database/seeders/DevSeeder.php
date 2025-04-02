@@ -30,87 +30,90 @@ class DevSeeder extends Seeder
         $this->call(EventsMockSeeder::class);
         $this->call(UserMockSeeder::class);
 
-        Event::factory()->count(93)->create();
+        // Event::factory()->count(93)->create();
 
         DB::table('events')
-        ->update([
-            'end_date' => DB::raw("st_date + INTERVAL '5 hours'")
-        ]);
+            ->update([
+                'end_date' => DB::raw("st_date + INTERVAL '5 hours'")
+            ]);
 
-        Event::all()->each(function ($event) {
+        // Event::all()->each(function ($event) {
 
-            $tickets = [];
-            $ticketCount = rand(20, 50);
-          
-            while (count($tickets) < $ticketCount) {
-                $code = strtoupper(Str::random(6));
-            
-                $tickets[] = [
-                  'uid' => (string) Str::uuid(),
-                  'company_uid' => $event->company->uid,
-                  'event_uid' => $event->uid,
-                  'code' => $code,
-                  'redeemed' => true,
-                  'price' => rand(3, 6),
-                  'likes' => fake()->numberBetween(1, 100),
-                  'super_likes' => fake()->numberBetween(1, 100),
-                  'created_at' => now(),
-                  'updated_at' => now(),
-                ];
-            }
-          
-            Ticket::insert($tickets);
+        //     $tickets = [];
+        //     $ticketCount = rand(20, 50);
 
-            $userCount = rand(20, 50);
+        //     while (count($tickets) < $ticketCount) {
+        //         $code = strtoupper(Str::random(6));
 
-            User::factory()->count($userCount)->create()->each(function ($user) use ($event) {
-                UserEvent::create([
-                  'user_uid' => $user->uid,
-                  'event_uid' => $event->uid,
-                  'logged_at' => fake()->dateTimeInInterval('-12 hours', '+15 hours'),
-                  'super_likes' => $event->super_likes,
-                  'likes' => $event->likes,
-                ]);
-            });
+        //         $tickets[] = [
+        //             'uid' => (string) Str::uuid(),
+        //             'company_uid' => $event->company->uid,
+        //             'event_uid' => $event->uid,
+        //             'code' => $code,
+        //             'redeemed' => true,
+        //             'price' => rand(3, 6),
+        //             'likes' => fake()->numberBetween(1, 100),
+        //             'super_likes' => fake()->numberBetween(1, 100),
+        //             'created_at' => now(),
+        //             'updated_at' => now(),
+        //         ];
+        //     }
 
-        
-        });
+        //     Ticket::insert($tickets);
 
-        
-        
-        
-        // User::all()->each(function ($user)  {
-        //     $randomEvents = Event::inRandomOrder()->first();
-        //     $interests = Interest::inRandomOrder()->limit(3)->pluck('id');
-        //     $user->interestBelongsToMany()->attach($interests);
+        //     $userCount = rand(20, 50);
 
-
-        // for($i = 0; $i < 3; $i++) {
-
-        //     $imageData = file_get_contents("https://picsum.photos/500/900");
-                
-        //     $img = Image::read($imageData);
-    
-        //     $ogWidth = $img->width();
-        //     $ogHeight = $img->height();
-                
-        //     $aspectRatio = $ogWidth / $ogHeight;
-    
-        //     $newHeight = 500 / $aspectRatio;
-    
-    
-        //     $processedImage = $img->resize(500, $newHeight)->toWebP(80);
-                
-        //     $newImage = $user->userImages()->create([
-        //       'order' => $user->userImages()->count() + 1,
-        //       'name' => "databnaseSeeder",
-        //       'size' => "34886",
-        //       'type' => "image/png",
-        //     ]);
-        
-        //     Storage::disk('r2')->put($newImage->url, $processedImage);
-        // }
-
+        //     User::factory()->count($userCount)->create()->each(function ($user) use ($event) {
+        //         UserEvent::create([
+        //             'user_uid' => $user->uid,
+        //             'event_uid' => $event->uid,
+        //             'logged_at' => fake()->dateTimeInInterval('-12 hours', '+15 hours'),
+        //             'super_likes' => $event->super_likes,
+        //             'likes' => $event->likes,
+        //         ]);
+        //     });
         // });
+
+
+
+
+        User::all()->each(function ($user) {
+            $event = Event::first();
+            $interests = Interest::inRandomOrder()->limit(3)->pluck('id');
+            $user->interestBelongsToMany()->attach($interests);
+            UserEvent::create([
+                'user_uid' => $user->uid,
+                'event_uid' => $event->uid,
+                'logged_at' => fake()->dateTimeInInterval('-12 hours', '+15 hours'),
+                'super_likes' => $event->super_likes,
+                'likes' => $event->likes,
+            ]);
+
+            for ($i = 0; $i < 3; $i++) {
+
+                $imageData = file_get_contents("https://picsum.photos/500/900");
+
+                $img = Image::read($imageData);
+
+                $ogWidth = $img->width();
+                $ogHeight = $img->height();
+
+                $aspectRatio = $ogWidth / $ogHeight;
+
+                $newHeight = 500 / $aspectRatio;
+
+
+                $processedImage = $img->resize(500, $newHeight)->toWebP(80);
+
+                $newImage = $user->userImages()->create([
+                    'order' => $user->userImages()->count() + 1,
+                    'name' => "databnaseSeeder",
+                    'size' => "34886",
+                    'type' => "image/png",
+                ]);
+
+                Storage::disk('r2')->put($newImage->url, $processedImage);
+            }
+        });
     }
 }

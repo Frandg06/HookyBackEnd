@@ -17,7 +17,7 @@ class CheckEventIsActiveMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $authEvent = $request->user()->auth_event;
+        $authEvent = $request->user();
 
         $tz = $authEvent->event->timezone;
 

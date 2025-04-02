@@ -7,7 +7,6 @@ use App\Http\Filters\TicketFilter;
 use App\Http\Orders\TicketOrdenator;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\Exports\TicketExportResource;
-use App\Http\Resources\TicketCollection;
 use App\Http\Resources\TicketResource;
 use App\Models\Event;
 use App\Models\Ticket;
@@ -43,14 +42,13 @@ class TicketService extends Service
     {
         DB::beginTransaction();
         try {
-
             $event = Event::find($uuid);
 
             if (Carbon::parse($event->end_date)->isPast()) {
                 return $this->responseError('event_is_past', 400);
             }
 
-            if ($event->tickets->count() > $event->company->pricing_plan->ticket_limit) {
+            if ($event->tickets->count() > $event->company->pricingPlan->ticket_limit) {
                 return $this->responseError('tickets_limit_exceeded', 400);
             }
 
@@ -82,41 +80,38 @@ class TicketService extends Service
     {
         DB::beginTransaction();
         try {
-
             $company_uid = $this->user()->company_uid;
             $event_uid = $this->user()->event_uid;
 
-            $ticket = Ticket::getTicketByCompanyEventAndCode($company_uid, $code)->first();
+            $ticket = Ticket::where('code', $code)
+                ->where('event_uid', $event_uid)
+                ->where('redeemed', false)
+                ->first();
 
             if (!$ticket) {
                 throw new ApiException('ticket_invalid', 400);
             }
 
-
-            $ticket->ticketsRedeem()->create([
-                'user_uid' => $this->user()->uid,
-                'event_uid' => $event_uid,
-                'company_uid' => $company_uid,
-            ]);
-
             $tz = $this->user()->events()->activeEventData()->event->timezone;
 
             $ticket->update([
+                'user_uid' => $this->user()->uid,
                 'redeemed' => true,
                 'redeemed_at' => now($tz)
             ]);
 
+
             $this->user()->events()->update([
-                'likes' => $this->user()->like_credits + $ticket->likes,
-                'super_likes' => $this->user()->super_like_credits + $ticket->super_likes
+                'likes' => $this->user()->event->likes + $ticket->likes,
+                'super_likes' => $this->user()->event->superlikes + $ticket->super_likes
             ]);
 
             DB::commit();
 
             return [
                 'user_total' => [
-                    'super_like_credits' => $this->user()->super_like_credits,
-                    'like_credits' => $this->user()->like_credits,
+                    'super_like_credits' => $this->user()->event->super_likes,
+                    'like_credits' => $this->user()->event->likes,
                 ],
                 'ticket_add' => [
                     'super_likes' => $ticket->super_likes,
@@ -148,7 +143,6 @@ class TicketService extends Service
     {
         DB::beginTransaction();
         try {
-
             $ticket = Ticket::where('event_uid', $event->uid)
                 ->where('redeemed', false)
                 ->where("generated", false)

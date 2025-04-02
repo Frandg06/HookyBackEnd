@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Log;
 
 class WsChatService
 {
-
     public function storeChat($user1_uid, $user2_uid, $event_uid)
     {
 

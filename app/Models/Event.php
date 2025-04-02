@@ -49,6 +49,11 @@ class Event extends Model
         return $this->hasMany(Notification::class, 'event_uid', 'uid');
     }
 
+    public function chats(): HasMany
+    {
+        return $this->hasMany(Chat::class, 'event_uid', 'uid');
+    }
+
     public function scopeNextMontEvents($query)
     {
         $query->where('st_date', '>', Carbon::now())
