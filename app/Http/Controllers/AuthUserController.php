@@ -126,7 +126,7 @@ class AuthUserController extends Controller
     {
         $user = $request->user();
 
-        $isHook = UsersInteraction::checkHook($user->uid, $uid, $user->event_uid);
+        $isHook = UsersInteraction::checkHook($user->uid, $uid, $user->event->uid);
 
         if (!$isHook) {
             return response()->json([

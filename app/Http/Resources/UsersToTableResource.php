@@ -16,7 +16,7 @@ class UsersToTableResource extends JsonResource
     {
         return [
             'uid' => $this->uid,
-            'event_uid' => $this->event_uid,
+            'event_uid' => $this->event->uid,
             'gender_id' => $this->gender_id,
             'sexual_orientation_id' => $this->sexual_orientation_id,
             'role' => $this->role->name,

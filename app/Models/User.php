@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Http\Resources\AuthUserResource;
-use App\Http\Resources\UsersToTableResource;
 use App\Models\Traits\Filterable;
 use App\Models\Traits\HasUid;
 use App\Models\Traits\Sortable;
@@ -14,8 +13,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
@@ -118,7 +115,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(Event::class, 'user_events', 'user_uid', 'event_uid');
     }
 
-
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'user_uid', 'uid');
@@ -134,7 +130,6 @@ class User extends Authenticatable implements JWTSubject
         return Carbon::parse($this->born_date)->age;
     }
 
-
     public function getEventAttribute()
     {
         return $this->eventsBelongsToMany()->first();
@@ -142,7 +137,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getCompanyUidAttribute(): string
     {
-        return $this->events()->getCompanyByEvent();
+        return $this->event->company_uid;
     }
 
 
@@ -294,8 +289,6 @@ class User extends Authenticatable implements JWTSubject
     public function refreshInteractions($interaction)
     {
         $eventPivot = $this->events()->where('event_uid', $this->event->uid)->first();
-        Log::info('likes', [$eventPivot->likes]);
-        Log::info('likes', [$eventPivot->super_likes]);
         if ($interaction == Interaction::LIKE_ID) {
             $eventPivot->update([
                 'likes' => $this->likes - 1

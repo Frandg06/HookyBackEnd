@@ -33,7 +33,7 @@ class NotificationService
         try {
             $user = request()->user();
 
-            $notifications = $user->notifications()->where('type_id', $type)->where('event_uid', $user->event_uid)->where('read_at', null)->get();
+            $notifications = $user->notifications()->where('type_id', $type)->where('event_uid', $user->event->uid)->where('read_at', null)->get();
 
             $notifications->each(function ($notification) {
                 $notification->read_at = now();
