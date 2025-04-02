@@ -122,8 +122,8 @@ class UserService
             $remainingUsersCount = $remainingUsers->count();
 
             $response = [
-                'super_like_credits' => $authUser->super_like_credits,
-                'like_credits' => $authUser->like_credits,
+                'super_like_credits' => $authUser->event->super_likes,
+                'like_credits' => $authUser->event->likes,
             ];
 
             if ($remainingUsersCount <= 10) {

@@ -10,6 +10,7 @@ use App\Models\Traits\Sortable;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -40,8 +41,6 @@ class User extends Authenticatable implements JWTSubject
         'city',
         'born_date',
         'description',
-        'like_credits',
-        'super_like_credits',
         'tw',
         'ig',
         'role_id',
@@ -112,6 +111,12 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(UserEvent::class, 'user_uid', 'uid');
     }
 
+    public function eventsBelongsToMany(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class, 'user_events', 'user_uid', 'event_uid');
+    }
+
+
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'user_uid', 'uid');
@@ -127,28 +132,15 @@ class User extends Authenticatable implements JWTSubject
         return Carbon::parse($this->born_date)->age;
     }
 
-    public function getLikeCreditsAttribute(): int
-    {
-        return $this->events()->activeEventData()->likes;
-    }
-    public function getSuperLikeCreditsAttribute(): int
-    {
-        return $this->events()->activeEventData()->super_likes;
-    }
 
-    public function getEventUidAttribute(): string
+    public function getEventAttribute(): Event
     {
-        return $this->events()->activeEventData()->event_uid;
+        return $this->eventsBelongsToMany()->first();
     }
 
     public function getCompanyUidAttribute(): string
     {
         return $this->events()->getCompanyByEvent();
-    }
-
-    public function getAuthEventAttribute()
-    {
-        return $this->events()->activeEventData();
     }
 
 
@@ -277,12 +269,12 @@ class User extends Authenticatable implements JWTSubject
     public function refreshInteractions($interaction)
     {
         if ($interaction == Interaction::LIKE_ID) {
-            $this->events()->activeEventData()->update([
-                'likes' => $this->like_credits - 1
+            $this->event->update([
+                'likes' => $this->event->likes - 1
             ]);
         } elseif ($interaction == Interaction::SUPER_LIKE_ID) {
-            $this->events()->activeEventData()->update([
-                'super_likes' => $this->super_like_credits - 1
+            $this->event->update([
+                'super_likes' => $this->super_likes - 1
             ]);
         }
     }
@@ -319,7 +311,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return [
             'uid' => $this->uid,
-            'event_uid' => $this->event_uid
+            'event_uid' => $this->event->uid
         ];
     }
 }

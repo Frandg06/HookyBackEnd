@@ -6,6 +6,7 @@ use App\Models\NotificationsType;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Log;
 
 class AuthUserResource extends JsonResource
 {
@@ -17,13 +18,14 @@ class AuthUserResource extends JsonResource
     public function toArray(Request $request): array
     {
 
-        $tz = $this->auth_event->event->timezone;
+        $tz = $this->event->timezone;
         $now = now($tz);
 
         return [
             'id' => $this->id,
             'uid' => $this->uid,
-            'event_uid' => $this->event_uid,
+            'event_uid' => $this->event->uid,
+            'active' => $this->event,
             'gender_id' => $this->gender_id,
             'sexual_orientation_id' => $this->sexual_orientation_id,
             'premium' => $this->role_id == Role::PREMIUM ? true : false,
@@ -33,8 +35,8 @@ class AuthUserResource extends JsonResource
             'city' => $this->city,
             'born_date' => $this->born_date,
             'description' => $this->description,
-            'like_credits' => $this->like_credits,
-            'super_like_credits' => $this->super_like_credits,
+            'like_credits' => $this->event->likes,
+            'super_like_credits' => $this->event->super_likes,
             'data_complete' => $this->data_complete,
             'data_images' => $this->data_images,
             'data_interest' => $this->data_interest,
@@ -48,7 +50,7 @@ class AuthUserResource extends JsonResource
                     'size' => $image->size,
                     'name' => $image->name,
                     'uid' => $image->uid,
-                ] ;
+                ];
             }),
             'socials' => [
                 'instagram' => [
@@ -75,8 +77,8 @@ class AuthUserResource extends JsonResource
                 'hook' => $this->notifications()->where('event_uid', $this->event_uid)->where('type_id', NotificationsType::HOOK_TYPE)->where('read_at', null)->count(),
             ],
             'next_event' => [
-                'exists' => $now->lt($this->auth_event->event->st_date) ? true : null,
-                'st_date' => $this->auth_event->event->st_date,
+                'exists' => $now->lt($this->event->st_date) ? true : null,
+                'st_date' => $this->event->st_date,
             ]
 
         ];

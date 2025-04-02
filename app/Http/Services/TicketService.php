@@ -102,16 +102,16 @@ class TicketService extends Service
 
 
             $this->user()->events()->update([
-                'likes' => $this->user()->like_credits + $ticket->likes,
-                'super_likes' => $this->user()->super_like_credits + $ticket->super_likes
+                'likes' => $this->user()->event->likes + $ticket->likes,
+                'super_likes' => $this->user()->event->superlikes + $ticket->super_likes
             ]);
 
             DB::commit();
 
             return [
                 'user_total' => [
-                    'super_like_credits' => $this->user()->super_like_credits,
-                    'like_credits' => $this->user()->like_credits,
+                    'super_like_credits' => $this->user()->event->super_likes,
+                    'like_credits' => $this->user()->event->likes,
                 ],
                 'ticket_add' => [
                     'super_likes' => $ticket->super_likes,

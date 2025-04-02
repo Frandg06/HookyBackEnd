@@ -26,8 +26,8 @@ class UsersToTableResource extends JsonResource
             'city' => $this->city,
             'born_date' => $this->born_date,
             'description' => $this->description,
-            'like_credits' => $this->like_credits,
-            'super_like_credits' => $this->super_like_credits,
+            'like_credits' => $this->event->likes,
+            'super_like_credits' => $this->event->super_likes,
             'age' => $this->age,
             'avatar' => $this->userImages()->first()->web_url ?? null,
             'socials' => [
