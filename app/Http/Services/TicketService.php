@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Str;
 
 class TicketService extends Service
 {
@@ -52,19 +53,22 @@ class TicketService extends Service
                 return $this->responseError('tickets_limit_exceeded', 400);
             }
 
-            Ticket::factory()->count($data['count'])->create([
-                'company_uid' => $this->company()->uid,
-                'event_uid' => $uuid,
-                'redeemed' => false,
-                'likes' => $data['likes'],
-                'super_likes' => $data['superlikes'],
-                'name' => $data['name'],
-                'price' => $data['price'],
-                'created_at' => now(),
-                'updated_at' => now(),
-                'user_uid' => null,
-                'redeemed_at' => null
-            ]);
+            for ($i = 0; $i < $data['count']; $i++) {
+                Ticket::create([
+                    'company_uid' => $this->company()->uid,
+                    'event_uid' => $uuid,
+                    'redeemed' => false,
+                    'likes' => $data['likes'],
+                    'super_likes' => $data['superlikes'],
+                    'name' => $data['name'],
+                    'price' => $data['price'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                    'user_uid' => null,
+                    'redeemed_at' => null,
+                    'code' => strtoupper(Str::random(6)),
+                ]);
+            }
 
             DB::commit();
 
