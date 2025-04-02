@@ -17,6 +17,7 @@ Route::post('/event/dispatcher', [EventController::class, 'getTicketDispatcher']
 Route::post('/event/dispatcher/qr', [TicketController::class, 'getQrCode'])->middleware('auth.event');
 
 Route::middleware(['auth:company', 'jwt.verify.company'])->group(function () {
+    Route::post('/update-password', [AuthCompanyController::class, 'updatePassword']);
     Route::put('/update', [CompanyController::class, 'update']);
     Route::get('/auth', [AuthCompanyController::class, 'me']);
     Route::post('/logout', [AuthCompanyController::class, 'logout']);

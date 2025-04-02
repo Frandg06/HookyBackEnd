@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class EventService extends Service
 {
@@ -21,6 +22,7 @@ class EventService extends Service
         try {
             $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
             $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
+            $data['code'] = Str::uuid();
 
             $validator = $this->validateEvent($data['st_date'], $data['end_date'], null);
 
@@ -91,6 +93,7 @@ class EventService extends Service
 
             $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
             $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
+            $data['code'] = Str::uuid();
             $validator = $this->validateEvent($data['st_date'], $data['end_date'], $uuid);
 
             if ($validator !== true)  return $validator;

@@ -21,7 +21,7 @@ class EventController extends Controller
 
     public function store(CreateEventRequest $request)
     {
-        $validated = $request->safe()->only('st_date', 'end_date', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'st_hour', 'end_hour', 'code');
+        $validated = $request->safe()->only('st_date', 'end_date', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'st_hour', 'end_hour');
         $response = $this->eventService->store($validated);
         return $this->response($response);
     }
@@ -42,7 +42,7 @@ class EventController extends Controller
 
     public function updateEvent(UpdateEventRequest $request, $uuid)
     {
-        $validated = $request->safe()->only('st_date', 'end_date', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'st_hour', 'end_hour', 'code');
+        $validated = $request->safe()->only('st_date', 'end_date', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'st_hour', 'end_hour');
         $response = $this->eventService->update($validated, $uuid);
         return $this->response($response);
     }
