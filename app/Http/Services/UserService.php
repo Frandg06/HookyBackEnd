@@ -15,7 +15,7 @@ use App\Models\UsersInteraction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class UserService
+class UserService extends Service
 {
     protected $notificationService;
     protected $wsChatService;
@@ -30,13 +30,13 @@ class UserService
     {
         DB::beginTransaction();
         try {
-            $authUser = request()->user();
+            $authUser = $this->user();
             Log::info('authUser->uid: ' . $authUser->uid);
             // usuarios ya obtenidos previamente con lo que no se ha interactuado en el evento actual
-            $usersWithoutInteraction = $authUser->interactions()->usersWithoutInteraction($authUser->event_uid);
+            $usersWithoutInteraction = $authUser->interactions()->usersWithoutInteraction($authUser->event->uid);
 
             // usuarios que se han cargado previamente y que se ha interactuado en el evento actual
-            $usersWithInteraction = $authUser->interactions()->usersWithInteraction($authUser->event_uid);
+            $usersWithInteraction = $authUser->interactions()->usersWithInteraction($authUser->event->uid);
 
             // obtener los usuarios que se van a interactuar que esten en el evento que no se haya interactuado con ellos
             if ($authUser->sexual_orientation_id == SexualOrientation::BISEXUAL) {
@@ -56,7 +56,7 @@ class UserService
                     'user_uid' => $authUser->uid,
                     'interaction_user_uid' => $userToInsert->uid,
                     'interaction_id' => null,
-                    'event_uid' => $authUser->event_uid,
+                    'event_uid' => $authUser->event->uid,
                     'created_at' => now()
                 ];
             }

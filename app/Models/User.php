@@ -204,7 +204,7 @@ class User extends Authenticatable implements JWTSubject
         return $query->whereIn('gender_id', $authUser->match_gender)
             ->whereIn('sexual_orientation_id', [$authUser->sexual_orientation_id, SexualOrientation::BISEXUAL])
             ->whereHas('events', function ($query) use ($authUser) {
-                $query->where('event_uid', $authUser->event_uid);
+                $query->where('event_uid', $authUser->event->uid);
             })->eligibleUsers($authUser, $usersWithInteraction, $usersWithoutInteraction);
     }
 
@@ -263,7 +263,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function scopeRemainingUsersToInteract()
     {
-        return $this->interactions()->where('event_uid', $this->event_uid)->where('interaction_id', null)->get();
+        return $this->interactions()->where('event_uid', $this->event->uid)->where('interaction_id', null)->get();
     }
 
     public function refreshInteractions($interaction)
