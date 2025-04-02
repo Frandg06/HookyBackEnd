@@ -86,25 +86,23 @@ class TicketService extends Service
             $company_uid = $this->user()->company_uid;
             $event_uid = $this->user()->event_uid;
 
-            $ticket = Ticket::getTicketByCompanyEventAndCode($company_uid, $code)->first();
+            $ticket = Ticket::where('code', $code)
+                ->where('event_uid', $event_uid)
+                ->where('redeemed', false)
+                ->first();
 
             if (!$ticket) {
                 throw new ApiException('ticket_invalid', 400);
             }
 
-
-            $ticket->ticketsRedeem()->create([
-                'user_uid' => $this->user()->uid,
-                'event_uid' => $event_uid,
-                'company_uid' => $company_uid,
-            ]);
-
             $tz = $this->user()->events()->activeEventData()->event->timezone;
 
             $ticket->update([
+                'user_uid' => $this->user()->uid,
                 'redeemed' => true,
                 'redeemed_at' => now($tz)
             ]);
+
 
             $this->user()->events()->update([
                 'likes' => $this->user()->like_credits + $ticket->likes,
