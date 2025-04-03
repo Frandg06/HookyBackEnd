@@ -196,8 +196,6 @@ class EventService extends Service
 
     private function validateEvent($st_date, $end_date, $event): bool|array
     {
-        $now = now();
-        $this->log($now);
         $st_date = Carbon::parse($st_date);
         $end_date = Carbon::parse($end_date);
         $diff = $st_date->diffInHours($end_date);

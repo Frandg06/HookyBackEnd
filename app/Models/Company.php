@@ -96,20 +96,14 @@ class Company extends Authenticatable implements JWTSubject
 
     public function checkEveventsInSameTime($st_date, $end_date, $uid)
     {
-        $events = $this->events()
+        return $this->events()
             ->when($uid, function ($query) use ($uid) {
                 $query->whereNot('uid', $uid);
             })
             ->where(function ($query) use ($st_date, $end_date) {
-                $query->where(function ($query2) use ($st_date) {
-                    $query2->whereDate('st_date', '>=', $st_date)
-                        ->whereDate('end_date', '<=', $st_date);
-                })->orWhere(function ($query3) use ($end_date) {
-                    $query3->whereDate('st_date', '>=', $end_date)
-                        ->whereDate('end_date', '<=', $end_date);
-                });
-            })->count();
-        return $events > 0;
+                $query->where('st_date', '<', $end_date)
+                    ->where('end_date', '>', $st_date);
+            })->exists();
     }
 
     public function getActiveEventAttribute()
