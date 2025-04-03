@@ -71,7 +71,7 @@ class EventController extends Controller
         return $this->response($response);
     }
 
-    public function getTicketDispatcher(Request $request): JsonResponse
+    public function getTicketDispatcher(Request $request)
     {
         $event = $request->event;
         $response = $this->eventService->getTicketDispatcher($event);

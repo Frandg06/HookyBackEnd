@@ -9,6 +9,7 @@ use App\Http\Resources\EventResource;
 use App\Http\Resources\Exports\EventExportResource;
 use App\Models\Event;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -134,7 +135,7 @@ class EventService extends Service
         return  EventExportResource::collection($events);
     }
 
-    public function getEventsFillable(EventFilter $filter): array
+    public function getEventsFillable(EventFilter $filter): Collection
     {
 
         $events = $this->company()->events()
@@ -145,7 +146,7 @@ class EventService extends Service
         return $events;
     }
 
-    public function getTicketDispatcher(Event $event): array
+    public function getTicketDispatcher(Event $event): Collection
     {
         $tickets_types = $event->tickets()->select('name')->distinct()->get();
         return $tickets_types;

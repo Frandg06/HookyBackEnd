@@ -75,10 +75,22 @@ class DevSeeder extends Seeder
         // });
 
 
+        // User::factory()->count(100)->create([
+        //     'sexual_orientation_id' => 2,
+        //     'gender_id' => 1,
+        // ])->each(function ($user) use ($event) {
+        //     UserEvent::create([
+        //         'user_uid' => $user->uid,
+        //         'event_uid' => $event->uid,
+        //         'logged_at' => fake()->dateTimeInInterval('-12 hours', '+15 hours'),
+        //         'super_likes' => $event->super_likes,
+        //         'likes' => $event->likes,
+        //     ]);
+        // });
 
+        $event = Event::first();
 
-        User::all()->each(function ($user) {
-            $event = Event::first();
+        User::all()->each(function ($user) use ($event) {
             $interests = Interest::inRandomOrder()->limit(3)->pluck('id');
             $user->interestBelongsToMany()->attach($interests);
             UserEvent::create([

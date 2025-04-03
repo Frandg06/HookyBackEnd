@@ -20,7 +20,8 @@ class EventMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $token = $request->get('token');
+        $token = $request->token;
+
         if (!$token) {
             return response()->json(['error' => true, 'message' => 'token_not_found'], 404);
         }

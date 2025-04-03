@@ -34,7 +34,6 @@ class UserService extends Service
         DB::beginTransaction();
         try {
             $authUser = $this->user();
-            Log::info('authUser->uid: ' . $authUser->uid);
             // usuarios ya obtenidos previamente con lo que no se ha interactuado en el evento actual
             $usersWithoutInteraction = $authUser->interactions()->usersWithoutInteraction($authUser->event->uid);
 

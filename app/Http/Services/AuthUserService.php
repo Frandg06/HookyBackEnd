@@ -25,8 +25,8 @@ class AuthUserService extends Service
 
             $this->user()->update($data);
 
-            if (isset($user['gender_id']) || isset($user['sexual_orientation_id'])) {
-                $user->interactions()->delete();
+            if (isset($data['gender_id']) || isset($data['sexual_orientation_id'])) {
+                $this->user()->interactions()->delete();
             }
 
             DB::commit();

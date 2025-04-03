@@ -67,7 +67,7 @@ class UsersInteraction extends Model
     {
         return self::where('user_uid', $uid)
             ->where('interaction_user_uid', $auth->uid)
-            ->where('interaction_id', Interaction::SUPER_LIKE_ID)
+            ->where('interaction_id', Interaction::LIKE_ID)
             ->where('event_uid', $auth->event->uid)
             ->exists();
     }

@@ -11,6 +11,7 @@ use App\Http\Services\NotificationService;
 use App\Http\Services\UserService;
 use App\Models\User;
 use App\Models\UsersInteraction;
+use Illuminate\Support\Facades\Log;
 
 class AuthUserController extends Controller
 {
@@ -94,7 +95,8 @@ class AuthUserController extends Controller
 
     public function getUserToConfirm(Request $request, $uid)
     {
-        $user = $request->user();
+        $user = $this->user();
+        // todo obtener todas las interacciones del usuario hacia el autenticado y luego filtrar por tipo    
 
         $isLike = UsersInteraction::checkIsLike($uid, $user);
 
@@ -108,7 +110,7 @@ class AuthUserController extends Controller
             ], 401);
         }
 
-        if (!$isLike || !$isSuperlike) {
+        if (!$isLike && !$isSuperlike) {
             return response()->json([
                 'success' => false,
                 'message' => __('i18n.not_aviable_user'),
