@@ -23,7 +23,7 @@ class EventMiddleware
         $token = $request->token;
 
         if (!$token) {
-            return response()->json(['error' => true, 'message' => 'token_not_found'], 404);
+            return response()->json(['error' => true, 'message' => __('i18n.token_not_found')], 404);
         }
 
         $decryptString = Crypt::decryptString($token);
@@ -33,7 +33,7 @@ class EventMiddleware
         $event = Event::where('uid', $decodedToken['event_uid'])->where('code', $decodedToken['code'])->first();
 
         if (!$event) {
-            return response()->json(['error' => true, 'message' => 'event_not_found'], 404);
+            return response()->json(['error' => true, 'custom_message' => __('i18n.event_not_found')], 404);
         }
 
         Config::set('app.timezone', $event->company->timezone->name ?? 'Europe/Madrid');
@@ -43,11 +43,11 @@ class EventMiddleware
         $st_date = Carbon::parse($event->st_date);
 
         if ($end_date->isPast()) {
-            return response()->json(['error' => true, 'message' => 'event_is_past'], 404);
+            return response()->json(['error' => true, 'custom_message' => __('i18n.event_is_past')], 404);
         }
 
         if ($st_date->isFuture()) {
-            return response()->json(['error' => true, 'message' => 'event_not_start'], 404);
+            return response()->json(['error' => true, 'custom_message' => __('i18n.event_not_start')], 404);
         }
 
         $request->event = $event;
