@@ -32,13 +32,9 @@ class AuthUserService extends Service
             DB::commit();
 
             return $this->user()->resource();
-        } catch (ApiException $e) {
-            DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('update_company_ko');
+            throw $e;
         }
     }
 
@@ -56,13 +52,9 @@ class AuthUserService extends Service
             DB::commit();
 
             return $this->user()->resource();
-        } catch (ApiException $e) {
-            DB::rollBack();
-            throw new ApiException($e->getMessage());
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('update_password_ko', 500);
+            throw $e;
         }
     }
 
@@ -91,53 +83,41 @@ class AuthUserService extends Service
             return $this->user()->resource();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('update_user_interest_ko', 500);
+            throw $e;
         }
     }
 
     public function getNotifications()
     {
-        DB::beginTransaction();
-        try {
-            $user = request()->user();
+        $user = $this->user();
 
+        $notifications = $user->notifications()->where('event_uid', $user->event->uid)->get();
 
-            $notifications = $user->notifications()->where('event_uid', $user->event->uid)->get();
+        $usersHook = $notifications->where('type_id', NotificationsType::HOOK_TYPE);
 
-            $usersHook = $notifications->where('type_id', NotificationsType::HOOK_TYPE);
+        $userLikes = $notifications->where('type_id', NotificationsType::LIKE_TYPE);
 
-            $userLikes = $notifications->where('type_id', NotificationsType::LIKE_TYPE);
+        $userSuperLikes =  $notifications->where('type_id', NotificationsType::SUPER_LIKE_TYPE);;
 
-            $userSuperLikes =  $notifications->where('type_id', NotificationsType::SUPER_LIKE_TYPE);
-            ;
+        $likes_count = $userLikes->count();
 
-            $likes_count = $userLikes->count();
-
-            if ($user->role_id == Role::PREMIUM) {
-                $likes = NotificationUserResource::collection($userLikes);
-            } else {
-                $likes['images'] = $userLikes->take(7)->map(function ($u) use ($user) {
-                    return $u->user->userImages()->first()->web_url;
-                });
-                $likes['count'] = $likes_count;
-            }
-
-
-            $data = [
-                'likes' => $likes,
-                'super_likes' => NotificationUserResource::collection($userSuperLikes),
-                'hooks' => NotificationUserResource::collection($usersHook)
-            ];
-
-            DB::commit();
-
-            return $data;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('get_notifications_ko', 500);
+        if ($user->role_id == Role::PREMIUM) {
+            $likes = NotificationUserResource::collection($userLikes);
+        } else {
+            $likes['images'] = $userLikes->take(7)->map(function ($u) use ($user) {
+                return $u->user->userImages()->first()->web_url;
+            });
+            $likes['count'] = $likes_count;
         }
+
+
+        $data = [
+            'likes' => $likes,
+            'super_likes' => NotificationUserResource::collection($userSuperLikes),
+            'hooks' => NotificationUserResource::collection($usersHook)
+        ];
+
+        return $data;
     }
 
     public function completeRegisterData($info, $files, $interests)
@@ -162,13 +142,10 @@ class AuthUserService extends Service
             DB::commit();
 
             return $user->resource();
-        } catch (ApiException $e) {
-            DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('update_company_ko', 500);
+            throw $e;
         }
     }
 }

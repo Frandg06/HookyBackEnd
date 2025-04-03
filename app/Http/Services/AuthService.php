@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 
 class AuthService extends Service
 {
@@ -70,13 +69,9 @@ class AuthService extends Service
             DB::commit();
 
             return $token;
-        } catch (ApiException $e) {
-            DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('register_user_ko', 500);
+            throw $e;
         }
     }
 
@@ -147,14 +142,9 @@ class AuthService extends Service
             DB::commit();
 
             return $token;
-        } catch (ApiException $e) {
-            DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('login_ko', 500);
+            throw $e;
         }
     }
 
@@ -200,13 +190,9 @@ class AuthService extends Service
             DB::commit();
 
             return true;
-        } catch (ApiException $e) {
-            DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('unexpected_error', 500);
+            throw $e;
         }
     }
 
@@ -233,13 +219,9 @@ class AuthService extends Service
             $token_model->delete();
             DB::commit();
             return true;
-        } catch (ApiException $e) {
-            DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('unexpected_error', 500);
+            throw $e;
         }
     }
 
