@@ -121,7 +121,7 @@ class UserService extends Service
 
                 $notify->dualEmitWithSave();
 
-                // Creo el chat 
+                // Creo el chat
                 $chat = $this->chatService->store($userUid, $uid, $eventUid);
             } elseif (in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
                 $isLike = $interaction == Interaction::LIKE_ID;

@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class AuthCompanyService extends Service
@@ -22,7 +21,9 @@ class AuthCompanyService extends Service
         try {
             $company = Company::where('email', $data['email'])->first();
 
-            if ($company) throw new ApiException('user_exists', 409);
+            if ($company) {
+                throw new ApiException('user_exists', 409);
+            }
 
             if (!isset($data['timezone_uid']) || empty($data['timezone_uid'])) {
                 $data['timezone_uid'] = TimeZone::where('name', 'Europe/Berlin')->first()->uid;
@@ -66,7 +67,9 @@ class AuthCompanyService extends Service
         try {
             $company = $this->company();
 
-            if (!$company) throw new ApiException('user_not_found', 404);
+            if (!$company) {
+                throw new ApiException('user_not_found', 404);
+            }
 
             if (!Hash::check($data['old_password'], $company->password)) {
                 throw new ApiException('actual_password_ko', 400);
@@ -88,11 +91,15 @@ class AuthCompanyService extends Service
     {
         DB::beginTransaction();
         try {
-            if (!$email) throw new ApiException('email_required', 400);
+            if (!$email) {
+                throw new ApiException('email_required', 400);
+            }
 
             $company = Company::where('email', $email)->first();
 
-            if (!$company) throw new ApiException('user_not_found', 404);
+            if (!$company) {
+                throw new ApiException('user_not_found', 404);
+            }
 
             $token = uniqid(rand(), true);
 
@@ -134,7 +141,9 @@ class AuthCompanyService extends Service
         try {
             $token_model = CompanyPasswordResetToken::where('token', $data['token'])->first();
 
-            if (!$token_model) throw new ApiException('token_not_found', 404);
+            if (!$token_model) {
+                throw new ApiException('token_not_found', 404);
+            }
 
             if (now()->greaterThan(Carbon::parse($token_model->expires_at))) {
                 throw new ApiException('token_expired', 404);

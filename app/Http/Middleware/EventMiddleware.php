@@ -21,7 +21,9 @@ class EventMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $token = $request->get('token');
-        if (!$token) return response()->json(['error' => true, 'message' => 'token_not_found'], 404);
+        if (!$token) {
+            return response()->json(['error' => true, 'message' => 'token_not_found'], 404);
+        }
 
         $decryptString = Crypt::decryptString($token);
 
@@ -29,7 +31,9 @@ class EventMiddleware
 
         $event = Event::where('uid', $decodedToken['event_uid'])->where('code', $decodedToken['code'])->first();
 
-        if (!$event) return response()->json(['error' => true, 'message' => 'event_not_found'], 404);
+        if (!$event) {
+            return response()->json(['error' => true, 'message' => 'event_not_found'], 404);
+        }
 
         Config::set('app.timezone', $event->company->timezone->name ?? 'Europe/Madrid');
         date_default_timezone_set($event->company->timezone->name ?? 'Europe/Madrid');
@@ -37,9 +41,13 @@ class EventMiddleware
         $end_date = Carbon::parse($event->end_date);
         $st_date = Carbon::parse($event->st_date);
 
-        if ($end_date->isPast()) return response()->json(['error' => true, 'message' => 'event_is_past'], 404);
+        if ($end_date->isPast()) {
+            return response()->json(['error' => true, 'message' => 'event_is_past'], 404);
+        }
 
-        if ($st_date->isFuture()) return response()->json(['error' => true, 'message' => 'event_not_start'], 404);
+        if ($st_date->isFuture()) {
+            return response()->json(['error' => true, 'message' => 'event_not_start'], 404);
+        }
 
         $request->event = $event;
 

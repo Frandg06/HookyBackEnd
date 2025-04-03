@@ -18,7 +18,7 @@ class CompanyUsersController extends Controller
 
     public function getUsers(UserFilter $filter, UserOrdenator $order)
     {
-        $response = $this->companyUsersService->getUsers($filter, $order,);
+        $response = $this->companyUsersService->getUsers($filter, $order, );
         return $this->response($response);
     }
 

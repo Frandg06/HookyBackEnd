@@ -75,7 +75,9 @@ class EventService extends Service
         try {
             $event = $this->company()->events()->where('uid', $uuid)->first();
 
-            if (!$event) throw new ApiException('event_not_found', 404);
+            if (!$event) {
+                throw new ApiException('event_not_found', 404);
+            }
 
             $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
             $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
@@ -95,7 +97,9 @@ class EventService extends Service
     {
         $event = $this->company()->events()->where('uid', $uuid)->first();
 
-        if (!$event) throw new ApiException('event_not_found', 404);
+        if (!$event) {
+            throw new ApiException('event_not_found', 404);
+        }
 
         return EventResource::make($event);
     }
@@ -104,11 +108,15 @@ class EventService extends Service
     {
         $event = $this->company()->events()->where('uid', $uuid)->first();
 
-        if (!$event) throw new ApiException('event_not_found', 404);
+        if (!$event) {
+            throw new ApiException('event_not_found', 404);
+        }
 
         $st_date = Carbon::parse($event->st_date);
 
-        if ($st_date->isPast()) throw new ApiException('event_is_past', 404);
+        if ($st_date->isPast()) {
+            throw new ApiException('event_is_past', 404);
+        }
 
         $event->delete();
 

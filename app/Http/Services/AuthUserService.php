@@ -109,7 +109,8 @@ class AuthUserService extends Service
 
             $userLikes = $notifications->where('type_id', NotificationsType::LIKE_TYPE);
 
-            $userSuperLikes =  $notifications->where('type_id', NotificationsType::SUPER_LIKE_TYPE);;
+            $userSuperLikes =  $notifications->where('type_id', NotificationsType::SUPER_LIKE_TYPE);
+            ;
 
             $likes_count = $userLikes->count();
 

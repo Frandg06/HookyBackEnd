@@ -23,14 +23,14 @@ class TicketService extends Service
             $tickets = $this->company()->tickets()->filter($filter)->sort($order)->paginate($limit);
             $data = TicketResource::collection($tickets);
             return [
-                "data" => $data,
-                "current_page" => $tickets->currentPage(),
-                "from" => $tickets->firstItem(),
-                "last_page" => $tickets->lastPage(),
-                "path" => $tickets->path(),
-                "per_page" => $tickets->perPage(),
-                "to" => $tickets->lastItem(),
-                "total" => $tickets->total()
+                'data' => $data,
+                'current_page' => $tickets->currentPage(),
+                'from' => $tickets->firstItem(),
+                'last_page' => $tickets->lastPage(),
+                'path' => $tickets->path(),
+                'per_page' => $tickets->perPage(),
+                'to' => $tickets->lastItem(),
+                'total' => $tickets->total()
             ];
         } catch (\Exception $e) {
             $this->logError($e, __CLASS__, __FUNCTION__);
@@ -147,7 +147,7 @@ class TicketService extends Service
         try {
             $ticket = Ticket::where('event_uid', $event->uid)
                 ->where('redeemed', false)
-                ->where("generated", false)
+                ->where('generated', false)
                 ->whereRaw('LOWER(name) = ?', [strtolower($type)])
                 ->inRandomOrder()
                 ->first();

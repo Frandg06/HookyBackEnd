@@ -91,7 +91,7 @@ class DevSeeder extends Seeder
 
             for ($i = 0; $i < 3; $i++) {
 
-                $imageData = file_get_contents("https://picsum.photos/500/900");
+                $imageData = file_get_contents('https://picsum.photos/500/900');
 
                 $img = Image::read($imageData);
 
@@ -107,9 +107,9 @@ class DevSeeder extends Seeder
 
                 $newImage = $user->userImages()->create([
                     'order' => $user->userImages()->count() + 1,
-                    'name' => "databnaseSeeder",
-                    'size' => "34886",
-                    'type' => "image/png",
+                    'name' => 'databnaseSeeder',
+                    'size' => '34886',
+                    'type' => 'image/png',
                 ]);
 
                 Storage::disk('r2')->put($newImage->url, $processedImage);
