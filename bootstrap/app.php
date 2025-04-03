@@ -32,7 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (ApiException $e, Request $request) {
             return response()->json([
                 'error' => true,
-                'message' => __('i18n.' . $e->getMessage()),
+                'custom_message' => __('i18n.' . $e->getMessage()),
             ], $e->getCode());
         });
         $exceptions->render(function (ValidationException $e, Request $request) {
@@ -44,7 +44,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (Exception $e, Request $request) {
             return response()->json([
                 'error' => true,
-                'message' => __('i18n.unexpected_error'),
+                'custom_message' => __('i18n.unexpected_error'),
             ], 500);
         });
     })->create();
