@@ -23,7 +23,7 @@ class EventMiddleware
         $token = $request->token;
 
         if (!$token) {
-            return response()->json(['error' => true, 'message' => __('i18n.token_not_found')], 404);
+            return response()->json(['error' => true, 'custom_message' => __('i18n.token_not_found')], 404);
         }
 
         $decryptString = Crypt::decryptString($token);
