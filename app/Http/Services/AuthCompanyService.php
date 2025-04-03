@@ -22,9 +22,7 @@ class AuthCompanyService extends Service
         try {
             $company = Company::where('email', $data['email'])->first();
 
-            if ($company) {
-                throw new ApiException('user_exists', 409);
-            }
+            if ($company) throw new ApiException('user_exists', 409);
 
             if (!isset($data['timezone_uid']) || empty($data['timezone_uid'])) {
                 $data['timezone_uid'] = TimeZone::where('name', 'Europe/Berlin')->first()->uid;
@@ -43,50 +41,37 @@ class AuthCompanyService extends Service
             DB::commit();
 
             return $token;
-        } catch (ApiException $e) {
-            DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('register_company_ko', 500);
+            throw $e;
         }
     }
 
     public function login(array $data): string
     {
-        try {
-            $company = Company::where('email', $data['email'])->first();
+        $company = Company::where('email', $data['email'])->first();
 
-            if (!$company || !Hash::check($data['password'], $company->password)) {
-                throw new ApiException('credentials_ko', 401);
-            }
-
-            Auth::setTTL(24 * 60);
-
-            $token = Auth::guard('company')->attempt($data);
-
-            return $token;
-        } catch (ApiException $e) {
-            throw new ApiException($e->getMessage(), $e->getCode());
-        } catch (\Exception $e) {
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('login_ko', 500);
+        if (!$company || !Hash::check($data['password'], $company->password)) {
+            throw new ApiException('credentials_ko', 401);
         }
+
+        Auth::setTTL(24 * 60);
+        $token = Auth::guard('company')->attempt($data);
+        return $token;
     }
 
-    public function updatePassword(array $data)
+    public function updatePassword(array $data): bool
     {
         DB::beginTransaction();
         try {
             $company = $this->company();
 
-            if (!$company) {
-                return $this->responseError('user_not_found', 404);
-            }
+            if (!$company) throw new ApiException('user_not_found', 404);
+
             if (!Hash::check($data['old_password'], $company->password)) {
-                return $this->responseError('passwords_dont_match', 404);
+                throw new ApiException('actual_password_ko', 400);
             }
+
             $company->update([
                 'password' => bcrypt($data['new_password'])
             ]);
@@ -95,8 +80,7 @@ class AuthCompanyService extends Service
             return true;
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->logError($e, __CLASS__, __FUNCTION__);
-            return $this->responseError('unexpected_error', 500);
+            throw $e;
         }
     }
 
@@ -104,15 +88,11 @@ class AuthCompanyService extends Service
     {
         DB::beginTransaction();
         try {
-            if (!$email) {
-                throw new ApiException('email_required', 400);
-            }
+            if (!$email) throw new ApiException('email_required', 400);
 
             $company = Company::where('email', $email)->first();
 
-            if (!$company) {
-                throw new ApiException('user_not_found', 404);
-            }
+            if (!$company) throw new ApiException('user_not_found', 404);
 
             $token = uniqid(rand(), true);
 
@@ -142,13 +122,9 @@ class AuthCompanyService extends Service
             DB::commit();
 
             return true;
-        } catch (ApiException $e) {
-            DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('unexpected_error', 500);
+            throw $e;
         }
     }
 
@@ -158,9 +134,7 @@ class AuthCompanyService extends Service
         try {
             $token_model = CompanyPasswordResetToken::where('token', $data['token'])->first();
 
-            if (!$token_model) {
-                throw new ApiException('token_not_found', 404);
-            }
+            if (!$token_model) throw new ApiException('token_not_found', 404);
 
             if (now()->greaterThan(Carbon::parse($token_model->expires_at))) {
                 throw new ApiException('token_expired', 404);
@@ -175,13 +149,9 @@ class AuthCompanyService extends Service
             $token_model->delete();
             DB::commit();
             return true;
-        } catch (ApiException $e) {
-            DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('unexpected_error', 500);
+            throw $e;
         }
     }
 }

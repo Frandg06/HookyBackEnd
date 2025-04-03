@@ -34,7 +34,6 @@ class AuthUserController extends Controller
     public function update(CompleteDataRequest $request)
     {
         $data = $request->all();
-
         $response = $this->authUserService->update($data);
         return response()->json(['success' => true, 'resp' =>  $response], 200);
     }

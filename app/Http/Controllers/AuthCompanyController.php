@@ -37,13 +37,8 @@ class AuthCompanyController extends Controller
 
     public function me()
     {
-        try {
-            $company = request()->user()->resource();
-            return $this->response($company);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            $this->response(['message' => __('i18n.error'), 'error' => true, 'code' => 500]);
-        }
+        $company = request()->user()->resource();
+        return $this->response($company);
     }
 
     public function logout()
