@@ -48,13 +48,9 @@ class ImagesService
             DB::commit();
 
             return $user->resource();
-        } catch (ApiException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('images_store_ko', 500);
+            throw $e;
         }
     }
 
@@ -79,13 +75,9 @@ class ImagesService
             DB::commit();
 
             return $user->resource();
-        } catch (ApiException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('images_store_ko', 500);
+            throw $e;
         }
     }
 
@@ -110,13 +102,9 @@ class ImagesService
             $imageToDelete->delete();
             DB::commit();
             return true;
-        } catch (ApiException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('images_store_ko', 500);
+            throw $e;
         }
     }
 
@@ -139,10 +127,7 @@ class ImagesService
             DB::commit();
 
             return true;
-        } catch (ApiException $e) {
-            DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
             throw new ApiException('image_delete_ko', 500);
@@ -159,8 +144,8 @@ class ImagesService
             Storage::disk('r2')->deleteDirectory('hooky/profile');
 
             return true;
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+        } catch (\Throwable $e) {
+            throw $e;
         }
     }
 

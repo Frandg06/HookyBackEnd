@@ -2,11 +2,7 @@
 
 namespace App\Http\Services;
 
-use App\Exceptions\ApiException;
-use App\Models\Notification;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class NotificationService extends Service
 {
@@ -14,36 +10,18 @@ class NotificationService extends Service
     {
         DB::beginTransaction();
         try {
-            $user = request()->user();
+            $user = $this->user();
 
-            $notifications = $user->notifications()->where('type_id', $type)->where('event_uid', $user->event->uid)->where('read_at', null)->get();
-
-            $notifications->each(function ($notification) {
-                $notification->read_at = now();
-                $notification->save();
-            });
+            $user->notifications()->where('type_id', $type)->where('event_uid', $user->event->uid)->where('read_at', null)->update([
+                'read_at' => now(),
+            ]);
 
             DB::commit();
 
             return true;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            throw new ApiException('read_notifications_ko', 500);
-        }
-    }
-
-    private function emitNotification($data)
-    {
-        try {
-            $notify_url = config('services.ws_api.notify_url');
-
-            Http::withHeaders([
-                'Authorization' => 'Bearer ' . request()->bearerToken(),
-                'Accept' => 'application/json'
-            ])->post($notify_url, $data);
-        } catch (\Exception $e) {
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException($e);
+            throw $e;
         }
     }
 }

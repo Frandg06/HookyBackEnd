@@ -27,13 +27,10 @@ class CompanyService extends Service
             DB::commit();
 
             return AuthCompanyResource::make($company);
-        } catch (ApiException $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('update_company_ko', 500);
+            $this->log($e, __CLASS__, __FUNCTION__);
+            throw $e;
         }
     }
 }
