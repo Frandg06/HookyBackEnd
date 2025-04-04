@@ -19,13 +19,11 @@ use Illuminate\Support\Facades\Log;
 class UserService extends Service
 {
     protected $notificationService;
-    protected $wsChatService;
     protected $chatService;
 
-    public function __construct(NotificationService $notificationService, WsChatService $wsChatService, ChatService $chatService)
+    public function __construct(NotificationService $notificationService, ChatService $chatService)
     {
         $this->notificationService = $notificationService;
-        $this->wsChatService = $wsChatService;
         $this->chatService = $chatService;
     }
 

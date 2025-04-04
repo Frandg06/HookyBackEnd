@@ -11,45 +11,42 @@ use App\Http\Resources\TicketResource;
 use App\Models\Event;
 use App\Models\Ticket;
 use Carbon\Carbon;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TicketService extends Service
 {
-    public function getTickets(TicketFilter $filter, TicketOrdenator $order, int $limit)
+    public function getTickets(TicketFilter $filter, TicketOrdenator $order, int $limit): array
     {
-        try {
-            $tickets = $this->company()->tickets()->filter($filter)->sort($order)->paginate($limit);
-            $data = TicketResource::collection($tickets);
-            return [
-                'data' => $data,
-                'current_page' => $tickets->currentPage(),
-                'from' => $tickets->firstItem(),
-                'last_page' => $tickets->lastPage(),
-                'path' => $tickets->path(),
-                'per_page' => $tickets->perPage(),
-                'to' => $tickets->lastItem(),
-                'total' => $tickets->total()
-            ];
-        } catch (\Exception $e) {
-            $this->logError($e, __CLASS__, __FUNCTION__);
-            return $this->responseError('get_tickets_ko', 500);
-        }
+
+        $tickets = $this->company()->tickets()->filter($filter)->sort($order)->paginate($limit);
+        $data = TicketResource::collection($tickets);
+        return [
+            'data' => $data,
+            'current_page' => $tickets->currentPage(),
+            'from' => $tickets->firstItem(),
+            'last_page' => $tickets->lastPage(),
+            'path' => $tickets->path(),
+            'per_page' => $tickets->perPage(),
+            'to' => $tickets->lastItem(),
+            'total' => $tickets->total()
+        ];
     }
 
-    public function generateTickets(array $data, string $uuid)
+    public function generateTickets(array $data, string $uuid): EventResource
     {
         DB::beginTransaction();
         try {
             $event = Event::find($uuid);
 
             if (Carbon::parse($event->end_date)->isPast()) {
-                return $this->responseError('event_is_past', 400);
+                throw new ApiException('event_expired', 400);
             }
 
             if ($event->tickets->count() > $event->company->pricingPlan->ticket_limit) {
-                return $this->responseError('tickets_limit_exceeded', 400);
+                throw new ApiException('ticket_limit_reached', 400);
             }
 
             for ($i = 0; $i < $data['count']; $i++) {
@@ -72,14 +69,14 @@ class TicketService extends Service
             DB::commit();
 
             return EventResource::make($event->refresh());
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             $this->logError($e, __CLASS__, __FUNCTION__);
-            return $this->responseError('generate_tickets_ko', 500);
+            throw $e;
         }
     }
 
-    public function redeem(string $code)
+    public function redeem(string $code): array
     {
         DB::beginTransaction();
         try {
@@ -120,28 +117,20 @@ class TicketService extends Service
                     'likes' => $ticket->likes,
                 ]
             ];
-        } catch (ApiException $e) {
-            DB::rollBack();
-            throw new ApiException($e->getMessage(), $e->getCode());
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
-            throw new ApiException('generate_tickets_ko', 500);
+            throw $e;
         }
     }
 
-    public function getTicketsToExport(TicketFilter $filter, TicketOrdenator $order)
+    public function getTicketsToExport(TicketFilter $filter, TicketOrdenator $order): JsonResource
     {
-        try {
-            $tickets = $this->company()->tickets()->filter($filter)->sort($order)->get();
-            return TicketExportResource::collection($tickets);
-        } catch (\Exception $e) {
-            $this->logError($e, __CLASS__, __FUNCTION__);
-            return $this->responseError('get_tickets_ko', 500);
-        }
+        $tickets = $this->company()->tickets()->filter($filter)->sort($order)->get();
+        return TicketExportResource::collection($tickets);
     }
 
-    public function getQrCode(Event $event, string $type)
+    public function getQrCode(Event $event, string $type): string
     {
         DB::beginTransaction();
         try {
@@ -153,7 +142,7 @@ class TicketService extends Service
                 ->first();
 
             if (!$ticket) {
-                return $this->responseError('ticket_not_found', 404);
+                throw new ApiException('ticket_not_found', 404);
             }
 
             $url = config('app.front_url') . '/redeem?code=' . $ticket->code;
@@ -163,10 +152,9 @@ class TicketService extends Service
             DB::commit();
 
             return $url;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            $this->logError($e, __CLASS__, __FUNCTION__);
-            return $this->responseError('get_qr_code_ko', 500);
+            throw $e;
         }
     }
 }
