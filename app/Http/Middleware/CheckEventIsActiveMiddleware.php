@@ -24,11 +24,11 @@ class CheckEventIsActiveMiddleware
         $now =  now($tz);
 
         if ($now->gt($user->event->end_date)) {
-            return response()->json(['error' => true, 'message' => 'El evento no está activo', 'type' => 'AuthException'], 401);
+            return response()->json(['error' => true, 'custom_message' => 'El evento no está activo', 'type' => 'AuthException'], 401);
         }
 
         if ($now->lt($user->event->st_date)) {
-            return response()->json(['error' => true, 'message' => 'El evento no ha comenzado'], 409);
+            return response()->json(['error' => true, 'custom_message' => 'El evento no ha comenzado'], 409);
         };
 
         return $next($request);

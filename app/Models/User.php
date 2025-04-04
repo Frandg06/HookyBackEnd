@@ -132,7 +132,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getEventAttribute()
     {
-        return $this->eventsBelongsToMany()->first();
+        return $this->eventsBelongsToMany()->orderByPivot('logged_at', 'desc')->first();
     }
 
     public function getCompanyUidAttribute(): string
