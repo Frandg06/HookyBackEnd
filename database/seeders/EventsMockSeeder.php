@@ -18,6 +18,15 @@ class EventsMockSeeder extends Seeder
 
         $company = Company::orderBy('id', 'desc')->first();
         $tz = $company->timezone->name;
+        $labels = collect([
+            'label-sky',
+            'label-emerald',
+            'label-orange',
+            'label-indigo',
+            'label-red',
+            'label-purple',
+            'label-yellow',
+        ]);
 
         $events = [
             [
@@ -26,79 +35,91 @@ class EventsMockSeeder extends Seeder
                 'timezone' => 'Europe/Madrid',
                 'likes' => 10,
                 'super_likes' => 2,
-                'name' => 'Mock Event 0',
+                'name' => 'Evento de prueba 0',
+                'company_uid' => $company->uid,
+                'code' => Str::uuid(),
+                'colors' => $labels->random()
+            ],
+            [
+                'st_date' => now($tz)->subDays(1)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->subDays(1)->addDay()->format('Y-m-d H:i'),
+                'timezone' => 'Europe/Madrid',
+                'likes' => 10,
+                'super_likes' => 2,
+                'name' => 'Evento de prueba 1',
+                'company_uid' => $company->uid,
+                'code' => Str::uuid(),
+                'colors' => $labels->random()
+
+            ],
+            [
+                'st_date' => now($tz)->subDays(2)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->subDays(2)->addDay()->format('Y-m-d H:i'),
+                'timezone' => 'Europe/Madrid',
+                'likes' => 10,
+                'super_likes' => 2,
+                'name' => 'Evento de prueba 2',
+                'company_uid' => $company->uid,
+                'code' => Str::uuid(),
+                'colors' => $labels->random()
+
+            ],
+            [
+                'st_date' => now($tz)->subDays(3)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->subDays(3)->addDay()->format('Y-m-d H:i'),
+                'timezone' => 'Europe/Madrid',
+                'likes' => 10,
+                'super_likes' => 2,
+                'name' => 'Evento de prueba 3',
+                'company_uid' => $company->uid,
+                'code' => Str::uuid(),
+                'colors' => $labels->random()
+
+            ],
+            [
+                'st_date' => now($tz)->subDays(4)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->subDays(4)->addDay()->format('Y-m-d H:i'),
+                'timezone' => 'Europe/Madrid',
+                'likes' => 10,
+                'super_likes' => 2,
+                'name' => 'Evento de prueba 4',
+                'company_uid' => $company->uid,
+                'code' => Str::uuid(),
+                'colors' => $labels->random()
+
+            ],
+            [
+                'st_date' => now($tz)->subDays(5)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->subDays(5)->addDay()->format('Y-m-d H:i'),
+                'timezone' => 'Europe/Madrid',
+                'likes' => 10,
+                'super_likes' => 2,
+                'name' => 'Evento de prueba 5',
+                'company_uid' => $company->uid,
+                'code' => Str::uuid(),
+                'colors' => $labels->random()
+
+            ],
+            [
+                'st_date' => now($tz)->subDays(6)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->subDays(6)->addDay()->format('Y-m-d H:i'),
+                'timezone' => 'Europe/Madrid',
+                'likes' => 10,
+                'super_likes' => 2,
+                'name' => 'Evento de prueba 6',
                 'company_uid' => $company->uid,
                 'code' => Str::uuid(),
             ],
             [
-                'st_date' => now($tz)->subMonths(1)->format('Y-m-d H:i'),
-                'end_date' => now($tz)->subMonths(1)->addDay()->format('Y-m-d H:i'),
+                'st_date' => now($tz)->subDays(7)->format('Y-m-d H:i'),
+                'end_date' => now($tz)->subDays(7)->addDay()->format('Y-m-d H:i'),
                 'timezone' => 'Europe/Madrid',
                 'likes' => 10,
                 'super_likes' => 2,
-                'name' => 'Mock Event 1',
+                'name' => 'Evento de prueba 7',
                 'company_uid' => $company->uid,
                 'code' => Str::uuid(),
-            ],
-            [
-                'st_date' => now($tz)->subMonths(2)->format('Y-m-d H:i'),
-                'end_date' => now($tz)->subMonths(2)->addDay()->format('Y-m-d H:i'),
-                'timezone' => 'Europe/Madrid',
-                'likes' => 10,
-                'super_likes' => 2,
-                'name' => 'Mock Event 2',
-                'company_uid' => $company->uid,
-                'code' => Str::uuid(),
-            ],
-            [
-                'st_date' => now($tz)->subMonths(3)->format('Y-m-d H:i'),
-                'end_date' => now($tz)->subMonths(3)->addDay()->format('Y-m-d H:i'),
-                'timezone' => 'Europe/Madrid',
-                'likes' => 10,
-                'super_likes' => 2,
-                'name' => 'Mock Event 3',
-                'company_uid' => $company->uid,
-                'code' => Str::uuid(),
-            ],
-            [
-                'st_date' => now($tz)->subMonths(4)->format('Y-m-d H:i'),
-                'end_date' => now($tz)->subMonths(4)->addDay()->format('Y-m-d H:i'),
-                'timezone' => 'Europe/Madrid',
-                'likes' => 10,
-                'super_likes' => 2,
-                'name' => 'Mock Event 4',
-                'company_uid' => $company->uid,
-                'code' => Str::uuid(),
-            ],
-            [
-                'st_date' => now($tz)->subMonths(5)->format('Y-m-d H:i'),
-                'end_date' => now($tz)->subMonths(5)->addDay()->format('Y-m-d H:i'),
-                'timezone' => 'Europe/Madrid',
-                'likes' => 10,
-                'super_likes' => 2,
-                'name' => 'Mock Event 5',
-                'company_uid' => $company->uid,
-                'code' => Str::uuid(),
-            ],
-            [
-                'st_date' => now($tz)->subMonths(6)->format('Y-m-d H:i'),
-                'end_date' => now($tz)->subMonths(6)->addDay()->format('Y-m-d H:i'),
-                'timezone' => 'Europe/Madrid',
-                'likes' => 10,
-                'super_likes' => 2,
-                'name' => 'Mock Event 6',
-                'company_uid' => $company->uid,
-                'code' => Str::uuid(),
-            ],
-            [
-                'st_date' => now($tz)->subMonths(7)->format('Y-m-d H:i'),
-                'end_date' => now($tz)->subMonths(7)->addDay()->format('Y-m-d H:i'),
-                'timezone' => 'Europe/Madrid',
-                'likes' => 10,
-                'super_likes' => 2,
-                'name' => 'Mock Event 7',
-                'company_uid' => $company->uid,
-                'code' => Str::uuid(),
+                'colors' => $labels->random()
             ],
         ];
 

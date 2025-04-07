@@ -30,9 +30,9 @@ class DatabaseSeeder extends Seeder
 
         $company = Company::create([
             'uid' => '54ce8856-fb28-4ff9-bae5-6ed039829959',
-            'name' => 'Scrapworld',
-            'email' => 'fdiez86@gmail.com',
-            'password' => '234Karatedo',
+            'name' => 'Empresa de Prueba',
+            'email' => 'demo@hookyapp.es',
+            'password' => 'Demo2025',
             'timezone_uid' => TimeZone::find(2)->uid,
             'pricing_plan_uid' => \App\Models\PricingPlan::find(4)->uid
         ]);
