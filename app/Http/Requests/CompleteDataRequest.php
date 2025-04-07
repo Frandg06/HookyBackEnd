@@ -22,10 +22,7 @@ class CompleteDataRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'instagram' => 'nullable|string',
-            'twitter' => 'nullable|string',
             'description' => 'nullable|string',
-            'city' => 'required|string',
             'born_date' => 'required|date',
             'gender_id' => 'required|integer|exists:genders,id',
             'sexual_orientation_id' => 'required|integer|exists:sexual_orientations,id',

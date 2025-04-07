@@ -37,11 +37,8 @@ class User extends Authenticatable implements JWTSubject
         'gender_id',
         'sexual_orientation_id',
         'role_id',
-        'city',
         'born_date',
         'description',
-        'tw',
-        'ig',
         'role_id',
     ];
 
@@ -60,7 +57,6 @@ class User extends Authenticatable implements JWTSubject
         'gender_id',
         'sexual_orientation_id',
         'role_id',
-        'city',
         'born_date',
     ];
 

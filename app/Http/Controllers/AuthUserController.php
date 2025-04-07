@@ -154,16 +154,13 @@ class AuthUserController extends Controller
     {
         return [
             'born_date' => $data['born_date'],
-            'city' => $data['city'],
             'description' => $data['description'],
             'email' => $data['email'],
             'gender_id' => $data['gender_id'],
-            'ig' => $data['ig'],
             'interests' => $data['interests'],
             'name' => $data['name'],
             'sexual_orientation_id' => $data['sexual_orientation_id'],
             'surnames' => $data['surnames'],
-            'tw' => $data['tw'],
         ];
     }
 

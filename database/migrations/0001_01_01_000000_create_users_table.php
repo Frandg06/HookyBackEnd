@@ -19,10 +19,7 @@ return new class extends Migration {
             $table->string('name');
             $table->string('surnames')->nullable();
             $table->string('email')->unique();
-            $table->string('city')->nullable();
             $table->date('born_date')->nullable();
-            $table->string('ig')->nullable();
-            $table->string('tw')->nullable();
             $table->longText('description')->nullable();
             $table->string('password');
             $table->boolean('verified')->default(false);

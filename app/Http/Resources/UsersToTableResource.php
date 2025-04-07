@@ -23,23 +23,12 @@ class UsersToTableResource extends JsonResource
             'name' => $this->name,
             'surnames' => $this->surnames,
             'email' => $this->email,
-            'city' => $this->city,
             'born_date' => $this->born_date,
             'description' => $this->description,
             'like_credits' => $this->event->likes,
             'super_like_credits' => $this->event->super_likes,
             'age' => $this->age,
             'avatar' => $this->userImages()->first()->web_url ?? null,
-            'socials' => [
-                'instagram' => [
-                    'name' => $this->ig,
-                    'url' => 'https://www.instagram.com/' . $this->ig
-                ],
-                'tw' => [
-                    'name' => $this->tw,
-                    'url' => 'https://www.x.com/' . $this->tw
-                ]
-            ],
         ];
     }
 }

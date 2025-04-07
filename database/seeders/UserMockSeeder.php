@@ -25,10 +25,7 @@ class UserMockSeeder extends Seeder
                 'gender_id' => Gender::MALE,
                 'sexual_orientation_id' => SexualOrientation::HETEROSEXUAL,
                 'role_id' => Role::PREMIUM,
-                'city' => 'Leon',
                 'born_date' => '1990-01-01',
-                'ig' => 'frandiez',
-                'tw' => 'frandiez',
                 'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.'
             ],
             [
@@ -39,10 +36,7 @@ class UserMockSeeder extends Seeder
                 'gender_id' => Gender::FEMALE,
                 'sexual_orientation_id' => SexualOrientation::HETEROSEXUAL,
                 'role_id' => Role::USER,
-                'city' => 'Leon',
                 'born_date' => '1990-01-01',
-                'ig' => 'celia',
-                'tw' => 'celia',
                 'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.'
 
             ],
@@ -54,10 +48,7 @@ class UserMockSeeder extends Seeder
                 'gender_id' => Gender::FEMALE,
                 'sexual_orientation_id' => SexualOrientation::HOMOSEXUAL,
                 'role_id' => Role::USER,
-                'city' => 'Leon',
                 'born_date' => '1990-01-01',
-                'ig' => 'clara',
-                'tw' => 'clara',
                 'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.'
             ],
             [
@@ -68,10 +59,7 @@ class UserMockSeeder extends Seeder
                 'gender_id' => Gender::FEMALE,
                 'sexual_orientation_id' => SexualOrientation::BISEXUAL,
                 'role_id' => Role::USER,
-                'city' => 'Leon',
                 'born_date' => '1990-01-01',
-                'ig' => 'irene',
-                'tw' => 'irene',
                 'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.'
             ],
             [
@@ -82,10 +70,7 @@ class UserMockSeeder extends Seeder
                 'gender_id' => Gender::FEMALE,
                 'sexual_orientation_id' => SexualOrientation::HOMOSEXUAL,
                 'role_id' => Role::USER,
-                'city' => 'Leon',
                 'born_date' => '1990-01-01',
-                'ig' => 'celia',
-                'tw' => 'celia',
                 'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.'
 
             ],
@@ -97,10 +82,7 @@ class UserMockSeeder extends Seeder
                 'gender_id' => Gender::MALE,
                 'sexual_orientation_id' => SexualOrientation::BISEXUAL,
                 'role_id' => Role::USER,
-                'city' => 'Leon',
                 'born_date' => '1990-01-01',
-                'ig' => 'dani',
-                'tw' => 'dani',
                 'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.'
             ],
             [
@@ -111,10 +93,7 @@ class UserMockSeeder extends Seeder
                 'gender_id' => Gender::MALE,
                 'sexual_orientation_id' => SexualOrientation::HOMOSEXUAL,
                 'role_id' => Role::USER,
-                'city' => 'Leon',
                 'born_date' => '1990-01-01',
-                'ig' => 'tetor',
-                'tw' => 'tetor',
                 'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.'
             ],
         ];
@@ -122,6 +101,5 @@ class UserMockSeeder extends Seeder
         foreach ($arr as $user) {
             User::create($user);
         }
-        
     }
 }

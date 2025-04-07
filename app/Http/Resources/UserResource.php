@@ -21,7 +21,6 @@ class UserResource extends JsonResource
             'surnames' => $this->surnames,
             'gender_id' => $this->gender_id,
             'sexual_orientation_id' => $this->sexual_orientation_id,
-            'city' => $this->city,
             'description' => $this->description,
             'age' => $this->age,
             'userImages' => $this->userImages->map(function ($image) {
@@ -29,16 +28,6 @@ class UserResource extends JsonResource
                     'web_url' => $image->web_url,
                 ];
             }),
-            'socials' => [
-                'instagram' => [
-                    'name' => $this->ig,
-                    'url' => 'https://www.instagram.com/' . $this->ig
-                ],
-                'tw' => [
-                    'name' => $this->tw,
-                    'url' => 'https://www.x.com/' . $this->tw
-                ]
-            ],
             'interests' => $this->interests->map(function ($interest) {
                 return [
                     'id' => $interest->interest_id,

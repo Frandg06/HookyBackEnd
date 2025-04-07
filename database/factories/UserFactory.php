@@ -33,10 +33,7 @@ class UserFactory extends Factory
             'gender_id' => fake()->numberBetween(1, 2),
             'sexual_orientation_id' => fake()->numberBetween(1, 3),
             'role_id' => Role::USER,
-            'city' => fake()->city(),
             'born_date' => fake()->date(),
-            'ig' => fake()->name(),
-            'tw' => fake()->name(),
             'description' => fake()->paragraph(),
         ];
     }
@@ -46,7 +43,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

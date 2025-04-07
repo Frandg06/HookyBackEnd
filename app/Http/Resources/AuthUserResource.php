@@ -32,7 +32,6 @@ class AuthUserResource extends JsonResource
             'name' => $this->name,
             'surnames' => $this->surnames,
             'email' => $this->email,
-            'city' => $this->city,
             'born_date' => $this->born_date,
             'description' => $this->description,
             'like_credits' => $this->likes,
@@ -52,16 +51,6 @@ class AuthUserResource extends JsonResource
                     'uid' => $image->uid,
                 ];
             }),
-            'socials' => [
-                'instagram' => [
-                    'name' => $this->ig,
-                    'url' => 'https://www.instagram.com/' . $this->ig
-                ],
-                'tw' => [
-                    'name' => $this->tw,
-                    'url' => 'https://www.x.com/' . $this->tw
-                ]
-            ],
             'interests' => $this->interests->map(function ($interest) {
                 return [
                     'id' => $interest->interest_id,
