@@ -23,9 +23,9 @@ class DevSeeder extends Seeder
      */
     public function run(): void
     {
-        if (env('APP_ENV') !== 'local') {
-            return;
-        }
+        // if (env('APP_ENV') !== 'local') {
+        //     return;
+        // }
 
         $this->call(EventsMockSeeder::class);
         $this->call(UserMockSeeder::class);
