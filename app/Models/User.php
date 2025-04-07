@@ -91,10 +91,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(UserImage::class, 'user_uid', 'uid');
     }
 
-    public function interests(): HasMany
-    {
-        return $this->hasMany(UserInterest::class, 'user_uid', 'uid');
-    }
 
     public function interactions(): HasMany
     {
@@ -163,11 +159,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->events()->where('event_uid', $this->event->uid)->first()->super_likes;
     }
 
-    public function getDataInterestAttribute(): bool
-    {
-        return $this->interests()->count() >= 3 ? true : false;
-    }
-
     public function getUnreadChatsAttribute(): int
     {
         return ChatMessage::whereNot('sender_uid', $this->uid)
@@ -183,7 +174,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getCompleteRegisterAttribute(): bool
     {
-        if ($this->data_complete && $this->data_images && $this->data_interest) {
+        if ($this->data_complete && $this->data_images) {
             return true;
         }
         return false;
@@ -208,11 +199,6 @@ class User extends Authenticatable implements JWTSubject
     public function scopeResource()
     {
         return AuthUserResource::make($this);
-    }
-
-    public function interestBelongsToMany()
-    {
-        return $this->belongsToMany(Interest::class, 'user_interests', 'user_uid', 'interest_id');
     }
 
     public function scopeGetUsersToInteract($query, $authUser, $usersWithInteraction, $usersWithoutInteraction)
@@ -252,15 +238,6 @@ class User extends Authenticatable implements JWTSubject
     {
         return $query->whereNot('uid', $authUser->uid)
             ->whereNotIn('uid', $usersWithInteraction)
-            ->whereRaw('
-            EXISTS (
-                SELECT 1 
-                FROM user_interests 
-                WHERE user_interests.user_uid = users.uid 
-                GROUP BY user_interests.user_uid 
-                HAVING COUNT(user_interests.user_uid) BETWEEN 3 AND 6
-            )
-        ')
             ->whereRaw('
             EXISTS (
                 SELECT 1 

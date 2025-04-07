@@ -58,35 +58,6 @@ class AuthUserService extends Service
         }
     }
 
-    public function updateInterest(array $newInterests)
-    {
-        DB::beginTransaction();
-        try {
-            $hasInterest = $this->user()->interests()->get()->pluck('interest_id')->toArray();
-
-            foreach ($newInterests as $item) {
-                if (!in_array($item, $hasInterest)) {
-                    $this->user()->interests()->create([
-                        'interest_id' => $item
-                    ]);
-                }
-            }
-
-            foreach ($hasInterest as $item) {
-                if (!in_array($item, $newInterests)) {
-                    $this->user()->interests()->where('interest_id', $item)->delete();
-                }
-            }
-
-            DB::commit();
-
-            return $this->user()->resource();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-    }
-
     public function getNotifications()
     {
         $user = $this->user();
@@ -120,13 +91,12 @@ class AuthUserService extends Service
         return $data;
     }
 
-    public function completeRegisterData($info, $files, $interests)
+    public function completeRegisterData($info, $files)
     {
         DB::beginTransaction();
         try {
             $user = request()->user();
             $this->update($info);
-            $this->updateInterest($interests);
 
             $imageService = new ImagesService();
 

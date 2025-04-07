@@ -26,7 +26,6 @@ class CompleteAuthUserRequest extends FormRequest
             'description' => 'nullable|string',
             'email' => 'required|email',
             'gender_id' => 'required|exists:genders,id',
-            'interests' => 'required|string',
             'name' => 'required|string|min:2',
             'sexual_orientation_id' => 'required|exists:sexual_orientations,id',
             'surnames' => 'required|string|min:2',

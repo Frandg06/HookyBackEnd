@@ -38,7 +38,6 @@ class AuthUserResource extends JsonResource
             'super_like_credits' => $this->super_likes,
             'data_complete' => $this->data_complete,
             'data_images' => $this->data_images,
-            'data_interest' => $this->data_interest,
             'complete_register' => $this->complete_register,
             'age' => $this->age,
             'userImages' => $this->userImages->map(function ($image) {
@@ -49,15 +48,6 @@ class AuthUserResource extends JsonResource
                     'size' => $image->size,
                     'name' => $image->name,
                     'uid' => $image->uid,
-                ];
-            }),
-            'interests' => $this->interests->map(function ($interest) {
-                return [
-                    'id' => $interest->interest_id,
-                    'name' => $interest->interest->name,
-                    'icon' => $interest->interest->icon,
-                    'color' => $interest->interest->color,
-                    'bg_color' => $interest->interest->bg_color,
                 ];
             }),
             'notifications' => [
