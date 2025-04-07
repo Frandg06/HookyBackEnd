@@ -28,15 +28,6 @@ class UserResource extends JsonResource
                     'web_url' => $image->web_url,
                 ];
             }),
-            'interests' => $this->interests->map(function ($interest) {
-                return [
-                    'id' => $interest->interest_id,
-                    'name' => $interest->interest->name,
-                    'icon' => $interest->interest->icon,
-                    'color' => $interest->interest->color,
-                    'bg_color' => $interest->interest->bg_color,
-                ];
-            }),
         ];
     }
 }
