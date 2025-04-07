@@ -10,7 +10,6 @@ Route::prefix('user')->group(function () {
 
     Route::put('/password', [AuthUserController::class, 'updatePassword']);
     Route::put('/update', [AuthUserController::class, 'update']);
-    Route::put('/interest', [AuthUserController::class, 'updateInterest']);
 
     Route::get('/notifications', [AuthUserController::class, 'getNotifications']);
     Route::post('/notifications/read/{type}', [AuthUserController::class, 'readNotificationsByType']);

@@ -16,7 +16,6 @@ Route::middleware(['api', 'lang'])->group(function () {
     Route::post('/user/complete', [AuthUserController::class, 'completeRegisterData'])->middleware(['auth:api', 'jwt.verify']);
 
     Route::get('/timezones', [DomainController::class, 'getTimeZones'])->middleware(['auth:company']);
-    Route::get('/interests', [DomainController::class, 'getInterests'])->middleware(['auth:api']);
 
     Route::post('/email/waitlist', [EmailController::class, 'storeWaitlist']);
     Route::delete('/images/all', [ImageController::class, 'deleteAll']);

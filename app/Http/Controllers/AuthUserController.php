@@ -44,9 +44,8 @@ class AuthUserController extends Controller
         $data = $request->all();
         $info = $this->parseCompleteData($data);
         $files = $this->parseCompleteFiles($data);
-        $interests = $this->parseCompleteInterests($data);
 
-        $response = $this->authUserService->completeRegisterData($info, $files, $interests);
+        $response = $this->authUserService->completeRegisterData($info, $files);
         return response()->json(['success' => true, 'resp' => $response], 200);
     }
 
@@ -63,17 +62,6 @@ class AuthUserController extends Controller
         return response()->json(['success' => true, 'resp' => $response], 200);
     }
 
-    public function updateInterest(Request $request)
-    {
-        $request->validate([
-            'interests' => 'required|array|min:3'
-        ]);
-
-        $interests = $request->interests;
-        $response = $this->authUserService->updateInterest($interests);
-
-        return response()->json(['success' => true, 'resp' => $response], 200);
-    }
 
     public function getNotifications()
     {
@@ -157,7 +145,6 @@ class AuthUserController extends Controller
             'description' => $data['description'],
             'email' => $data['email'],
             'gender_id' => $data['gender_id'],
-            'interests' => $data['interests'],
             'name' => $data['name'],
             'sexual_orientation_id' => $data['sexual_orientation_id'],
             'surnames' => $data['surnames'],
@@ -191,10 +178,5 @@ class AuthUserController extends Controller
                 ]
             ],
         ];
-    }
-
-    private function parseCompleteInterests($data)
-    {
-        return explode(',', $data['interests']);
     }
 }
