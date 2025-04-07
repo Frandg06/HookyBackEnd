@@ -15,7 +15,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
+        if (env('APP_ENV') !== 'local') {
+            return;
+        }
         Storage::disk('r2')->deleteDirectory('hooky/profile');
         Storage::disk('r2')->deleteDirectory('hooky/qr');
 
