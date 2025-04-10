@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\CompleteAuthUserRequest;
 use App\Http\Requests\CompleteDataRequest;
+use App\Http\Resources\UserResource;
 use App\Http\Services\AuthUserService;
 use App\Http\Services\ImagesService;
 use App\Http\Services\NotificationService;
@@ -108,14 +109,14 @@ class AuthUserController extends Controller
 
         $user = User::where('uid', $uid)->first();
 
-        return response()->json(['resp' => $user->resource(), 'success' => true], 200);
+        return $this->response(UserResource::make($user));
     }
 
     public function getUser(Request $request, $uid)
     {
         $user = $request->user();
 
-        $isHook = UsersInteraction::checkHook($user->uid, $uid, $user->event->uid);
+        $isHook = UsersInteraction::isHook($user->uid, $uid, $user->event->uid);
 
         if (!$isHook) {
             return response()->json([
@@ -127,7 +128,8 @@ class AuthUserController extends Controller
 
         $user = User::where('uid', $uid)->first();
 
-        return response()->json(['resp' => $user->resource(), 'success' => true], 200);
+
+        return $this->response(UserResource::make($user));
     }
 
     public function setInteraction(Request $request, $uid)
