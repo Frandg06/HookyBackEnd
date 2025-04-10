@@ -70,27 +70,24 @@ class UserService extends Service
 
             $user = $this->user();
             $eventUid = $user->event->uid;
-            $userUid = $user->uid;
-            // Busco si previamente se habia creado la plantilla de interacciones
-            UsersInteraction::updateOrCreate(
-                [
-                    'user_uid' => $userUid,
-                    'interaction_user_uid' => $uid,
-                    'event_uid' => $eventUid
-                ],
-                [
-                    'interaction_id' => $interaction
-                ]
-            );
+            $authUid = $user->uid;
+            $targetUserUid = $uid;
+
+            UsersInteraction::create([
+                'user_uid' => $authUid,
+                'interaction_user_uid' => $targetUserUid,
+                'event_uid' => $eventUid,
+                'interaction_id' => $interaction
+            ],);
             // Actualizo los likes y super likes restantes
-            $this->user()->refreshInteractions($interaction);
+            $this->user()->refreshCredits($interaction);
 
             // Compruebo si es un hook
-            $checkHook =  UsersInteraction::checkHook($uid, $userUid, $eventUid);
+            $checkHook =  UsersInteraction::checkHook($uid, $authUid, $eventUid);
 
             if ($checkHook) {
                 // Si lo es y existe la interacción como like la elimino
-                $existLike = Notification::getLikeAndSuperLikeNotify($userUid, $uid, $eventUid);
+                $existLike = Notification::getLikeAndSuperLikeNotify($authUid, $uid, $eventUid);
                 if ($existLike) {
                     $existLike->delete();
                 }
@@ -100,7 +97,7 @@ class UserService extends Service
                 $notify = new Notifify([
                     'reciber_uid' => $uid,
                     'type_id' => $type,
-                    'sender_uid' => $userUid,
+                    'sender_uid' => $authUid,
                     'payload' => [
                         'chat_created' => true,
                     ]
@@ -109,7 +106,7 @@ class UserService extends Service
                 $notify->dualEmitWithSave();
 
                 // Creo el chat
-                $chat = $this->chatService->store($userUid, $uid, $eventUid);
+                $chat = $this->chatService->store($authUid, $uid, $eventUid);
             } elseif (in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
                 $isLike = $interaction == Interaction::LIKE_ID;
 
@@ -118,7 +115,7 @@ class UserService extends Service
                 $notify = new Notifify([
                     'reciber_uid' => $uid,
                     'type_id' => $type,
-                    'sender_uid' => $userUid,
+                    'sender_uid' => $authUid,
 
                 ]);
 

@@ -248,7 +248,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->interactions()->where('event_uid', $this->event->uid)->where('interaction_id', null)->get();
     }
 
-    public function refreshInteractions($interaction)
+    public function refreshCredits($interaction)
     {
         $eventPivot = $this->events()->where('event_uid', $this->event->uid)->first();
         if ($interaction == Interaction::LIKE_ID) {
