@@ -6,6 +6,7 @@ use App\Exceptions\ApiException;
 use App\Http\Resources\UserResource;
 use App\Http\Services\NotificationService;
 use App\Http\Services\WsChatService;
+use App\Models\Gender;
 use App\Models\Interaction;
 use App\Models\Notification;
 use App\Models\NotificationsType;
@@ -13,6 +14,7 @@ use App\Models\Notifify;
 use App\Models\SexualOrientation;
 use App\Models\User;
 use App\Models\UsersInteraction;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -31,40 +33,28 @@ class UserService extends Service
     {
         DB::beginTransaction();
         try {
-            $authUser = $this->user();
-            // usuarios ya obtenidos previamente con lo que no se ha interactuado en el evento actual
-            $usersWithoutInteraction = $authUser->interactions()->usersWithoutInteraction($authUser->event->uid);
 
-            // usuarios que se han cargado previamente y que se ha interactuado en el evento actual
-            $usersWithInteraction = $authUser->interactions()->usersWithInteraction($authUser->event->uid);
+            $auth = $this->user();
+            $cacheKey = 'target_users_uids_' . $auth->uid . '_' .  $auth->event->uid;
+            $cachedUids = Cache::get($cacheKey, []);
+            $needed = 50 - count($cachedUids);
 
-            // obtener los usuarios que se van a interactuar que esten en el evento que no se haya interactuado con ellos
-            if ($authUser->sexual_orientation_id == SexualOrientation::BISEXUAL) {
-                $users = User::getBisexualUsersToInteract($authUser, $usersWithInteraction, $usersWithoutInteraction);
-            } else {
-                $users = User::getUsersToInteract($authUser, $usersWithInteraction, $usersWithoutInteraction);
+            if ($needed > 0) {
+                $targetUsers = User::whereTargetUsersFrom($auth)
+                    ->whereNotIn('uid', $cachedUids)
+                    ->orderBy('created_at', 'asc')
+                    ->orderBy('id', 'asc')
+                    ->limit($needed)
+                    ->get();
+
+                $targetUids = $targetUsers->pluck('uid')->toArray();
+
+                $cachedUids = array_merge($cachedUids, $targetUids);
+                Cache::put($cacheKey, $cachedUids);
             }
 
-            $newUsersWithInteractions = [];
-
-            foreach ($users as $userToInsert) {
-                if (UsersInteraction::where('user_uid', $authUser->uid)->where('interaction_user_uid', $userToInsert->uid)->count() > 0) {
-                    continue;
-                }
-
-                $newUsersWithInteractions[] = [
-                    'user_uid' => $authUser->uid,
-                    'interaction_user_uid' => $userToInsert->uid,
-                    'interaction_id' => null,
-                    'event_uid' => $authUser->event->uid,
-                    'created_at' => now()
-                ];
-            }
-
-            UsersInteraction::insert($newUsersWithInteractions);
-
+            $users = User::whereIn('uid', $cachedUids)->get();
             DB::commit();
-
             return UserResource::collection($users);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -143,8 +133,6 @@ class UserService extends Service
                 'super_like_credits' => $this->user()->super_likes,
                 'like_credits' => $this->user()->likes,
             ];
-
-            Log::alert($response);
 
             if ($remainingUsersCount <= 10) {
                 $refetch = $this->getUsers();
