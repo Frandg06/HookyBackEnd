@@ -23,11 +23,7 @@ class UserResource extends JsonResource
             'sexual_orientation_id' => $this->sexual_orientation_id,
             'description' => $this->description,
             'age' => $this->age,
-            'userImages' => $this->userImages->map(function ($image) {
-                return [
-                    'web_url' => $image->web_url,
-                ];
-            }),
+            'userImages' => $this->userImages->pluck('web_url'),
         ];
     }
 }

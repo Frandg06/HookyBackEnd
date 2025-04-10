@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
@@ -95,11 +96,6 @@ class User extends Authenticatable implements JWTSubject
     public function interactions(): HasMany
     {
         return $this->hasMany(UsersInteraction::class, 'user_uid', 'uid');
-    }
-
-    public function targetUsers(): HasMany
-    {
-        return $this->hasMany(UsersInteraction::class, 'interaction_user_uid', 'uid');
     }
 
     public function events(): HasMany
@@ -237,9 +233,12 @@ class User extends Authenticatable implements JWTSubject
             ->whereHas('events', function ($q) use ($auth) {
                 $q->where('event_uid', $auth->event->uid);
             })
-            ->whereDoesntHave('targetUsers', function ($q) use ($auth) {
-                $q->where('user_uid', $auth->uid)
-                    ->where('event_uid', $auth->event->uid);
+            ->whereNotIn('uid', function ($q) use ($auth) {
+                $q->select('interaction_user_uid')
+                    ->from('users_interactions as ui')
+                    ->where('ui.user_uid', $auth->uid)
+                    ->where('ui.event_uid', $auth->event->uid)
+                    ->pluck('interaction_user_uid');
             });
     }
 

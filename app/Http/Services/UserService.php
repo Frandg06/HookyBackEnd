@@ -5,13 +5,10 @@ namespace App\Http\Services;
 use App\Exceptions\ApiException;
 use App\Http\Resources\UserResource;
 use App\Http\Services\NotificationService;
-use App\Http\Services\WsChatService;
-use App\Models\Gender;
 use App\Models\Interaction;
 use App\Models\Notification;
 use App\Models\NotificationsType;
 use App\Models\Notifify;
-use App\Models\SexualOrientation;
 use App\Models\User;
 use App\Models\UsersInteraction;
 use Illuminate\Support\Facades\Cache;
@@ -48,7 +45,6 @@ class UserService extends Service
                     ->get();
 
                 $targetUids = $targetUsers->pluck('uid')->toArray();
-
                 $cachedUids = array_merge($cachedUids, $targetUids);
                 Cache::put($cacheKey, $cachedUids);
             }
@@ -78,62 +74,33 @@ class UserService extends Service
                 'interaction_user_uid' => $targetUserUid,
                 'event_uid' => $eventUid,
                 'interaction_id' => $interaction
-            ],);
+            ]);
+
             // Actualizo los likes y super likes restantes
             $this->user()->refreshCredits($interaction);
 
             // Compruebo si es un hook
-            $checkHook =  UsersInteraction::checkHook($uid, $authUid, $eventUid);
+            $isHook =  UsersInteraction::isHook($targetUserUid, $authUid, $eventUid)->exists();
 
-            if ($checkHook) {
-                // Si lo es y existe la interacción como like la elimino
-                $existLike = Notification::getLikeAndSuperLikeNotify($authUid, $uid, $eventUid);
-                if ($existLike) {
-                    $existLike->delete();
-                }
-
-                $type = NotificationsType::HOOK_TYPE;
-
-                $notify = new Notifify([
-                    'reciber_uid' => $uid,
-                    'type_id' => $type,
-                    'sender_uid' => $authUid,
-                    'payload' => [
-                        'chat_created' => true,
-                    ]
-                ]);
-
-                $notify->dualEmitWithSave();
-
-                // Creo el chat
-                $chat = $this->chatService->store($authUid, $uid, $eventUid);
+            if ($isHook) {
+                $this->handleHook($authUid, $targetUserUid, $eventUid, $chat);
             } elseif (in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
-                $isLike = $interaction == Interaction::LIKE_ID;
-
-                $type = $isLike ? NotificationsType::LIKE_TYPE : NotificationsType::SUPER_LIKE_TYPE;
-
-                $notify = new Notifify([
-                    'reciber_uid' => $uid,
-                    'type_id' => $type,
-                    'sender_uid' => $authUid,
-
-                ]);
-
-                $notify->emit();
-                $notify->save();
+                $this->handleLike($interaction, $authUid, $targetUserUid);
             }
 
-            $remainingUsers = $this->user()->remainingUsersToInteract();
-            $remainingUsersCount = $remainingUsers->count();
+            $cacheKey = 'target_users_uids_' . $authUid . '_' .  $eventUid;
+            $cachedUids = Cache::get($cacheKey, []);
+            $filtered = collect($cachedUids)->reject(fn($cachedUid) => $cachedUid == $targetUserUid)->values();
+            Cache::put($cacheKey, $filtered->toArray());
 
             $response = [
                 'super_like_credits' => $this->user()->super_likes,
                 'like_credits' => $this->user()->likes,
             ];
 
-            if ($remainingUsersCount <= 10) {
+            if ($filtered->count() <= 10) {
                 $refetch = $this->getUsers();
-                if (count($refetch) != $remainingUsersCount) {
+                if (count($refetch) != $filtered->count()) {
                     $response['remaining_users'] = $refetch;
                 }
             }
@@ -150,5 +117,41 @@ class UserService extends Service
             Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
             throw new ApiException('set_interaction_ko', 500);
         }
+    }
+
+    private function handleHook(string $authUid, string $targetUserUid, string $eventUid, &$chat): void
+    {
+        $pastNotify = Notification::getLikeAndSuperLikeNotify($authUid, $targetUserUid, $eventUid);
+        if ($pastNotify) {
+            $pastNotify->delete();
+        }
+
+
+        $notification = new Notifify([
+            'reciber_uid' => $targetUserUid,
+            'type_id' => NotificationsType::HOOK_TYPE,
+            'sender_uid' => $authUid,
+            'payload' => ['chat_created' => true]
+        ]);
+
+        $notification->dualEmitWithSave();
+
+        $chat = $this->chatService->store($authUid, $targetUserUid, $eventUid);
+    }
+
+    private function handleLike(int $interaction, string $authUid, string $targetUserUid): void
+    {
+        $type = $interaction === Interaction::LIKE_ID
+            ? NotificationsType::LIKE_TYPE
+            : NotificationsType::SUPER_LIKE_TYPE;
+
+        $notification = new Notifify([
+            'reciber_uid' => $targetUserUid,
+            'type_id' => $type,
+            'sender_uid' => $authUid
+        ]);
+
+        $notification->emit();
+        $notification->save();
     }
 }

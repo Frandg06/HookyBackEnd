@@ -48,7 +48,7 @@ class UsersInteraction extends Model
             ->pluck('interaction_user_uid');
     }
 
-    public static function scopeCheckHook($query, $emitter, $reciber, $event)
+    public static function scopeIsHook($query, $emitter, $reciber, $event)
     {
         return $query->where('user_uid', $reciber)
             ->where('interaction_user_uid', $emitter)
@@ -59,8 +59,7 @@ class UsersInteraction extends Model
                     ->where('interaction_user_uid', $reciber)
                     ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
                     ->where('event_uid', $event);
-            })
-            ->exists();
+            });
     }
 
     public static function checkIsLike($uid, $auth)

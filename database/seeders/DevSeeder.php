@@ -78,18 +78,18 @@ class DevSeeder extends Seeder
 
         $event = Event::first();
 
-        // User::factory()->count(100)->create([
-        //     'sexual_orientation_id' => 2,
-        //     'gender_id' => 1,
-        // ])->each(function ($user) use ($event) {
-        //     UserEvent::create([
-        //         'user_uid' => $user->uid,
-        //         'event_uid' => $event->uid,
-        //         'logged_at' => fake()->dateTimeInInterval('-12 hours', '+15 hours'),
-        //         'super_likes' => $event->super_likes,
-        //         'likes' => $event->likes,
-        //     ]);
-        // });
+        User::factory()->count(100)->create([
+            'sexual_orientation_id' => 2,
+            'gender_id' => 1,
+        ])->each(function ($user) use ($event) {
+            UserEvent::create([
+                'user_uid' => $user->uid,
+                'event_uid' => $event->uid,
+                'logged_at' => fake()->dateTimeInInterval('-12 hours', '+15 hours'),
+                'super_likes' => $event->super_likes,
+                'likes' => $event->likes,
+            ]);
+        });
 
 
         User::all()->each(function ($user) use ($event) {
