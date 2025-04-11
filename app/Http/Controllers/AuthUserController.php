@@ -85,7 +85,7 @@ class AuthUserController extends Controller
     public function getUserToConfirm(Request $request, $uid)
     {
         $user = $this->user();
-        // todo obtener todas las interacciones del usuario hacia el autenticado y luego filtrar por tipo    
+        // todo obtener todas las interacciones del usuario hacia el autenticado y luego filtrar por tipo
 
         $isLike = TargetUsers::checkIsLike($uid, $user);
 

@@ -89,7 +89,7 @@ class UserService extends Service
 
             $cacheKey = 'target_users_uids_' . $authUid . '_' .  $eventUid;
             $cachedUids = Cache::get($cacheKey, []);
-            $filtered = collect($cachedUids)->reject(fn($cachedUid) => $cachedUid == $targetUserUid)->values();
+            $filtered = collect($cachedUids)->reject(fn ($cachedUid) => $cachedUid == $targetUserUid)->values();
             Cache::put($cacheKey, $filtered->toArray());
 
             $response = [

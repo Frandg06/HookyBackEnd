@@ -210,7 +210,7 @@ class User extends Authenticatable implements JWTSubject
                 $q->whereIn('gender_id', $auth->match_gender)
                     ->whereIn('sexual_orientation_id', [$auth->sexual_orientation_id, SexualOrientation::BISEXUAL]);
             })
-            ->when($auth->sexual_orientation_id === SexualOrientation::BISEXUAL,  function ($q) use ($auth) {
+            ->when($auth->sexual_orientation_id === SexualOrientation::BISEXUAL, function ($q) use ($auth) {
                 $q->when($auth->gender_id === Gender::MALE, function ($query) {
                     $query->where(function ($subQuery) {
                         $subQuery->where('gender_id', Gender::MALE)
