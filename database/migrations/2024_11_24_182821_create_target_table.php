@@ -10,14 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('users_interactions', function (Blueprint $table) {
+        Schema::dropIfExists('users_iteractions');
+        Schema::create('target_users', function (Blueprint $table) {
             $table->id();
             $table->uuid('user_uid');
-            $table->uuid('interaction_user_uid')->nullable();
+            $table->uuid('target_user_uid')->nullable();
             $table->unsignedBigInteger('interaction_id')->nullable();
             $table->uuid('event_uid')->nullable();
             $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
-            $table->foreign('interaction_user_uid')->references('uid')->on('users')->onDelete('cascade');
+            $table->foreign('target_user_uid')->references('uid')->on('users')->onDelete('cascade');
             $table->foreign('interaction_id')->references('id')->on('interactions')->onDelete('cascade');
             $table->foreign('event_uid')->references('uid')->on('events')->onDelete('cascade');
             $table->timestamps();
@@ -29,6 +30,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('users_iteractions');
+        Schema::dropIfExists('target_users');
     }
 };

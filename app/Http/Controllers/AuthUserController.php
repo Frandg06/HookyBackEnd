@@ -11,7 +11,7 @@ use App\Http\Services\ImagesService;
 use App\Http\Services\NotificationService;
 use App\Http\Services\UserService;
 use App\Models\User;
-use App\Models\UsersInteraction;
+use App\Models\TargetUsers;
 use Illuminate\Support\Facades\Log;
 
 class AuthUserController extends Controller
@@ -87,9 +87,9 @@ class AuthUserController extends Controller
         $user = $this->user();
         // todo obtener todas las interacciones del usuario hacia el autenticado y luego filtrar por tipo    
 
-        $isLike = UsersInteraction::checkIsLike($uid, $user);
+        $isLike = TargetUsers::checkIsLike($uid, $user);
 
-        $isSuperlike = UsersInteraction::checkIsSuperLike($uid, $user);
+        $isSuperlike = TargetUsers::checkIsSuperLike($uid, $user);
 
         if (!$user->is_premium && !$isSuperlike) {
             return response()->json([
@@ -116,7 +116,7 @@ class AuthUserController extends Controller
     {
         $user = $request->user();
 
-        $isHook = UsersInteraction::isHook($user->uid, $uid, $user->event->uid);
+        $isHook = TargetUsers::isHook($user->uid, $uid, $user->event->uid);
 
         if (!$isHook) {
             return response()->json([

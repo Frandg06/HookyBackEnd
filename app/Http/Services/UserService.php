@@ -10,7 +10,7 @@ use App\Models\Notification;
 use App\Models\NotificationsType;
 use App\Models\Notifify;
 use App\Models\User;
-use App\Models\UsersInteraction;
+use App\Models\TargetUsers;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -54,7 +54,6 @@ class UserService extends Service
             return UserResource::collection($users);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
             throw new ApiException('get_users_ko', 500);
         }
     }
@@ -69,9 +68,9 @@ class UserService extends Service
             $authUid = $user->uid;
             $targetUserUid = $uid;
 
-            UsersInteraction::create([
+            TargetUsers::create([
                 'user_uid' => $authUid,
-                'interaction_user_uid' => $targetUserUid,
+                'target_user_uid' => $targetUserUid,
                 'event_uid' => $eventUid,
                 'interaction_id' => $interaction
             ]);
@@ -80,7 +79,7 @@ class UserService extends Service
             $this->user()->refreshCredits($interaction);
 
             // Compruebo si es un hook
-            $isHook =  UsersInteraction::isHook($targetUserUid, $authUid, $eventUid)->exists();
+            $isHook =  TargetUsers::isHook($targetUserUid, $authUid, $eventUid)->exists();
 
             if ($isHook) {
                 $this->handleHook($authUid, $targetUserUid, $eventUid, $chat);
@@ -114,7 +113,6 @@ class UserService extends Service
             return $response;
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
             throw new ApiException('set_interaction_ko', 500);
         }
     }

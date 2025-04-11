@@ -95,7 +95,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function interactions(): HasMany
     {
-        return $this->hasMany(UsersInteraction::class, 'user_uid', 'uid');
+        return $this->hasMany(TargetUsers::class, 'user_uid', 'uid');
     }
 
     public function events(): HasMany
@@ -234,11 +234,11 @@ class User extends Authenticatable implements JWTSubject
                 $q->where('event_uid', $auth->event->uid);
             })
             ->whereNotIn('uid', function ($q) use ($auth) {
-                $q->select('interaction_user_uid')
-                    ->from('users_interactions as ui')
+                $q->select('target_user_uid')
+                    ->from('target_users as ui')
                     ->where('ui.user_uid', $auth->uid)
                     ->where('ui.event_uid', $auth->event->uid)
-                    ->pluck('interaction_user_uid');
+                    ->pluck('target_user_uid');
             });
     }
 
