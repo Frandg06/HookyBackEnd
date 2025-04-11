@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\CompleteAuthUserRequest;
 use App\Http\Requests\CompleteDataRequest;
+use App\Http\Resources\UserResource;
 use App\Http\Services\AuthUserService;
 use App\Http\Services\ImagesService;
 use App\Http\Services\NotificationService;
 use App\Http\Services\UserService;
 use App\Models\User;
-use App\Models\UsersInteraction;
+use App\Models\TargetUsers;
 use Illuminate\Support\Facades\Log;
 
 class AuthUserController extends Controller
@@ -84,11 +85,11 @@ class AuthUserController extends Controller
     public function getUserToConfirm(Request $request, $uid)
     {
         $user = $this->user();
-        // todo obtener todas las interacciones del usuario hacia el autenticado y luego filtrar por tipo    
+        // todo obtener todas las interacciones del usuario hacia el autenticado y luego filtrar por tipo
 
-        $isLike = UsersInteraction::checkIsLike($uid, $user);
+        $isLike = TargetUsers::checkIsLike($uid, $user);
 
-        $isSuperlike = UsersInteraction::checkIsSuperLike($uid, $user);
+        $isSuperlike = TargetUsers::checkIsSuperLike($uid, $user);
 
         if (!$user->is_premium && !$isSuperlike) {
             return response()->json([
@@ -108,14 +109,14 @@ class AuthUserController extends Controller
 
         $user = User::where('uid', $uid)->first();
 
-        return response()->json(['resp' => $user->resource(), 'success' => true], 200);
+        return $this->response(UserResource::make($user));
     }
 
     public function getUser(Request $request, $uid)
     {
         $user = $request->user();
 
-        $isHook = UsersInteraction::checkHook($user->uid, $uid, $user->event->uid);
+        $isHook = TargetUsers::isHook($user->uid, $uid, $user->event->uid);
 
         if (!$isHook) {
             return response()->json([
@@ -127,7 +128,8 @@ class AuthUserController extends Controller
 
         $user = User::where('uid', $uid)->first();
 
-        return response()->json(['resp' => $user->resource(), 'success' => true], 200);
+
+        return $this->response(UserResource::make($user));
     }
 
     public function setInteraction(Request $request, $uid)

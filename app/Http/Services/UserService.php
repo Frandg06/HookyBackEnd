@@ -5,14 +5,13 @@ namespace App\Http\Services;
 use App\Exceptions\ApiException;
 use App\Http\Resources\UserResource;
 use App\Http\Services\NotificationService;
-use App\Http\Services\WsChatService;
 use App\Models\Interaction;
 use App\Models\Notification;
 use App\Models\NotificationsType;
 use App\Models\Notifify;
-use App\Models\SexualOrientation;
 use App\Models\User;
-use App\Models\UsersInteraction;
+use App\Models\TargetUsers;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -31,44 +30,30 @@ class UserService extends Service
     {
         DB::beginTransaction();
         try {
-            $authUser = $this->user();
-            // usuarios ya obtenidos previamente con lo que no se ha interactuado en el evento actual
-            $usersWithoutInteraction = $authUser->interactions()->usersWithoutInteraction($authUser->event->uid);
 
-            // usuarios que se han cargado previamente y que se ha interactuado en el evento actual
-            $usersWithInteraction = $authUser->interactions()->usersWithInteraction($authUser->event->uid);
+            $auth = $this->user();
+            $cacheKey = 'target_users_uids_' . $auth->uid . '_' .  $auth->event->uid;
+            $cachedUids = Cache::get($cacheKey, []);
+            $needed = 50 - count($cachedUids);
 
-            // obtener los usuarios que se van a interactuar que esten en el evento que no se haya interactuado con ellos
-            if ($authUser->sexual_orientation_id == SexualOrientation::BISEXUAL) {
-                $users = User::getBisexualUsersToInteract($authUser, $usersWithInteraction, $usersWithoutInteraction);
-            } else {
-                $users = User::getUsersToInteract($authUser, $usersWithInteraction, $usersWithoutInteraction);
+            if ($needed > 0) {
+                $targetUsers = User::whereTargetUsersFrom($auth)
+                    ->whereNotIn('uid', $cachedUids)
+                    ->orderBy('created_at', 'asc')
+                    ->orderBy('id', 'asc')
+                    ->limit($needed)
+                    ->get();
+
+                $targetUids = $targetUsers->pluck('uid')->toArray();
+                $cachedUids = array_merge($cachedUids, $targetUids);
+                Cache::put($cacheKey, $cachedUids);
             }
 
-            $newUsersWithInteractions = [];
-
-            foreach ($users as $userToInsert) {
-                if (UsersInteraction::where('user_uid', $authUser->uid)->where('interaction_user_uid', $userToInsert->uid)->count() > 0) {
-                    continue;
-                }
-
-                $newUsersWithInteractions[] = [
-                    'user_uid' => $authUser->uid,
-                    'interaction_user_uid' => $userToInsert->uid,
-                    'interaction_id' => null,
-                    'event_uid' => $authUser->event->uid,
-                    'created_at' => now()
-                ];
-            }
-
-            UsersInteraction::insert($newUsersWithInteractions);
-
+            $users = User::whereIn('uid', $cachedUids)->get();
             DB::commit();
-
             return UserResource::collection($users);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
             throw new ApiException('get_users_ko', 500);
         }
     }
@@ -80,75 +65,41 @@ class UserService extends Service
 
             $user = $this->user();
             $eventUid = $user->event->uid;
-            $userUid = $user->uid;
-            // Busco si previamente se habia creado la plantilla de interacciones
-            UsersInteraction::updateOrCreate(
-                [
-                    'user_uid' => $userUid,
-                    'interaction_user_uid' => $uid,
-                    'event_uid' => $eventUid
-                ],
-                [
-                    'interaction_id' => $interaction
-                ]
-            );
+            $authUid = $user->uid;
+            $targetUserUid = $uid;
+
+            TargetUsers::create([
+                'user_uid' => $authUid,
+                'target_user_uid' => $targetUserUid,
+                'event_uid' => $eventUid,
+                'interaction_id' => $interaction
+            ]);
+
             // Actualizo los likes y super likes restantes
-            $this->user()->refreshInteractions($interaction);
+            $this->user()->refreshCredits($interaction);
 
             // Compruebo si es un hook
-            $checkHook =  UsersInteraction::checkHook($uid, $userUid, $eventUid);
+            $isHook =  TargetUsers::isHook($targetUserUid, $authUid, $eventUid)->exists();
 
-            if ($checkHook) {
-                // Si lo es y existe la interacción como like la elimino
-                $existLike = Notification::getLikeAndSuperLikeNotify($userUid, $uid, $eventUid);
-                if ($existLike) {
-                    $existLike->delete();
-                }
-
-                $type = NotificationsType::HOOK_TYPE;
-
-                $notify = new Notifify([
-                    'reciber_uid' => $uid,
-                    'type_id' => $type,
-                    'sender_uid' => $userUid,
-                    'payload' => [
-                        'chat_created' => true,
-                    ]
-                ]);
-
-                $notify->dualEmitWithSave();
-
-                // Creo el chat
-                $chat = $this->chatService->store($userUid, $uid, $eventUid);
+            if ($isHook) {
+                $this->handleHook($authUid, $targetUserUid, $eventUid, $chat);
             } elseif (in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
-                $isLike = $interaction == Interaction::LIKE_ID;
-
-                $type = $isLike ? NotificationsType::LIKE_TYPE : NotificationsType::SUPER_LIKE_TYPE;
-
-                $notify = new Notifify([
-                    'reciber_uid' => $uid,
-                    'type_id' => $type,
-                    'sender_uid' => $userUid,
-
-                ]);
-
-                $notify->emit();
-                $notify->save();
+                $this->handleLike($interaction, $authUid, $targetUserUid);
             }
 
-            $remainingUsers = $this->user()->remainingUsersToInteract();
-            $remainingUsersCount = $remainingUsers->count();
+            $cacheKey = 'target_users_uids_' . $authUid . '_' .  $eventUid;
+            $cachedUids = Cache::get($cacheKey, []);
+            $filtered = collect($cachedUids)->reject(fn ($cachedUid) => $cachedUid == $targetUserUid)->values();
+            Cache::put($cacheKey, $filtered->toArray());
 
             $response = [
                 'super_like_credits' => $this->user()->super_likes,
                 'like_credits' => $this->user()->likes,
             ];
 
-            Log::alert($response);
-
-            if ($remainingUsersCount <= 10) {
+            if ($filtered->count() <= 10) {
                 $refetch = $this->getUsers();
-                if (count($refetch) != $remainingUsersCount) {
+                if (count($refetch) != $filtered->count()) {
                     $response['remaining_users'] = $refetch;
                 }
             }
@@ -162,8 +113,43 @@ class UserService extends Service
             return $response;
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
             throw new ApiException('set_interaction_ko', 500);
         }
+    }
+
+    private function handleHook(string $authUid, string $targetUserUid, string $eventUid, &$chat): void
+    {
+        $pastNotify = Notification::getLikeAndSuperLikeNotify($authUid, $targetUserUid, $eventUid);
+        if ($pastNotify) {
+            $pastNotify->delete();
+        }
+
+
+        $notification = new Notifify([
+            'reciber_uid' => $targetUserUid,
+            'type_id' => NotificationsType::HOOK_TYPE,
+            'sender_uid' => $authUid,
+            'payload' => ['chat_created' => true]
+        ]);
+
+        $notification->dualEmitWithSave();
+
+        $chat = $this->chatService->store($authUid, $targetUserUid, $eventUid);
+    }
+
+    private function handleLike(int $interaction, string $authUid, string $targetUserUid): void
+    {
+        $type = $interaction === Interaction::LIKE_ID
+            ? NotificationsType::LIKE_TYPE
+            : NotificationsType::SUPER_LIKE_TYPE;
+
+        $notification = new Notifify([
+            'reciber_uid' => $targetUserUid,
+            'type_id' => $type,
+            'sender_uid' => $authUid
+        ]);
+
+        $notification->emit();
+        $notification->save();
     }
 }

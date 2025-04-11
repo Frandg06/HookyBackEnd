@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
@@ -94,7 +95,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function interactions(): HasMany
     {
-        return $this->hasMany(UsersInteraction::class, 'user_uid', 'uid');
+        return $this->hasMany(TargetUsers::class, 'user_uid', 'uid');
     }
 
     public function events(): HasMany
@@ -201,57 +202,44 @@ class User extends Authenticatable implements JWTSubject
         return AuthUserResource::make($this);
     }
 
-    public function scopeGetUsersToInteract($query, $authUser, $usersWithInteraction, $usersWithoutInteraction)
+    public static function whereTargetUsersFrom($auth)
     {
-        return $query->whereIn('gender_id', $authUser->match_gender)
-            ->whereIn('sexual_orientation_id', [$authUser->sexual_orientation_id, SexualOrientation::BISEXUAL])
-            ->whereHas('events', function ($query) use ($authUser) {
-                $query->where('event_uid', $authUser->event->uid);
-            })->eligibleUsers($authUser, $usersWithInteraction, $usersWithoutInteraction);
-    }
-
-    public function scopeGetBisexualUsersToInteract($query, $authUser, $usersWithInteraction, $usersWithoutInteraction)
-    {
-        return $query->where(function ($q) use ($authUser) {
-            if ($authUser->gender_id === Gender::MALE) {
-                $q->where(function ($subQuery) {
-                    $subQuery->where('gender_id', Gender::MALE)
-                        ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
-                })->orWhere(function ($subQuery) {
-                    $subQuery->where('gender_id', Gender::FEMALE)
-                        ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+        return User::whereNot('uid', $auth->uid)
+            ->has('userImages', '=', 3)
+            ->when(in_array($auth->sexual_orientation_id, [SexualOrientation::HOMOSEXUAL, SexualOrientation::HETEROSEXUAL]), function ($q) use ($auth) {
+                $q->whereIn('gender_id', $auth->match_gender)
+                    ->whereIn('sexual_orientation_id', [$auth->sexual_orientation_id, SexualOrientation::BISEXUAL]);
+            })
+            ->when($auth->sexual_orientation_id === SexualOrientation::BISEXUAL, function ($q) use ($auth) {
+                $q->when($auth->gender_id === Gender::MALE, function ($query) {
+                    $query->where(function ($subQuery) {
+                        $subQuery->where('gender_id', Gender::MALE)
+                            ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
+                    })->orWhere(function ($subQuery) {
+                        $subQuery->where('gender_id', Gender::FEMALE)
+                            ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                    });
                 });
-            } elseif ($authUser->gender_id === Gender::FEMALE) {
-                $q->where(function ($subQuery) {
-                    $subQuery->where('gender_id', Gender::FEMALE)
-                        ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
-                })->orWhere(function ($subQuery) {
-                    $subQuery->where('gender_id', Gender::MALE)
-                        ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                $q->when($auth->gender_id === Gender::FEMALE, function ($query) {
+                    $query->where(function ($subQuery) {
+                        $subQuery->where('gender_id', Gender::FEMALE)
+                            ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
+                    })->orWhere(function ($subQuery) {
+                        $subQuery->where('gender_id', Gender::MALE)
+                            ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                    });
                 });
-            }
-        })
-            ->eligibleUsers($authUser, $usersWithInteraction, $usersWithoutInteraction);
-    }
-
-    public function scopeEligibleUsers($query, $authUser, $usersWithInteraction, $usersWithoutInteraction)
-    {
-        return $query->whereNot('uid', $authUser->uid)
-            ->whereNotIn('uid', $usersWithInteraction)
-            ->whereRaw('
-            EXISTS (
-                SELECT 1 
-                FROM user_images 
-                WHERE user_images.user_uid = users.uid 
-                GROUP BY user_images.user_uid 
-                HAVING COUNT(user_images.user_uid) = 3
-            )
-        ')
-            ->orWhereIn('uid', $usersWithoutInteraction)
-            ->orderBy('created_at', 'asc')
-            ->orderBy('id', 'asc')
-            ->limit(50)
-            ->get();
+            })
+            ->whereHas('events', function ($q) use ($auth) {
+                $q->where('event_uid', $auth->event->uid);
+            })
+            ->whereNotIn('uid', function ($q) use ($auth) {
+                $q->select('target_user_uid')
+                    ->from('target_users as ui')
+                    ->where('ui.user_uid', $auth->uid)
+                    ->where('ui.event_uid', $auth->event->uid)
+                    ->pluck('target_user_uid');
+            });
     }
 
     public function scopeRemainingUsersToInteract()
@@ -259,7 +247,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->interactions()->where('event_uid', $this->event->uid)->where('interaction_id', null)->get();
     }
 
-    public function refreshInteractions($interaction)
+    public function refreshCredits($interaction)
     {
         $eventPivot = $this->events()->where('event_uid', $this->event->uid)->first();
         if ($interaction == Interaction::LIKE_ID) {

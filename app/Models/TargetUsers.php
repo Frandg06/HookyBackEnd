@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UsersInteraction extends Model
+class TargetUsers extends Model
 {
     use HasFactory;
+    protected $table = 'target_users';
 
-    protected $fillable = ['user_uid', 'interaction_id', 'interaction_user_uid', 'event_uid'];
+    protected $fillable = ['user_uid', 'interaction_id', 'target_user_uid', 'event_uid'];
 
     public function user()
     {
@@ -18,7 +19,7 @@ class UsersInteraction extends Model
 
     public function interactionUser()
     {
-        return $this->belongsTo(User::class, 'interaction_user_uid', 'uid');
+        return $this->belongsTo(User::class, 'target_user_uid', 'uid');
     }
 
     public function event()
@@ -37,7 +38,7 @@ class UsersInteraction extends Model
         return $query->where('interaction_id', null)
             ->where('event_uid', $eventUid)
             ->get()
-            ->pluck('interaction_user_uid');
+            ->pluck('target_user_uid');
     }
 
     public function scopeUsersWithInteraction($query, $eventUid)
@@ -45,28 +46,27 @@ class UsersInteraction extends Model
         return $query->where('event_uid', $eventUid)
             ->whereNot('interaction_id', null)
             ->get()
-            ->pluck('interaction_user_uid');
+            ->pluck('target_user_uid');
     }
 
-    public static function scopeCheckHook($query, $emitter, $reciber, $event)
+    public static function scopeIsHook($query, $emitter, $reciber, $event)
     {
         return $query->where('user_uid', $reciber)
-            ->where('interaction_user_uid', $emitter)
+            ->where('target_user_uid', $emitter)
             ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
             ->whereExists(function ($query) use ($reciber, $emitter, $event) {
-                $query->from('users_interactions')
+                $query->from('target_users')
                     ->where('user_uid', $emitter)
-                    ->where('interaction_user_uid', $reciber)
+                    ->where('target_user_uid', $reciber)
                     ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
                     ->where('event_uid', $event);
-            })
-            ->exists();
+            });
     }
 
     public static function checkIsLike($uid, $auth)
     {
         return self::where('user_uid', $uid)
-            ->where('interaction_user_uid', $auth->uid)
+            ->where('target_user_uid', $auth->uid)
             ->where('interaction_id', Interaction::LIKE_ID)
             ->where('event_uid', $auth->event->uid)
             ->exists();
@@ -75,7 +75,7 @@ class UsersInteraction extends Model
     public static function checkIsSuperLike($uid, $auth)
     {
         return self::where('user_uid', $uid)
-            ->where('interaction_user_uid', $auth->uid)
+            ->where('target_user_uid', $auth->uid)
             ->where('interaction_id', Interaction::SUPER_LIKE_ID)
             ->where('event_uid', $auth->event->uid)
             ->exists();
