@@ -147,7 +147,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getDataImagesAttribute(): bool
     {
-        return $this->userImages()->count() == 3 ? true : false;
+        return $this->userImages()->count() >= 1 ? true : false;
     }
 
     public function getLikesAttribute(): int
@@ -175,11 +175,11 @@ class User extends Authenticatable implements JWTSubject
 
     public function getCompleteRegisterAttribute(): bool
     {
-        if ($this->data_complete && $this->data_images) {
-            return true;
-        }
-        return false;
+        return $this->data_complete && $this->data_images
+            ? true
+            : false;
     }
+
     public function getIsPremiumAttribute(): bool
     {
         return $this->role_id == Role::PREMIUM ? true : false;
@@ -205,7 +205,7 @@ class User extends Authenticatable implements JWTSubject
     public static function whereTargetUsersFrom($auth)
     {
         return User::whereNot('uid', $auth->uid)
-            ->has('userImages', '=', 3)
+            ->has('userImages', '>=', 1)
             ->when(in_array($auth->sexual_orientation_id, [SexualOrientation::HOMOSEXUAL, SexualOrientation::HETEROSEXUAL]), function ($q) use ($auth) {
                 $q->whereIn('gender_id', $auth->match_gender)
                     ->whereIn('sexual_orientation_id', [$auth->sexual_orientation_id, SexualOrientation::BISEXUAL]);

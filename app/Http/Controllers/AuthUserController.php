@@ -157,28 +157,20 @@ class AuthUserController extends Controller
     {
         $size = json_decode($data['userImagesSizes'], true);
 
-        return [
-            [
-                'file' => $data['userImages0'],
-                'data' => [
-                    'width' =>  $size[0]['width'],
-                    'height' =>  $size[0]['height']
-                ]
-            ],
-            [
-                'file' => $data['userImages1'],
-                'data' => [
-                    'width' =>  $size[1]['width'],
-                    'height' =>  $size[1]['height']
-                ]
-            ],
-            [
-                'file' => $data['userImages2'],
-                'data' => [
-                    'width' =>  $size[2]['width'],
-                    'height' =>  $size[2]['height']
-                ]
-            ],
-        ];
+        $response = [];
+        for ($i = 0; $i < 3; $i++) {
+
+            if (isset($data['userImages' . $i])) {
+
+                $response[] =  [
+                    'file' => $data['userImages' . $i],
+                    'data' => [
+                        'width' =>  $size[$i]['width'],
+                        'height' =>  $size[$i]['height']
+                    ]
+                ];
+            }
+        }
+        return $response;
     }
 }
