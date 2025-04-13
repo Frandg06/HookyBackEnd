@@ -5,7 +5,6 @@ namespace App\Http\Services;
 use App\Exceptions\ApiException;
 use App\Http\Resources\NotificationUserResource;
 use App\Models\NotificationsType;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -60,32 +59,25 @@ class AuthUserService extends Service
 
     public function getNotifications()
     {
-        $user = $this->user();
+        $user = user();
 
-        $notifications = $user->notifications()->where('event_uid', $user->event->uid)->get();
+        $query = $user->notifications()->where('event_uid', $user->event->uid)->get();
 
-        $usersHook = $notifications->where('type_id', NotificationsType::HOOK_TYPE);
-
-        $userLikes = $notifications->where('type_id', NotificationsType::LIKE_TYPE);
-
-        $userSuperLikes =  $notifications->where('type_id', NotificationsType::SUPER_LIKE_TYPE);
-
-        $likes_count = $userLikes->count();
-
-        if ($user->role_id == Role::PREMIUM) {
-            $likes = NotificationUserResource::collection($userLikes);
-        } else {
-            $likes['images'] = $userLikes->take(7)->map(function ($u) use ($user) {
-                return $u->user->userImages()->first()->web_url;
-            });
-            $likes['count'] = $likes_count;
-        }
-
+        [$likes, $superlikes, $hooks] = [
+            $query->where('type_id', NotificationsType::HOOK_TYPE),
+            $query->where('type_id', NotificationsType::LIKE_TYPE),
+            $query->where('type_id', NotificationsType::SUPER_LIKE_TYPE),
+        ];
 
         $data = [
-            'likes' => $likes,
-            'super_likes' => NotificationUserResource::collection($userSuperLikes),
-            'hooks' => NotificationUserResource::collection($usersHook)
+            'likes' => user()->isPremium ? NotificationUserResource::collection($likes) : [
+                'images' => $likes->take(7)->map(function ($u) {
+                    return $u->user->userImages()->first()->web_url;
+                }),
+                'count' => $likes->count()
+            ],
+            'super_likes' => NotificationUserResource::collection($superlikes),
+            'hooks' => NotificationUserResource::collection($hooks)
         ];
 
         return $data;

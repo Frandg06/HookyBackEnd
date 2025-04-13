@@ -1,16 +1,17 @@
 <?php
 
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
 function user(): User
 {
-  return request()->user();
+  return auth('api')->user();
 }
 
-function company(): User
+function company(): Company
 {
-  return request()->user();
+  return auth('company')->user();
 }
 
 function log_error($exception, $class, $function)
