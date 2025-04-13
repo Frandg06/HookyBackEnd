@@ -9,9 +9,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
-use Intervention\Image\Laravel\Facades\Image;
 
-class ImagesService
+class ImagesService extends Service
 {
     public function store($img, $data)
     {
@@ -58,7 +57,7 @@ class ImagesService
     {
         DB::beginTransaction();
         try {
-            $user = request()->user();
+            $user = $this->user();
 
             if ($img_uid) {
 
