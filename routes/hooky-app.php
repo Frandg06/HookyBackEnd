@@ -16,7 +16,7 @@ Route::prefix('user')->group(function () {
 
     Route::post('/image', [ImageController::class, 'store']);
     Route::post('/image/update', [ImageController::class, 'update']);
-    Route::delete('/image/{company_uid}', [ImageController::class, 'delete']);
+    Route::delete('/image/{uid}', [ImageController::class, 'delete']);
     Route::delete('/images', [ImageController::class, 'deleteUserImages']);
 
     Route::post('/redeem', [TicketController::class, 'redeem']);

@@ -60,10 +60,13 @@ class ImagesService
         try {
             $user = request()->user();
 
-            $delete = $this->delete($img_uid);
+            if ($img_uid) {
 
-            if (!$delete) {
-                throw new ApiException('delete_image_unexpected_error', 500);
+                $delete = $this->delete($img_uid);
+
+                if (!$delete) {
+                    throw new ApiException('delete_image_unexpected_error', 500);
+                }
             }
 
             $store = $this->store($img, $data);

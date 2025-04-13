@@ -32,27 +32,22 @@ class ImageController extends Controller
         return response()->json(['success' => true, 'resp' =>  $response], 200);
     }
 
-    public function delete(Request $request)
+    public function delete(string $uid)
     {
-
-        $request->validate(['uid' => 'required|string']);
-
-        $uid = $request->uid;
-
         $this->imageService->delete($uid);
 
-        return response()->json(['success' => true, 'resp' =>  'Image delete successfully'], 200);
+        return $this->response($this->user()->resource());
     }
 
     public function update(Request $request)
     {
 
-        $request->validate([
+        $validated = $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5000',
-            'uid' => 'required|string'
+            'uid' => 'nullable|string'
         ]);
 
-        $uid = $request->uid;
+        $uid = $validated['uid'] ?? null;
         $image = $request->file('image');
         $original_data = [
             'width' => $request->width,
