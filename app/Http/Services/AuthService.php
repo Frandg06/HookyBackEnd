@@ -28,8 +28,6 @@ class AuthService extends Service
 
             $company_uid = Crypt::decrypt($data['company_uid']);
 
-            debug($company_uid);
-
             $company = Company::where('uid', $company_uid)->first();
 
             if (!$company) {
