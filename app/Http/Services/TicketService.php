@@ -80,7 +80,7 @@ class TicketService extends Service
     {
         DB::beginTransaction();
         try {
-            $event_uid = $this->user()->event->uid;
+            $event_uid = user()->event->uid;
 
             $ticket = Ticket::where('code', $code)
                 ->where('event_uid', $event_uid)
@@ -91,18 +91,17 @@ class TicketService extends Service
                 throw new ApiException('ticket_invalid', 400);
             }
 
-            $tz = $this->user()->event->timezone;
+            $tz = user()->event->timezone;
 
             $ticket->update([
-                'user_uid' => $this->user()->uid,
+                'user_uid' => user()->uid,
                 'redeemed' => true,
                 'redeemed_at' => now($tz)
             ]);
 
-
-            $this->user()->events()->where('event_uid', $event_uid)->update([
-                'likes' => $this->user()->likes + $ticket->likes,
-                'super_likes' => $this->user()->superlikes + $ticket->super_likes
+            user()->events()->updateExistingPivot(user()->event->uid, [
+                'likes' => user()->likes + $ticket->likes,
+                'super_likes' => user()->superlikes + $ticket->super_likes
             ]);
 
             DB::commit();

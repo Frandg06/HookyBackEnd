@@ -16,7 +16,7 @@ class CheckCreditsMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $authUser = $request->user()->events()->activeEventData();
+        $authUser = user()->event;
         $interaction = $request->interactionId;
         $error = null;
 

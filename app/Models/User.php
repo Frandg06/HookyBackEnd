@@ -98,14 +98,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(TargetUsers::class, 'user_uid', 'uid');
     }
 
-    public function events(): HasMany
+    public function events(): BelongsToMany
     {
-        return $this->hasMany(UserEvent::class, 'user_uid', 'uid');
-    }
-
-    public function eventsBelongsToMany(): BelongsToMany
-    {
-        return $this->belongsToMany(Event::class, 'user_events', 'user_uid', 'event_uid');
+        return $this->belongsToMany(Event::class, 'user_events', 'user_uid', 'event_uid')
+            ->withPivot('likes', 'super_likes', 'logged_at');
     }
 
     public function notifications(): HasMany
@@ -125,7 +121,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getEventAttribute()
     {
-        return $this->eventsBelongsToMany()->orderByPivot('logged_at', 'desc')->first();
+        return $this->events()->orderByPivot('logged_at', 'desc')->first();
     }
 
     public function getCompanyUidAttribute(): string
@@ -152,12 +148,12 @@ class User extends Authenticatable implements JWTSubject
 
     public function getLikesAttribute(): int
     {
-        return $this->events()->where('event_uid', $this->event->uid)->first()->likes;
+        return $this->event->pivot->likes;
     }
 
     public function getSuperLikesAttribute(): int
     {
-        return $this->events()->where('event_uid', $this->event->uid)->first()->super_likes;
+        return $this->event->pivot->super_likes;
     }
 
     public function getUnreadChatsAttribute(): int
@@ -247,18 +243,16 @@ class User extends Authenticatable implements JWTSubject
         return $this->interactions()->where('event_uid', $this->event->uid)->where('interaction_id', null)->get();
     }
 
-    public function refreshCredits($interaction)
+    public function scopeDecrementInteraction(int $interaction): void
     {
-        $eventPivot = $this->events()->where('event_uid', $this->event->uid)->first();
-        if ($interaction == Interaction::LIKE_ID) {
-            $eventPivot->update([
-                'likes' => $this->likes - 1
-            ]);
-        } elseif ($interaction == Interaction::SUPER_LIKE_ID) {
-            $eventPivot->update([
-                'super_likes' => $this->super_likes - 1
-            ]);
-        }
+        $name = match ($interaction) {
+            Interaction::LIKE_ID => 'likes',
+            Interaction::SUPER_LIKE_ID => 'super_likes',
+        };
+
+        $this->events()->updateExistingPivot($this->event->uid, [
+            $name => max(0, $this->likes - 1)
+        ]);
     }
 
 

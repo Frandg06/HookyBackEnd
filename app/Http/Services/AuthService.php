@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\ErrorHandler\Debug;
 
 class AuthService extends Service
 {
@@ -26,6 +27,8 @@ class AuthService extends Service
             }
 
             $company_uid = Crypt::decrypt($data['company_uid']);
+
+            debug($company_uid);
 
             $company = Company::where('uid', $company_uid)->first();
 
@@ -55,11 +58,10 @@ class AuthService extends Service
                 throw new ApiException('limit_users_reached', 409);
             }
 
-            $user->events()->create([
-                'event_uid' => $event->uid,
+            $user->events()->attach($event->uid, [
                 'logged_at' => now(),
                 'likes' => $event->likes,
-                'super_likes' => $event->super_likes
+                'super_likes' => $event->super_likes,
             ]);
 
             $diff = $this->getDiff($event->end_date, $timezone);
@@ -82,6 +84,7 @@ class AuthService extends Service
             $company_uid = Crypt::decrypt($company_uid);
 
             $company = Company::find($company_uid);
+
 
             if (!$company) {
                 throw new ApiException('company_not_exists', 404);
@@ -112,25 +115,23 @@ class AuthService extends Service
                 throw new ApiException('credentials_ko', 401);
             }
 
-            $exist = $user->events()->where('event_uid', $event->uid)->exists();
+            $exist = $user->events()->wherePivot('event_uid', $event->uid)->exists();
 
-            if ($exist) {
-                $user->events()->where('event_uid', $event->uid)->update(['logged_at' => now()]);
-            } else {
-                $count = $event->users->count();
+            if (!$exist && $event->users->count() >= $company->limit_users) {
+                throw new ApiException('limit_users_reached', 409);
+            }
 
-                if ($count >= $company->limit_users) {
-                    throw new ApiException('limit_users_reached', 409);
-                }
-
-                UserEvent::create([
+            UserEvent::updateOrCreate(
+                [
                     'user_uid' => $user->uid,
                     'event_uid' => $event->uid,
+                ],
+                [
                     'logged_at' => now(),
                     'likes' => $event->likes,
-                    'super_likes' => $event->super_likes
-                ]);
-            }
+                    'super_likes' => $event->super_likes,
+                ]
+            );
 
             $diff = $this->getDiff($event->end_date, $timezone);
             $token = Auth::setTTL($diff)->attempt($data);

@@ -18,3 +18,8 @@ function log_error($exception, $class, $function)
 {
   Log::error('Error en ' . $class . '->' . $function, ['exception' => $exception]);
 }
+
+function debug($log)
+{
+  Log::info($log);
+}
