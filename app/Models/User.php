@@ -106,7 +106,8 @@ class User extends Authenticatable implements JWTSubject
 
     public function notifications(): HasMany
     {
-        return $this->hasMany(Notification::class, 'user_uid', 'uid');
+        return $this->hasMany(Notification::class, 'user_uid', 'uid')
+            ->where('event_uid', $this->event->uid);
     }
 
     public function tickets()
@@ -253,6 +254,17 @@ class User extends Authenticatable implements JWTSubject
         $this->events()->updateExistingPivot($this->event->uid, [
             $name => max(0, $this->likes - 1)
         ]);
+    }
+
+    public function scopeGetNotificationsByType()
+    {
+        $unread = $this->notifications()->where('read_at', null)->get()->groupBy('type_id');
+
+        return [
+            'like' => $unread->has(NotificationsType::LIKE_TYPE) ? $unread->get(NotificationsType::LIKE_TYPE)->count() : 0,
+            'superlike' => $unread->has(NotificationsType::SUPER_LIKE_TYPE) ? $unread->get(NotificationsType::SUPER_LIKE_TYPE)->count() : 0,
+            'hook' => $unread->has(NotificationsType::HOOK_TYPE) ? $unread->get(NotificationsType::HOOK_TYPE)->count() : 0,
+        ];
     }
 
 

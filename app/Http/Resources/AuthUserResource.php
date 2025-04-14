@@ -40,20 +40,9 @@ class AuthUserResource extends JsonResource
             'data_images' => $this->data_images,
             'complete_register' => $this->complete_register,
             'age' => $this->age,
-            'userImages' => $this->userImages->map(function ($image) {
-                return [
-                    'web_url' => $image->web_url,
-                    'order' => $image->order,
-                    'type' => $image->type,
-                    'size' => $image->size,
-                    'name' => $image->name,
-                    'uid' => $image->uid,
-                ];
-            }),
+            'userImages' => $this->userImages,
             'notifications' => [
-                'like' => $this->notifications()->where('event_uid', $this->event->uid)->where('type_id', NotificationsType::LIKE_TYPE)->where('read_at', null)->count(),
-                'superlike' => $this->notifications()->where('event_uid', $this->event->uid)->where('type_id', NotificationsType::SUPER_LIKE_TYPE)->where('read_at', null)->count(),
-                'hook' => $this->notifications()->where('event_uid', $this->event->uid)->where('type_id', NotificationsType::HOOK_TYPE)->where('read_at', null)->count(),
+                ...$this->getNotificationsByType(),
                 'message' => $this->unread_chats
             ],
             'next_event' => [

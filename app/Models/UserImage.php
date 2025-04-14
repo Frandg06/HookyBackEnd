@@ -26,7 +26,13 @@ class UserImage extends Model
         'size',
         'type',
         'name',
+        'web_url',
     ];
+
+    protected $appends = [
+        'web_url',
+    ];
+
     protected $hidden = [
         'id',
         'user_id',
