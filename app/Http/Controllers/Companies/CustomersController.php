@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Companies;
 
+use App\Http\Controllers\Controller;
 use App\Http\Filters\UserFilter;
 use App\Http\Orders\UserOrdenator;
 use App\Http\Services\CompanyUsersService;
-use Illuminate\Http\Request;
 
-class CompanyUsersController extends Controller
+class CustomersController extends Controller
 {
     protected $companyUsersService;
 
@@ -18,7 +18,7 @@ class CompanyUsersController extends Controller
 
     public function getUsers(UserFilter $filter, UserOrdenator $order)
     {
-        $response = $this->companyUsersService->getUsers($filter, $order, );
+        $response = $this->companyUsersService->getUsers($filter, $order,);
         return $this->response($response);
     }
 

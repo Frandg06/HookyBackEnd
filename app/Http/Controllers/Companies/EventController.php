@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Companies;
 
+use App\Http\Controllers\Controller;
 use App\Http\Filters\EventFilter;
 use App\Http\Orders\EventOrdenator;
 use App\Http\Requests\CreateEventRequest;

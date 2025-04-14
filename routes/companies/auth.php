@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\AuthCompanyController;
+use App\Http\Controllers\Companies\AuthController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/register', [AuthCompanyController::class, 'register']);
-Route::post('/login', [AuthCompanyController::class, 'login']);
-Route::post('/password/email', [AuthCompanyController::class, 'passwordReset']);
-Route::post('/password/new', [AuthCompanyController::class, 'setNewPassword']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/password/email', [AuthController::class, 'passwordReset']);
+Route::post('/password/new', [AuthController::class, 'setNewPassword']);
