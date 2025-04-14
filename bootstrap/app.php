@@ -26,9 +26,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        if (env('APP_ENV') !== 'local') {
+        if (app()->isProduction()) {
             $exceptions->render(function (AuthenticationException $e, Request $request) {
-                return response()->json(['custom_message' => 'No existe una sesion activa', 'type' => 'AuthException'], 401);
+                return response()->json(['custom_message' => __('i18n.user_not_login'), 'type' => 'AuthException'], 401);
             });
             $exceptions->render(function (ApiException $e, Request $request) {
                 return response()->json([

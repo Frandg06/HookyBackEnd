@@ -21,7 +21,7 @@ class JwtVerifyMiddleware
         $token = str_replace('Bearer ', '', $request->header('Authorization'));
 
         if (!$token) {
-            return response()->json(['custom_message' => 'No existe un token', 'type' => 'AuthException'], 401);
+            return response()->json(['custom_message' => __('i18n.user_not_login'), 'type' => 'AuthException'], 401);
         }
 
         $payload = JWTAuth::setToken($token)->getPayload();
@@ -29,7 +29,7 @@ class JwtVerifyMiddleware
         $user = User::find($payload['uid']);
 
         if (!$user) {
-            return response()->json(['custom_message' => 'No existe una sesion activa', 'type' => 'AuthException'], 401);
+            return response()->json(['custom_message' => __('i18n.user_not_login'), 'type' => 'AuthException'], 401);
         }
 
         return $next($request);

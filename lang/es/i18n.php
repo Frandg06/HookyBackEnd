@@ -82,9 +82,14 @@ return [
     'hook' => 'Has hecho un Hook.',
     'message' => ':username te ha enviado un mensaje.',
   ],
+
+  'event_not_found' => 'El evento no está activo.',
+  'event_not_active' => 'El evento no está activo.',
   'event_not_found' => 'El evento no existe o no está activo.',
   'event_is_past_delete' => 'No se puede eliminar un evento que ya ha finalizado.',
   'event_is_past' => 'El evento ya ha finalizado.',
+  'event_not_start' => 'El evento no ha comenzado todavia, intentelo mas tarde.',
   'ticket_limit_reached' => 'Has alcanzado el límite de tickets para este evento.',
   'ticket_not_found' => 'El ticket no existe o no está activo.',
+  'user_not_login' => 'Tienes que iniciar sesión para poder continuar.',
 ];
