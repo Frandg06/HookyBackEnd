@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasUid;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends Model
 {
-    use HasUid;
+    use HasUuids;
 
     protected $fillable = [
         'id',
@@ -40,5 +40,10 @@ class Notification extends Model
             ->where('event_uid', $event)
             ->whereIn('type_id', [NotificationsType::LIKE_TYPE, NotificationsType::SUPER_LIKE_TYPE])
             ->first();
+    }
+
+    public function uniqueIds(): array
+    {
+        return ['uid'];
     }
 }

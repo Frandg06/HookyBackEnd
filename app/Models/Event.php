@@ -6,6 +6,7 @@ use App\Models\Traits\Filterable;
 use App\Models\Traits\HasUid;
 use App\Models\Traits\Sortable;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Event extends Model
 {
-    use HasUid, Filterable, Sortable, HasFactory;
+    use HasUuids, Filterable, Sortable, HasFactory;
 
     protected $table = 'events';
     protected $primaryKey = 'uid';
@@ -152,5 +153,10 @@ class Event extends Model
     public function getHooksAttribute()
     {
         return $this->notifications()->where('type_id', '=', NotificationsType::HOOK_TYPE)->count() / 2;
+    }
+
+    public function uniqueIds(): array
+    {
+        return ['uid'];
     }
 }

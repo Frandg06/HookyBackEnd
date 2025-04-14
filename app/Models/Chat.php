@@ -44,6 +44,7 @@ class Chat extends Model
     {
         return $this->belongsTo(Event::class, 'event_uid', 'uid');
     }
+
     public function uniqueIds(): array
     {
         return ['uid'];

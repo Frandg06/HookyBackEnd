@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TargetUsers extends Model
 {
-    use HasFactory;
     protected $table = 'target_users';
 
     protected $fillable = ['user_uid', 'interaction_id', 'target_user_uid', 'event_uid'];

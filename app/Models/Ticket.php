@@ -3,18 +3,17 @@
 namespace App\Models;
 
 use App\Models\Traits\Filterable;
-use App\Models\Traits\HasUid;
 use App\Models\Traits\Sortable;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Ticket extends Model
 {
-    use HasUid, HasFactory, Sortable, Filterable;
+    use HasUuids, HasFactory, Sortable, Filterable;
 
     protected $fillable = [
         'company_uid',
@@ -55,5 +54,10 @@ class Ticket extends Model
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class, 'event_uid', 'uid');
+    }
+
+    public function uniqueIds(): array
+    {
+        return ['uid'];
     }
 }

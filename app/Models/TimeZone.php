@@ -2,13 +2,19 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasUid;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
 class TimeZone extends Model
 {
-    use HasUid;
+    use HasUuids;
 
     protected $fillable = ['name', 'utc_offset', 'uid'];
     protected $hidden = ['id', 'created_at', 'updated_at'];
+
+
+    public function uniqueIds(): array
+    {
+        return ['uid'];
+    }
 }

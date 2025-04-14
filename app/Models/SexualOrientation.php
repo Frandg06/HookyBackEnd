@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class SexualOrientation extends Model
@@ -12,6 +11,4 @@ class SexualOrientation extends Model
     const HOMOSEXUAL = 3;
 
     protected $fillable = ['id', 'name'];
-
-    use HasFactory;
 }

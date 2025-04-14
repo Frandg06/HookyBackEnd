@@ -4,9 +4,9 @@ namespace App\Models;
 
 use App\Http\Resources\AuthUserResource;
 use App\Models\Traits\Filterable;
-use App\Models\Traits\HasUid;
 use App\Models\Traits\Sortable;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -18,7 +18,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable, HasUid, Filterable, Sortable;
+    use HasFactory, Notifiable, HasUuids, Filterable, Sortable;
 
     protected $table = 'users';
     protected $primaryKey = 'uid';
@@ -301,5 +301,10 @@ class User extends Authenticatable implements JWTSubject
             'uid' => $this->uid,
             'event_uid' => $this->event->uid
         ];
+    }
+
+    public function uniqueIds(): array
+    {
+        return ['uid'];
     }
 }

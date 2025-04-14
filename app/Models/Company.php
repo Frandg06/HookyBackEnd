@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Http\Resources\AuthCompanyResource;
 use App\Models\Traits\HasUid;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,7 +15,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class Company extends Authenticatable implements JWTSubject
 {
     use HasFactory;
-    use HasUid;
+    use HasUuids;
 
     protected $table = 'companies';
     protected $primaryKey = 'uid';
@@ -185,5 +186,10 @@ class Company extends Authenticatable implements JWTSubject
         return [
             'uid' => $this->uid,
         ];
+    }
+
+    public function uniqueIds(): array
+    {
+        return ['uid'];
     }
 }
