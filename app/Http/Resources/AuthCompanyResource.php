@@ -28,7 +28,6 @@ class AuthCompanyResource extends JsonResource
             'website' => $this->website,
             'timezone_uid' => $this->timezone_uid,
             'timezone_string' => $this->timezone->name,
-            'qr_url' => config('filesystems.disks.r2.url') . 'qr/' . $this->uid . '.png',
             'link' => $this->link,
             'users' => $this->total_users,
             'incomes' => $this->incomes,

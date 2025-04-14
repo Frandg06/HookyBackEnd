@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Companies;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterCompanyRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Services\AuthCompanyService;
 use App\Http\Services\EmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
-class AuthCompanyController extends Controller
+class AuthController extends Controller
 {
     protected $authService;
     protected $emailService;

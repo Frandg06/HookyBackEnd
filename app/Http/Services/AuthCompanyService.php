@@ -10,8 +10,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 
 class AuthCompanyService extends Service
 {
@@ -30,10 +28,6 @@ class AuthCompanyService extends Service
             }
 
             $company = Company::create($data);
-
-            $response = Http::get(env('QR_API_URL') . $company->link);
-
-            Storage::disk('r2')->put('hooky/qr/' . $company->uid . '.png', $response->body());
 
             Auth::setTTL(24 * 60);
 

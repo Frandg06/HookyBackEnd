@@ -26,7 +26,7 @@ class UserService extends Service
         $this->chatService = $chatService;
     }
 
-    public function getUsers()
+    public function getTargetUsers()
     {
         DB::beginTransaction();
         try {
@@ -76,7 +76,7 @@ class UserService extends Service
             ]);
 
             // Actualizo los likes y super likes restantes
-            $this->user()->refreshCredits($interaction);
+            $this->user()->decrementInteraction($interaction);
 
             // Compruebo si es un hook
             $isHook =  TargetUsers::isHook($targetUserUid, $authUid, $eventUid)->exists();
@@ -89,7 +89,7 @@ class UserService extends Service
 
             $cacheKey = 'target_users_uids_' . $authUid . '_' .  $eventUid;
             $cachedUids = Cache::get($cacheKey, []);
-            $filtered = collect($cachedUids)->reject(fn ($cachedUid) => $cachedUid == $targetUserUid)->values();
+            $filtered = collect($cachedUids)->reject(fn($cachedUid) => $cachedUid == $targetUserUid)->values();
             Cache::put($cacheKey, $filtered->toArray());
 
             $response = [
@@ -98,7 +98,7 @@ class UserService extends Service
             ];
 
             if ($filtered->count() <= 10) {
-                $refetch = $this->getUsers();
+                $refetch = $this->getTargetUsers();
                 if (count($refetch) != $filtered->count()) {
                     $response['remaining_users'] = $refetch;
                 }
@@ -113,7 +113,7 @@ class UserService extends Service
             return $response;
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new ApiException('set_interaction_ko', 500);
+            throw $e;
         }
     }
 

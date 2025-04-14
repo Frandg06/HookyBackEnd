@@ -15,22 +15,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        if (env('APP_ENV') !== 'local') {
-            return;
-        }
         Storage::disk('r2')->deleteDirectory('hooky/profile');
         Storage::disk('r2')->deleteDirectory('hooky/qr');
 
-        // $company = Company::create([
-        //     'uid' => '3333dbce-508d-4c64-a8aa-ede97081576f',
-        //     'name' => 'Studio54',
-        //     'email' => 'test@test.es',
-        //     'password' => 'a',
-        //     'timezone_uid' => TimeZone::find(2)->uid,
-        //     'pricing_plan_uid' => \App\Models\PricingPlan::find(1)->uid
-        // ]);
-
-        $company = Company::create([
+        Company::create([
             'uid' => '54ce8856-fb28-4ff9-bae5-6ed039829959',
             'name' => 'Empresa de Prueba',
             'email' => 'demo@hookyapp.es',
@@ -38,11 +26,6 @@ class DatabaseSeeder extends Seeder
             'timezone_uid' => TimeZone::find(2)->uid,
             'pricing_plan_uid' => \App\Models\PricingPlan::find(4)->uid
         ]);
-
-
-        $response = Http::get('https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=' . $company->link);
-
-        Storage::disk('r2')->put('hooky/qr/' . $company->uid . '.png', $response->body());
 
 
         $this->call(DevSeeder::class);
