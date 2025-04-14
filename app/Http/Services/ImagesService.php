@@ -46,7 +46,7 @@ class ImagesService extends Service
 
             DB::commit();
 
-            return $user->resource();
+            return $user->toResource();
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;
@@ -76,7 +76,7 @@ class ImagesService extends Service
 
             DB::commit();
 
-            return $user->resource();
+            return $user->toResource();
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;

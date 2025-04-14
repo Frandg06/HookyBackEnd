@@ -30,7 +30,7 @@ class AuthUserService extends Service
 
             DB::commit();
 
-            return $this->user()->resource();
+            return $this->user()->toResource();
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
@@ -50,7 +50,7 @@ class AuthUserService extends Service
 
             DB::commit();
 
-            return $this->user()->resource();
+            return $this->user()->toResource();
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
@@ -103,7 +103,7 @@ class AuthUserService extends Service
 
             DB::commit();
 
-            return $user->resource();
+            return $user->toResource();
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);

@@ -36,7 +36,7 @@ class ImageController extends Controller
     {
         $this->imageService->delete($uid);
 
-        return $this->response($this->user()->resource());
+        return $this->response($this->user()->toResource());
     }
 
     public function update(Request $request)

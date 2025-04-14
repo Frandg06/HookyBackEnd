@@ -193,7 +193,7 @@ class User extends Authenticatable implements JWTSubject
         }
     }
 
-    public function scopeResource()
+    public function scopeToResource()
     {
         return AuthUserResource::make($this);
     }

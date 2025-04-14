@@ -37,7 +37,7 @@ class AuthCompanyController extends Controller
 
     public function me()
     {
-        $company = request()->user()->resource();
+        $company = company()->resource();
         return $this->response($company);
     }
 
