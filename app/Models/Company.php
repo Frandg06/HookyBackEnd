@@ -3,17 +3,12 @@
 namespace App\Models;
 
 use App\Http\Resources\AuthCompanyResource;
-use App\Http\Resources\UsersToTableResource;
 use App\Models\Traits\HasUid;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class Company extends Authenticatable implements JWTSubject
