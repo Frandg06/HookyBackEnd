@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Customers;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\CompleteAuthUserRequest;
 use App\Http\Requests\CompleteDataRequest;
@@ -14,7 +15,7 @@ use App\Models\User;
 use App\Models\TargetUsers;
 use Illuminate\Support\Facades\Log;
 
-class AuthUserController extends Controller
+class UserController extends Controller
 {
     protected $authUserService;
     protected $userService;
@@ -76,9 +77,9 @@ class AuthUserController extends Controller
         return response()->json(['success' => true, 'resp' => $response], 200);
     }
 
-    public function getUsers()
+    public function retrieveTargetUsers()
     {
-        $response = $this->userService->getUsers();
+        $response = $this->userService->getTargetUsers();
         return response()->json(['resp' => $response, 'success' => true], 200);
     }
 
@@ -112,7 +113,7 @@ class AuthUserController extends Controller
         return $this->response(UserResource::make($user));
     }
 
-    public function getUser(Request $request, $uid)
+    public function showTargetUser(Request $request, $uid)
     {
         $user = $request->user();
 

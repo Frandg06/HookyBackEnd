@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Customers;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetPasswordRequest;
@@ -11,7 +12,6 @@ use App\Http\Services\ImagesService;
 use App\Http\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -44,7 +44,6 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
         $company_uid = $request->company_uid;
-
         $response = $this->authService->login($credentials, $company_uid);
         return response()->json(['success' => true, 'access_token' => $response], 200);
     }

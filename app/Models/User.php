@@ -244,7 +244,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->interactions()->where('event_uid', $this->event->uid)->where('interaction_id', null)->get();
     }
 
-    public function scopeDecrementInteraction(int $interaction): void
+    public function decrementInteraction(int $interaction): void
     {
         $name = match ($interaction) {
             Interaction::LIKE_ID => 'likes',

@@ -8,10 +8,6 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/register', [AuthCompanyController::class, 'register']);
-Route::post('/login', [AuthCompanyController::class, 'login']);
-Route::post('/password/email', [AuthCompanyController::class, 'passwordReset']);
-Route::post('/password/new', [AuthCompanyController::class, 'setNewPassword']);
 
 Route::post('/event/dispatcher', [EventController::class, 'getTicketDispatcher'])->middleware('auth.event');
 Route::post('/event/dispatcher/qr', [TicketController::class, 'getQrCode'])->middleware('auth.event');
