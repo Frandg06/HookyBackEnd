@@ -3,7 +3,6 @@
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
-use App\Models\UserImage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -40,6 +39,7 @@ class ImagesService extends Service
             ]);
 
             $storage = Storage::disk('r2')->put($newImage->url, $image);
+
             if (!$storage) {
                 throw new ApiException('images_store_ko', 500);
             }
@@ -133,21 +133,6 @@ class ImagesService extends Service
             DB::rollBack();
             Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
             throw new ApiException('image_delete_ko', 500);
-        }
-    }
-
-    public function deleteAll()
-    {
-        try {
-            foreach (UserImage::all() as $image) {
-                $image->delete();
-            }
-
-            Storage::disk('r2')->deleteDirectory('hooky/profile');
-
-            return true;
-        } catch (\Throwable $e) {
-            throw $e;
         }
     }
 

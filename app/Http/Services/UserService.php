@@ -3,7 +3,7 @@
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\TargetUserResource;
 use App\Http\Services\NotificationService;
 use App\Models\Interaction;
 use App\Models\Notification;
@@ -51,7 +51,7 @@ class UserService extends Service
 
             $users = User::whereIn('uid', $cachedUids)->get();
             DB::commit();
-            return UserResource::collection($users);
+            return TargetUserResource::collection($users);
         } catch (\Exception $e) {
             DB::rollBack();
             throw new ApiException('get_users_ko', 500);

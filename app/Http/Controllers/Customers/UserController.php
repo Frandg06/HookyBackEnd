@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\CompleteAuthUserRequest;
 use App\Http\Requests\CompleteDataRequest;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\TargetUserResource;
 use App\Http\Services\AuthUserService;
 use App\Http\Services\ImagesService;
 use App\Http\Services\NotificationService;
@@ -110,7 +110,7 @@ class UserController extends Controller
 
         $user = User::where('uid', $uid)->first();
 
-        return $this->response(UserResource::make($user));
+        return $this->response(TargetUserResource::make($user));
     }
 
     public function showTargetUser(Request $request, $uid)
@@ -130,7 +130,7 @@ class UserController extends Controller
         $user = User::where('uid', $uid)->first();
 
 
-        return $this->response(UserResource::make($user));
+        return $this->response(TargetUserResource::make($user));
     }
 
     public function setInteraction(Request $request, $uid)

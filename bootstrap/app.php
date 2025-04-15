@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\DestroyImages;
 use App\Exceptions\ApiException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -49,4 +50,8 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 500);
             });
         }
-    })->create();
+    })->withCommands([
+        DestroyImages::class,
+    ])
+
+    ->create();

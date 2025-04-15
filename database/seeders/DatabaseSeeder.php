@@ -16,7 +16,6 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         Storage::disk('r2')->deleteDirectory('hooky/profile');
-        Storage::disk('r2')->deleteDirectory('hooky/qr');
 
         Company::create([
             'uid' => '54ce8856-fb28-4ff9-bae5-6ed039829959',

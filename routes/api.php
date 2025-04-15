@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Companies\DomainController;
-use App\Http\Controllers\ImageController;
+use App\Http\Controllers\Customers\ImageController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api', 'lang'])->group(function () {
@@ -17,9 +17,4 @@ Route::middleware(['api', 'lang'])->group(function () {
         Route::prefix('export')->group(base_path('routes/export.php'));
         Route::get('/timezones', [DomainController::class, 'getTimeZones'])->middleware(['auth:company']);
     });
-
-
-
-
-    Route::delete('/images/all', [ImageController::class, 'deleteAll']);
 });

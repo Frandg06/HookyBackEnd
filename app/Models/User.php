@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Http\Resources\AuthUserResource;
 use App\Models\Traits\Filterable;
 use App\Models\Traits\Sortable;
 use Carbon\Carbon;
@@ -13,7 +12,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
@@ -192,11 +190,6 @@ class User extends Authenticatable implements JWTSubject
             case SexualOrientation::HOMOSEXUAL:
                 return [$this->gender_id];
         }
-    }
-
-    public function scopeToResource()
-    {
-        return AuthUserResource::make($this);
     }
 
     public static function whereTargetUsersFrom($auth)

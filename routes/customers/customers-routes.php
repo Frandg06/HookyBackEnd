@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\Customers\ChatController;
+use App\Http\Controllers\Customers\ImageController;
 use App\Http\Controllers\Customers\UserController;
-use App\Http\Controllers\ImageController;
 use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,9 +15,9 @@ Route::middleware(['auth:api', 'event', 'jwt.verify'])->group(function () {
         Route::get('/notifications', [UserController::class, 'getNotifications']);
         Route::post('/notifications/read/{type}', [UserController::class, 'readNotificationsByType']);
 
-        Route::post('/image', [ImageController::class, 'store']);
-        Route::post('/image/update', [ImageController::class, 'update']);
-        Route::delete('/image/{uid}', [ImageController::class, 'delete']);
+        Route::post('/images', [ImageController::class, 'store']);
+        Route::post('/images/{uid}', [ImageController::class, 'update']);
+        Route::delete('/images/{uid}', [ImageController::class, 'delete']);
         Route::delete('/images', [ImageController::class, 'deleteUserImages']);
 
         Route::post('/redeem', [TicketController::class, 'redeem']);
