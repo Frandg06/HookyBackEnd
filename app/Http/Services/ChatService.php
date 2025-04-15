@@ -17,10 +17,7 @@ class ChatService extends Service
     public function retrieve($user)
     {
         $chats = Chat::where('event_uid', $user->event->uid)
-            ->where(function ($query) use ($user) {
-                $query->where('user1_uid', $user->uid)
-                    ->orWhere('user2_uid', $user->uid);
-            })
+            ->whereAny(['user1_uid', 'user2_uid'], $user->uid)
             ->orderBy(function ($query) {
                 $query->select('created_at')
                     ->from('chat_messages')

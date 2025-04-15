@@ -36,14 +36,6 @@ class UserFilter extends QueryFilter
         return $this->builder->where('email', 'like', '%' . $email . '%');
     }
 
-    public function socials(string $name)
-    {
-        return $this->builder->where(function ($query) use ($name) {
-            $query->where('tw', 'like', '%' . $name . '%')
-              ->orWhere('ig', 'like', '%' . $name . '%');
-        });
-    }
-
     public function role(string $role)
     {
         $roleCode = $role == 'user' ? Role::USER : Role::PREMIUM;

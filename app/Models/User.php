@@ -161,10 +161,7 @@ class User extends Authenticatable implements JWTSubject
             ->where('read_at', false)
             ->whereHas('chat', function ($query) {
                 $query->where('event_uid', $this->event->uid)
-                    ->where(function ($query2) {
-                        $query2->where('user2_uid', $this->uid)
-                            ->orWhere('user1_uid', $this->uid);
-                    });
+                    ->whereAny(['user1_uid', 'user2_uid'], $this->uid);
             })->count();
     }
 
