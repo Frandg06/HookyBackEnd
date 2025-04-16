@@ -14,7 +14,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject
+class  User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable, HasUuids, Filterable, Sortable;
 
@@ -155,6 +155,12 @@ class User extends Authenticatable implements JWTSubject
         return $this->event->pivot->super_likes;
     }
 
+    public function scopeChats()
+    {
+        return Chat::where('event_uid', user()->event->uid)
+            ->whereAny(['user1_uid', 'user2_uid'], user()->uid);
+    }
+
     public function getUnreadChatsAttribute(): int
     {
         return ChatMessage::whereNot('sender_uid', $this->uid)
@@ -236,6 +242,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function decrementInteraction(int $interaction): void
     {
+        if ($interaction == Interaction::DISLIKE_ID) return;
         $name = match ($interaction) {
             Interaction::LIKE_ID => 'likes',
             Interaction::SUPER_LIKE_ID => 'super_likes',

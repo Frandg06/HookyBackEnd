@@ -120,6 +120,7 @@ class UserService extends Service
     private function handleHook(string $authUid, string $targetUserUid, string $eventUid, &$chat): void
     {
         $pastNotify = Notification::getLikeAndSuperLikeNotify($authUid, $targetUserUid, $eventUid);
+
         if ($pastNotify) {
             $pastNotify->delete();
         }

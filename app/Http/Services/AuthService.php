@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Symfony\Component\ErrorHandler\Debug;
+use Illuminate\Support\Str;
 
 class AuthService extends Service
 {
@@ -79,9 +79,13 @@ class AuthService extends Service
     {
         DB::beginTransaction();
         try {
-            $company_uid = Crypt::decrypt($company_uid);
+            $decrypted = Crypt::decrypt($company_uid);
 
-            $company = Company::find($company_uid);
+            // if (!Str::isUuid($decrypted)) {
+            //     throw new ApiException('company_not_exists', 404);
+            // }
+
+            $company = Company::findOrFail($decrypted);
 
 
             if (!$company) {
@@ -106,7 +110,7 @@ class AuthService extends Service
             $user = User::where('email', $data['email'])->first();
 
             if (!$user) {
-                throw new ApiException('user_not_found', 404);
+                throw new ApiException('credentials_ko', 401);
             }
 
             if (!Hash::check($data['password'], $user->password)) {
