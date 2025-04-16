@@ -42,8 +42,8 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $credentials = $request->only('email', 'password');
-        $company_uid = $request->company_uid;
+        $credentials = $request->safe()->only('email', 'password');
+        $company_uid = $request->safe()->company_uid;
         $response = $this->authService->login($credentials, $company_uid);
         return response()->json(['success' => true, 'access_token' => $response], 200);
     }

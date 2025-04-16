@@ -63,7 +63,7 @@ class AuthUserService extends Service
 
         $query = $user->notifications()->where('event_uid', $user->event->uid)->get();
 
-        [$likes, $superlikes, $hooks] = [
+        [$hooks, $likes, $superlikes] = [
             $query->where('type_id', NotificationsType::HOOK_TYPE),
             $query->where('type_id', NotificationsType::LIKE_TYPE),
             $query->where('type_id', NotificationsType::SUPER_LIKE_TYPE),
