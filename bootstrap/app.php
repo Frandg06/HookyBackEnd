@@ -28,7 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (AuthenticationException $e, Request $request) {
-            return response()->json(['custom_message' => __('i18n.user_not_login'), 'type' => 'AuthException'], 401);
+            return response()->json(['custom_message' => __('i18n.user_not_login'), 'redirect' => '/auth/login', 'destroy_session' => true], 401);
         });
         $exceptions->render(function (ApiException $e, Request $request) {
             return response()->json([
