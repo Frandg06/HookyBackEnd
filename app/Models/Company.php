@@ -47,7 +47,7 @@ class Company extends Authenticatable implements JWTSubject
 
     public function getlinkAttribute()
     {
-        return config('app.front_url') . '/?company=' . Crypt::encrypt($this->uid);
+        return config('app.front_url') . '/?t=' . $this->uid;
     }
 
     public function timezone(): BelongsTo

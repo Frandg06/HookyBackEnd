@@ -39,6 +39,7 @@ class  User extends Authenticatable implements JWTSubject
         'born_date',
         'description',
         'role_id',
+        'company_uid',
     ];
 
     protected $hidden = [
@@ -82,7 +83,7 @@ class  User extends Authenticatable implements JWTSubject
 
     public function company(): BelongsTo
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class, 'company_uid', 'uid');
     }
 
     public function userImages(): HasMany
@@ -120,14 +121,9 @@ class  User extends Authenticatable implements JWTSubject
 
     public function getEventAttribute()
     {
-        return $this->events()->orderByPivot('logged_at', 'desc')->first();
+        $now = Carbon::now();
+        return  $this->nextOrLastEvent();
     }
-
-    public function getCompanyUidAttribute(): string
-    {
-        return $this->event->company_uid;
-    }
-
 
     public function getDataCompleteAttribute(): bool
     {
@@ -255,13 +251,39 @@ class  User extends Authenticatable implements JWTSubject
 
     public function scopeGetNotificationsByType()
     {
+        if (!$this->event) {
+            return [];
+        }
+
         $unread = $this->notifications()->where('read_at', null)->get()->groupBy('type_id');
 
         return [
             'like' => $unread->has(NotificationsType::LIKE_TYPE) ? $unread->get(NotificationsType::LIKE_TYPE)->count() : 0,
             'superlike' => $unread->has(NotificationsType::SUPER_LIKE_TYPE) ? $unread->get(NotificationsType::SUPER_LIKE_TYPE)->count() : 0,
             'hook' => $unread->has(NotificationsType::HOOK_TYPE) ? $unread->get(NotificationsType::HOOK_TYPE)->count() : 0,
+            'message' => $this->unread_chats,
         ];
+    }
+
+    public function nextOrLastEvent()
+    {
+        $now = Carbon::now();
+
+        // Primero intentamos encontrar el evento futuro más cercano
+        $futureEvent = $this->company->events()
+            ->where('st_date', '>', $now)
+            ->orderBy('st_date', 'asc')
+            ->first();
+
+        if ($futureEvent) {
+            return $futureEvent;
+        }
+
+        // Si no hay eventos futuros, devolvemos el último evento pasado
+        return $this->company->events()
+            ->where('st_date', '<=', $now)
+            ->orderBy('st_date', 'desc')
+            ->first();
     }
 
 
@@ -296,7 +318,7 @@ class  User extends Authenticatable implements JWTSubject
     {
         return [
             'uid' => $this->uid,
-            'event_uid' => $this->event->uid
+            'event_uid' => $this->event->uid ?? null,
         ];
     }
 

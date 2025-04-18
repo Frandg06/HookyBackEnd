@@ -26,45 +26,48 @@ class AuthService extends Service
                 throw new ApiException('user_exists', 409);
             }
 
-            $company_uid = Crypt::decrypt($data['company_uid']);
-
-            $company = Company::where('uid', $company_uid)->first();
-
-            if (!$company) {
-                throw new ApiException('company_not_exists', 404);
-            }
-
-            $timezone = $company->timezone->name;
-
-            $actual_event = $company->active_event;
-
-            if (!$actual_event) {
-                $next_event = $company->next_event;
-            }
-
-            $event = $actual_event ?? $next_event;
-
-            if (!$event) {
-                throw new ApiException('event_not_active', 404);
-            }
-
             $user = User::create($data);
 
-            $count = $event->users()->count();
 
-            if ($count >= $company->limit_users) {
-                throw new ApiException('limit_users_reached', 409);
+            if (isset($data['company_uid']) && !empty($data['company_uid'])) {
+
+                $user->update([
+                    'company_uid' => $data['company_uid'],
+                ]);
+
+                $company = Company::find($data['company_uid']);
+
+                $timezone = $company->timezone->name;
+
+                $actual_event = $company->active_event;
+
+                if (!$actual_event) {
+                    $next_event = $company->next_event;
+                }
+
+                $event = $actual_event ?? $next_event;
+
+                if ($event) {
+                    $count = $event->users()->count();
+
+                    if ($count >= $company->limit_users) {
+                        throw new ApiException('limit_users_reached', 409);
+                    }
+
+                    $user->events()->attach($event->uid, [
+                        'logged_at' => now(),
+                        'likes' => $event->likes,
+                        'super_likes' => $event->super_likes,
+                    ]);
+                }
             }
 
-            $user->events()->attach($event->uid, [
-                'logged_at' => now(),
-                'likes' => $event->likes,
-                'super_likes' => $event->super_likes,
-            ]);
+            $end_date = $event->end_date ?? null;
+            $timezone = $event->timezone ?? null;
 
-            $diff = $this->getDiff($event->end_date, $timezone);
+            $diff = $this->getDiff($end_date, $timezone);
 
-            $token = Auth::setTTL($diff)->attempt(['email' => $data['email'], 'password' => $data['password']]);
+            $token = Auth::setTTL(+$diff)->attempt(['email' => $data['email'], 'password' => $data['password']]);
 
             DB::commit();
 
@@ -75,37 +78,10 @@ class AuthService extends Service
         }
     }
 
-    public function login(array $data, string $company_uid): string
+    public function login(array $data): string
     {
         DB::beginTransaction();
         try {
-            $decrypted = Crypt::decrypt($company_uid);
-
-            // if (!Str::isUuid($decrypted)) {
-            //     throw new ApiException('company_not_exists', 404);
-            // }
-
-            $company = Company::findOrFail($decrypted);
-
-
-            if (!$company) {
-                throw new ApiException('company_not_exists', 404);
-            }
-
-            $timezone = $company->timezone->name;
-
-            $actual_event = $company->active_event;
-
-            if (!$actual_event) {
-                $next_event = $company->next_event;
-            }
-
-            $event = $actual_event ?? $next_event;
-
-            if (!$event) {
-                throw new ApiException('event_not_active', 404);
-            }
-
 
             $user = User::where('email', $data['email'])->first();
 
@@ -117,26 +93,48 @@ class AuthService extends Service
                 throw new ApiException('credentials_ko', 401);
             }
 
-            $exist = $user->events()->wherePivot('event_uid', $event->uid)->exists();
+            if (isset($data['company_uid']) && !empty($data['company_uid'])) {
 
-            if (!$exist && $event->users->count() >= $company->limit_users) {
-                throw new ApiException('limit_users_reached', 409);
+                $user->update([
+                    'company_uid' => $data['company_uid'],
+                ]);
+
+                $company = Company::find($data['company_uid']);
+
+                $timezone = $company->timezone->name;
+
+                $actual_event = $company->active_event;
+
+                if (!$actual_event) {
+                    $next_event = $company->next_event;
+                }
+
+                $event = $actual_event ?? $next_event;
+
+                if ($event) {
+                    $exist = $user->events()->wherePivot('event_uid', $event->uid)->exists();
+                    if (!$exist && $event->users->count() >= $company->limit_users) {
+                        throw new ApiException('limit_users_reached', 409);
+                    }
+                    UserEvent::updateOrCreate(
+                        [
+                            'user_uid' => $user->uid,
+                            'event_uid' => $event->uid,
+                        ],
+                        [
+                            'logged_at' => now(),
+                            'likes' => $event->likes,
+                            'super_likes' => $event->super_likes,
+                        ]
+                    );
+                }
             }
 
-            UserEvent::updateOrCreate(
-                [
-                    'user_uid' => $user->uid,
-                    'event_uid' => $event->uid,
-                ],
-                [
-                    'logged_at' => now(),
-                    'likes' => $event->likes,
-                    'super_likes' => $event->super_likes,
-                ]
-            );
+            $end_date = $event->end_date ?? null;
+            $timezone = $event->timezone ?? null;
 
-            $diff = $this->getDiff($event->end_date, $timezone);
-            $token = Auth::setTTL($diff)->attempt($data);
+            $diff = $this->getDiff($end_date, $timezone);
+            $token = Auth::setTTL($diff)->attempt(['email' => $data['email'], 'password' => $data['password']]);
 
             if (!$token) {
                 throw new ApiException('credentials_ko', 401);
@@ -228,10 +226,14 @@ class AuthService extends Service
         }
     }
 
-    private function getDiff($end_date, $timezone)
+    private function getDiff($date, $tz = 'Europe/Berlin')
     {
-        $now = Carbon::now($timezone);
-        $end_date = Carbon::parse($end_date);
-        return $now->diffInMinutes($end_date);
+        if (!$date) {
+            $date = now($tz)->addHours(12)->format('Y-m-d H:i');
+        }
+
+        $end_date = Carbon::parse($date);
+
+        return now($tz)->diffInMinutes($end_date);
     }
 }
