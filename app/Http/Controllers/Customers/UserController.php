@@ -96,7 +96,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => __('i18n.not_aviable_user'),
-                'type' => 'RoleException'
+                'redirect' => '/home'
             ], 401);
         }
 
@@ -104,7 +104,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => __('i18n.not_aviable_user'),
-                'type' => 'RoleException'
+                'redirect' => '/home'
             ], 401);
         }
 
@@ -123,7 +123,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => __('i18n.not_aviable_user'),
-                'type' => 'RoleException'
+                'redirect' => '/home'
             ], 401);
         }
 

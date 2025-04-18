@@ -16,14 +16,25 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
 
-        $tz = $this->event->timezone;
-        $now = now($tz);
+        // $tz = $this->event->timezone;
+        // $now = now($tz);
 
         return [
             'id' => $this->id,
             'uid' => $this->uid,
-            'event_uid' => $this->event->uid,
-            'company' => $this->event->company->name,
+            'company' => [
+                'uid' => optional($this->company)->uid,
+                'name' =>  optional($this->company)->name,
+            ],
+            'event' => [
+                'is_active' => optional($this->event)->is_active,
+                'uid' => optional($this->event)->uid,
+                'name' => optional($this->event)->name,
+                'st_date' => optional($this->event)->st_date,
+                'end_date' => optional($this->event)->end_date,
+                'is_finished' => optional($this->event)->is_finished,
+
+            ],
             'gender_id' => $this->gender_id,
             'sexual_orientation_id' => $this->sexual_orientation_id,
             'premium' => $this->role_id == Role::PREMIUM ? true : false,
@@ -32,8 +43,8 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'born_date' => $this->born_date,
             'description' => $this->description,
-            'like_credits' => $this->likes,
-            'super_like_credits' => $this->super_likes,
+            'like_credits' => optional($this->event)->likes,
+            'super_like_credits' => optional($this->event)->super_likes,
             'data_complete' => $this->data_complete,
             'data_images' => $this->data_images,
             'complete_register' => $this->complete_register,
@@ -41,13 +52,7 @@ class UserResource extends JsonResource
             'userImages' => $this->userImages,
             'notifications' => [
                 ...$this->getNotificationsByType(),
-                'message' => $this->unread_chats
             ],
-            'next_event' => [
-                'exists' => $now->lt($this->event->st_date) ? true : null,
-                'st_date' => $this->event->st_date,
-            ]
-
         ];
     }
 }

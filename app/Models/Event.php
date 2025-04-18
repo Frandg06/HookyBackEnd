@@ -55,6 +55,18 @@ class Event extends Model
         return $this->hasMany(Chat::class, 'event_uid', 'uid');
     }
 
+    public function getIsActiveAttribute()
+    {
+        return $this->st_date <= now($this->timezone) && $this->end_date >= now($this->timezone);
+    }
+
+    public function getIsFinishedAttribute()
+    {
+        $end_date = Carbon::parse($this->end_date);
+        $now = now($this->timezone);
+        return $now->gt($end_date);
+    }
+
     public function scopeNextMontEvents($query)
     {
         $query->where('st_date', '>', Carbon::now())

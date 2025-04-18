@@ -27,27 +27,27 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (AuthenticationException $e, Request $request) {
-            return response()->json(['custom_message' => __('i18n.user_not_login'), 'type' => 'AuthException'], 401);
-        });
-        $exceptions->render(function (ApiException $e, Request $request) {
-            return response()->json([
-                'error' => true,
-                'custom_message' => __('i18n.' . $e->getMessage()),
-            ], $e->getCode());
-        });
-        $exceptions->render(function (ValidationException $e, Request $request) {
-            return response()->json([
-                'error' => true,
-                'message' => $e->validator->errors()
-            ], 422);
-        });
-        $exceptions->render(function (Exception $e, Request $request) {
-            return response()->json([
-                'error' => true,
-                'custom_message' => __('i18n.unexpected_error'),
-            ], 500);
-        });
+        // $exceptions->render(function (AuthenticationException $e, Request $request) {
+        //     return response()->json(['custom_message' => __('i18n.user_not_login'), 'redirect' => '/auth/login', 'destroy_session' => true], 401);
+        // });
+        // $exceptions->render(function (ApiException $e, Request $request) {
+        //     return response()->json([
+        //         'error' => true,
+        //         'custom_message' => __('i18n.' . $e->getMessage()),
+        //     ], $e->getCode());
+        // });
+        // $exceptions->render(function (ValidationException $e, Request $request) {
+        //     return response()->json([
+        //         'error' => true,
+        //         'message' => $e->validator->errors()
+        //     ], 422);
+        // });
+        // $exceptions->render(function (Exception $e, Request $request) {
+        //     return response()->json([
+        //         'error' => true,
+        //         'custom_message' => __('i18n.unexpected_error'),
+        //     ], 500);
+        // });
     })->withCommands([
         DestroyImages::class,
     ])

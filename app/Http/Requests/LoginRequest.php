@@ -24,14 +24,7 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string'],
-            'company_uid' => ['required', 'string'],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'company_uid.required' => 'Es necesario registrarse/iniciar sesion desde el link que proporcionó la empresa',
+            'company_uid' => ['nullable', 'uuid', 'exists:companies,uid'],
         ];
     }
 }

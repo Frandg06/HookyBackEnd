@@ -34,7 +34,7 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request)
     {
-        $data = $request->only('name', 'surnames', 'email', 'password', 'company_uid');
+        $data = $request->safe()->only('name', 'surnames', 'email', 'password', 'company_uid');
         $response = $this->authService->register($data);
 
         return response()->json(['success' => true, 'access_token' => $response], 200);
@@ -42,9 +42,8 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $credentials = $request->safe()->only('email', 'password');
-        $company_uid = $request->safe()->company_uid;
-        $response = $this->authService->login($credentials, $company_uid);
+        $credentials = $request->safe()->only('email', 'password', 'company_uid');
+        $response = $this->authService->login($credentials);
         return response()->json(['success' => true, 'access_token' => $response], 200);
     }
 

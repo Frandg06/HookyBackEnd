@@ -24,12 +24,12 @@ class CheckEventIsActiveMiddleware
 
         $now =  now($tz);
 
-        if ($now->gt($user->event->end_date)) {
-            return response()->json(['error' => true, 'custom_message' => __('i18n.event_is_past'), 'type' => 'AuthException'], 401);
+        if ($user->event->is_finished) {
+            return response()->json(['error' => true, 'custom_message' => __('i18n.event_is_past'), 'redirect' => '/no-event'], 401);
         }
 
         if ($now->lt($user->event->st_date)) {
-            return response()->json(['error' => true, 'custom_message' => __('i18n.event_not_start')], 409);
+            return response()->json(['error' => true, 'custom_message' => __('i18n.event_not_start'), 'redirect' => '/no-event'], 409);
         };
 
         return $next($request);
