@@ -269,6 +269,10 @@ class  User extends Authenticatable implements JWTSubject
     {
         $now = Carbon::now();
 
+        if (!$this->company) {
+            return null;
+        }
+
         // Primero intentamos encontrar el evento futuro más cercano
         $futureEvent = $this->company->events()
             ->where('st_date', '>', $now)
