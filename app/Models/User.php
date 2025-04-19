@@ -121,10 +121,9 @@ class  User extends Authenticatable implements JWTSubject
 
     public function getEventAttribute()
     {
-        $now = Carbon::now();
         return  $this->events()
-            ->where('st_date', '<=', $now)
-            ->where('end_date', '>=', $now)
+            ->where('st_date', '<=', now())
+            ->where('end_date', '>=', now())
             ->latest('logged_at')
             ->first() ?? $this->nextOrLastEvent();
     }
