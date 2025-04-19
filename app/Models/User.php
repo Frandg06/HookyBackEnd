@@ -122,7 +122,11 @@ class  User extends Authenticatable implements JWTSubject
     public function getEventAttribute()
     {
         $now = Carbon::now();
-        return  $this->nextOrLastEvent();
+        return  $this->events()
+            ->where('st_date', '<=', $now)
+            ->where('end_date', '>=', $now)
+            ->latest('logged_at')
+            ->first() ?? $this->nextOrLastEvent();
     }
 
     public function getDataCompleteAttribute(): bool
@@ -143,12 +147,12 @@ class  User extends Authenticatable implements JWTSubject
 
     public function getLikesAttribute(): int
     {
-        return $this->event->pivot->likes;
+        return $this->event->pivot?->likes;
     }
 
     public function getSuperLikesAttribute(): int
     {
-        return $this->event->pivot->super_likes;
+        return $this->event->pivot?->super_likes;
     }
 
     public function scopeChats()
@@ -239,6 +243,7 @@ class  User extends Authenticatable implements JWTSubject
     public function decrementInteraction(int $interaction): void
     {
         if ($interaction == Interaction::DISLIKE_ID) return;
+
         $name = match ($interaction) {
             Interaction::LIKE_ID => 'likes',
             Interaction::SUPER_LIKE_ID => 'super_likes',

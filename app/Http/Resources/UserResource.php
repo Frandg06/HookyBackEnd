@@ -15,10 +15,6 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-
-        // $tz = $this->event->timezone;
-        // $now = now($tz);
-
         return [
             'id' => $this->id,
             'uid' => $this->uid,
@@ -43,8 +39,8 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'born_date' => $this->born_date,
             'description' => $this->description,
-            'like_credits' => optional($this->event)->likes,
-            'super_like_credits' => optional($this->event)->super_likes,
+            'like_credits' => optional($this->event?->pivot)->likes,
+            'super_like_credits' => optional($this->event?->pivot)->super_likes,
             'data_complete' => $this->data_complete,
             'data_images' => $this->data_images,
             'complete_register' => $this->complete_register,

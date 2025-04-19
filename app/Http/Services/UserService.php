@@ -125,17 +125,19 @@ class UserService extends Service
             $pastNotify->delete();
         }
 
+        $chat = $this->chatService->store($authUid, $targetUserUid, $eventUid);
 
         $notification = new Notifify([
             'reciber_uid' => $targetUserUid,
             'type_id' => NotificationsType::HOOK_TYPE,
             'sender_uid' => $authUid,
-            'payload' => ['chat_created' => true]
+            'payload' => [
+                'chat_created' => true,
+                'chat' => $chat,
+            ]
         ]);
 
         $notification->dualEmitWithSave();
-
-        $chat = $this->chatService->store($authUid, $targetUserUid, $eventUid);
     }
 
     private function handleLike(int $interaction, string $authUid, string $targetUserUid): void
