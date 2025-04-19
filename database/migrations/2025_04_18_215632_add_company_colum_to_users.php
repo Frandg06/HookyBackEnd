@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->uuid('company_uid')->nullable();
-            $table->foreign('company_uid')->references('uid')->on('companies')->onDelete('cascade');
+            $table->foreign('company_uid')->references('uid')->on('companies')->onDelete('set null');
         });
     }
 
