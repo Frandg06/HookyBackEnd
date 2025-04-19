@@ -147,12 +147,12 @@ class  User extends Authenticatable implements JWTSubject
 
     public function getLikesAttribute(): int
     {
-        return $this->event->pivot?->likes;
+        return $this->event?->pivot?->likes ?? 0;
     }
 
     public function getSuperLikesAttribute(): int
     {
-        return $this->event->pivot?->super_likes;
+        return $this->event?->pivot?->super_likes ?? 0;
     }
 
     public function scopeChats()
