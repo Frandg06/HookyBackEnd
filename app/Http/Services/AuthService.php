@@ -3,7 +3,9 @@
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
+use App\Http\Resources\UserResource;
 use App\Models\Company;
+use App\Models\Event;
 use App\Models\PasswordResetToken;
 use App\Models\User;
 use App\Models\UserEvent;
@@ -140,6 +142,43 @@ class AuthService extends Service
             DB::commit();
 
             return $token;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function loginIntoEvent(string $event_uid): UserResource
+    {
+        DB::beginTransaction();
+        try {
+            $user = user();
+
+            $event = Event::find($event_uid);
+
+            if (! $event) {
+                throw new ApiException('event_not_found', 404);
+            }
+
+            if (! $event->is_active) {
+                throw new ApiException('event_not_started', 409);
+            }
+
+            UserEvent::updateOrCreate(
+                [
+                    'user_uid' => $user->uid,
+                    'event_uid' => $event->uid,
+                ],
+                [
+                    'logged_at' => now(),
+                    'likes' => $event->likes,
+                    'super_likes' => $event->super_likes,
+                ]
+            );
+
+            DB::commit();
+
+            return $user->toResource();
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;

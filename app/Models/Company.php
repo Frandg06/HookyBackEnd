@@ -49,7 +49,7 @@ class Company extends Authenticatable implements JWTSubject
 
     public function getlinkAttribute()
     {
-        return config('app.front_url') . '/?t=' . $this->uid;
+        return config('app.front_url').'/?t='.$this->uid;
     }
 
     public function timezone(): BelongsTo
@@ -64,7 +64,7 @@ class Company extends Authenticatable implements JWTSubject
 
     public function checkEventLimit($st_date, $uid)
     {
-        $st_date = clone ($st_date);
+        $st_date = clone $st_date;
         $limit = $this->pricingPlan->limit_events;
         $events = $this->events()
             ->when($uid, function ($query) use ($uid) {

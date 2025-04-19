@@ -166,10 +166,10 @@ class UserController extends Controller
         $response = [];
         for ($i = 0; $i < 3; $i++) {
 
-            if (isset($data['userImages' . $i])) {
+            if (isset($data['userImages'.$i])) {
 
                 $response[] = [
-                    'file' => $data['userImages' . $i],
+                    'file' => $data['userImages'.$i],
                     'data' => [
                         'width' => $size[$i]['width'],
                         'height' => $size[$i]['height'],

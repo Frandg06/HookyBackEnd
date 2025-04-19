@@ -19,8 +19,8 @@ class EventService extends Service
     public function store(array $data): EventResource
     {
         try {
-            $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
-            $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
+            $data['st_date'] = $data['st_date'].' '.$data['st_hour'];
+            $data['end_date'] = $data['end_date'].' '.$data['end_hour'];
             $data['code'] = Str::uuid();
 
             $this->validateEvent($data['st_date'], $data['end_date'], null);
@@ -82,8 +82,8 @@ class EventService extends Service
                 throw new ApiException('event_not_found', 404);
             }
 
-            $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
-            $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
+            $data['st_date'] = $data['st_date'].' '.$data['st_hour'];
+            $data['end_date'] = $data['end_date'].' '.$data['end_hour'];
 
             $this->validateEvent($data['st_date'], $data['end_date'], $uuid);
 

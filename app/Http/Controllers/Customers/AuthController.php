@@ -51,6 +51,13 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'access_token' => $response], 200);
     }
 
+    public function loginIntoEvent(string $event_uid)
+    {
+        $response = $this->authService->loginIntoEvent($event_uid);
+
+        return $this->response($response);
+    }
+
     public function logout()
     {
         Auth::invalidate(true);
