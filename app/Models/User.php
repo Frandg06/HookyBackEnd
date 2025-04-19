@@ -152,6 +152,10 @@ class  User extends Authenticatable implements JWTSubject
 
     public function getSuperLikesAttribute(): int
     {
+        debug([
+            'event' => $this->event,
+            'pivot' => $this->event->pivot,
+        ]);
         return $this->event?->pivot?->super_likes ?? 0;
     }
 
