@@ -22,7 +22,7 @@ class JwtVerifyCompanyMiddleware
         $token = str_replace('Bearer ', '', $request->header('Authorization'));
 
         if (! $token) {
-            return response()->json(['message' => 'No existe un token', 'type' => 'AuthException'], 401);
+            return response()->json(['custom_message' => 'No existe una sesion activa', 'destroy_session' => true], 401);
         }
 
         $payload = JWTAuth::setToken($token)->getPayload();
@@ -30,7 +30,7 @@ class JwtVerifyCompanyMiddleware
         $user = Company::find($payload['uid']);
 
         if (! $user) {
-            return response()->json(['message' => 'No existe una sesion activa', 'type' => 'AuthException'], 401);
+            return response()->json(['custom_message' => 'No existe una sesion activa', 'destroy_session' => true], 401);
         }
 
         Config::set('app.timezone', $user->timezone->name ?? 'Europe/Madrid');

@@ -100,7 +100,7 @@ class UserController extends Controller
 
         if (! $user->is_premium && ! $isSuperlike) {
             return response()->json([
-                'success' => false,
+                'error' => true,
                 'message' => __('i18n.not_aviable_user'),
                 'redirect' => '/home',
             ], 401);
@@ -108,7 +108,7 @@ class UserController extends Controller
 
         if (! $isLike && ! $isSuperlike) {
             return response()->json([
-                'success' => false,
+                'error' => true,
                 'message' => __('i18n.not_aviable_user'),
                 'redirect' => '/home',
             ], 401);
@@ -127,7 +127,7 @@ class UserController extends Controller
 
         if (! $isHook) {
             return response()->json([
-                'success' => false,
+                'error' => true,
                 'message' => __('i18n.not_aviable_user'),
                 'redirect' => '/home',
             ], 401);
@@ -166,10 +166,10 @@ class UserController extends Controller
         $response = [];
         for ($i = 0; $i < 3; $i++) {
 
-            if (isset($data['userImages'.$i])) {
+            if (isset($data['userImages' . $i])) {
 
                 $response[] = [
-                    'file' => $data['userImages'.$i],
+                    'file' => $data['userImages' . $i],
                     'data' => [
                         'width' => $size[$i]['width'],
                         'height' => $size[$i]['height'],

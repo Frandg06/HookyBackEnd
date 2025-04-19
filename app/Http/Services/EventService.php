@@ -19,8 +19,8 @@ class EventService extends Service
     public function store(array $data): EventResource
     {
         try {
-            $data['st_date'] = $data['st_date'].' '.$data['st_hour'];
-            $data['end_date'] = $data['end_date'].' '.$data['end_hour'];
+            $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
+            $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
             $data['code'] = Str::uuid();
 
             $this->validateEvent($data['st_date'], $data['end_date'], null);
@@ -82,8 +82,8 @@ class EventService extends Service
                 throw new ApiException('event_not_found', 404);
             }
 
-            $data['st_date'] = $data['st_date'].' '.$data['st_hour'];
-            $data['end_date'] = $data['end_date'].' '.$data['end_hour'];
+            $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
+            $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
 
             $this->validateEvent($data['st_date'], $data['end_date'], $uuid);
 
@@ -169,11 +169,11 @@ class EventService extends Service
             throw new ApiException('event_limit_reached', 409);
         }
 
-        if ($st_date->isPast()) {
+        if ($st_date->lt(now())) {
             throw new ApiException('start_date_past', 409);
         }
-        if ($end_date->isPast()) {
-            throw new ApiException('start_date_past', 409);
+        if ($end_date->lt(now())) {
+            throw new ApiException('end_date_past', 409);
         }
         if ($diff < 0) {
             throw new ApiException('end_date_before_start', 409);
