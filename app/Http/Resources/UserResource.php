@@ -35,7 +35,7 @@ class UserResource extends JsonResource
                 ]
             ),
             'company_event' => $this->when(
-                !$this->event && $this->nextOrLastEvent(),
+                ! $this->event && $this->nextOrLastEvent(),
                 [
                     'is_active' => optional($this->nextOrLastEvent())->is_active,
                     'uid' => optional($this->nextOrLastEvent())->uid,
