@@ -4,36 +4,38 @@ namespace App\Http\Filters;
 
 use App\Models\Gender;
 use App\Models\Role;
-use Illuminate\Support\Facades\Log;
 
 class UserFilter extends QueryFilter
 {
     public function name(string $value)
     {
-        return $this->builder->whereRaw("LOWER(name || ' ' || surnames) LIKE ?", ['%' . strtolower($value) . '%']);
+        return $this->builder->whereRaw("LOWER(name || ' ' || surnames) LIKE ?", ['%'.strtolower($value).'%']);
     }
 
     public function ageMin(int $age)
     {
         $date = now()->subYears($age)->format('Y-m-d');
+
         return $this->builder->whereDate('born_date', '<=', $date);
     }
 
     public function ageMax(int $age)
     {
         $date = now()->subYears($age)->format('Y-m-d');
+
         return $this->builder->where('born_date', '>=', $date);
     }
 
     public function gender(string $gender)
     {
         $gederCode = $gender == 'male' ? Gender::MALE : Gender::FEMALE;
+
         return $this->builder->where('gender_id', $gederCode);
     }
 
     public function email(string $email)
     {
-        return $this->builder->where('email', 'like', '%' . $email . '%');
+        return $this->builder->where('email', 'like', '%'.$email.'%');
     }
 
     public function role(string $role)

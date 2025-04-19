@@ -33,6 +33,7 @@ class ChatService extends Service
     public function show(string $uid): ChatResource
     {
         $chat = Chat::findOrFail($uid);
+
         return ChatResource::make($chat);
     }
 
@@ -62,6 +63,7 @@ class ChatService extends Service
 
             $notify->emit();
             DB::commit();
+
             return $response;
         } catch (Throwable $e) {
             DB::rollBack();
@@ -84,16 +86,15 @@ class ChatService extends Service
         }
     }
 
-
-
     public function store($user1, $user2, $event)
     {
         $chat = Chat::create([
             'user1_uid' => $user1,
             'user2_uid' => $user2,
             'event_uid' => $event,
-            'created_at' => now()
+            'created_at' => now(),
         ]);
+
         return ChatPreviewResource::make($chat);
     }
 }

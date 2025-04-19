@@ -29,8 +29,8 @@ return [
     ],
 
     'ws_api' => [
-        'notify_url' => env('WS_API_URL') . '/notify',
-        'send_message' => env('WS_API_URL') . '/chat/send',
+        'notify_url' => env('WS_API_URL').'/notify',
+        'send_message' => env('WS_API_URL').'/chat/send',
     ],
 
     'slack' => [

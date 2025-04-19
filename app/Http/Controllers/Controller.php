@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Request;
 
 abstract class Controller
 {
@@ -29,12 +28,12 @@ abstract class Controller
         Log::debug($message, $data);
     }
 
-
     private function reponseChecked($response, $customRespKey, $code)
     {
         if (isset($response['error']) && $response['error']) {
             return $this->returnError($response['message'], $response['code']);
         }
+
         return $this->returnSucces($response, $customRespKey, $code);
     }
 

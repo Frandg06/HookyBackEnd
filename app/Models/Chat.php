@@ -8,11 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Chat extends Model
 {
     use HasUuids;
-    protected $table = 'chats';
-    protected $primaryKey = 'uid';
-    protected $keyType = 'string';
-    public $incrementing = false;
 
+    protected $table = 'chats';
+
+    protected $primaryKey = 'uid';
+
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 
     protected $fillable = [
         'id',
@@ -32,14 +35,17 @@ class Chat extends Model
     {
         return $this->belongsTo(User::class, 'user1_uid', 'uid');
     }
+
     public function user2()
     {
         return $this->belongsTo(User::class, 'user2_uid', 'uid');
     }
+
     public function messages()
     {
         return $this->hasMany(ChatMessage::class, 'chat_uid', 'uid');
     }
+
     public function event()
     {
         return $this->belongsTo(Event::class, 'event_uid', 'uid');

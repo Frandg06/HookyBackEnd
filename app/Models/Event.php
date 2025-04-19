@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Traits\Filterable;
-use App\Models\Traits\HasUid;
 use App\Models\Traits\Sortable;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -15,14 +14,21 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Event extends Model
 {
-    use HasUuids, Filterable, Sortable, HasFactory;
+    use Filterable;
+    use HasFactory;
+    use HasUuids;
+    use Sortable;
 
     protected $table = 'events';
+
     protected $primaryKey = 'uid';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = ['uid', 'st_date', 'end_date', 'company_uid', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'code'];
+
     protected $hidden = ['created_at', 'updated_at', 'id'];
 
     public function company(): BelongsTo
@@ -64,6 +70,7 @@ class Event extends Model
     {
         $end_date = Carbon::parse($this->end_date);
         $now = now($this->timezone);
+
         return $now->gt($end_date);
     }
 
@@ -154,7 +161,6 @@ class Event extends Model
         $females = $this->users2()
             ->where('users.gender_id', Gender::FEMALE)
             ->count();
-
 
         return [
             'males' => $males,

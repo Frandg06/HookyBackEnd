@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Customers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\CompleteAuthUserRequest;
 use App\Http\Requests\CompleteDataRequest;
 use App\Http\Resources\TargetUserResource;
@@ -11,15 +10,18 @@ use App\Http\Services\AuthUserService;
 use App\Http\Services\ImagesService;
 use App\Http\Services\NotificationService;
 use App\Http\Services\UserService;
-use App\Models\User;
 use App\Models\TargetUsers;
-use Illuminate\Support\Facades\Log;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
     protected $authUserService;
+
     protected $userService;
+
     protected $imageService;
+
     protected $notificationService;
 
     public function __construct(
@@ -38,7 +40,8 @@ class UserController extends Controller
     {
         $data = $request->all();
         $response = $this->authUserService->update($data);
-        return response()->json(['success' => true, 'resp' =>  $response], 200);
+
+        return response()->json(['success' => true, 'resp' => $response], 200);
     }
 
     public function completeRegisterData(CompleteAuthUserRequest $request)
@@ -48,6 +51,7 @@ class UserController extends Controller
         $files = $this->parseCompleteFiles($data);
 
         $response = $this->authUserService->completeRegisterData($info, $files);
+
         return response()->json(['success' => true, 'resp' => $response], 200);
     }
 
@@ -64,22 +68,24 @@ class UserController extends Controller
         return response()->json(['success' => true, 'resp' => $response], 200);
     }
 
-
     public function getNotifications()
     {
         $response = $this->authUserService->getNotifications();
+
         return response()->json(['success' => true, 'resp' => $response], 200);
     }
 
     public function readNotificationsByType($type)
     {
         $response = $this->notificationService->readNotificationsByType($type);
+
         return response()->json(['success' => true, 'resp' => $response], 200);
     }
 
     public function retrieveTargetUsers()
     {
         $response = $this->userService->getTargetUsers();
+
         return response()->json(['resp' => $response, 'success' => true], 200);
     }
 
@@ -92,19 +98,19 @@ class UserController extends Controller
 
         $isSuperlike = TargetUsers::checkIsSuperLike($uid, $user);
 
-        if (!$user->is_premium && !$isSuperlike) {
+        if (! $user->is_premium && ! $isSuperlike) {
             return response()->json([
                 'success' => false,
                 'message' => __('i18n.not_aviable_user'),
-                'redirect' => '/home'
+                'redirect' => '/home',
             ], 401);
         }
 
-        if (!$isLike && !$isSuperlike) {
+        if (! $isLike && ! $isSuperlike) {
             return response()->json([
                 'success' => false,
                 'message' => __('i18n.not_aviable_user'),
-                'redirect' => '/home'
+                'redirect' => '/home',
             ], 401);
         }
 
@@ -119,16 +125,15 @@ class UserController extends Controller
 
         $isHook = TargetUsers::isHook($user->uid, $uid, $user->event->uid);
 
-        if (!$isHook) {
+        if (! $isHook) {
             return response()->json([
                 'success' => false,
                 'message' => __('i18n.not_aviable_user'),
-                'redirect' => '/home'
+                'redirect' => '/home',
             ], 401);
         }
 
         $user = User::where('uid', $uid)->first();
-
 
         return $this->response(TargetUserResource::make($user));
     }
@@ -161,17 +166,18 @@ class UserController extends Controller
         $response = [];
         for ($i = 0; $i < 3; $i++) {
 
-            if (isset($data['userImages' . $i])) {
+            if (isset($data['userImages'.$i])) {
 
-                $response[] =  [
-                    'file' => $data['userImages' . $i],
+                $response[] = [
+                    'file' => $data['userImages'.$i],
                     'data' => [
-                        'width' =>  $size[$i]['width'],
-                        'height' =>  $size[$i]['height']
-                    ]
+                        'width' => $size[$i]['width'],
+                        'height' => $size[$i]['height'],
+                    ],
                 ];
             }
         }
+
         return $response;
     }
 }

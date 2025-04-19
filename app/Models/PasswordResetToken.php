@@ -15,7 +15,6 @@ class PasswordResetToken extends Model
 
     public $timestamps = false;
 
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'email', 'email');

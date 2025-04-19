@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Models;
 
 use Illuminate\Support\Facades\Http;
@@ -9,14 +8,21 @@ class Notifify
 {
     public $attributes = [];
 
-    const LIKE = 1;
-    const SUPER_LIKE = 2;
-    const HOOK = 3;
-    const MESSAGE = 4;
-    const LIKE_STR = 'like';
-    const SUPER_LIKE_STR = 'superlike';
-    const HOOK_STR = 'hook';
-    const MESSAGE_STR = 'message';
+    public const LIKE = 1;
+
+    public const SUPER_LIKE = 2;
+
+    public const HOOK = 3;
+
+    public const MESSAGE = 4;
+
+    public const LIKE_STR = 'like';
+
+    public const SUPER_LIKE_STR = 'superlike';
+
+    public const HOOK_STR = 'hook';
+
+    public const MESSAGE_STR = 'message';
 
     public function __construct($attributes = [])
     {
@@ -64,10 +70,10 @@ class Notifify
     public function save()
     {
         Notification::create([
-          'event_uid' => request()->user()->event->uid,
-          'user_uid' => $this->reciber_uid,
-          'emitter_uid' => $this->sender_uid,
-          'type_id' => $this->type_id,
+            'event_uid' => request()->user()->event->uid,
+            'user_uid' => $this->reciber_uid,
+            'emitter_uid' => $this->sender_uid,
+            'type_id' => $this->type_id,
         ]);
     }
 
@@ -76,8 +82,8 @@ class Notifify
         $url = config('services.ws_api.notify_url');
 
         Http::withHeaders([
-          'Authorization' => 'Bearer ' . request()->bearerToken(),
-          'Accept' => 'application/json'
+            'Authorization' => 'Bearer '.request()->bearerToken(),
+            'Accept' => 'application/json',
         ])->post($url, $this->toArray());
     }
 
@@ -94,8 +100,8 @@ class Notifify
     private function getMessage()
     {
         return match ($this->type_id) {
-            self::LIKE => __('i18n.notify.base', ['interaction' => SELF::LIKE_STR]),
-            self::SUPER_LIKE => __('i18n.notify.base', ['interaction' => SELF::SUPER_LIKE_STR]),
+            self::LIKE => __('i18n.notify.base', ['interaction' => self::LIKE_STR]),
+            self::SUPER_LIKE => __('i18n.notify.base', ['interaction' => self::SUPER_LIKE_STR]),
             self::HOOK => __('i18n.notify.hook'),
             self::MESSAGE => __('i18n.notify.message', ['username' => $this->sender_name]),
         };
@@ -104,10 +110,10 @@ class Notifify
     private function getTypeStr()
     {
         return match ($this->type_id) {
-            self::LIKE => SELF::LIKE_STR,
-            self::SUPER_LIKE => SELF::SUPER_LIKE_STR,
-            self::HOOK => SELF::HOOK_STR,
-            self::MESSAGE => SELF::MESSAGE_STR,
+            self::LIKE => self::LIKE_STR,
+            self::SUPER_LIKE => self::SUPER_LIKE_STR,
+            self::HOOK => self::HOOK_STR,
+            self::MESSAGE => self::MESSAGE_STR,
         };
     }
 }

@@ -10,7 +10,7 @@ abstract class Service extends Controller
     public function responseError($message, $code = 400): array
     {
         return [
-            'message' => __('i18n.' . $message),
+            'message' => __('i18n.'.$message),
             'error' => true,
             'code' => $code,
         ];
@@ -18,6 +18,6 @@ abstract class Service extends Controller
 
     public function logError($error, $class, $function)
     {
-        Log::error('Error en ' . $class . '->' . $function, ['exception' => $error]);
+        Log::error('Error en '.$class.'->'.$function, ['exception' => $error]);
     }
 }

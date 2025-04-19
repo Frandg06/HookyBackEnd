@@ -23,7 +23,7 @@ class AuthCompanyService extends Service
                 throw new ApiException('user_exists', 409);
             }
 
-            if (!isset($data['timezone_uid']) || empty($data['timezone_uid'])) {
+            if (! isset($data['timezone_uid']) || empty($data['timezone_uid'])) {
                 $data['timezone_uid'] = TimeZone::where('name', 'Europe/Berlin')->first()->uid;
             }
 
@@ -46,12 +46,13 @@ class AuthCompanyService extends Service
     {
         $company = Company::where('email', $data['email'])->first();
 
-        if (!$company || !Hash::check($data['password'], $company->password)) {
+        if (! $company || ! Hash::check($data['password'], $company->password)) {
             throw new ApiException('credentials_ko', 401);
         }
 
         Auth::setTTL(24 * 60);
         $token = Auth::guard('company')->attempt($data);
+
         return $token;
     }
 
@@ -61,16 +62,16 @@ class AuthCompanyService extends Service
         try {
             $company = $this->company();
 
-            if (!$company) {
+            if (! $company) {
                 throw new ApiException('user_not_found', 404);
             }
 
-            if (!Hash::check($data['old_password'], $company->password)) {
+            if (! Hash::check($data['old_password'], $company->password)) {
                 throw new ApiException('actual_password_ko', 400);
             }
 
             $company->update([
-                'password' => bcrypt($data['new_password'])
+                'password' => bcrypt($data['new_password']),
             ]);
             DB::commit();
 
@@ -85,13 +86,13 @@ class AuthCompanyService extends Service
     {
         DB::beginTransaction();
         try {
-            if (!$email) {
+            if (! $email) {
                 throw new ApiException('email_required', 400);
             }
 
             $company = Company::where('email', $email)->first();
 
-            if (!$company) {
+            if (! $company) {
                 throw new ApiException('user_not_found', 404);
             }
 
@@ -106,18 +107,17 @@ class AuthCompanyService extends Service
             $password_token = CompanyPasswordResetToken::create([
                 'email' => $company->email,
                 'token' => base64_encode($token),
-                'expires_at' => now()->addMinutes(15)
+                'expires_at' => now()->addMinutes(15),
             ]);
 
-            $url = config('app.admin_url') . '/password/new?token=' . $password_token->token;
-
+            $url = config('app.admin_url').'/password/new?token='.$password_token->token;
 
             $template = view('emails.recovery_password_app', [
                 'link' => $url,
                 'name' => $company->name,
             ])->render();
 
-            $emailService = new EmailService();
+            $emailService = new EmailService;
             $emailService->sendEmail($company, __('i18n.password_reset_subject'), $template);
 
             DB::commit();
@@ -135,7 +135,7 @@ class AuthCompanyService extends Service
         try {
             $token_model = CompanyPasswordResetToken::where('token', $data['token'])->first();
 
-            if (!$token_model) {
+            if (! $token_model) {
                 throw new ApiException('token_not_found', 404);
             }
 
@@ -146,11 +146,12 @@ class AuthCompanyService extends Service
             $company = $token_model->company;
 
             $company->update([
-                'password' => bcrypt($data['password'])
+                'password' => bcrypt($data['password']),
             ]);
 
             $token_model->delete();
             DB::commit();
+
             return true;
         } catch (\Exception $e) {
             DB::rollBack();

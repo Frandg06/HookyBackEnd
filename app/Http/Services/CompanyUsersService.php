@@ -29,9 +29,9 @@ class CompanyUsersService extends Service
     public function getEventUsers(UserFilter $filter, UserOrdenator $order, string $event_uid): array
     {
 
-        $event =  Event::find($event_uid);
+        $event = Event::find($event_uid);
 
-        if (!$event) {
+        if (! $event) {
             throw new ApiException('event_not_found', 404);
         }
 
@@ -50,7 +50,7 @@ class CompanyUsersService extends Service
     {
         $users = Event::find($event_uid);
 
-        if (!$users) {
+        if (! $users) {
             throw new ApiException('event_not_found', 404);
         }
 
@@ -63,6 +63,7 @@ class CompanyUsersService extends Service
     {
 
         $users = $this->company()->users()->filter($filter)->sort($order)->get();
+
         return CompanyUsersExportResource::collection($users);
     }
 }

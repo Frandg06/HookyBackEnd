@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasUid;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -43,12 +41,12 @@ class UserImage extends Model
 
     public function getUrlAttribute(): string
     {
-        return 'hooky/profile/' . $this->user->uid . '/' . $this->uid . config('filesystems.disks.r2.image_default_extension');
+        return 'hooky/profile/'.$this->user->uid.'/'.$this->uid.config('filesystems.disks.r2.image_default_extension');
     }
 
     public function getWebUrlAttribute(): string
     {
-        return config('filesystems.disks.r2.url') . 'profile/' . $this->user->uid . '/' . $this->uid . config('filesystems.disks.r2.image_default_extension');
+        return config('filesystems.disks.r2.url').'profile/'.$this->user->uid.'/'.$this->uid.config('filesystems.disks.r2.image_default_extension');
     }
 
     public function user(): BelongsTo

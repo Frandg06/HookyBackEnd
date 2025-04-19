@@ -8,9 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class ChatMessage extends Model
 {
     use HasUuids;
+
     protected $table = 'chat_messages';
+
     protected $primaryKey = 'uid';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [
@@ -23,6 +27,7 @@ class ChatMessage extends Model
         'created_at',
         'updated_at',
     ];
+
     protected $hidden = [
         'updated_at',
     ];

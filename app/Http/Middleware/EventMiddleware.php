@@ -6,10 +6,9 @@ use App\Models\Event;
 use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Crypt;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
 
 class EventMiddleware
 {
@@ -22,7 +21,7 @@ class EventMiddleware
     {
         $token = $request->token;
 
-        if (!$token) {
+        if (! $token) {
             return response()->json(['error' => true, 'custom_message' => __('i18n.token_not_found')], 404);
         }
 
@@ -32,7 +31,7 @@ class EventMiddleware
 
         $event = Event::where('uid', $decodedToken['event_uid'])->where('code', $decodedToken['code'])->first();
 
-        if (!$event) {
+        if (! $event) {
             return response()->json(['error' => true, 'custom_message' => __('i18n.event_not_found')], 404);
         }
 

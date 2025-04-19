@@ -25,6 +25,7 @@ class ChatController extends Controller
     public function show(string $uid)
     {
         $response = $this->chatService->show($uid);
+
         return $this->response($response);
     }
 
@@ -39,10 +40,10 @@ class ChatController extends Controller
         return $this->response($response);
     }
 
-
     public function readMessage(string $uid)
     {
         $this->chatService->read($uid);
+
         return $this->response(['success' => true]);
     }
 }

@@ -21,7 +21,7 @@ class ImagesService extends Service
                 throw new ApiException('user_images_limit', 409);
             }
 
-            if (!in_array($img->getMimeType(), ['image/jpeg', 'image/png', 'image/webp'])) {
+            if (! in_array($img->getMimeType(), ['image/jpeg', 'image/png', 'image/webp'])) {
                 throw new ApiException('images_extension_ko', 409);
             }
 
@@ -40,7 +40,7 @@ class ImagesService extends Service
 
             $storage = Storage::disk('r2')->put($newImage->url, $image);
 
-            if (!$storage) {
+            if (! $storage) {
                 throw new ApiException('images_store_ko', 500);
             }
 
@@ -63,14 +63,14 @@ class ImagesService extends Service
 
                 $delete = $this->delete($img_uid);
 
-                if (!$delete) {
+                if (! $delete) {
                     throw new ApiException('delete_image_unexpected_error', 500);
                 }
             }
 
             $store = $this->store($img, $data);
 
-            if (!$store) {
+            if (! $store) {
                 throw new ApiException('store_image_unexpected_error', 500);
             }
 
@@ -91,18 +91,19 @@ class ImagesService extends Service
 
             $imageToDelete = $user->userImages()->where('uid', $uid)->first();
 
-            if (!$imageToDelete) {
+            if (! $imageToDelete) {
                 return throw new ApiException('image_not_found', 404);
             }
 
             $delete = Storage::disk('r2')->delete($imageToDelete->url);
 
-            if (!$delete) {
+            if (! $delete) {
                 throw new ApiException('i18n.image_delete_ko', 500);
             }
 
             $imageToDelete->delete();
             DB::commit();
+
             return true;
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -122,7 +123,7 @@ class ImagesService extends Service
 
             $remove = Storage::disk('r2')->deleteDirectory("hooky/profile/$user->uid");
 
-            if (!$remove) {
+            if (! $remove) {
                 throw new ApiException('image_delete_ko', 500);
             }
 
@@ -131,7 +132,7 @@ class ImagesService extends Service
             return true;
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
+            Log::error('Error en '.__CLASS__.'->'.__FUNCTION__, ['exception' => $e]);
             throw new ApiException('image_delete_ko', 500);
         }
     }

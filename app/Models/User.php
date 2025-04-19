@@ -14,13 +14,20 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class  User extends Authenticatable implements JWTSubject
+class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable, HasUuids, Filterable, Sortable;
+    use Filterable;
+    use HasFactory;
+    use HasUuids;
+    use Notifiable;
+    use Sortable;
 
     protected $table = 'users';
+
     protected $primaryKey = 'uid';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     /**
@@ -65,7 +72,6 @@ class  User extends Authenticatable implements JWTSubject
      *
      * @var array<int, string>
      */
-
     public function gender(): BelongsTo
     {
         return $this->belongsTo(Gender::class);
@@ -90,7 +96,6 @@ class  User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(UserImage::class, 'user_uid', 'uid');
     }
-
 
     public function interactions(): HasMany
     {
@@ -121,7 +126,7 @@ class  User extends Authenticatable implements JWTSubject
 
     public function getEventAttribute()
     {
-        return  $this->events()
+        return $this->events()
             ->where('st_date', '<=', now())
             ->where('end_date', '>=', now())
             ->latest('logged_at')
@@ -131,11 +136,12 @@ class  User extends Authenticatable implements JWTSubject
     public function getDataCompleteAttribute(): bool
     {
         foreach ($this->dataCompleteValues as $value) {
-            if (!$this->{$value}) {
+            if (! $this->{$value}) {
                 return false;
                 break;
             }
         }
+
         return true;
     }
 
@@ -155,6 +161,7 @@ class  User extends Authenticatable implements JWTSubject
             'event' => $this->event,
             'pivot' => $this->event->pivot,
         ]);
+
         return $this->event?->pivot?->super_likes ?? 0;
     }
 
@@ -245,7 +252,9 @@ class  User extends Authenticatable implements JWTSubject
 
     public function decrementInteraction(int $interaction): void
     {
-        if ($interaction == Interaction::DISLIKE_ID) return;
+        if ($interaction == Interaction::DISLIKE_ID) {
+            return;
+        }
 
         $name = match ($interaction) {
             Interaction::LIKE_ID => 'likes',
@@ -253,13 +262,13 @@ class  User extends Authenticatable implements JWTSubject
         };
 
         $this->events()->updateExistingPivot($this->event->uid, [
-            $name => max(0, $this->likes - 1)
+            $name => max(0, $this->likes - 1),
         ]);
     }
 
     public function scopeGetNotificationsByType()
     {
-        if (!$this->event) {
+        if (! $this->event) {
             return [];
         }
 
@@ -277,7 +286,7 @@ class  User extends Authenticatable implements JWTSubject
     {
         $now = Carbon::now();
 
-        if (!$this->company) {
+        if (! $this->company) {
             return null;
         }
 
@@ -297,7 +306,6 @@ class  User extends Authenticatable implements JWTSubject
             ->orderBy('st_date', 'desc')
             ->first();
     }
-
 
     /**
      * Get the attributes that should be cast.

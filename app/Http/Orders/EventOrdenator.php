@@ -22,16 +22,16 @@ class EventOrdenator extends QueryOrdenator
     public function usersCount(string $value)
     {
         return $this->builder
-          ->select('events.*')
-          ->selectRaw('(SELECT COUNT(*) FROM user_events WHERE user_events.event_uid = events.uid) as user_count')
-          ->orderBy('user_count', $value);
+            ->select('events.*')
+            ->selectRaw('(SELECT COUNT(*) FROM user_events WHERE user_events.event_uid = events.uid) as user_count')
+            ->orderBy('user_count', $value);
     }
 
     public function redeemedTickets(string $value)
     {
         return $this->builder
-          ->select('events.*')
-          ->selectRaw('(SELECT COUNT(*) FROM tickets WHERE tickets.event_uid = events.uid) as tickets_count')
-          ->orderBy('tickets_count', $value);
+            ->select('events.*')
+            ->selectRaw('(SELECT COUNT(*) FROM tickets WHERE tickets.event_uid = events.uid) as tickets_count')
+            ->orderBy('tickets_count', $value);
     }
 }

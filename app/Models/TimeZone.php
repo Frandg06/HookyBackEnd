@@ -10,8 +10,8 @@ class TimeZone extends Model
     use HasUuids;
 
     protected $fillable = ['name', 'utc_offset', 'uid'];
-    protected $hidden = ['id', 'created_at', 'updated_at'];
 
+    protected $hidden = ['id', 'created_at', 'updated_at'];
 
     public function uniqueIds(): array
     {

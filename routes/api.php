@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Companies\DomainController;
-use App\Http\Controllers\Customers\ImageController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api', 'lang'])->group(function () {

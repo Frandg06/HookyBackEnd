@@ -4,20 +4,19 @@ namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
 use App\Http\Resources\TargetUserResource;
-use App\Http\Services\NotificationService;
 use App\Models\Interaction;
 use App\Models\Notification;
 use App\Models\NotificationsType;
 use App\Models\Notifify;
-use App\Models\User;
 use App\Models\TargetUsers;
+use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class UserService extends Service
 {
     protected $notificationService;
+
     protected $chatService;
 
     public function __construct(NotificationService $notificationService, ChatService $chatService)
@@ -32,7 +31,7 @@ class UserService extends Service
         try {
 
             $auth = $this->user();
-            $cacheKey = 'target_users_uids_' . $auth->uid . '_' .  $auth->event->uid;
+            $cacheKey = 'target_users_uids_'.$auth->uid.'_'.$auth->event->uid;
             $cachedUids = Cache::get($cacheKey, []);
             $needed = 50 - count($cachedUids);
 
@@ -51,6 +50,7 @@ class UserService extends Service
 
             $users = User::whereIn('uid', $cachedUids)->get();
             DB::commit();
+
             return TargetUserResource::collection($users);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -72,14 +72,14 @@ class UserService extends Service
                 'user_uid' => $authUid,
                 'target_user_uid' => $targetUserUid,
                 'event_uid' => $eventUid,
-                'interaction_id' => $interaction
+                'interaction_id' => $interaction,
             ]);
 
             // Actualizo los likes y super likes restantes
             $this->user()->decrementInteraction($interaction);
 
             // Compruebo si es un hook
-            $isHook =  TargetUsers::isHook($targetUserUid, $authUid, $eventUid)->exists();
+            $isHook = TargetUsers::isHook($targetUserUid, $authUid, $eventUid)->exists();
 
             if ($isHook) {
                 $this->handleHook($authUid, $targetUserUid, $eventUid, $chat);
@@ -87,9 +87,9 @@ class UserService extends Service
                 $this->handleLike($interaction, $authUid, $targetUserUid);
             }
 
-            $cacheKey = 'target_users_uids_' . $authUid . '_' .  $eventUid;
+            $cacheKey = 'target_users_uids_'.$authUid.'_'.$eventUid;
             $cachedUids = Cache::get($cacheKey, []);
-            $filtered = collect($cachedUids)->reject(fn($cachedUid) => $cachedUid == $targetUserUid)->values();
+            $filtered = collect($cachedUids)->reject(fn ($cachedUid) => $cachedUid == $targetUserUid)->values();
             Cache::put($cacheKey, $filtered->toArray());
 
             $response = [
@@ -134,7 +134,7 @@ class UserService extends Service
             'payload' => [
                 'chat_created' => true,
                 'chat' => $chat,
-            ]
+            ],
         ]);
 
         $notification->dualEmitWithSave();
@@ -149,7 +149,7 @@ class UserService extends Service
         $notification = new Notifify([
             'reciber_uid' => $targetUserUid,
             'type_id' => $type,
-            'sender_uid' => $authUid
+            'sender_uid' => $authUid,
         ]);
 
         $notification->emit();

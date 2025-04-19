@@ -16,8 +16,11 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     protected $authService;
+
     protected $userService;
+
     protected $imageService;
+
     protected $emailService;
 
     public function __construct(
@@ -44,6 +47,7 @@ class AuthController extends Controller
     {
         $credentials = $request->safe()->only('email', 'password', 'company_uid');
         $response = $this->authService->login($credentials);
+
         return response()->json(['success' => true, 'access_token' => $response], 200);
     }
 
@@ -51,12 +55,14 @@ class AuthController extends Controller
     {
         Auth::invalidate(true);
         Auth::logout();
+
         return response()->json(['success' => true, 'message' => __('i18n.logged_out')], 200);
     }
 
     public function me()
     {
         $user = user()->toResource();
+
         return response()->json(['resp' => $user, 'success' => true], 200);
     }
 

@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class SexualOrientation extends Model
 {
-    const BISEXUAL = 1;
-    const HETEROSEXUAL = 2;
-    const HOMOSEXUAL = 3;
+    public const BISEXUAL = 1;
+
+    public const HETEROSEXUAL = 2;
+
+    public const HOMOSEXUAL = 3;
 
     protected $fillable = ['id', 'name'];
 }

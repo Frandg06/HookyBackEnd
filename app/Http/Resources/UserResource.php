@@ -20,7 +20,7 @@ class UserResource extends JsonResource
             'uid' => $this->uid,
             'company' => [
                 'uid' => optional($this->company)->uid,
-                'name' =>  optional($this->company)->name,
+                'name' => optional($this->company)->name,
             ],
             'event' => [
                 'is_active' => optional($this->event)->is_active,

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     protected $authService;
+
     protected $emailService;
 
     public function __construct(AuthCompanyService $authService, EmailService $emailService)
@@ -25,6 +26,7 @@ class AuthController extends Controller
     {
         $validated = $request->only('name', 'email', 'phone', 'address', 'city', 'country', 'password');
         $response = $this->authService->register($validated);
+
         return $this->response($response, 'access_token');
     }
 
@@ -32,12 +34,14 @@ class AuthController extends Controller
     {
         $data = $request->only('email', 'password');
         $response = $this->authService->login($data);
+
         return $this->response($response, 'access_token');
     }
 
     public function me()
     {
         $company = company()->resource();
+
         return $this->response($company);
     }
 
@@ -57,6 +61,7 @@ class AuthController extends Controller
         ]);
 
         $response = $this->authService->updatePassword($validated);
+
         return $this->response($response);
     }
 

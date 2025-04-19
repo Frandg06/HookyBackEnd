@@ -29,8 +29,8 @@ class ChartsController extends Controller
             }
         }
 
-
         $events = ChartUserAndIncomesResource::make($events);
+
         return $this->response($events);
     }
 
@@ -103,9 +103,10 @@ class ChartsController extends Controller
         // Asegurar que todos los rangos de edad estén presentes
         $completeAgeGroups = collect($predefinedAgeGroups)->map(function ($group) use ($ageGroups) {
             $found = $ageGroups->firstWhere('age_group', $group);
+
             return [
                 'age_group' => $group,
-                'total' => $found ? $found->total : 0
+                'total' => $found ? $found->total : 0,
             ];
         });
 

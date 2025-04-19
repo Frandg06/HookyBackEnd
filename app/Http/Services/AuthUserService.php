@@ -41,7 +41,7 @@ class AuthUserService extends Service
     {
         DB::beginTransaction();
         try {
-            if (!Hash::check($data['old_password'], $this->user()->password)) {
+            if (! Hash::check($data['old_password'], $this->user()->password)) {
                 throw new ApiException('actual_password_ko', 400);
             }
 
@@ -74,10 +74,10 @@ class AuthUserService extends Service
                 'images' => $likes->take(7)->map(function ($u) {
                     return $u->user->userImages()->first()->web_url;
                 }),
-                'count' => $likes->count()
+                'count' => $likes->count(),
             ],
             'super_likes' => NotificationUserResource::collection($superlikes),
-            'hooks' => NotificationUserResource::collection($hooks)
+            'hooks' => NotificationUserResource::collection($hooks),
         ];
 
         return $data;
@@ -90,7 +90,7 @@ class AuthUserService extends Service
             $user = request()->user();
             $this->update($info);
 
-            $imageService = new ImagesService();
+            $imageService = new ImagesService;
 
             if ($user->userImages()->count() === 0) {
                 if (count($files) < 1 || count($files) > 3) {
@@ -106,7 +106,7 @@ class AuthUserService extends Service
             return $user->toResource();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
+            Log::error('Error en '.__CLASS__.'->'.__FUNCTION__, ['exception' => $e]);
             throw $e;
         }
     }

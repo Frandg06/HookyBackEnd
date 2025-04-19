@@ -13,7 +13,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Ticket extends Model
 {
-    use HasUuids, HasFactory, Sortable, Filterable;
+    use Filterable;
+    use HasFactory;
+    use HasUuids;
+    use Sortable;
 
     protected $fillable = [
         'company_uid',

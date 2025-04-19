@@ -12,14 +12,14 @@ use Tests\TestCase;
 
 class LoginCustomerTest extends TestCase
 {
-
     use RefreshDatabase;
     use WithFaker;
 
     protected $user;
+
     protected $company;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $this->user = User::factory()->create([
@@ -28,6 +28,7 @@ class LoginCustomerTest extends TestCase
         ]);
         $this->company = Company::factory()->create();
     }
+
     /**
      * A basic feature test example.
      */
@@ -142,7 +143,7 @@ class LoginCustomerTest extends TestCase
         ]);
 
         $res = $this->postJson('api/customers/auth/login', [
-            'email' => "fake@fake.es",
+            'email' => 'fake@fake.es',
             'password' => '123456',
             'company_uid' => Crypt::encrypt($this->company->uid),
         ]);

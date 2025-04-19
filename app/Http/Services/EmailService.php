@@ -17,7 +17,7 @@ class EmailService
     public function sendEmail($user, $subject, $template)
     {
 
-        $email = new Mail();
+        $email = new Mail;
 
         $email->setFrom('admin@hookyapp.es', 'Hooky!');
         $email->setSubject($subject);
@@ -29,6 +29,7 @@ class EmailService
 
         try {
             $response = $this->sender->send($email);
+
             return $response;
         } catch (\Exception $e) {
             return $e->getMessage();

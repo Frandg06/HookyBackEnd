@@ -19,7 +19,7 @@ class ImageController extends Controller
     {
 
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5000'
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5000',
         ]);
 
         $image = $request->file('image');
@@ -30,7 +30,7 @@ class ImageController extends Controller
 
         $response = $this->imageService->store($image, $original_data);
 
-        return response()->json(['success' => true, 'resp' =>  $response], 200);
+        return response()->json(['success' => true, 'resp' => $response], 200);
     }
 
     public function delete(string $uid)
@@ -44,7 +44,7 @@ class ImageController extends Controller
     {
         $validated = $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5000',
-            'uid' => 'nullable|string'
+            'uid' => 'nullable|string',
         ]);
 
         $image = $validated['image'];
@@ -53,14 +53,15 @@ class ImageController extends Controller
             'height' => $request->height,
         ];
 
-
         $response = $this->imageService->update($uid, $image, $original_data);
-        return response()->json(['success' => true, 'resp' =>  $response], 200);
+
+        return response()->json(['success' => true, 'resp' => $response], 200);
     }
 
     public function deleteUserImages()
     {
         $response = $this->imageService->deleteUserImages();
-        return response()->json(['success' => true, 'resp' =>  'Image delete successfully'], 200);
+
+        return response()->json(['success' => true, 'resp' => 'Image delete successfully'], 200);
     }
 }

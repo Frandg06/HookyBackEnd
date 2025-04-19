@@ -10,6 +10,7 @@ class DomainController extends Controller
     public function getTimeZones()
     {
         $timezones = TimeZone::all();
+
         return response()->json($timezones);
     }
 }

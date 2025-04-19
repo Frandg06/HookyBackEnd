@@ -21,7 +21,7 @@ class JwtVerifyCompanyMiddleware
 
         $token = str_replace('Bearer ', '', $request->header('Authorization'));
 
-        if (!$token) {
+        if (! $token) {
             return response()->json(['message' => 'No existe un token', 'type' => 'AuthException'], 401);
         }
 
@@ -29,7 +29,7 @@ class JwtVerifyCompanyMiddleware
 
         $user = Company::find($payload['uid']);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'No existe una sesion activa', 'type' => 'AuthException'], 401);
         }
 

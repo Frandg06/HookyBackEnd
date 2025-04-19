@@ -2,14 +2,13 @@
 
 namespace App\Http\Filters;
 
-use App\Http\Filters\QueryFilter;
-
 class TicketFilter extends QueryFilter
 {
     public function name(string $value)
     {
-        return $this->builder->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($value) . '%']);
+        return $this->builder->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($value).'%']);
     }
+
     public function eventUid(string $value)
     {
         return $this->builder->where('event_uid', $value);

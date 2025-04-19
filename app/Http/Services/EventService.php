@@ -19,8 +19,8 @@ class EventService extends Service
     public function store(array $data): EventResource
     {
         try {
-            $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
-            $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
+            $data['st_date'] = $data['st_date'].' '.$data['st_hour'];
+            $data['end_date'] = $data['end_date'].' '.$data['end_hour'];
             $data['code'] = Str::uuid();
 
             $this->validateEvent($data['st_date'], $data['end_date'], null);
@@ -28,6 +28,7 @@ class EventService extends Service
             $event = $this->company()->events()->create($data);
 
             DB::commit();
+
             return EventResource::make($event);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -50,6 +51,7 @@ class EventService extends Service
 
             $events = array_merge($events, $query);
         }
+
         return $events;
     }
 
@@ -61,7 +63,7 @@ class EventService extends Service
             ->sort($ordenator)
             ->paginate($limit);
 
-        return  [
+        return [
             'data' => EventResource::collection($events),
             'current_page' => $events->currentPage(),
             'last_page' => $events->lastPage(),
@@ -76,17 +78,18 @@ class EventService extends Service
         try {
             $event = $this->company()->events()->where('uid', $uuid)->first();
 
-            if (!$event) {
+            if (! $event) {
                 throw new ApiException('event_not_found', 404);
             }
 
-            $data['st_date'] = $data['st_date'] . ' ' . $data['st_hour'];
-            $data['end_date'] = $data['end_date'] . ' ' . $data['end_hour'];
+            $data['st_date'] = $data['st_date'].' '.$data['st_hour'];
+            $data['end_date'] = $data['end_date'].' '.$data['end_hour'];
 
             $this->validateEvent($data['st_date'], $data['end_date'], $uuid);
 
             $event->update($data);
             DB::commit();
+
             return EventResource::make($event);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -98,7 +101,7 @@ class EventService extends Service
     {
         $event = $this->company()->events()->where('uid', $uuid)->first();
 
-        if (!$event) {
+        if (! $event) {
             throw new ApiException('event_not_found', 404);
         }
 
@@ -109,7 +112,7 @@ class EventService extends Service
     {
         $event = $this->company()->events()->where('uid', $uuid)->first();
 
-        if (!$event) {
+        if (! $event) {
             throw new ApiException('event_not_found', 404);
         }
 
@@ -132,7 +135,7 @@ class EventService extends Service
             ->sort($ordenator)
             ->get(['name', 'st_date', 'end_date', 'colors', 'likes', 'super_likes']);
 
-        return  EventExportResource::collection($events);
+        return EventExportResource::collection($events);
     }
 
     public function getEventsFillable(EventFilter $filter): Collection
@@ -149,6 +152,7 @@ class EventService extends Service
     public function getTicketDispatcher(Event $event): Collection
     {
         $tickets_types = $event->tickets()->select('name')->distinct()->get();
+
         return $tickets_types;
     }
 
@@ -161,7 +165,7 @@ class EventService extends Service
         if ($this->company()->checkEveventsInSameTime($st_date, $end_date, $event)) {
             throw new ApiException('event_at_same_time', 409);
         }
-        if (!$this->company()->checkEventLimit($st_date, $event)) {
+        if (! $this->company()->checkEventLimit($st_date, $event)) {
             throw new ApiException('event_limit_reached', 409);
         }
 

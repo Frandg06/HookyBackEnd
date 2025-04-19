@@ -23,6 +23,7 @@ class TicketService extends Service
 
         $tickets = $this->company()->tickets()->filter($filter)->sort($order)->paginate($limit);
         $data = TicketResource::collection($tickets);
+
         return [
             'data' => $data,
             'current_page' => $tickets->currentPage(),
@@ -31,7 +32,7 @@ class TicketService extends Service
             'path' => $tickets->path(),
             'per_page' => $tickets->perPage(),
             'to' => $tickets->lastItem(),
-            'total' => $tickets->total()
+            'total' => $tickets->total(),
         ];
     }
 
@@ -87,7 +88,7 @@ class TicketService extends Service
                 ->where('redeemed', false)
                 ->first();
 
-            if (!$ticket) {
+            if (! $ticket) {
                 throw new ApiException('ticket_invalid', 400);
             }
 
@@ -96,12 +97,12 @@ class TicketService extends Service
             $ticket->update([
                 'user_uid' => user()->uid,
                 'redeemed' => true,
-                'redeemed_at' => now($tz)
+                'redeemed_at' => now($tz),
             ]);
 
             user()->events()->updateExistingPivot(user()->event->uid, [
                 'likes' => user()->likes + $ticket->likes,
-                'super_likes' => user()->superlikes + $ticket->super_likes
+                'super_likes' => user()->superlikes + $ticket->super_likes,
             ]);
 
             DB::commit();
@@ -114,11 +115,11 @@ class TicketService extends Service
                 'ticket_add' => [
                     'super_likes' => $ticket->super_likes,
                     'likes' => $ticket->likes,
-                ]
+                ],
             ];
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
+            Log::error('Error en '.__CLASS__.'->'.__FUNCTION__, ['exception' => $e]);
             throw $e;
         }
     }
@@ -126,6 +127,7 @@ class TicketService extends Service
     public function getTicketsToExport(TicketFilter $filter, TicketOrdenator $order): JsonResource
     {
         $tickets = $this->company()->tickets()->filter($filter)->sort($order)->get();
+
         return TicketExportResource::collection($tickets);
     }
 
@@ -140,11 +142,11 @@ class TicketService extends Service
                 ->inRandomOrder()
                 ->first();
 
-            if (!$ticket) {
+            if (! $ticket) {
                 throw new ApiException('ticket_not_found', 404);
             }
 
-            $url = config('app.front_url') . '/redeem?code=' . $ticket->code;
+            $url = config('app.front_url').'/redeem?code='.$ticket->code;
 
             $ticket->update(['generated' => true]);
 

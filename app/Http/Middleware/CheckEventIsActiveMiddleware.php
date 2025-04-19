@@ -2,11 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Exceptions\ApiException;
-use Carbon\Carbon;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckEventIsActiveMiddleware
@@ -22,7 +19,7 @@ class CheckEventIsActiveMiddleware
 
         $tz = $user->event->timezone;
 
-        $now =  now($tz);
+        $now = now($tz);
 
         if ($user->event->is_finished) {
             return response()->json(['error' => true, 'custom_message' => __('i18n.event_is_past'), 'redirect' => '/no-event'], 401);
@@ -30,7 +27,7 @@ class CheckEventIsActiveMiddleware
 
         if ($now->lt($user->event->st_date)) {
             return response()->json(['error' => true, 'custom_message' => __('i18n.event_not_start'), 'redirect' => '/no-event'], 409);
-        };
+        }
 
         return $next($request);
     }

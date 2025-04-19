@@ -30,7 +30,6 @@ class EventFactory extends Factory
             'label-yellow',
         ];
 
-
         return [
             'uid' => fake()->uuid(),
             'name' => fake()->name(),
@@ -40,7 +39,7 @@ class EventFactory extends Factory
             'timezone' => 'Europe/Madrid',
             'likes' => fake()->numberBetween(1, 100),
             'super_likes' => fake()->numberBetween(1, 100),
-            'colors' => $colors[rand(0, count($colors) - 1)]
+            'colors' => $colors[rand(0, count($colors) - 1)],
         ];
     }
 }

@@ -6,9 +6,7 @@ use App\Http\Filters\TicketFilter;
 use App\Http\Orders\TicketOrdenator;
 use App\Http\Requests\CreateTicketRequest;
 use App\Http\Services\TicketService;
-use App\Models\Ticket;
 use Illuminate\Http\Request;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class TicketController extends Controller
 {
@@ -22,6 +20,7 @@ class TicketController extends Controller
     public function getTickets(TicketFilter $filter, TicketOrdenator $order, Request $request)
     {
         $tickets = $this->ticketService->getTickets($filter, $order, $request->limit ?? 10);
+
         return $this->response($tickets);
     }
 
@@ -29,6 +28,7 @@ class TicketController extends Controller
     {
         $data = $request->safe()->only(['count', 'likes', 'superlikes', 'name', 'price']);
         $response = $this->ticketService->generateTickets($data, $uuid);
+
         return $this->response($response);
     }
 
@@ -43,6 +43,7 @@ class TicketController extends Controller
     public function getTicketsToExport(TicketFilter $filter, TicketOrdenator $order)
     {
         $tickets = $this->ticketService->getTicketsToExport($filter, $order);
+
         return $this->response($tickets);
     }
 
@@ -51,6 +52,7 @@ class TicketController extends Controller
         $event = $request->event;
         $type = $request->type;
         $qr = $this->ticketService->getQrCode($event, $type);
+
         return $this->response($qr);
     }
 }

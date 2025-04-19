@@ -3,12 +3,10 @@
 namespace App\Models;
 
 use App\Http\Resources\AuthCompanyResource;
-use App\Models\Traits\HasUid;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
@@ -18,8 +16,11 @@ class Company extends Authenticatable implements JWTSubject
     use HasUuids;
 
     protected $table = 'companies';
+
     protected $primaryKey = 'uid';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [
@@ -48,7 +49,7 @@ class Company extends Authenticatable implements JWTSubject
 
     public function getlinkAttribute()
     {
-        return config('app.front_url') . '/?t=' . $this->uid;
+        return config('app.front_url').'/?t='.$this->uid;
     }
 
     public function timezone(): BelongsTo
@@ -70,6 +71,7 @@ class Company extends Authenticatable implements JWTSubject
             })
             ->whereDate('st_date', '>=', $st_date->startOfMonth())
             ->whereDate('st_date', '<=', $st_date->endOfMonth())->count();
+
         return $events < $limit;
     }
 
@@ -129,22 +131,20 @@ class Company extends Authenticatable implements JWTSubject
             ->join('user_events', 'events.uid', '=', 'user_events.event_uid')
             ->distinct('user_events.user_uid');
 
-
         $actual_data = (clone $query)->whereBetween('user_events.created_at', [
             now()->subMonths(6)->format('Y-m-d H:i:s'),
-            now()->format('Y-m-d H:i:s')
+            now()->format('Y-m-d H:i:s'),
         ])->count('user_events.user_uid');
-
 
         $usersLastSixMonths = (clone $query)->whereBetween('user_events.created_at', [
             now()->subMonths(12)->format('Y-m-d H:i:s'),
-            now()->subMonth(6)->format('Y-m-d H:i:s')
+            now()->subMonth(6)->format('Y-m-d H:i:s'),
         ])->count('user_events.user_uid');
 
         $percentage = $actual_data / ($usersLastSixMonths || 1) * 100;
 
         return [
-            'data' =>  $actual_data,
+            'data' => $actual_data,
             'percentage' => $percentage,
         ];
     }
@@ -155,7 +155,7 @@ class Company extends Authenticatable implements JWTSubject
 
         $actual_data = (clone $query)->whereBetween('redeemed_at', [
             now()->subMonth(6),
-            now()
+            now(),
         ])->sum('price');
 
         $past_incomes = (clone $query)->whereBetween('redeemed_at', [
@@ -164,8 +164,9 @@ class Company extends Authenticatable implements JWTSubject
         ])->sum('price');
 
         $percentage = $actual_data / ($past_incomes || 1) * 100;
+
         return [
-            'data' =>  $actual_data,
+            'data' => $actual_data,
             'percentage' => $percentage,
         ];
     }

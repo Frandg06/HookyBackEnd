@@ -9,10 +9,8 @@ use App\Models\User;
 use App\Models\UserEvent;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class AuthService extends Service
 {
@@ -28,8 +26,7 @@ class AuthService extends Service
 
             $user = User::create($data);
 
-
-            if (isset($data['company_uid']) && !empty($data['company_uid'])) {
+            if (isset($data['company_uid']) && ! empty($data['company_uid'])) {
 
                 $user->update([
                     'company_uid' => $data['company_uid'],
@@ -41,7 +38,7 @@ class AuthService extends Service
 
                 $actual_event = $company->active_event;
 
-                if (!$actual_event) {
+                if (! $actual_event) {
                     $next_event = $company->next_event;
                 }
 
@@ -85,15 +82,15 @@ class AuthService extends Service
 
             $user = User::where('email', $data['email'])->first();
 
-            if (!$user) {
+            if (! $user) {
                 throw new ApiException('credentials_ko', 401);
             }
 
-            if (!Hash::check($data['password'], $user->password)) {
+            if (! Hash::check($data['password'], $user->password)) {
                 throw new ApiException('credentials_ko', 401);
             }
 
-            if (isset($data['company_uid']) && !empty($data['company_uid'])) {
+            if (isset($data['company_uid']) && ! empty($data['company_uid'])) {
 
                 $user->update([
                     'company_uid' => $data['company_uid'],
@@ -105,7 +102,7 @@ class AuthService extends Service
 
                 $actual_event = $company->active_event;
 
-                if (!$actual_event) {
+                if (! $actual_event) {
                     $next_event = $company->next_event;
                 }
 
@@ -113,7 +110,7 @@ class AuthService extends Service
 
                 if ($event) {
                     $exist = $user->events()->wherePivot('event_uid', $event->uid)->exists();
-                    if (!$exist && $event->users->count() >= $company->limit_users) {
+                    if (! $exist && $event->users->count() >= $company->limit_users) {
                         throw new ApiException('limit_users_reached', 409);
                     }
                     UserEvent::updateOrCreate(
@@ -136,7 +133,7 @@ class AuthService extends Service
             $diff = $this->getDiff($end_date, $timezone);
             $token = Auth::setTTL($diff)->attempt(['email' => $data['email'], 'password' => $data['password']]);
 
-            if (!$token) {
+            if (! $token) {
                 throw new ApiException('credentials_ko', 401);
             }
 
@@ -153,13 +150,13 @@ class AuthService extends Service
     {
         DB::beginTransaction();
         try {
-            if (!$email) {
+            if (! $email) {
                 throw new ApiException('email_required', 400);
             }
 
             $user = User::where('email', $email)->first();
 
-            if (!$user) {
+            if (! $user) {
                 throw new ApiException('user_not_found', 404);
             }
 
@@ -174,18 +171,17 @@ class AuthService extends Service
             $password_token = PasswordResetToken::create([
                 'email' => $user->email,
                 'token' => base64_encode($token),
-                'expires_at' => now()->addMinutes(15)
+                'expires_at' => now()->addMinutes(15),
             ]);
 
-            $url = config('app.front_url') . '/auth/password/new?token=' . $password_token->token;
-
+            $url = config('app.front_url').'/auth/password/new?token='.$password_token->token;
 
             $template = view('emails.recovery_password_app', [
                 'link' => $url,
                 'name' => $user->name,
             ])->render();
 
-            $emailService = new EmailService();
+            $emailService = new EmailService;
             $emailService->sendEmail($user, __('i18n.password_reset_subject'), $template);
 
             DB::commit();
@@ -203,7 +199,7 @@ class AuthService extends Service
         try {
             $token_model = PasswordResetToken::where('token', $data['token'])->first();
 
-            if (!$token_model) {
+            if (! $token_model) {
                 throw new ApiException('token_not_found', 404);
             }
 
@@ -214,11 +210,12 @@ class AuthService extends Service
             $user = $token_model->user;
 
             $user->update([
-                'password' => bcrypt($data['password'])
+                'password' => bcrypt($data['password']),
             ]);
 
             $token_model->delete();
             DB::commit();
+
             return true;
         } catch (\Exception $e) {
             DB::rollBack();
@@ -228,7 +225,7 @@ class AuthService extends Service
 
     private function getDiff($date, $tz = 'Europe/Berlin')
     {
-        if (!$date) {
+        if (! $date) {
             $date = now($tz)->addHours(12)->format('Y-m-d H:i');
         }
 

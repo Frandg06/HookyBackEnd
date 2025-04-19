@@ -16,7 +16,7 @@ class CompanyUsersExportResource extends JsonResource
     {
         return [
             'Id' => $this->id,
-            'Nombre' => $this->name . ' ' . $this->surnames,
+            'Nombre' => $this->name.' '.$this->surnames,
             'Email' => $this->email,
             'phone' => $this->phone,
             'Instagram' => $this->ig,

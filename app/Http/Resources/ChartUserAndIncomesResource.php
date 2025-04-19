@@ -2,10 +2,10 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\Event;
 
 class ChartUserAndIncomesResource extends JsonResource
 {
@@ -24,15 +24,15 @@ class ChartUserAndIncomesResource extends JsonResource
             'data' => [
                 [
                     'name' => 'Usuarios',
-                    'data' => $this->pluck('users2_count')->toArray()
+                    'data' => $this->pluck('users2_count')->toArray(),
                 ],
                 [
                     'name' => 'Ingresos',
                     'data' => $this->map(function ($event) {
                         return isset($event->total_incomes) ? $event->total_incomes : 0;
-                    })->values()->toArray()
+                    })->values()->toArray(),
                 ],
-            ]
+            ],
         ];
     }
 }

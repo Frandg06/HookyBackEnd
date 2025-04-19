@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Company;
 use App\Models\TimeZone;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
@@ -23,9 +22,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'demo@hookyapp.es',
             'password' => 'Demo2025',
             'timezone_uid' => TimeZone::find(2)->uid,
-            'pricing_plan_uid' => \App\Models\PricingPlan::find(4)->uid
+            'pricing_plan_uid' => \App\Models\PricingPlan::find(4)->uid,
         ]);
-
 
         $this->call(DevSeeder::class);
     }

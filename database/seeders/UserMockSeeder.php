@@ -6,7 +6,6 @@ use App\Models\Gender;
 use App\Models\Role;
 use App\Models\SexualOrientation;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class UserMockSeeder extends Seeder
@@ -26,7 +25,7 @@ class UserMockSeeder extends Seeder
                 'sexual_orientation_id' => SexualOrientation::HETEROSEXUAL,
                 'role_id' => Role::PREMIUM,
                 'born_date' => '1990-01-01',
-                'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.'
+                'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.',
             ],
             [
                 'name' => 'Celia',
@@ -37,7 +36,7 @@ class UserMockSeeder extends Seeder
                 'sexual_orientation_id' => SexualOrientation::HETEROSEXUAL,
                 'role_id' => Role::USER,
                 'born_date' => '1990-01-01',
-                'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.'
+                'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.',
 
             ],
             [
@@ -49,7 +48,7 @@ class UserMockSeeder extends Seeder
                 'sexual_orientation_id' => SexualOrientation::HOMOSEXUAL,
                 'role_id' => Role::USER,
                 'born_date' => '1990-01-01',
-                'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.'
+                'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.',
             ],
             [
                 'name' => 'Irene',
@@ -60,7 +59,7 @@ class UserMockSeeder extends Seeder
                 'sexual_orientation_id' => SexualOrientation::BISEXUAL,
                 'role_id' => Role::USER,
                 'born_date' => '1990-01-01',
-                'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.'
+                'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.',
             ],
             [
                 'name' => 'Laura',
@@ -71,7 +70,7 @@ class UserMockSeeder extends Seeder
                 'sexual_orientation_id' => SexualOrientation::HOMOSEXUAL,
                 'role_id' => Role::USER,
                 'born_date' => '1990-01-01',
-                'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.'
+                'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.',
 
             ],
             [
@@ -83,7 +82,7 @@ class UserMockSeeder extends Seeder
                 'sexual_orientation_id' => SexualOrientation::BISEXUAL,
                 'role_id' => Role::USER,
                 'born_date' => '1990-01-01',
-                'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.'
+                'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.',
             ],
             [
                 'name' => 'Tetor',
@@ -94,7 +93,7 @@ class UserMockSeeder extends Seeder
                 'sexual_orientation_id' => SexualOrientation::HOMOSEXUAL,
                 'role_id' => Role::USER,
                 'born_date' => '1990-01-01',
-                'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.'
+                'description' => 'Sit excepteur mollit duis elit elit sit cupidatat proident adipisicing. Dolor reprehenderit labore tempor sit est dolor. Velit aliqua cupidatat exercitation mollit nulla Lorem nostrud. Cupidatat ut laborum laborum minim dolore deserunt ad in anim aliqua ex commodo eu. Ut sint proident cillum in tempor eu.',
             ],
         ];
 

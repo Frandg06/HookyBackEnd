@@ -2,11 +2,9 @@
 
 use App\Models\Role;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -14,15 +12,14 @@ return new class extends Migration {
     {
 
         $arr = [
-            ['id' => 1, 'name' => 'Admin' ],
-            ['id' => 2, 'name' => 'User' ],
-            ['id' => 3, 'name' => 'Vip' ],
+            ['id' => 1, 'name' => 'Admin'],
+            ['id' => 2, 'name' => 'User'],
+            ['id' => 3, 'name' => 'Vip'],
         ];
 
         foreach ($arr as $item) {
             Role::create($item);
         }
-
 
     }
 

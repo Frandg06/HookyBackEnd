@@ -6,7 +6,6 @@ use App\Exceptions\ApiException;
 use App\Http\Resources\AuthCompanyResource;
 use App\Models\TimeZone;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class CompanyService extends Service
 {
@@ -18,7 +17,7 @@ class CompanyService extends Service
 
             $timezone_uid = TimeZone::where('name', $data['timezone_string'])->first()->uid;
 
-            if (!$timezone_uid) {
+            if (! $timezone_uid) {
                 throw new ApiException('timezone_not_found', 400);
             }
 

@@ -30,7 +30,6 @@ class TargetUsers extends Model
         return $this->belongsTo(Interaction::class, 'iteraction_id');
     }
 
-
     public function scopeUsersWithoutInteraction($query, $eventUid)
     {
         return $query->where('interaction_id', null)

@@ -6,7 +6,6 @@ use App\Models\Chat;
 use App\Models\Notification;
 use App\Models\TargetUsers;
 use Illuminate\Console\Command;
-use PHPUnit\Framework\TestStatus\Notice;
 
 class ResetInteractions extends Command
 {

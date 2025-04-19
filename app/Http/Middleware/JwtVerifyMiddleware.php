@@ -20,7 +20,7 @@ class JwtVerifyMiddleware
 
         $token = str_replace('Bearer ', '', $request->header('Authorization'));
 
-        if (!$token) {
+        if (! $token) {
             return response()->json(['custom_message' => __('i18n.user_not_login'), 'type' => 'AuthException'], 401);
         }
 
@@ -28,7 +28,7 @@ class JwtVerifyMiddleware
 
         $user = User::find($payload['uid']);
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['custom_message' => __('i18n.user_not_login'), 'type' => 'AuthException'], 401);
         }
 

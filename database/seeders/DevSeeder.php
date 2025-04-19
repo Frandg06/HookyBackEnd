@@ -4,17 +4,14 @@ namespace Database\Seeders;
 
 use App\Models\Event;
 use App\Models\Gender;
-use App\Models\Interest;
-use App\Models\Role;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Models\UserEvent;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Str;
+use Intervention\Image\Laravel\Facades\Image;
 
 class DevSeeder extends Seeder
 {
@@ -24,7 +21,6 @@ class DevSeeder extends Seeder
     public function run(): void
     {
         // if (app()->isLocal()) {
-
 
         $this->call(EventsMockSeeder::class);
         $this->call(UserMockSeeder::class);
@@ -74,7 +70,6 @@ class DevSeeder extends Seeder
         //     });
         // });
 
-
         $event = Event::first();
 
         // User::factory()->count(100)->create([
@@ -89,7 +84,6 @@ class DevSeeder extends Seeder
         //         'likes' => $event->likes,
         //     ]);
         // });
-
 
         User::all()->each(function ($user) use ($event) {
             UserEvent::create([
@@ -112,7 +106,6 @@ class DevSeeder extends Seeder
             //     $aspectRatio = $ogWidth / $ogHeight;
 
             //     $newHeight = 500 / $aspectRatio;
-
 
             //     $processedImage = $img->resize(500, $newHeight)->toWebP(80);
 

@@ -3,13 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\Company;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
 class EventsMockSeeder extends Seeder
 {
-
     /**
      * Run the database seeds.
      */
@@ -38,7 +36,7 @@ class EventsMockSeeder extends Seeder
                 'name' => 'Evento de prueba 0',
                 'company_uid' => $company->uid,
                 'code' => Str::uuid(),
-                'colors' => $labels->random()
+                'colors' => $labels->random(),
             ],
             [
                 'st_date' => now($tz)->subDays(1)->format('Y-m-d H:i'),
@@ -49,7 +47,7 @@ class EventsMockSeeder extends Seeder
                 'name' => 'Evento de prueba 1',
                 'company_uid' => $company->uid,
                 'code' => Str::uuid(),
-                'colors' => $labels->random()
+                'colors' => $labels->random(),
 
             ],
             [
@@ -61,7 +59,7 @@ class EventsMockSeeder extends Seeder
                 'name' => 'Evento de prueba 2',
                 'company_uid' => $company->uid,
                 'code' => Str::uuid(),
-                'colors' => $labels->random()
+                'colors' => $labels->random(),
 
             ],
             [
@@ -73,7 +71,7 @@ class EventsMockSeeder extends Seeder
                 'name' => 'Evento de prueba 3',
                 'company_uid' => $company->uid,
                 'code' => Str::uuid(),
-                'colors' => $labels->random()
+                'colors' => $labels->random(),
 
             ],
             [
@@ -85,7 +83,7 @@ class EventsMockSeeder extends Seeder
                 'name' => 'Evento de prueba 4',
                 'company_uid' => $company->uid,
                 'code' => Str::uuid(),
-                'colors' => $labels->random()
+                'colors' => $labels->random(),
 
             ],
             [
@@ -97,7 +95,7 @@ class EventsMockSeeder extends Seeder
                 'name' => 'Evento de prueba 5',
                 'company_uid' => $company->uid,
                 'code' => Str::uuid(),
-                'colors' => $labels->random()
+                'colors' => $labels->random(),
 
             ],
             [
@@ -119,7 +117,7 @@ class EventsMockSeeder extends Seeder
                 'name' => 'Evento de prueba 7',
                 'company_uid' => $company->uid,
                 'code' => Str::uuid(),
-                'colors' => $labels->random()
+                'colors' => $labels->random(),
             ],
         ];
 
