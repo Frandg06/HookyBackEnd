@@ -33,6 +33,7 @@ class Company extends Authenticatable implements JWTSubject
         'timezone_uid',
         'website',
         'cif',
+        'pricing_plan_uid',
     ];
 
     public function events(): HasMany
