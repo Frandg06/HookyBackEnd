@@ -29,7 +29,7 @@ class EventsMockSeeder extends Seeder
         $events = [
             [
                 'st_date' => now($tz)->format('Y-m-d H:i'),
-                'end_date' => now($tz)->addDay()->format('Y-m-d H:i'),
+                'end_date' => now($tz)->addHour()->format('Y-m-d H:i'),
                 'timezone' => 'Europe/Madrid',
                 'likes' => 10,
                 'super_likes' => 2,

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pricing_plans', function (Blueprint $table) {
-            $table->integer('ticket_limit')->default(1000);
+            $table->integer('ticket_limit')->default(100000);
         });
     }
 

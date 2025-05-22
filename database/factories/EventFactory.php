@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Event;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -30,12 +31,15 @@ class EventFactory extends Factory
             'label-yellow',
         ];
 
+        $st_date = fake()->dateTimeInInterval('-1 months', '-10 days');
+        $end_date = Carbon::parse($st_date)->addHours(8)->toDateString();
+
         return [
             'uid' => fake()->uuid(),
             'name' => fake()->name(),
             'company_uid' => '54ce8856-fb28-4ff9-bae5-6ed039829959',
-            'st_date' => fake()->dateTimeInInterval('-1 year', '+1 year'),
-            'end_date' => fake()->dateTimeInInterval('-1 year', '+1 year'),
+            'st_date' => $st_date,
+            'end_date' => $end_date,
             'timezone' => 'Europe/Madrid',
             'likes' => fake()->numberBetween(1, 100),
             'super_likes' => fake()->numberBetween(1, 100),
