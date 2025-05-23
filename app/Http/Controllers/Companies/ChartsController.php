@@ -36,8 +36,8 @@ class ChartsController extends Controller
 
     public function getUsersEntries(Request $request)
     {
-        $start = now()->subDay($request->days ?? 1)->startOfHour();
-        $end = now()->startOfHour();
+        $start = now()->addHour()->subDay($request->days ?? 1)->startOfHour();
+        $end = now()->addHour()->startOfHour();
 
         // Paso 1: Obtener datos desde la BBDD
         $rawCounts = DB::table('user_events')
