@@ -210,21 +210,25 @@ class User extends Authenticatable implements JWTSubject
             })
             ->when($auth->sexual_orientation_id === SexualOrientation::BISEXUAL, function ($q) use ($auth) {
                 $q->when($auth->gender_id === Gender::MALE, function ($query) {
-                    $query->where(function ($subQuery) {
-                        $subQuery->where('gender_id', Gender::MALE)
-                            ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
-                    })->orWhere(function ($subQuery) {
-                        $subQuery->where('gender_id', Gender::FEMALE)
-                            ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                    $query->where(function ($q) {
+                        $q->where(function ($subQuery) {
+                            $subQuery->where('gender_id', Gender::MALE)
+                                ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
+                        })->orWhere(function ($subQuery) {
+                            $subQuery->where('gender_id', Gender::FEMALE)
+                                ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                        });
                     });
                 });
                 $q->when($auth->gender_id === Gender::FEMALE, function ($query) {
-                    $query->where(function ($subQuery) {
-                        $subQuery->where('gender_id', Gender::FEMALE)
-                            ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
-                    })->orWhere(function ($subQuery) {
-                        $subQuery->where('gender_id', Gender::MALE)
-                            ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                    $query->where(function ($q) {
+                        $q->where(function ($subQuery) {
+                            $subQuery->where('gender_id', Gender::FEMALE)
+                                ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
+                        })->orWhere(function ($subQuery) {
+                            $subQuery->where('gender_id', Gender::MALE)
+                                ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                        });
                     });
                 });
             })
@@ -235,8 +239,7 @@ class User extends Authenticatable implements JWTSubject
                 $q->select('target_user_uid')
                     ->from('target_users as ui')
                     ->where('ui.user_uid', $auth->uid)
-                    ->where('ui.event_uid', $auth->event->uid)
-                    ->pluck('target_user_uid');
+                    ->where('ui.event_uid', $auth->event->uid);
             });
     }
 
