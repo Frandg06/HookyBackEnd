@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 
 class AuthUserService extends Service
 {
-    public function update(array $data)
+    public function update(array $data, bool $isRegister = false)
     {
         DB::beginTransaction();
         try {
@@ -25,7 +25,7 @@ class AuthUserService extends Service
 
             $this->user()->update($data);
 
-            if (isset($data['gender_id']) || isset($data['sexual_orientation_id'])) {
+            if (!$isRegister && (isset($data['gender_id']) || isset($data['sexual_orientation_id']))) {
                 $this->user()->interactions()->delete();
                 $cacheKey = 'target_users_uids_' . user()->uid . '_' . user()->event->uid;
                 Cache::forget($cacheKey);
@@ -91,7 +91,7 @@ class AuthUserService extends Service
         DB::beginTransaction();
         try {
             $user = request()->user();
-            $this->update($info);
+            $this->update($info, true);
 
             $imageService = new ImagesService;
 
