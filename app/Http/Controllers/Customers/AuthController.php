@@ -35,9 +35,6 @@ class AuthController extends Controller
         $this->emailService = $emailService;
     }
 
-    /**
-     * Handle user registration.
-     */
     public function register(RegisterRequest $request)
     {
         $data = $request->safe()->only('name', 'surnames', 'email', 'password', 'company_uid');
