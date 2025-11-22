@@ -1,55 +1,51 @@
-networks:
-    hooky:
-        driver: bridge
-
-volumes:
-    hooky_db:
-        driver: local
-    chat_db:
-        driver: local
-    hooky_db_pg:
-        driver: local
-
 services:
-    hooky_db:
-        image: mysql:8.0
-        container_name: hooky_db
+    nginx_service:
+        container_name: nginx_container_hooky
+        image: nginx:stable
+        depends_on:
+            - php_service
         restart: unless-stopped
-        environment:
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: hooky_db
-            MYSQL_PASSWORD: root
-        ports:
-            - "3320:3306"
         volumes:
-            - hooky_db:/var/lib/mysql
-        networks:
-            - hooky
-    chat_db:
-        image: mysql:8.0
-        container_name: chat_db
+            - ./devops/nginx_default.template:/etc/nginx/templates/default.conf.template
+            - ./api/:/var/www/html
+        ports:
+            - 8090:80
+        environment:
+            NGINX_HOST: php_container_hooky
+        extra_hosts:
+            - host.docker.internal:172.17.0.1
+
+    php_service:
+        container_name: php_container_hooky
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        working_dir: /var/www/html
         restart: unless-stopped
-        environment:
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: chat_db
-            MYSQL_PASSWORD: root
-        ports:
-            - "3330:3306"
         volumes:
-            - chat_db:/var/lib/mysql
-        networks:
-            - hooky
-    hooky_db_pg:
-        image: postgres:13
-        container_name: hooky_db_pg
+            - ./devops/php_fpm.conf:/usr/local/etc/php-fpm.d/www.conf
+            - ./:/var/www/html
+        extra_hosts:
+            - host.docker.internal:172.17.0.1
+        command: >
+            bash -c "if [ ! -d vendor ]; then 
+                composer install && php artisan migrate && php artisan jwt:secret && php artisan key:generate; 
+            else 
+                php artisan migrate && php artisan jwt:secret && php artisan key:generate; 
+            fi && php-fpm -R"
+    hooky_db_container:
+        image: postgres:16.2
+        container_name: hooky_db_container
         restart: unless-stopped
         environment:
             POSTGRES_USER: root
             POSTGRES_PASSWORD: root
-            POSTGRES_DB: hooky_db_pg
+            POSTGRES_DB: hooky_db
         ports:
             - "5450:5432"
         volumes:
-            - hooky_db_pg:/var/lib/postgresql/data
-        networks:
-            - hooky
+            - hooky_db_container:/var/lib/postgresql/data
+
+volumes:
+    hooky_db_container: {}
+    
