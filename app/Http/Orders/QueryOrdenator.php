@@ -33,7 +33,7 @@ abstract class QueryOrdenator
     final public function requestFields()
     {
         $fields = [];
-        foreach (explode(',', $this->request->sort) as $value) {
+        foreach (explode(',', $this->request->sort ?? '') as $value) {
             $field = explode(':', $value);
             $fields[$field[0]] = isset($field[1]) ? $field[1] : null;
         }
