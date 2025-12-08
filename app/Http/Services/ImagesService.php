@@ -82,6 +82,7 @@ final class ImagesService extends Service
             return $user->toResource();
         } catch (Throwable $e) {
             DB::rollBack();
+            debug(['error_updating_image' => $e->getMessage()]);
             throw $e;
         }
     }

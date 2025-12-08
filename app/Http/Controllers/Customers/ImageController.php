@@ -49,6 +49,8 @@ final class ImageController extends Controller
             'uid' => 'nullable|string',
         ]);
 
+        debug($validated);
+
         $image = $validated['image'];
         $original_data = [
             'width' => $request->width,
