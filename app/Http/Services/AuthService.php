@@ -157,11 +157,15 @@ class AuthService extends Service
             /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
             $driver = Socialite::driver($data['provider']);
             $socialUser = $driver->userFromToken($data['access_token']);
+
+            debug(['socialUser' => $socialUser]);
             
             $user = User::where('provider_name', $data['provider'])
                         ->where('provider_id', $socialUser->getId())
                         ->where('email', $socialUser->getEmail())
                         ->first();
+
+            debug(['user_found' => $user]);
 
             if (! $user) {
                 $user = User::create([
@@ -174,6 +178,8 @@ class AuthService extends Service
             }
 
             $token = JWTAuth::fromUser($user);            
+
+            debug(['token' => $token]);
             
             DB::commit();
 
@@ -181,6 +187,7 @@ class AuthService extends Service
 
         } catch (\Exception $e) {
             DB::rollBack();
+            debug(['error_social_login' => $e->getMessage()]);
             throw $e;
         }
     }

@@ -59,6 +59,7 @@ class AuthController extends Controller
     {
         $data = $request->validated();
         $data['provider'] = $provider;
+        debug($data);
         $response = $this->authService->socialLogin($data);
 
         return response()->json(['success' => true, 'access_token' => $response], 200);
