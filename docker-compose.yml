@@ -7,7 +7,7 @@ services:
         restart: unless-stopped
         volumes:
             - ./devops/nginx_default.template:/etc/nginx/templates/default.conf.template
-            - ./api/:/var/www/html
+            - ./:/var/www/html
         ports:
             - 8090:80
         environment:

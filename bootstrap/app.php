@@ -7,6 +7,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -51,9 +52,11 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 422);
         });
         $exceptions->render(function (Exception $e, Request $request) {
+            Log::error($e->getMessage(), ['stack' => $e->getTraceAsString()]);
             return response()->json([
                 'error' => true,
                 'custom_message' => __('i18n.unexpected_error'),
+                'error_message' => $e->getMessage(),
             ], 500);
         });
     })->withCommands([

@@ -13,6 +13,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Socialite\Socialite;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthService extends Service
 {
@@ -142,6 +144,41 @@ class AuthService extends Service
             DB::commit();
 
             return $token;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function socialLogin(array $data): string
+    {
+        DB::beginTransaction();
+        try {
+            /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
+            $driver = Socialite::driver($data['provider']);
+            $socialUser = $driver->userFromToken($data['access_token']);
+            
+            $user = User::where('provider_name', $data['provider'])
+                        ->where('provider_id', $socialUser->getId())
+                        ->where('email', $socialUser->getEmail())
+                        ->first();
+
+            if (! $user) {
+                $user = User::create([
+                    'name' => $socialUser->getName(),
+                    'email' => $socialUser->getEmail(),
+                    'provider_name' => $data['provider'],
+                    'provider_id' => $socialUser->getId(),
+                    'password' => bcrypt(uniqid()),
+                ]);
+            }
+
+            $token = JWTAuth::fromUser($user);            
+            
+            DB::commit();
+
+            return $token;
+
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;

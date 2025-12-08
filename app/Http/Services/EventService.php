@@ -19,6 +19,7 @@ class EventService extends Service
     public function store(array $data): EventResource
     {
         try {
+            DB::beginTransaction();
             $data['st_date'] = $data['st_date'].' '.$data['st_hour'];
             $data['end_date'] = $data['end_date'].' '.$data['end_hour'];
             $data['code'] = Str::uuid();
@@ -169,9 +170,9 @@ class EventService extends Service
             throw new ApiException('event_limit_reached', 409);
         }
 
-        if ($st_date->lt(now())) {
-            throw new ApiException('start_date_past', 409);
-        }
+        // if ($st_date->lt(now())) {
+        //     throw new ApiException('start_date_past', 409);
+        // }
         if ($end_date->lt(now())) {
             throw new ApiException('end_date_past', 409);
         }

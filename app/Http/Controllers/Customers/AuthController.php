@@ -54,6 +54,15 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'access_token' => $response], 200);
     }
 
+    public function socialLogin(Request $request, string $provider)
+    {
+        $data = $request->only('access_token', 'company_uid');
+        $data['provider'] = $provider;
+        $response = $this->authService->socialLogin($data);
+
+        return response()->json(['success' => true, 'access_token' => $response], 200);
+    }
+
     public function loginIntoEvent(string $event_uid)
     {
         $response = $this->authService->loginIntoEvent($event_uid);

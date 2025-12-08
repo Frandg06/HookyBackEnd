@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
+    
     public function run(): void
     {
         Storage::disk('r2')->deleteDirectory('hooky/profile');
@@ -25,6 +26,6 @@ class DatabaseSeeder extends Seeder
             'pricing_plan_uid' => \App\Models\PricingPlan::find(4)->uid,
         ]);
 
-        $this->call(DevSeeder::class);
+        // $this->call(DevSeeder::class);
     }
 }
