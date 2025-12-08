@@ -9,7 +9,7 @@ use Laravel\Socialite\Two\User as TwoUser;
 
 final class UserRepository
 {
-    public function getUserByUuid(string $uuid): User
+    public function getUserByUuid(string $uuid): ?User
     {
         return User::find($uuid);
     }
@@ -23,7 +23,7 @@ final class UserRepository
         return $user->refresh();
     }
 
-    public function createUserFromSocialLogin(TwoUser $user, string $provider): User
+    public function createUserFromSocialLogin(TwoUser $user, string $provider): ?User
     {
         return User::create([
             'name' => $user->getName(),
@@ -32,5 +32,10 @@ final class UserRepository
             'provider_id' => $user->getId(),
             'password' => bcrypt(uniqid()),
         ]);
+    }
+
+    public function getUserByEmail(string $email): ?User
+    {
+        return User::where('email', $email)->first();
     }
 }

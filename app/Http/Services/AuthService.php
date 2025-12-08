@@ -100,17 +100,19 @@ final class AuthService extends Service
             $driver = Socialite::driver($data['provider']);
             $socialUser = $driver->userFromToken($data['access_token']);
 
-            $user = User::where('email', $socialUser->getEmail())->first();
+            $user = $this->userRepository->getUserByEmail($socialUser->getEmail());
 
             if (! $user) {
                 $user = $this->userRepository->createUserFromSocialLogin($socialUser, $data['provider']);
             }
 
             if (filled($data['company_uid'])) {
-                [$user] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
+                [$user, $event] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
             }
 
-            $token = JWTAuth::fromUser($user);
+            $diff = $this->getDiff($event);
+
+            $token = Auth::setTTL($diff)->login($user);
 
             DB::commit();
 
@@ -118,7 +120,6 @@ final class AuthService extends Service
 
         } catch (Exception $e) {
             DB::rollBack();
-            debug(['error_social_login' => $e->getMessage()]);
             throw $e;
         }
     }
