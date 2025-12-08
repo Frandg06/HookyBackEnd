@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\SocialLoginRequest;
 use App\Http\Services\AuthService;
 use App\Http\Services\EmailService;
 use App\Http\Services\ImagesService;
@@ -54,9 +55,9 @@ class AuthController extends Controller
         return response()->json(['success' => true, 'access_token' => $response], 200);
     }
 
-    public function socialLogin(Request $request, string $provider)
+    public function socialLogin(SocialLoginRequest $request, string $provider)
     {
-        $data = $request->only('access_token', 'company_uid');
+        $data = $request->validated();
         $data['provider'] = $provider;
         $response = $this->authService->socialLogin($data);
 
