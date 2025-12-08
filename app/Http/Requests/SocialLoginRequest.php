@@ -23,7 +23,7 @@ class SocialLoginRequest extends FormRequest
     {
         return [
             'access_token' => ['required', 'string'],
-            'comony_uid' => ['nullable', 'string', 'exists:companies,uid'],
+            'company_uid' => ['nullable', 'string', 'exists:companies,uid'],
         ];
     }
 }

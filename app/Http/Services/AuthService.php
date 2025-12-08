@@ -174,9 +174,50 @@ class AuthService extends Service
                 ]);
             }
 
+            if (isset($data['company_uid']) && ! empty($data['company_uid'])) {
+                $user->update([
+                    'company_uid' => $data['company_uid'],
+                ]);
+
+                $company = Company::find($data['company_uid']);
+
+                $timezone = $company->timezone->name;
+
+                $actual_event = $company->active_event;
+
+                if (! $actual_event) {
+                    $next_event = $company->next_event;
+                }
+
+                $event = $actual_event ?? $next_event;
+
+                if ($event) {
+                    $exist = $user->events()->wherePivot('event_uid', $event->uid)->exists();
+                    if (! $exist && $event->users->count() >= $company->limit_users) {
+                        throw new ApiException('limit_users_reached', 409);
+                    }
+                    UserEvent::updateOrCreate(
+                        [
+                            'user_uid' => $user->uid,
+                            'event_uid' => $event->uid,
+                        ],
+                        [
+                            'logged_at' => now(),
+                            'likes' => $event->likes,
+                            'super_likes' => $event->super_likes,
+                        ]
+                    );
+                }
+            }
+
+            $end_date = $event->end_date ?? null;
+            $timezone = $event->timezone ?? null;
+
+            $diff = $this->getDiff($end_date, $timezone);
+
+
             $token = JWTAuth::fromUser($user);            
 
-            debug(['token' => $token]);
             
             DB::commit();
 
