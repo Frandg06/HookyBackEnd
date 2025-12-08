@@ -80,11 +80,20 @@ class Notifify
     public function emit()
     {
         $url = config('services.ws_api.notify_url');
-
-        Http::withHeaders([
+        $request = Http::withHeaders([
             'Authorization' => 'Bearer '.request()->bearerToken(),
             'Accept' => 'application/json',
         ])->post($url, $this->toArray());
+
+        debug([
+            'Notifify emit' => [
+                'url' => $url,
+                'response_status' => $request->status(),
+                'response_body' => $request->body(),
+            ],
+        ]);
+
+        return $request->successful();
     }
 
     public function getReverse()
