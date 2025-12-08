@@ -139,7 +139,7 @@ final class Event extends Model
 
     public function getAvgAgeAttribute()
     {
-        return $this->users2()
+        return (float) $this->users2()
             ->selectRaw('AVG(EXTRACT(YEAR FROM AGE(users.born_date))) as avg_age')
             ->value('avg_age');
     }
