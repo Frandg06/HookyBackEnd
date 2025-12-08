@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources\Exports;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CompanyUsersExportResource extends JsonResource
+final class CompanyUsersExportResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -22,8 +24,8 @@ class CompanyUsersExportResource extends JsonResource
             'Instagram' => $this->ig,
             'x' => $this->tw,
             'Edad' => $this->age,
-            'Género' => $this->gender_id == 1 ? 'Mujer' : 'Hombre',
-            'Rol' => $this->role_id == 2 ? 'Usuario' : 'VIP',
+            'Género' => $this->gender_id === 1 ? 'Mujer' : 'Hombre',
+            'Rol' => $this->role_id === 2 ? 'Usuario' : 'VIP',
             'Consumo' => 0,
         ];
     }

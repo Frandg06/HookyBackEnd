@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Companies\AuthController;
 use App\Http\Controllers\Companies\ChartsController;
 use App\Http\Controllers\Companies\CompanyController;

@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Filters;
 
 use App\Models\Gender;
 use App\Models\Role;
 
-class UserFilter extends QueryFilter
+final class UserFilter extends QueryFilter
 {
     public function name(string $value)
     {
-        return $this->builder->whereRaw("LOWER(name || ' ' || surnames) LIKE ?", ['%'.strtolower($value).'%']);
+        return $this->builder->whereRaw("LOWER(name || ' ' || surnames) LIKE ?", ['%'.mb_strtolower($value).'%']);
     }
 
     public function ageMin(int $age)
@@ -28,7 +30,7 @@ class UserFilter extends QueryFilter
 
     public function gender(string $gender)
     {
-        $gederCode = $gender == 'male' ? Gender::MALE : Gender::FEMALE;
+        $gederCode = $gender === 'male' ? Gender::MALE : Gender::FEMALE;
 
         return $this->builder->where('gender_id', $gederCode);
     }
@@ -40,7 +42,7 @@ class UserFilter extends QueryFilter
 
     public function role(string $role)
     {
-        $roleCode = $role == 'user' ? Role::USER : Role::PREMIUM;
+        $roleCode = $role === 'user' ? Role::USER : Role::PREMIUM;
 
         return $this->builder->where('role_id', $roleCode);
     }

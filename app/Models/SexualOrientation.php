@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SexualOrientation extends Model
+final class SexualOrientation extends Model
 {
     public const BISEXUAL = 1;
 

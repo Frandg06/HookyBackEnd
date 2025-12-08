@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Filters;
 
 use App\Models\Gender;
 
-class EventFilter extends QueryFilter
+final class EventFilter extends QueryFilter
 {
     public function range(string $value)
     {
@@ -16,7 +18,7 @@ class EventFilter extends QueryFilter
 
     public function name(string $value)
     {
-        return $this->builder->whereRaw('LOWER(name) LIKE ?', ['%'.strtolower($value).'%']);
+        return $this->builder->whereRaw('LOWER(name) LIKE ?', ['%'.mb_strtolower($value).'%']);
     }
 
     public function stDateAfter(string $value)
@@ -98,8 +100,8 @@ class EventFilter extends QueryFilter
     public function percentages(string $value)
     {
 
-        $gender = $value == 'males' ? Gender::MALE : Gender::FEMALE;
-        $genderToCompare = $value == 'males' ? Gender::FEMALE : Gender::MALE;
+        $gender = $value === 'males' ? Gender::MALE : Gender::FEMALE;
+        $genderToCompare = $value === 'males' ? Gender::FEMALE : Gender::MALE;
 
         return $this->builder
             ->whereIn('events.uid', function ($query) use ($gender, $genderToCompare) {

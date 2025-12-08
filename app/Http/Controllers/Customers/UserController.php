@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Customers;
 
 use App\Http\Controllers\Controller;
@@ -14,7 +16,7 @@ use App\Models\TargetUsers;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+final class UserController extends Controller
 {
     protected $authUserService;
 

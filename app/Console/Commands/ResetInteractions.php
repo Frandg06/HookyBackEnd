@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Models\Chat;
@@ -7,7 +9,7 @@ use App\Models\Notification;
 use App\Models\TargetUsers;
 use Illuminate\Console\Command;
 
-class ResetInteractions extends Command
+final class ResetInteractions extends Command
 {
     /**
      * The name and signature of the console command.

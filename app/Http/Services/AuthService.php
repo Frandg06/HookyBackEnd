@@ -1,23 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Services;
 
+use App\Actions\Consumer\AttachUserToCompanyEvent;
 use App\Exceptions\ApiException;
 use App\Http\Resources\UserResource;
-use App\Models\Company;
 use App\Models\Event;
 use App\Models\PasswordResetToken;
 use App\Models\User;
 use App\Models\UserEvent;
+use App\Repositories\UserRepository;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Socialite;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class AuthService extends Service
+final class AuthService extends Service
 {
+    public function __construct(
+        private readonly AttachUserToCompanyEvent $attachUserToCompanyEvent,
+        private readonly UserRepository $userRepository,
+    ) {}
+
     public function register(array $data): string
     {
         DB::beginTransaction();
@@ -30,50 +40,18 @@ class AuthService extends Service
 
             $user = User::create($data);
 
-            if (isset($data['company_uid']) && ! empty($data['company_uid'])) {
-
-                $user->update([
-                    'company_uid' => $data['company_uid'],
-                ]);
-
-                $company = Company::find($data['company_uid']);
-
-                $timezone = $company->timezone->name;
-
-                $actual_event = $company->active_event;
-
-                if (! $actual_event) {
-                    $next_event = $company->next_event;
-                }
-
-                $event = $actual_event ?? $next_event;
-
-                if ($event) {
-                    $count = $event->users()->count();
-
-                    if ($count >= $company->limit_users) {
-                        throw new ApiException('limit_users_reached', 409);
-                    }
-
-                    $user->events()->attach($event->uid, [
-                        'logged_at' => now(),
-                        'likes' => $event->likes,
-                        'super_likes' => $event->super_likes,
-                    ]);
-                }
+            if (filled($data['company_uid'])) {
+                [$user, $event] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
             }
 
-            $end_date = $event->end_date ?? null;
-            $timezone = $event->timezone ?? null;
+            $diff = $this->getDiff($event);
 
-            $diff = $this->getDiff($end_date, $timezone);
-
-            $token = Auth::setTTL(+$diff)->attempt(['email' => $data['email'], 'password' => $data['password']]);
+            $token = Auth::setTTL($diff)->attempt(['email' => $data['email'], 'password' => $data['password']]);
 
             DB::commit();
 
             return $token;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
@@ -94,47 +72,11 @@ class AuthService extends Service
                 throw new ApiException('credentials_ko', 401);
             }
 
-            if (isset($data['company_uid']) && ! empty($data['company_uid'])) {
-
-                $user->update([
-                    'company_uid' => $data['company_uid'],
-                ]);
-
-                $company = Company::find($data['company_uid']);
-
-                $timezone = $company->timezone->name;
-
-                $actual_event = $company->active_event;
-
-                if (! $actual_event) {
-                    $next_event = $company->next_event;
-                }
-
-                $event = $actual_event ?? $next_event;
-
-                if ($event) {
-                    $exist = $user->events()->wherePivot('event_uid', $event->uid)->exists();
-                    if (! $exist && $event->users->count() >= $company->limit_users) {
-                        throw new ApiException('limit_users_reached', 409);
-                    }
-                    UserEvent::updateOrCreate(
-                        [
-                            'user_uid' => $user->uid,
-                            'event_uid' => $event->uid,
-                        ],
-                        [
-                            'logged_at' => now(),
-                            'likes' => $event->likes,
-                            'super_likes' => $event->super_likes,
-                        ]
-                    );
-                }
+            if (filled($data['company_uid'])) {
+                [$user, $event] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
             }
 
-            $end_date = $event->end_date ?? null;
-            $timezone = $event->timezone ?? null;
-
-            $diff = $this->getDiff($end_date, $timezone);
+            $diff = $this->getDiff($event);
             $token = Auth::setTTL($diff)->attempt(['email' => $data['email'], 'password' => $data['password']]);
 
             if (! $token) {
@@ -144,7 +86,7 @@ class AuthService extends Service
             DB::commit();
 
             return $token;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
@@ -153,77 +95,28 @@ class AuthService extends Service
     public function socialLogin(array $data): string
     {
         DB::beginTransaction();
-        try {https://hooky-backend-5gvdds-4efb60-167-86-79-89.traefik.me/health
+        try {
             /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
             $driver = Socialite::driver($data['provider']);
             $socialUser = $driver->userFromToken($data['access_token']);
 
-            debug(['socialUser' => $socialUser]);
-            
             $user = User::where('email', $socialUser->getEmail())->first();
 
-            debug(['user_found' => $user]);
-
-            if (!$user) {
-                $user = User::create([
-                    'name' => $socialUser->getName(),
-                    'email' => $socialUser->getEmail(),
-                    'provider_name' => $data['provider'],
-                    'provider_id' => $socialUser->getId(),
-                    'password' => bcrypt(uniqid()),
-                ]);
+            if (! $user) {
+                $user = $this->userRepository->createUserFromSocialLogin($socialUser, $data['provider']);
             }
 
-            if (isset($data['company_uid']) && ! empty($data['company_uid'])) {
-                $user->update([
-                    'company_uid' => $data['company_uid'],
-                ]);
-
-                $company = Company::find($data['company_uid']);
-
-                $timezone = $company->timezone->name;
-
-                $actual_event = $company->active_event;
-
-                if (! $actual_event) {
-                    $next_event = $company->next_event;
-                }
-
-                $event = $actual_event ?? $next_event;
-
-                if ($event) {
-                    $exist = $user->events()->wherePivot('event_uid', $event->uid)->exists();
-                    if (! $exist && $event->users->count() >= $company->limit_users) {
-                        throw new ApiException('limit_users_reached', 409);
-                    }
-                    UserEvent::updateOrCreate(
-                        [
-                            'user_uid' => $user->uid,
-                            'event_uid' => $event->uid,
-                        ],
-                        [
-                            'logged_at' => now(),
-                            'likes' => $event->likes,
-                            'super_likes' => $event->super_likes,
-                        ]
-                    );
-                }
+            if (filled($data['company_uid'])) {
+                [$user] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
             }
 
-            $end_date = $event->end_date ?? null;
-            $timezone = $event->timezone ?? null;
+            $token = JWTAuth::fromUser($user);
 
-            $diff = $this->getDiff($end_date, $timezone);
-
-
-            $token = JWTAuth::fromUser($user);            
-
-            
             DB::commit();
 
             return $token;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             debug(['error_social_login' => $e->getMessage()]);
             throw $e;
@@ -261,7 +154,7 @@ class AuthService extends Service
             DB::commit();
 
             return $user->toResource();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
@@ -281,7 +174,7 @@ class AuthService extends Service
                 throw new ApiException('user_not_found', 404);
             }
 
-            $token = uniqid(rand(), true);
+            $token = Str::random(64);
 
             $already_used = PasswordResetToken::where('email', $user->email)->get();
 
@@ -308,7 +201,7 @@ class AuthService extends Service
             DB::commit();
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
@@ -338,14 +231,17 @@ class AuthService extends Service
             DB::commit();
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
     }
 
-    private function getDiff($date, $tz = 'Europe/Berlin')
+    private function getDiff(?Event $event): float
     {
+        $date = $event->end_date ?? null;
+        $tz = $event->timezone ?? 'Europe/Berlin';
+
         if (! $date) {
             $date = now($tz)->addHours(12)->format('Y-m-d H:i');
         }

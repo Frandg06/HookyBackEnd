@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Orders;
 
-class UserOrdenator extends QueryOrdenator
+final class UserOrdenator extends QueryOrdenator
 {
     public function name(string $order = 'asc')
     {

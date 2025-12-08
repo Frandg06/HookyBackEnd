@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Interaction extends Model
+final class Interaction extends Model
 {
     public const SUPER_LIKE_ID = 1;
 
@@ -12,7 +14,7 @@ class Interaction extends Model
 
     public const DISLIKE_ID = 3;
 
-    protected $fillable = ['id', 'name'];
-
     public $timestamps = false;
+
+    protected $fillable = ['id', 'name'];
 }

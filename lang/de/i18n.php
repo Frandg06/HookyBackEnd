@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     'register_user_ko' => 'Beim Registrieren des Benutzers ist ein Fehler aufgetreten.',

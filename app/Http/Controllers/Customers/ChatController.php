@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Customers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Services\ChatService;
 use Illuminate\Http\Request;
 
-class ChatController extends Controller
+final class ChatController extends Controller
 {
     protected $chatService;
 

@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
 use App\Http\Resources\AuthCompanyResource;
 use App\Models\TimeZone;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
-class CompanyService extends Service
+final class CompanyService extends Service
 {
     public function update(array $data)
     {
@@ -26,7 +29,7 @@ class CompanyService extends Service
             DB::commit();
 
             return AuthCompanyResource::make($company);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
             $this->log($e, __CLASS__, __FUNCTION__);
             throw $e;

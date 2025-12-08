@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Repositories;
+
+use App\Models\User;
+use Laravel\Socialite\Two\User as TwoUser;
+
+final class UserRepository
+{
+    public function getUserByUuid(string $uuid): User
+    {
+        return User::find($uuid);
+    }
+
+    public function updateUserCompany(User $user, string $company_uuid): User
+    {
+        $user->update([
+            'company_uid' => $company_uuid,
+        ]);
+
+        return $user->refresh();
+    }
+
+    public function createUserFromSocialLogin(TwoUser $user, string $provider): User
+    {
+        return User::create([
+            'name' => $user->getName(),
+            'email' => $user->getEmail(),
+            'provider_name' => $provider,
+            'provider_id' => $user->getId(),
+            'password' => bcrypt(uniqid()),
+        ]);
+    }
+}

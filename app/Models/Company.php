@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Http\Resources\AuthCompanyResource;
@@ -10,18 +12,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class Company extends Authenticatable implements JWTSubject
+final class Company extends Authenticatable implements JWTSubject
 {
     use HasFactory;
     use HasUuids;
+
+    public $incrementing = false;
 
     protected $table = 'companies';
 
     protected $primaryKey = 'uid';
 
     protected $keyType = 'string';
-
-    public $incrementing = false;
 
     protected $fillable = [
         'name',
@@ -116,6 +118,13 @@ class Company extends Authenticatable implements JWTSubject
         return $this->events()->firstNextEvent($this->timezone->name)->first();
     }
 
+    public function getAtiveOrUpcomingEventAttribute()
+    {
+        debug(['active_event' => $this->active_event]);
+
+        return $this->active_event ? $this->active_event : $this->next_event;
+    }
+
     public function getLimitUsersAttribute()
     {
         return $this->pricingPlan->limit_users;
@@ -172,13 +181,6 @@ class Company extends Authenticatable implements JWTSubject
         ];
     }
 
-    protected function casts(): array
-    {
-        return [
-            'password' => 'hashed',
-        ];
-    }
-
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -194,5 +196,12 @@ class Company extends Authenticatable implements JWTSubject
     public function uniqueIds(): array
     {
         return ['uid'];
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
     }
 }

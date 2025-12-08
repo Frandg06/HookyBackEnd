@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Services;
 
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
-class NotificationService extends Service
+final class NotificationService extends Service
 {
     public function readNotificationsByType($type)
     {
@@ -19,7 +22,7 @@ class NotificationService extends Service
             DB::commit();
 
             return true;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
             throw $e;
         }

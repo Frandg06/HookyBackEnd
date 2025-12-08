@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -8,7 +10,7 @@ use Illuminate\Support\Str;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Ticket>
  */
-class TicketFactory extends Factory
+final class TicketFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,7 +21,7 @@ class TicketFactory extends Factory
     {
         return [
             'company_uid' => $this->faker->uuid,
-            'code' => strtoupper(Str::random(6)),
+            'code' => mb_strtoupper(Str::random(6)),
             'redeemed' => false,
             'redeemed_at' => null,
             'super_likes' => $this->faker->numberBetween(0, 100),

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
@@ -10,10 +12,11 @@ use App\Models\NotificationsType;
 use App\Models\Notifify;
 use App\Models\TargetUsers;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-class UserService extends Service
+final class UserService extends Service
 {
     protected $notificationService;
 
@@ -52,7 +55,7 @@ class UserService extends Service
             DB::commit();
 
             return TargetUserResource::collection($users);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw new ApiException('get_users_ko', 500);
         }
@@ -89,7 +92,7 @@ class UserService extends Service
 
             $cacheKey = 'target_users_uids_'.$authUid.'_'.$eventUid;
             $cachedUids = Cache::get($cacheKey, []);
-            $filtered = collect($cachedUids)->reject(fn ($cachedUid) => $cachedUid == $targetUserUid)->values();
+            $filtered = collect($cachedUids)->reject(fn ($cachedUid) => $cachedUid === $targetUserUid)->values();
             Cache::put($cacheKey, $filtered->toArray());
 
             $response = [
@@ -99,7 +102,7 @@ class UserService extends Service
 
             if ($filtered->count() <= 10) {
                 $refetch = $this->getTargetUsers();
-                if (count($refetch) != $filtered->count()) {
+                if (count($refetch) !== $filtered->count()) {
                     $response['remaining_users'] = $refetch;
                 }
             }
@@ -111,7 +114,7 @@ class UserService extends Service
             DB::commit();
 
             return $response;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }

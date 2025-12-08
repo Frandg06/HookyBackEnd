@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Companies\CustomersController;
 use App\Http\Controllers\Companies\EventController;
 use App\Http\Controllers\TicketController;

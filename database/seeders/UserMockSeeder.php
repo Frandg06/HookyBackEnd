@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\Gender;
@@ -8,7 +10,7 @@ use App\Models\SexualOrientation;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class UserMockSeeder extends Seeder
+final class UserMockSeeder extends Seeder
 {
     /**
      * Run the database seeds.

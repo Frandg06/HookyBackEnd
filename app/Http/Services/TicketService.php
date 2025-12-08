@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
@@ -15,8 +17,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Throwable;
 
-class TicketService extends Service
+final class TicketService extends Service
 {
     public function getTickets(TicketFilter $filter, TicketOrdenator $order, int $limit): array
     {
@@ -63,14 +66,14 @@ class TicketService extends Service
                     'updated_at' => now(),
                     'user_uid' => null,
                     'redeemed_at' => null,
-                    'code' => strtoupper(Str::random(6)),
+                    'code' => mb_strtoupper(Str::random(6)),
                 ]);
             }
 
             DB::commit();
 
             return EventResource::make($event->refresh());
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
             $this->logError($e, __CLASS__, __FUNCTION__);
             throw $e;
@@ -117,7 +120,7 @@ class TicketService extends Service
                     'likes' => $ticket->likes,
                 ],
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
             Log::error('Error en '.__CLASS__.'->'.__FUNCTION__, ['exception' => $e]);
             throw $e;
@@ -138,7 +141,7 @@ class TicketService extends Service
             $ticket = Ticket::where('event_uid', $event->uid)
                 ->where('redeemed', false)
                 ->where('generated', false)
-                ->whereRaw('LOWER(name) = ?', [strtolower($type)])
+                ->whereRaw('LOWER(name) = ?', [mb_strtolower($type)])
                 ->inRandomOrder()
                 ->first();
 
@@ -153,7 +156,7 @@ class TicketService extends Service
             DB::commit();
 
             return $url;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
             throw $e;
         }

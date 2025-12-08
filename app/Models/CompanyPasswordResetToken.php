@@ -1,12 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class CompanyPasswordResetToken extends Model
+final class CompanyPasswordResetToken extends Model
 {
+    public $incrementing = false;
+
+    public $timestamps = false;
+
     protected $fillable = [
         'email',
         'token',
@@ -16,10 +22,6 @@ class CompanyPasswordResetToken extends Model
     protected $primaryKey = 'email';
 
     protected $keyType = 'string';
-
-    public $incrementing = false;
-
-    public $timestamps = false;
 
     public function company(): BelongsTo
     {

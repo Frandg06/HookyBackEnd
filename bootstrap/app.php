@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Console\Commands\DestroyImages;
 use App\Exceptions\ApiException;
 use Illuminate\Auth\AuthenticationException;
@@ -12,19 +14,19 @@ use Illuminate\Validation\ValidationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__ . '/../routes/web.php',
-        api: __DIR__ . '/../routes/api.php',
-        commands: __DIR__ . '/../routes/console.php',
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
+        commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'event' => \App\Http\Middleware\CheckEventIsActiveMiddleware::class,
-            'credits' => \App\Http\Middleware\CheckCreditsMiddleware::class,
-            'lang' => \App\Http\Middleware\LangMiddleware::class,
-            'jwt.verify' => \App\Http\Middleware\JwtVerifyMiddleware::class,
-            'jwt.verify.company' => \App\Http\Middleware\JwtVerifyCompanyMiddleware::class,
-            'auth.event' => \App\Http\Middleware\EventMiddleware::class,
+            'event' => App\Http\Middleware\CheckEventIsActiveMiddleware::class,
+            'credits' => App\Http\Middleware\CheckCreditsMiddleware::class,
+            'lang' => App\Http\Middleware\LangMiddleware::class,
+            'jwt.verify' => App\Http\Middleware\JwtVerifyMiddleware::class,
+            'jwt.verify.company' => App\Http\Middleware\JwtVerifyCompanyMiddleware::class,
+            'auth.event' => App\Http\Middleware\EventMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
@@ -34,7 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     'error' => true,
                     'custom_message' => __('i18n.user_not_login'),
                     'redirect' => '/auth/login',
-                    'destroy_session' => true
+                    'destroy_session' => true,
                 ],
                 401
             );
@@ -42,7 +44,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (ApiException $e, Request $request) {
             return response()->json([
                 'error' => true,
-                'custom_message' => __('i18n.' . $e->getMessage()),
+                'custom_message' => __('i18n.'.$e->getMessage()),
             ], $e->getCode());
         });
         $exceptions->render(function (ValidationException $e, Request $request) {
@@ -53,6 +55,7 @@ return Application::configure(basePath: dirname(__DIR__))
         });
         $exceptions->render(function (Exception $e, Request $request) {
             Log::error($e->getMessage(), ['stack' => $e->getTraceAsString()]);
+
             return response()->json([
                 'error' => true,
                 'custom_message' => __('i18n.unexpected_error'),

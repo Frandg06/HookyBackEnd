@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Companies;
 
 use App\Http\Controllers\Controller;
@@ -9,7 +11,7 @@ use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class ChartsController extends Controller
+final class ChartsController extends Controller
 {
     public function getUserIncomesData(Request $request)
     {

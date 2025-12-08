@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Orders;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -17,7 +19,7 @@ abstract class QueryOrdenator
         $this->request = $request;
     }
 
-    public function apply(Builder $query)
+    final public function apply(Builder $query)
     {
         $this->builder = $query;
         foreach ($this->requestFields() as $field => $order) {
@@ -28,7 +30,7 @@ abstract class QueryOrdenator
         }
     }
 
-    public function requestFields()
+    final public function requestFields()
     {
         $fields = [];
         foreach (explode(',', $this->request->sort) as $value) {

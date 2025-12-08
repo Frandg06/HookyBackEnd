@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\Traits\Filterable;
@@ -12,20 +14,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Event extends Model
+final class Event extends Model
 {
     use Filterable;
     use HasFactory;
     use HasUuids;
     use Sortable;
 
+    public $incrementing = false;
+
     protected $table = 'events';
 
     protected $primaryKey = 'uid';
 
     protected $keyType = 'string';
-
-    public $incrementing = false;
 
     protected $fillable = ['uid', 'st_date', 'end_date', 'company_uid', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'code'];
 
@@ -147,7 +149,7 @@ class Event extends Model
 
         $total = $this->users2()->count();
 
-        if ($total == 0) {
+        if ($total === 0) {
             return [
                 'males' => 0,
                 'females' => 0,

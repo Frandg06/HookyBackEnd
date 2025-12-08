@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Companies;
 
 use App\Http\Controllers\Controller;
 use App\Http\Services\CompanyService;
 use Illuminate\Http\Request;
 
-class CompanyController extends Controller
+final class CompanyController extends Controller
 {
     protected $companyService;
 

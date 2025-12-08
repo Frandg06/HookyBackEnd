@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateEventRequest extends FormRequest
+final class UpdateEventRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

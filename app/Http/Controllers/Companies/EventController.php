@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Companies;
 
 use App\Http\Controllers\Controller;
@@ -11,7 +13,7 @@ use App\Http\Services\EventService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class EventController extends Controller
+final class EventController extends Controller
 {
     private EventService $eventService;
 

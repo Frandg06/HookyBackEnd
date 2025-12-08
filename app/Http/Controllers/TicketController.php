@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Filters\TicketFilter;
@@ -8,7 +10,7 @@ use App\Http\Requests\CreateTicketRequest;
 use App\Http\Services\TicketService;
 use Illuminate\Http\Request;
 
-class TicketController extends Controller
+final class TicketController extends Controller
 {
     protected $ticketService;
 

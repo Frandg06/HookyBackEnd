@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
@@ -7,11 +9,12 @@ use App\Models\Company;
 use App\Models\CompanyPasswordResetToken;
 use App\Models\TimeZone;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class AuthCompanyService extends Service
+final class AuthCompanyService extends Service
 {
     public function register(array $data): string
     {
@@ -36,7 +39,7 @@ class AuthCompanyService extends Service
             DB::commit();
 
             return $token;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
@@ -76,7 +79,7 @@ class AuthCompanyService extends Service
             DB::commit();
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
@@ -123,7 +126,7 @@ class AuthCompanyService extends Service
             DB::commit();
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
@@ -153,7 +156,7 @@ class AuthCompanyService extends Service
             DB::commit();
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }

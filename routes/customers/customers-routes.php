@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Customers\ChatController;
 use App\Http\Controllers\Customers\ImageController;
 use App\Http\Controllers\Customers\UserController;

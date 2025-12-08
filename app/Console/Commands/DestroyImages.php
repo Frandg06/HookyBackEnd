@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Models\UserImage;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
-class DestroyImages extends Command
+final class DestroyImages extends Command
 {
     /**
      * The name and signature of the console command.

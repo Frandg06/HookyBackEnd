@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Customers;
 
 use App\Http\Controllers\Controller;
@@ -14,7 +16,7 @@ use App\Http\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AuthController extends Controller
+final class AuthController extends Controller
 {
     protected $authService;
 
@@ -59,7 +61,6 @@ class AuthController extends Controller
     {
         $data = $request->validated();
         $data['provider'] = $provider;
-        debug($data);
         $response = $this->authService->socialLogin($data);
 
         return response()->json(['success' => true, 'access_token' => $response], 200);

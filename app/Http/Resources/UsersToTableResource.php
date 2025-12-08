@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UsersToTableResource extends JsonResource
+final class UsersToTableResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+final class UserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -48,7 +50,7 @@ class UserResource extends JsonResource
             ),
             'gender_id' => $this->gender_id,
             'sexual_orientation_id' => $this->sexual_orientation_id,
-            'premium' => $this->role_id == Role::PREMIUM ? true : false,
+            'premium' => $this->role_id === Role::PREMIUM ? true : false,
             'name' => $this->name,
             'surnames' => $this->surnames,
             'email' => $this->email,

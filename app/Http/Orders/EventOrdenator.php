@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Orders;
 
-class EventOrdenator extends QueryOrdenator
+final class EventOrdenator extends QueryOrdenator
 {
     public function name(string $value)
     {

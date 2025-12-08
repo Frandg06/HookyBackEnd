@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
@@ -17,7 +19,7 @@ return new class extends Migration
         ];
 
         foreach ($elements as $element) {
-            \App\Models\PricingPlan::create($element);
+            App\Models\PricingPlan::create($element);
         }
     }
 
@@ -26,7 +28,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        \App\Models\PricingPlan::all()->each(function ($item) {
+        App\Models\PricingPlan::all()->each(function ($item) {
             $item->delete();
         });
     }

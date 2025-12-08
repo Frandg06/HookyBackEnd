@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
@@ -11,7 +13,7 @@ use App\Http\Resources\Exports\CompanyUsersExportResource;
 use App\Models\Event;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class CompanyUsersService extends Service
+final class CompanyUsersService extends Service
 {
     public function getUsers(UserFilter $filter, UserOrdenator $order): array
     {

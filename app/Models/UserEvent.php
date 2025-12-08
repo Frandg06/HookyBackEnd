@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserEvent extends Model
+final class UserEvent extends Model
 {
     protected $fillable = ['user_uid', 'event_uid', 'logged_at', 'likes', 'super_likes'];
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Filters;
 
 use Illuminate\Database\Eloquent\Builder;
@@ -17,7 +19,7 @@ abstract class QueryFilter
         $this->request = $request;
     }
 
-    public function apply(Builder $query)
+    final public function apply(Builder $query)
     {
         $this->builder = $query;
         foreach ($this->requestFields() as $field => $value) {
@@ -30,7 +32,7 @@ abstract class QueryFilter
         }
     }
 
-    public function requestFields()
+    final public function requestFields()
     {
         // Con el filtro eliminamos los campos vacios
         return array_filter(

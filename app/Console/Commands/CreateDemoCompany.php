@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Models\Company;
@@ -7,7 +9,7 @@ use App\Models\PricingPlan;
 use App\Models\TimeZone;
 use Illuminate\Console\Command;
 
-class CreateDemoCompany extends Command
+final class CreateDemoCompany extends Command
 {
     /**
      * The name and signature of the console command.

@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class NotificationsType extends Model
+final class NotificationsType extends Model
 {
     public const LIKE_TYPE = 1;
 

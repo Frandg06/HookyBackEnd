@@ -1,21 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-class Chat extends Model
+final class Chat extends Model
 {
     use HasUuids;
+
+    public $incrementing = false;
 
     protected $table = 'chats';
 
     protected $primaryKey = 'uid';
 
     protected $keyType = 'string';
-
-    public $incrementing = false;
 
     protected $fillable = [
         'id',

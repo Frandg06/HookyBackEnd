@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -19,7 +21,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => explode(', ', env('CORS', ''),),
+    'allowed_origins' => explode(', ', env('CORS', '')),
 
     'allowed_origins_patterns' => [],
 

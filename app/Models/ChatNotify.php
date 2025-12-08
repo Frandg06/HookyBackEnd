@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Support\Facades\Http;
 
-class ChatNotify extends Notifify
+final class ChatNotify extends Notifify
 {
     public function __construct(array $attributes)
     {

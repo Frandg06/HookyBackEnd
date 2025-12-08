@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\Traits\Filterable;
@@ -14,7 +16,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject
+final class User extends Authenticatable implements JWTSubject
 {
     use Filterable;
     use HasFactory;
@@ -22,13 +24,13 @@ class User extends Authenticatable implements JWTSubject
     use Notifiable;
     use Sortable;
 
+    public $incrementing = false;
+
     protected $table = 'users';
 
     protected $primaryKey = 'uid';
 
     protected $keyType = 'string';
-
-    public $incrementing = false;
 
     /**
      * The attributes that are mass assignable.
@@ -68,6 +70,49 @@ class User extends Authenticatable implements JWTSubject
         'role_id',
         'born_date',
     ];
+
+    public static function whereTargetUsersFrom($auth)
+    {
+        return self::whereNot('uid', $auth->uid)
+            ->has('userImages', '>=', 1)
+            ->when(in_array($auth->sexual_orientation_id, [SexualOrientation::HOMOSEXUAL, SexualOrientation::HETEROSEXUAL]), function ($q) use ($auth) {
+                $q->whereIn('gender_id', $auth->match_gender)
+                    ->whereIn('sexual_orientation_id', [$auth->sexual_orientation_id, SexualOrientation::BISEXUAL]);
+            })
+            ->when($auth->sexual_orientation_id === SexualOrientation::BISEXUAL, function ($q) use ($auth) {
+                $q->when($auth->gender_id === Gender::MALE, function ($query) {
+                    $query->where(function ($q) {
+                        $q->where(function ($subQuery) {
+                            $subQuery->where('gender_id', Gender::MALE)
+                                ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
+                        })->orWhere(function ($subQuery) {
+                            $subQuery->where('gender_id', Gender::FEMALE)
+                                ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                        });
+                    });
+                });
+                $q->when($auth->gender_id === Gender::FEMALE, function ($query) {
+                    $query->where(function ($q) {
+                        $q->where(function ($subQuery) {
+                            $subQuery->where('gender_id', Gender::FEMALE)
+                                ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
+                        })->orWhere(function ($subQuery) {
+                            $subQuery->where('gender_id', Gender::MALE)
+                                ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                        });
+                    });
+                });
+            })
+            ->whereHas('events', function ($q) use ($auth) {
+                $q->where('event_uid', $auth->event->uid);
+            })
+            ->whereNotIn('uid', function ($q) use ($auth) {
+                $q->select('target_user_uid')
+                    ->from('target_users as ui')
+                    ->where('ui.user_uid', $auth->uid)
+                    ->where('ui.event_uid', $auth->event->uid);
+            });
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -187,7 +232,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getIsPremiumAttribute(): bool
     {
-        return $this->role_id == Role::PREMIUM ? true : false;
+        return $this->role_id === Role::PREMIUM ? true : false;
     }
 
     public function getMatchGenderAttribute()
@@ -196,53 +241,10 @@ class User extends Authenticatable implements JWTSubject
             case SexualOrientation::BISEXUAL:
                 return [Gender::MALE, Gender::FEMALE];
             case SexualOrientation::HETEROSEXUAL:
-                return $this->gender_id == Gender::FEMALE ? [Gender::MALE] : [Gender::FEMALE];
+                return $this->gender_id === Gender::FEMALE ? [Gender::MALE] : [Gender::FEMALE];
             case SexualOrientation::HOMOSEXUAL:
                 return [$this->gender_id];
         }
-    }
-
-    public static function whereTargetUsersFrom($auth)
-    {
-        return User::whereNot('uid', $auth->uid)
-            ->has('userImages', '>=', 1)
-            ->when(in_array($auth->sexual_orientation_id, [SexualOrientation::HOMOSEXUAL, SexualOrientation::HETEROSEXUAL]), function ($q) use ($auth) {
-                $q->whereIn('gender_id', $auth->match_gender)
-                    ->whereIn('sexual_orientation_id', [$auth->sexual_orientation_id, SexualOrientation::BISEXUAL]);
-            })
-            ->when($auth->sexual_orientation_id === SexualOrientation::BISEXUAL, function ($q) use ($auth) {
-                $q->when($auth->gender_id === Gender::MALE, function ($query) {
-                    $query->where(function ($q) {
-                        $q->where(function ($subQuery) {
-                            $subQuery->where('gender_id', Gender::MALE)
-                                ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
-                        })->orWhere(function ($subQuery) {
-                            $subQuery->where('gender_id', Gender::FEMALE)
-                                ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
-                        });
-                    });
-                });
-                $q->when($auth->gender_id === Gender::FEMALE, function ($query) {
-                    $query->where(function ($q) {
-                        $q->where(function ($subQuery) {
-                            $subQuery->where('gender_id', Gender::FEMALE)
-                                ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
-                        })->orWhere(function ($subQuery) {
-                            $subQuery->where('gender_id', Gender::MALE)
-                                ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
-                        });
-                    });
-                });
-            })
-            ->whereHas('events', function ($q) use ($auth) {
-                $q->where('event_uid', $auth->event->uid);
-            })
-            ->whereNotIn('uid', function ($q) use ($auth) {
-                $q->select('target_user_uid')
-                    ->from('target_users as ui')
-                    ->where('ui.user_uid', $auth->uid)
-                    ->where('ui.event_uid', $auth->event->uid);
-            });
     }
 
     public function scopeRemainingUsersToInteract()
@@ -252,7 +254,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function decrementInteraction(int $interaction): void
     {
-        if ($interaction == Interaction::DISLIKE_ID) {
+        if ($interaction === Interaction::DISLIKE_ID) {
             return;
         }
 
@@ -308,18 +310,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'password' => 'hashed',
-        ];
-    }
-
-    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
@@ -345,5 +335,17 @@ class User extends Authenticatable implements JWTSubject
     public function uniqueIds(): array
     {
         return ['uid'];
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
     }
 }

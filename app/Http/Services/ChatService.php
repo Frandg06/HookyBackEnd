@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Services;
 
 use App\Http\Resources\ChatPreviewResource;
@@ -12,7 +14,7 @@ use App\Models\Notifify;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class ChatService extends Service
+final class ChatService extends Service
 {
     public function retrieve($user)
     {

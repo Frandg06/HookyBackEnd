@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Gender;
 use Illuminate\Database\Migrations\Migration;
 

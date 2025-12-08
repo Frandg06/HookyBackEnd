@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Customers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Services\ImagesService;
 use Illuminate\Http\Request;
 
-class ImageController extends Controller
+final class ImageController extends Controller
 {
     protected $imageService;
 

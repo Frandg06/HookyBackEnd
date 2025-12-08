@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\Company;
@@ -10,7 +12,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Crypt;
 use Tests\TestCase;
 
-class LoginCustomerTest extends TestCase
+final class LoginCustomerTest extends TestCase
 {
     use RefreshDatabase;
     use WithFaker;

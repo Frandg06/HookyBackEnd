@@ -1,17 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
 use App\Http\Resources\NotificationUserResource;
 use App\Models\NotificationsType;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
-class AuthUserService extends Service
+final class AuthUserService extends Service
 {
     public function update(array $data, bool $isRegister = false)
     {
@@ -25,16 +28,16 @@ class AuthUserService extends Service
 
             $this->user()->update($data);
 
-            if (!$isRegister && (isset($data['gender_id']) || isset($data['sexual_orientation_id']))) {
+            if (! $isRegister && (isset($data['gender_id']) || isset($data['sexual_orientation_id']))) {
                 $this->user()->interactions()->delete();
-                $cacheKey = 'target_users_uids_' . user()->uid . '_' . user()->event->uid;
+                $cacheKey = 'target_users_uids_'.user()->uid.'_'.user()->event->uid;
                 Cache::forget($cacheKey);
             }
 
             DB::commit();
 
             return $this->user()->toResource();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
@@ -54,7 +57,7 @@ class AuthUserService extends Service
             DB::commit();
 
             return $this->user()->toResource();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
@@ -107,9 +110,9 @@ class AuthUserService extends Service
             DB::commit();
 
             return $user->toResource();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
-            Log::error('Error en ' . __CLASS__ . '->' . __FUNCTION__, ['exception' => $e]);
+            Log::error('Error en '.__CLASS__.'->'.__FUNCTION__, ['exception' => $e]);
             throw $e;
         }
     }

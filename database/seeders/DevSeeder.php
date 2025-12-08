@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\Event;
-use App\Models\Gender;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Models\UserEvent;
+use Exception;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class DevSeeder extends Seeder
+final class DevSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -27,7 +29,7 @@ class DevSeeder extends Seeder
 
         DB::table('events')
             ->update([
-                'end_date' => DB::raw("st_date + INTERVAL '5 hours'")
+                'end_date' => DB::raw("st_date + INTERVAL '5 hours'"),
             ]);
 
         Event::all()->each(function ($event) {
@@ -36,7 +38,7 @@ class DevSeeder extends Seeder
             $ticketCount = rand(20, 50);
 
             while (count($tickets) < $ticketCount) {
-                $code = strtoupper(Str::random(6));
+                $code = mb_strtoupper(Str::random(6));
 
                 $tickets[] = [
                     'uid' => (string) Str::uuid(),
@@ -90,8 +92,6 @@ class DevSeeder extends Seeder
             });
         });
 
-
-
         // User::all()->each(function ($user) use ($event) {
         //     UserEvent::create([
         //         'user_uid' => $user->uid,
@@ -138,7 +138,7 @@ class DevSeeder extends Seeder
                 if ($imageData !== false) {
                     return $imageData;
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Ignora la excepción, intenta de nuevo
             }
 
@@ -146,6 +146,6 @@ class DevSeeder extends Seeder
             usleep($delayMs * 1000); // espera entre intentos (en milisegundos)
         }
 
-        throw new \Exception("No se pudo descargar la imagen después de $maxRetries intentos.");
+        throw new Exception("No se pudo descargar la imagen después de $maxRetries intentos.");
     }
 }

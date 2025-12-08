@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\Company;
@@ -7,12 +9,11 @@ use App\Models\TimeZone;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
-class DatabaseSeeder extends Seeder
+final class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
      */
-    
     public function run(): void
     {
         Storage::disk('r2')->deleteDirectory('hooky/profile');

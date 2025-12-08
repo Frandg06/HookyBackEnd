@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Services;
 
 use App\Exceptions\ApiException;
@@ -8,8 +10,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
+use Throwable;
 
-class ImagesService extends Service
+final class ImagesService extends Service
 {
     public function store($img, $data)
     {
@@ -17,7 +20,7 @@ class ImagesService extends Service
         try {
             $user = request()->user();
 
-            if ($user->userImages()->count() == 3) {
+            if ($user->userImages()->count() === 3) {
                 throw new ApiException('user_images_limit', 409);
             }
 
@@ -47,7 +50,7 @@ class ImagesService extends Service
             DB::commit();
 
             return $user->toResource();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
             throw $e;
         }
@@ -77,7 +80,7 @@ class ImagesService extends Service
             DB::commit();
 
             return $user->toResource();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
             throw $e;
         }
@@ -105,7 +108,7 @@ class ImagesService extends Service
             DB::commit();
 
             return true;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
             throw $e;
         }
@@ -130,7 +133,7 @@ class ImagesService extends Service
             DB::commit();
 
             return true;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
             Log::error('Error en '.__CLASS__.'->'.__FUNCTION__, ['exception' => $e]);
             throw new ApiException('image_delete_ko', 500);
@@ -153,7 +156,7 @@ class ImagesService extends Service
         $size = $img->size();
         $ratio = $size->aspectRatio();
 
-        if ($data['width'] == $img->height() && $ratio != 1) {
+        if ($data['width'] === $img->height() && $ratio !== 1) {
             $rotate = -90;
         }
 

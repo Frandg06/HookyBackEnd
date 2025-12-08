@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Services;
 
+use Exception;
 use SendGrid;
 use SendGrid\Mail\Mail;
 
-class EmailService
+final class EmailService
 {
     private $sender;
 
@@ -31,7 +34,7 @@ class EmailService
             $response = $this->sender->send($email);
 
             return $response;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $e->getMessage();
         }
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Companies;
 
 use App\Http\Controllers\Controller;
@@ -10,7 +12,7 @@ use App\Http\Services\EmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AuthController extends Controller
+final class AuthController extends Controller
 {
     protected $authService;
 

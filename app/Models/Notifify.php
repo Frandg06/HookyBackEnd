@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Support\Facades\Http;
 
-class Notifify
+final class Notifify
 {
-    public $attributes = [];
-
     public const LIKE = 1;
 
     public const SUPER_LIKE = 2;
@@ -23,6 +23,8 @@ class Notifify
     public const HOOK_STR = 'hook';
 
     public const MESSAGE_STR = 'message';
+
+    public $attributes = [];
 
     public function __construct($attributes = [])
     {

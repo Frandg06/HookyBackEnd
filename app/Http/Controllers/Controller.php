@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Company;
@@ -8,22 +10,22 @@ use Illuminate\Support\Facades\Log;
 
 abstract class Controller
 {
-    public function company(): Company
+    final public function company(): Company
     {
         return request()->user();
     }
 
-    public function user(): User
+    final public function user(): User
     {
         return request()->user();
     }
 
-    public function response($data, $customRespKey = 'resp', $code = 200)
+    final public function response($data, $customRespKey = 'resp', $code = 200)
     {
         return $this->reponseChecked($data, $customRespKey, $code);
     }
 
-    public function log($message = '', $data = [])
+    final public function log($message = '', $data = [])
     {
         Log::debug($message, $data);
     }
