@@ -153,21 +153,18 @@ class AuthService extends Service
     public function socialLogin(array $data): string
     {
         DB::beginTransaction();
-        try {
+        try {https://hooky-backend-5gvdds-4efb60-167-86-79-89.traefik.me/health
             /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
             $driver = Socialite::driver($data['provider']);
             $socialUser = $driver->userFromToken($data['access_token']);
 
             debug(['socialUser' => $socialUser]);
             
-            $user = User::where('provider_name', $data['provider'])
-                        ->where('provider_id', $socialUser->getId())
-                        ->where('email', $socialUser->getEmail())
-                        ->first();
+            $user = User::where('email', $socialUser->getEmail())->first();
 
             debug(['user_found' => $user]);
 
-            if (! $user) {
+            if (!$user) {
                 $user = User::create([
                     'name' => $socialUser->getName(),
                     'email' => $socialUser->getEmail(),

@@ -22,7 +22,7 @@ class SocialLoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'token' => ['access_token', 'string'],
+            'access_token' => ['required', 'string'],
             'comony_uid' => ['nullable', 'string', 'exists:companies,uid'],
         ];
     }
