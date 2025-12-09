@@ -110,7 +110,7 @@ final class AuthService extends Service
                 [$user, $event] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
             }
 
-            $diff = $this->getDiff($event);
+            $diff = $this->getDiff($event ?? null);
 
             $token = Auth::setTTL($diff)->login($user);
 
