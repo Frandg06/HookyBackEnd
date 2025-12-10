@@ -105,11 +105,11 @@ final class AuthService extends Service
                 $user = $this->userRepository->createUserFromSocialLogin($socialUser, $data['provider']);
             }
 
-            if (filled($data['company_uid'])) {
+            if (isset($data['company_uid']) && filled($data['company_uid'])) {
                 [$user, $event] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
             }
 
-            $diff = $this->getDiff($event);
+            $diff = $this->getDiff($event ?? null);
 
             $token = Auth::setTTL($diff)->login($user);
 
