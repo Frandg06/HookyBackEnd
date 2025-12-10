@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Socialite;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 final class AuthService extends Service
 {
