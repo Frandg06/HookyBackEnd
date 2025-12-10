@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Enums\SocialProviders;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class SocialLoginRequest extends FormRequest
 {
@@ -17,6 +19,16 @@ final class SocialLoginRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'provider' => $this->route('provider'),
+        ]);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -25,7 +37,7 @@ final class SocialLoginRequest extends FormRequest
     {
         return [
             'access_token' => ['required', 'string'],
-            'company_uid' => ['nullable', 'string', 'exists:companies,uid'],
+            'provider' => ['required', 'string', Rule::enum(SocialProviders::class)],
         ];
     }
 }

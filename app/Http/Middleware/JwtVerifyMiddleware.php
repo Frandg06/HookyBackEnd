@@ -6,6 +6,7 @@ namespace App\Http\Middleware;
 
 use App\Models\User;
 use Closure;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -20,10 +21,10 @@ final class JwtVerifyMiddleware
     public function handle(Request $request, Closure $next): Response
     {
 
-        $token = str_replace('Bearer ', '', $request->header('Authorization'));
+        $token = $request->bearerToken();
 
         if (! $token) {
-            return response()->json(['custom_message' => __('i18n.user_not_login'), 'type' => 'AuthException'], 401);
+            throw new AuthenticationException();
         }
 
         $payload = JWTAuth::setToken($token)->getPayload();
@@ -31,7 +32,7 @@ final class JwtVerifyMiddleware
         $user = User::find($payload['uid']);
 
         if (! $user) {
-            return response()->json(['custom_message' => __('i18n.user_not_login'), 'type' => 'AuthException'], 401);
+            throw new AuthenticationException();
         }
 
         return $next($request);

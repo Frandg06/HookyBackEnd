@@ -6,10 +6,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Models\User;
+use App\Traits\ApiResponse;
 use Illuminate\Support\Facades\Log;
 
 abstract class Controller
 {
+    use ApiResponse;
+
     final public function company(): Company
     {
         return request()->user();

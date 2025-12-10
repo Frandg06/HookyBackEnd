@@ -21,7 +21,7 @@ final class JwtVerifyCompanyMiddleware
     public function handle(Request $request, Closure $next): Response
     {
 
-        $token = str_replace('Bearer ', '', $request->header('Authorization'));
+        $token = $request->bearerToken();
 
         if (! $token) {
             return response()->json(['custom_message' => 'No existe una sesion activa', 'destroy_session' => true], 401);

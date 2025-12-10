@@ -36,7 +36,6 @@ return Application::configure(basePath: dirname(__DIR__))
                     'error' => true,
                     'custom_message' => __('i18n.user_not_login'),
                     'redirect' => '/auth/login',
-                    'destroy_session' => true,
                 ],
                 401
             );
@@ -47,19 +46,21 @@ return Application::configure(basePath: dirname(__DIR__))
                 'custom_message' => __('i18n.'.$e->getMessage()),
             ], $e->getCode());
         });
+
         $exceptions->render(function (ValidationException $e, Request $request) {
             return response()->json([
                 'error' => true,
                 'custom_message' => implode(' ', $e->validator->errors()->all()),
             ], 422);
         });
+
         $exceptions->render(function (Exception $e, Request $request) {
             Log::error($e->getMessage(), ['stack' => $e->getTraceAsString()]);
 
             return response()->json([
                 'error' => true,
+                'log' => env('APP_ENV') === 'local' ? $e->getMessage() : null,
                 'custom_message' => __('i18n.unexpected_error'),
-                'error_message' => $e->getMessage(),
             ], 500);
         });
     })->withCommands([

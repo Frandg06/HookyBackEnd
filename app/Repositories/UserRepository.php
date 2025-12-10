@@ -23,13 +23,15 @@ final class UserRepository
         return $user->refresh();
     }
 
-    public function createUserFromSocialLogin(TwoUser $user, string $provider): ?User
+    public function updateOrCreateUserFromSocialLogin(TwoUser $user, string $provider): ?User
     {
-        return User::create([
-            'name' => $user->getName(),
+        return User::updateOrCreate([
             'email' => $user->getEmail(),
+        ], [
             'provider_name' => $provider,
             'provider_id' => $user->getId(),
+            'name' => $user->getName(),
+            'email' => $user->getEmail(),
             'password' => bcrypt(uniqid()),
         ]);
     }

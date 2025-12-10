@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
-use App\Actions\Consumer\AttachUserToCompanyEvent;
+use App\Actions\Customer\AttachUserToCompanyEvent;
 use App\Exceptions\ApiException;
 use App\Http\Resources\UserResource;
 use App\Models\Event;
@@ -43,7 +43,7 @@ final class AuthService extends Service
                 [$user, $event] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
             }
 
-            $diff = $this->getDiff($event);
+            $diff = $this->getDiff($event ?? null);
 
             $token = Auth::setTTL($diff)->attempt(['email' => $data['email'], 'password' => $data['password']]);
 
@@ -75,8 +75,7 @@ final class AuthService extends Service
                 [$user, $event] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
             }
 
-            $diff = $this->getDiff($event);
-            $token = Auth::setTTL($diff)->attempt(['email' => $data['email'], 'password' => $data['password']]);
+            $token = Auth::setTTL()->attempt(['email' => $data['email'], 'password' => $data['password']]);
 
             if (! $token) {
                 throw new ApiException('credentials_ko', 401);
@@ -85,38 +84,6 @@ final class AuthService extends Service
             DB::commit();
 
             return $token;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-    }
-
-    public function socialLogin(array $data): string
-    {
-        DB::beginTransaction();
-        try {
-            /** @var \Laravel\Socialite\Two\AbstractProvider $driver */
-            $driver = Socialite::driver($data['provider']);
-            $socialUser = $driver->userFromToken($data['access_token']);
-
-            $user = $this->userRepository->getUserByEmail($socialUser->getEmail());
-
-            if (! $user) {
-                $user = $this->userRepository->createUserFromSocialLogin($socialUser, $data['provider']);
-            }
-
-            if (isset($data['company_uid']) && filled($data['company_uid'])) {
-                [$user, $event] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
-            }
-
-            $diff = $this->getDiff($event ?? null);
-
-            $token = Auth::setTTL($diff)->login($user);
-
-            DB::commit();
-
-            return $token;
-
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;

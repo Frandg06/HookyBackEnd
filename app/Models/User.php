@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\SocialProviders;
 use App\Models\Traits\Filterable;
 use App\Models\Traits\Sortable;
 use Carbon\Carbon;
@@ -69,6 +70,11 @@ final class User extends Authenticatable implements JWTSubject
         'sexual_orientation_id',
         'role_id',
         'born_date',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'provider_name' => SocialProviders::class,
     ];
 
     public static function whereTargetUsersFrom($auth)
