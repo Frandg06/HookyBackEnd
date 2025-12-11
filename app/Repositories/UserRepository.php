@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Models\PasswordResetToken;
 use App\Models\User;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Two\User as TwoUser;
 
 final class UserRepository
@@ -44,5 +46,15 @@ final class UserRepository
     public function createUser(array $data): User
     {
         return User::create($data);
+    }
+
+    public function generatePasswordResetTokenRequest(string $email)
+    {
+        return PasswordResetToken::updateOrCreate([
+            'email' => $email,
+        ], [
+            'token' => base64_encode(Str::random(64)),
+            'expires_at' => now()->addMinutes(15),
+        ]);
     }
 }
