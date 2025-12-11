@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Companies\DomainController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['api', 'lang'])->group(function () {
+Route::middleware(['api', 'lang', 'accept-json'])->group(function () {
 
     Route::prefix('customers')->group(function () {
         Route::prefix('auth')->group(base_path('routes/customers/auth.php'));

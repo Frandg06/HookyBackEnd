@@ -24,7 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'event' => App\Http\Middleware\CheckEventIsActiveMiddleware::class,
             'credits' => App\Http\Middleware\CheckCreditsMiddleware::class,
             'lang' => App\Http\Middleware\LangMiddleware::class,
-            'jwt.verify' => App\Http\Middleware\JwtVerifyMiddleware::class,
+            'accept-json' => App\Http\Middleware\AcceptJsonMiddleware::class,
             'jwt.verify.company' => App\Http\Middleware\JwtVerifyCompanyMiddleware::class,
             'auth.event' => App\Http\Middleware\EventMiddleware::class,
         ]);
