@@ -15,8 +15,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', RegisterController::class)->name('customer.register');
 Route::post('/login', LoginController::class)->name('customer.login');
 Route::post('/social-login/{provider}', SocialLoginController::class)->name('customer.social.login');
-Route::post('/password/forgot', PasswordResetTokenController::class)->name('customer.password.email');
-Route::put('/password/reset', [AuthController::class, 'setNewPassword'])->name('customer.password.reset');
+Route::post('/forgot-password', PasswordResetTokenController::class)->name('customer.password.email');
+Route::put('/reset-password/{token}', [AuthController::class, 'setNewPassword'])->name('customer.password.reset');
 
 Route::middleware(['auth:api'])->group(function () {
     Route::post('/login/{event_uid}', EventAttachController::class)->name('customer.login.event');
