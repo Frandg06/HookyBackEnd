@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\Auth;
 
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 final readonly class LogoutAction
 {
@@ -13,8 +13,6 @@ final readonly class LogoutAction
      */
     public function execute()
     {
-        return DB::transaction(function () {
-            //
-        });
+        Auth::logout();
     }
 }
