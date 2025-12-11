@@ -17,6 +17,7 @@ final class ResetPasswordController extends Controller
     public function __invoke(ResetPasswordRequest $request, ResetPasswordAction $action)
     {
         $action->execute($request->input('token'), $request->input('password'));
+
         return $this->successResponse(__('i18n.password_reset_success'));
     }
 }
