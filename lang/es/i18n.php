@@ -94,4 +94,5 @@ return [
     'ticket_limit_reached' => 'Has alcanzado el límite de tickets para este evento.',
     'ticket_not_found' => 'El ticket no existe o no está activo.',
     'user_not_login' => 'Tienes que iniciar sesión para poder continuar.',
+    'authenticated_user' => 'Usuario autenticado correctamente.',
 ];

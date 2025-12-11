@@ -78,5 +78,6 @@ return [
     'not_aviable_user' => 'Sie haben keine Berechtigung, diesen Benutzer zu sehen.',
     'event_not_active_or_next' => 'Es gibt kein aktives oder bevorstehendes Event.',
     'limit_users_reached' => 'Das Event hat die maximale Anzahl an Teilnehmern erreicht.',
+    'authenticated_user' => 'Benutzer erfolgreich authentifiziert.',
 
 ];

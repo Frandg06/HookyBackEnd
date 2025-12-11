@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Customer\Auth\LoginController;
 use App\Http\Controllers\Customer\Auth\LogoutController;
+use App\Http\Controllers\Customer\Auth\MeController;
 use App\Http\Controllers\Customer\Auth\RegisterController;
 use App\Http\Controllers\Customer\Auth\SocialLoginController;
 use App\Http\Controllers\Customer\AuthController;
@@ -18,5 +19,5 @@ Route::put('/password/reset', [AuthController::class, 'setNewPassword'])->name('
 Route::middleware(['auth:api', 'jwt.verify'])->group(function () {
     Route::post('/login/{event_uid}', [AuthController::class, 'loginIntoEvent'])->name('customer.login.event');
     Route::post('/logout', LogoutController::class)->name('customer.logout');
-    Route::get('/me', [AuthController::class, 'me'])->name('customer.me');
+    Route::get('/me', MeController::class)->name('customer.me');
 });

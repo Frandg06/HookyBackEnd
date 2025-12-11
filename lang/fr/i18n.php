@@ -78,5 +78,5 @@ return [
     'not_aviable_user' => "Vous n'avez pas la permission de voir cet utilisateur.",
     'event_not_active_or_next' => 'Il n’y a aucun événement actif ou à venir.',
     'limit_users_reached' => 'L’événement a atteint la limite d’utilisateurs.',
-
+    'authenticated_user' => 'Utilisateur authentifié avec succès.',
 ];
