@@ -10,9 +10,14 @@ use App\Models\UserEvent;
 
 final class UserEventRepository
 {
+    public function findEventByUuid(string $event_uuid): ?Event
+    {
+        return Event::where('uid', $event_uuid)->first();
+    }
+
     public function attachUserToEvent(User $user, Event $event): UserEvent
     {
-        return UserEvent::createOrUpdate(
+        return UserEvent::updateOrCreate(
             [
                 'user_uid' => $user->uid,
                 'event_uid' => $event->uid,
