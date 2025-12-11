@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Customers;
+namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
@@ -61,7 +61,6 @@ final class AuthController extends Controller
             'company'
         ])->toResource();
 
-        debug('hola');
         return response()->json(['resp' => $user, 'success' => true], 200);
     }
 

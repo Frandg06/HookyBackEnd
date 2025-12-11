@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Customers\ChatController;
-use App\Http\Controllers\Customers\ImageController;
-use App\Http\Controllers\Customers\UserController;
+use App\Http\Controllers\Customer\ChatController;
+use App\Http\Controllers\Customer\ImageController;
+use App\Http\Controllers\Customer\UserController;
 use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 

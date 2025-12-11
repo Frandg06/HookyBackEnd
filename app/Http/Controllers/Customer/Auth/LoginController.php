@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Customers\Auth;
+namespace App\Http\Controllers\Customer\Auth;
 
 use App\Actions\Customer\Auth\LoginAction;
 use App\Http\Controllers\Controller;

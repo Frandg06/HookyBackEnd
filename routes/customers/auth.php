@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Customers\Auth\LoginController;
-use App\Http\Controllers\Customers\Auth\RegisterController;
-use App\Http\Controllers\Customers\Auth\SocialLoginController;
-use App\Http\Controllers\Customers\AuthController;
+use App\Http\Controllers\Customer\Auth\LoginController;
+use App\Http\Controllers\Customer\Auth\RegisterController;
+use App\Http\Controllers\Customer\Auth\SocialLoginController;
+use App\Http\Controllers\Customer\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', RegisterController::class)->name('customer.register');
