@@ -77,4 +77,5 @@ return [
     'event_not_active_or_next' => 'There is no active or upcoming event.',
     'limit_users_reached' => 'The event has reached the user limit.',
     'authenticated_user' => 'User authenticated successfully.',
+    'password_reset_success' => 'The password has been reset successfully.',
 ];

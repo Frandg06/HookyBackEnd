@@ -79,4 +79,5 @@ return [
     'event_not_active_or_next' => 'Não há nenhum evento ativo ou próximo.',
     'limit_users_reached' => 'O evento atingiu o limite de usuários.',
     'authenticated_user' => 'Usuário autenticado com sucesso.',
+    'password_reset_success' => 'A senha foi redefinida com sucesso.',
 ];

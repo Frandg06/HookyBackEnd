@@ -79,5 +79,5 @@ return [
     'event_not_active_or_next' => 'Es gibt kein aktives oder bevorstehendes Event.',
     'limit_users_reached' => 'Das Event hat die maximale Anzahl an Teilnehmern erreicht.',
     'authenticated_user' => 'Benutzer erfolgreich authentifiziert.',
-
+    'password_reset_success' => 'Das Passwort wurde erfolgreich zurückgesetzt.',
 ];

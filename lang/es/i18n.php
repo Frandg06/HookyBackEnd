@@ -95,4 +95,5 @@ return [
     'ticket_not_found' => 'El ticket no existe o no está activo.',
     'user_not_login' => 'Tienes que iniciar sesión para poder continuar.',
     'authenticated_user' => 'Usuario autenticado correctamente.',
+    'password_reset_success' => 'La contraseña ha sido restablecida correctamente.',
 ];

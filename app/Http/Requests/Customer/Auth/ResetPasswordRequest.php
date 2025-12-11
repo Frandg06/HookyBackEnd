@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Customer\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -16,6 +16,13 @@ final class ResetPasswordRequest extends FormRequest
         return true;
     }
 
+    public function prepareForValidation()
+    {
+        $this->merge([
+            'token' => $this->route('token'),
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,8 +31,8 @@ final class ResetPasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'token' => 'required',
-            'password' => 'required|min:8|confirmed',
+            'token' => 'required|string|exists:password_reset_tokens,token',
+            'password' => 'required|string|min:8|confirmed',
         ];
     }
 }

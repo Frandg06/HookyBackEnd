@@ -48,7 +48,7 @@ final class UserRepository
         return User::create($data);
     }
 
-    public function generatePasswordResetTokenRequest(string $email)
+    public function generatePasswordResetTokenRequest(string $email): PasswordResetToken
     {
         return PasswordResetToken::updateOrCreate([
             'email' => $email,
@@ -56,5 +56,22 @@ final class UserRepository
             'token' => base64_encode(Str::random(64)),
             'expires_at' => now()->addMinutes(15),
         ]);
+    }
+
+    public function getPasswordResetToken(string $token): ?PasswordResetToken
+    {
+        return PasswordResetToken::where('token', $token)->first();
+    }
+
+    public function updateUserPassword(User $user, string $password): void
+    {
+        $user->update([
+            'password' => bcrypt($password),
+        ]);
+    }
+
+    public function deletePasswordResetToken(PasswordResetToken $passwordResetToken): void
+    {
+        $passwordResetToken->delete();
     }
 }
