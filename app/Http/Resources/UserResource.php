@@ -16,35 +16,35 @@ final class UserResource extends JsonResource
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
-    {
+    {     
         return [
             'id' => $this->id,
             'uid' => $this->uid,
             'company' => [
-                'uid' => optional($this->company)->uid,
-                'name' => optional($this->company)->name,
+                'uid' => $this->company->uid,
+                'name' => $this->company->name,
             ],
             'event' => $this->when(
                 $this->event,
                 [
-                    'is_active' => optional($this->event)->is_active,
-                    'uid' => optional($this->event)->uid,
-                    'name' => optional($this->event)->name,
-                    'st_date' => optional($this->event)->st_date,
-                    'end_date' => optional($this->event)->end_date,
-                    'is_finished' => optional($this->event)->is_finished,
+                    'is_active' => $this->event?->is_active,
+                    'uid' => $this->event?->uid,
+                    'name' => $this->event?->name,
+                    'st_date' => $this->event?->st_date,
+                    'end_date' => $this->event?->end_date,
+                    'is_finished' => $this->event?->is_finished,
 
                 ]
             ),
             'company_event' => $this->when(
-                ! $this->event && $this->nextOrLastEvent(),
+                ! $this->event && $this->event,
                 [
-                    'is_active' => optional($this->nextOrLastEvent())->is_active,
-                    'uid' => optional($this->nextOrLastEvent())->uid,
-                    'name' => optional($this->nextOrLastEvent())->name,
-                    'st_date' => optional($this->nextOrLastEvent())->st_date,
-                    'end_date' => optional($this->nextOrLastEvent())->end_date,
-                    'is_finished' => optional($this->nextOrLastEvent())->is_finished,
+                    'is_active' =>$this->event?->is_active,
+                    'uid' =>$this->event?->uid,
+                    'name' =>$this->event?->name,
+                    'st_date' =>$this->event?->st_date,
+                    'end_date' =>$this->event?->end_date,
+                    'is_finished' =>$this->event?->is_finished,
 
                 ]
             ),
@@ -57,8 +57,8 @@ final class UserResource extends JsonResource
             'born_date' => $this->born_date,
             'description' => $this->description,
             $this->mergeWhen($this->event, [
-                'like_credits' => $this->likes,
-                'super_like_credits' => $this->super_likes,
+                'like_credits' => $this->likes ?? 0,
+                'super_like_credits' => $this->super_likes ?? 0,
             ]),
             'data_complete' => $this->data_complete,
             'data_images' => $this->data_images,
@@ -68,6 +68,7 @@ final class UserResource extends JsonResource
             'notifications' => [
                 ...$this->getNotificationsByType(),
             ],
+
         ];
     }
 }

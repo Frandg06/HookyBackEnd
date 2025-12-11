@@ -161,10 +161,20 @@ final class User extends Authenticatable implements JWTSubject
             ->withPivot('likes', 'super_likes', 'logged_at');
     }
 
+    public function activeEvent(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class, 'user_events', 'user_uid', 'event_uid')
+            ->withPivot('likes', 'super_likes', 'logged_at')
+            ->where('st_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->latest('logged_at')
+            ->limit(1);
+    }
+
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'user_uid', 'uid')
-            ->where('event_uid', $this->event->uid);
+            ->where('event_uid', $this->activeEvent?->first()?->uid ?? null);
     }
 
     public function tickets()
@@ -179,11 +189,7 @@ final class User extends Authenticatable implements JWTSubject
 
     public function getEventAttribute()
     {
-        return $this->events()
-            ->where('st_date', '<=', now())
-            ->where('end_date', '>=', now())
-            ->latest('logged_at')
-            ->first();
+        return $this->activeEvent->first();
     }
 
     public function getDataCompleteAttribute(): bool
@@ -200,22 +206,22 @@ final class User extends Authenticatable implements JWTSubject
 
     public function getDataImagesAttribute(): bool
     {
-        return $this->userImages()->count() >= 1 ? true : false;
+        return $this->userImages->count() >= 1 ? true : false;
     }
 
     public function getLikesAttribute(): int
     {
-        return $this->event?->pivot?->likes ?? 0;
+        return $this->activeEvent->first()?->likes ?? 0;
     }
 
     public function getSuperLikesAttribute(): int
     {
-        return $this->event?->pivot?->super_likes ?? 0;
+        return $this->activeEvent->first()?->super_likes ?? 0;
     }
 
     public function scopeChats()
     {
-        return Chat::where('event_uid', user()->event->uid)
+        return Chat::where('event_uid', user()->event?->uid)
             ->whereAny(['user1_uid', 'user2_uid'], user()->uid);
     }
 
@@ -224,7 +230,7 @@ final class User extends Authenticatable implements JWTSubject
         return ChatMessage::whereNot('sender_uid', $this->uid)
             ->where('read_at', false)
             ->whereHas('chat', function ($query) {
-                $query->where('event_uid', $this->event->uid)
+                $query->where('event_uid', $this->event?->uid)
                     ->whereAny(['user1_uid', 'user2_uid'], $this->uid);
             })->count();
     }
@@ -255,7 +261,7 @@ final class User extends Authenticatable implements JWTSubject
 
     public function scopeRemainingUsersToInteract()
     {
-        return $this->interactions()->where('event_uid', $this->event->uid)->where('interaction_id', null)->get();
+        return $this->interactions()->where('event_uid', $this->event?->uid)->where('interaction_id', null)->get();
     }
 
     public function decrementInteraction(int $interaction): void
@@ -269,7 +275,7 @@ final class User extends Authenticatable implements JWTSubject
             Interaction::SUPER_LIKE_ID => 'super_likes',
         };
 
-        $this->events()->updateExistingPivot($this->event->uid, [
+        $this->events()->updateExistingPivot($this->event?->uid, [
             $name => max(0, $this->likes - 1),
         ]);
     }
@@ -280,7 +286,7 @@ final class User extends Authenticatable implements JWTSubject
             return [];
         }
 
-        $unread = $this->notifications()->where('read_at', null)->get()->groupBy('type_id');
+        $unread = $this->notifications->where('read_at', null)->groupBy('type_id');
 
         return [
             'like' => $unread->has(NotificationsType::LIKE_TYPE) ? $unread->get(NotificationsType::LIKE_TYPE)->count() : 0,

@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Socialite;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 final class AuthService extends Service
 {
@@ -39,13 +40,13 @@ final class AuthService extends Service
 
             $user = User::create($data);
 
-            if (filled($data['company_uid'])) {
-                [$user, $event] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
-            }
+            // if (filled($data['company_uid'])) {
+            //     [$user, $event] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
+            // }
 
-            $diff = $this->getDiff($event ?? null);
+            // $diff = $this->getDiff($event ?? null);
 
-            $token = Auth::setTTL($diff)->attempt(['email' => $data['email'], 'password' => $data['password']]);
+            $token = JWTAuth::attempt(['email' => $data['email'], 'password' => $data['password']]);
 
             DB::commit();
 
@@ -71,9 +72,9 @@ final class AuthService extends Service
                 throw new ApiException('credentials_ko', 401);
             }
 
-            if (filled($data['company_uid'])) {
-                [$user, $event] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
-            }
+            // if (filled($data['company_uid'])) {
+            //     [$user, $event] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
+            // }
 
             $token = Auth::setTTL()->attempt(['email' => $data['email'], 'password' => $data['password']]);
 
