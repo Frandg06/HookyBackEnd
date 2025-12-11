@@ -8,12 +8,10 @@ use App\Exceptions\ApiException;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 final readonly class RegisterAction
 {
-
-    public function __construct(private readonly UserRepository $userRepository)
-    {
-    }
+    public function __construct(private readonly UserRepository $userRepository) {}
 
     /**
      * Execute the action.

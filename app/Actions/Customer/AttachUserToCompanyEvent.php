@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace App\Actions\Customer;
 
 use App\Exceptions\ApiException;
-use App\Models\Event;
 use App\Models\User;
 use App\Repositories\CompanyRepository;
 use App\Repositories\UserEventRepository;
 use App\Repositories\UserRepository;
-use Carbon\Carbon;
 
 final readonly class AttachUserToCompanyEvent
 {
@@ -38,8 +36,6 @@ final readonly class AttachUserToCompanyEvent
         }
 
         $this->userEventRepository->attachUserToEvent($user, $event);
-
-
 
         return [$user, $event, $company];
     }

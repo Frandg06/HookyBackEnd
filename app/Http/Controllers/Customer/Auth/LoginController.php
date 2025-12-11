@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Customer\Auth;
 
 use App\Actions\Customer\Auth\LoginAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 
-class LoginController extends Controller
+final class LoginController extends Controller
 {
     /**
      * Handle the incoming request.
@@ -15,6 +17,6 @@ class LoginController extends Controller
     {
         $response = $action->execute($request->validated());
 
-        return $this->successResponse('Login successful.',['access_token' => $response]);
+        return $this->successResponse('Login successful.', ['access_token' => $response]);
     }
 }

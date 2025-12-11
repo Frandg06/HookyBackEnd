@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Actions\Customer\Auth;
 
 use App\Exceptions\ApiException;
-use Exception;
 use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -17,7 +16,7 @@ final readonly class LoginAction
     public function execute(array $data): string
     {
         return DB::transaction(function () use ($data) {
-            
+
             $token = JWTAuth::attempt(['email' => $data['email'], 'password' => $data['password']]);
 
             if (! $token) {

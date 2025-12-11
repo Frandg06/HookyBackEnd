@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Customer\Auth;
 
 use App\Actions\Customer\Auth\RegisterAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
 
-class RegisterController extends Controller
+final class RegisterController extends Controller
 {
     /**
      * Handle the incoming request.
@@ -15,6 +17,6 @@ class RegisterController extends Controller
     {
         $response = $action->execute($request->validated());
 
-        return $this->successResponse('Registration successful.',['access_token' => $response]);
+        return $this->successResponse('Registration successful.', ['access_token' => $response]);
     }
 }

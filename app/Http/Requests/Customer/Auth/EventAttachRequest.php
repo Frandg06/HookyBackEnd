@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Customer\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class EventAttachRequest extends FormRequest
+final class EventAttachRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

@@ -5,15 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Services\AuthService;
-use App\Http\Services\EmailService;
-use App\Http\Services\ImagesService;
-use App\Http\Services\UserService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 final class AuthController extends Controller
 {
@@ -27,21 +21,8 @@ final class AuthController extends Controller
 
     public function __construct(
         AuthService $authService,
-        UserService $userService,
-        ImagesService $imageService,
-        EmailService $emailService
     ) {
         $this->authService = $authService;
-        $this->userService = $userService;
-        $this->imageService = $imageService;
-        $this->emailService = $emailService;
-    }
-
-    public function loginIntoEvent(string $event_uid)
-    {
-        $response = $this->authService->loginIntoEvent($event_uid);
-
-        return $this->response($response);
     }
 
     public function passwordReset(Request $request)

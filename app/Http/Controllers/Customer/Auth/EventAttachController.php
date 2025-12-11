@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Customer\Auth;
 
 use App\Actions\Customer\Auth\EventAttachAction;
@@ -9,7 +11,7 @@ use App\Http\Requests\Customer\Auth\EventAttachRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class EventAttachController extends Controller
+final class EventAttachController extends Controller
 {
     /**
      * Handle the incoming request.
@@ -20,6 +22,7 @@ class EventAttachController extends Controller
         $event_uuid = $request->input('event_uid');
         $eventAttachAction->execute($user, $event_uuid);
         $userResource = $userAction->execute($user);
+
         return $this->successResponse('Event attached successfully', $userResource);
     }
 }

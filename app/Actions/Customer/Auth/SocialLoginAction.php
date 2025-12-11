@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Actions\Customer\Auth;
@@ -15,7 +16,7 @@ final readonly class SocialLoginAction
         private readonly AttachUserToCompanyEvent $attachUserToCompanyEvent,
         private readonly UserRepository $userRepository,
     ) {}
-    
+
     public function execute(string $accessToken, string $provider): string
     {
         return DB::transaction(function () use ($accessToken, $provider) {
@@ -24,7 +25,7 @@ final readonly class SocialLoginAction
             $socialUser = $driver->userFromToken($accessToken);
 
             $user = $this->userRepository->updateOrCreateUserFromSocialLogin($socialUser, $provider);
-        
+
             $token = Auth::login($user);
 
             return $token;

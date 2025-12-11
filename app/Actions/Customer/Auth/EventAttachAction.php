@@ -11,22 +11,20 @@ use Illuminate\Support\Facades\DB;
 
 final readonly class EventAttachAction
 {
-    public function __construct(private readonly UserEventRepository $userEventRepository)
-    {
-    }
+    public function __construct(private readonly UserEventRepository $userEventRepository) {}
 
     /**
      * Execute the action.
      */
-    public function execute(User $user, string $event_uuid) :void
+    public function execute(User $user, string $event_uuid): void
     {
         DB::transaction(function () use ($user, $event_uuid): void {
             $event = $this->userEventRepository->findEventByUuid($event_uuid);
-            
+
             if (! $event->is_active) {
                 throw new ApiException('event_not_active', 404);
             }
-            
+
             $this->userEventRepository->attachUserToEvent($user, $event);
         });
     }

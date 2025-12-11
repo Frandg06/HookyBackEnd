@@ -6,7 +6,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 
-class MakeActionCommand extends GeneratorCommand
+final class MakeActionCommand extends GeneratorCommand
 {
     /**
      * The name and signature of the console command.

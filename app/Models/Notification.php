@@ -25,15 +25,15 @@ final class Notification extends Model
         'updated_at',
     ];
 
-    
     public static function scopeGetLikeAndSuperLikeNotify($query, $reciber, $emitter, $event)
     {
         $query->where('user_uid', $reciber)
-        ->where('emitter_uid', $emitter)
-        ->where('event_uid', $event)
-        ->whereIn('type_id', [NotificationsType::LIKE_TYPE, NotificationsType::SUPER_LIKE_TYPE])
-        ->first();
+            ->where('emitter_uid', $emitter)
+            ->where('event_uid', $event)
+            ->whereIn('type_id', [NotificationsType::LIKE_TYPE, NotificationsType::SUPER_LIKE_TYPE])
+            ->first();
     }
+
     public function type(): BelongsTo
     {
         return $this->belongsTo(NotificationsType::class, 'type_id', 'id');

@@ -16,7 +16,7 @@ final class UserResource extends JsonResource
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
-    {     
+    {
         return [
             'id' => $this->id,
             'uid' => $this->uid,
@@ -39,12 +39,12 @@ final class UserResource extends JsonResource
             'company_event' => $this->when(
                 ! $this->event && $this->event,
                 [
-                    'is_active' =>$this->event?->is_active,
-                    'uid' =>$this->event?->uid,
-                    'name' =>$this->event?->name,
-                    'st_date' =>$this->event?->st_date,
-                    'end_date' =>$this->event?->end_date,
-                    'is_finished' =>$this->event?->is_finished,
+                    'is_active' => $this->event?->is_active,
+                    'uid' => $this->event?->uid,
+                    'name' => $this->event?->name,
+                    'st_date' => $this->event?->st_date,
+                    'end_date' => $this->event?->end_date,
+                    'is_finished' => $this->event?->is_finished,
 
                 ]
             ),

@@ -18,7 +18,7 @@ final class AcceptJsonMiddleware
     public function handle(Request $request, Closure $next): Response
     {
 
-        if(!$request->header('Accept')){
+        if (! $request->header('Accept')) {
             $request->headers->set('Accept', 'application/json');
         }
 

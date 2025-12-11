@@ -13,7 +13,7 @@ final class Pint extends Command
      *
      * @var string
      */
-    protected $signature = 'pint {--parallel}';
+    protected $signature = 'pint {--test}';
 
     /**
      * The console command description.
@@ -29,7 +29,13 @@ final class Pint extends Command
     {
         $this->info('Running Pint...');
 
+        $this->info('Options: '.$this->option('test'));
+
         $comand = '.\\vendor\\bin\\pint';
+
+        if ($this->option('test')) {
+            $comand .= ' --test';
+        }
 
         $result = shell_exec($comand);
 

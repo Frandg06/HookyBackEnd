@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Customer\Auth;
 
 use App\Actions\Customer\Auth\MeAction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class MeController extends Controller
+final class MeController extends Controller
 {
     /**
      * Handle the incoming request.

@@ -14,11 +14,8 @@ use App\Models\UserEvent;
 use App\Repositories\UserRepository;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Laravel\Socialite\Socialite;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 final class AuthService extends Service
@@ -30,8 +27,8 @@ final class AuthService extends Service
 
     public function register(array $data): string
     {
-        return DB::transaction(function () use ($data) { 
-            
+        return DB::transaction(function () use ($data) {
+
             User::create($data);
 
             $token = JWTAuth::attempt(['email' => $data['email'], 'password' => $data['password']]);
@@ -41,7 +38,7 @@ final class AuthService extends Service
             }
 
             return $token;
-            
+
         });
     }
 
