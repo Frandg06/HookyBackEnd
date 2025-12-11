@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Customers\Auth\LoginController;
+use App\Http\Controllers\Customers\Auth\RegisterController;
 use App\Http\Controllers\Customers\Auth\SocialLoginController;
 use App\Http\Controllers\Customers\AuthController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/register', [AuthController::class, 'register'])->name('customer.register');
-Route::post('/login', [AuthController::class, 'login'])->name('customer.login');
+Route::post('/register', RegisterController::class)->name('customer.register');
+Route::post('/login', LoginController::class)->name('customer.login');
 Route::post('/social-login/{provider}', SocialLoginController::class)->name('customer.social.login');
 Route::post('/password/email', [AuthController::class, 'passwordReset'])->name('customer.password.email');
 Route::put('/password/reset', [AuthController::class, 'setNewPassword'])->name('customer.password.reset');
