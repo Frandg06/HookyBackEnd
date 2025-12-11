@@ -30,65 +30,33 @@ final class AuthService extends Service
 
     public function register(array $data): string
     {
-        DB::beginTransaction();
-        try {
-            $user = User::where('email', $data['email'])->first();
-
-            if ($user) {
-                throw new ApiException('user_exists', 409);
-            }
-
-            $user = User::create($data);
-
-            // if (filled($data['company_uid'])) {
-            //     [$user, $event] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
-            // }
-
-            // $diff = $this->getDiff($event ?? null);
+        return DB::transaction(function () use ($data) { 
+            
+            User::create($data);
 
             $token = JWTAuth::attempt(['email' => $data['email'], 'password' => $data['password']]);
-
-            DB::commit();
-
-            return $token;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-    }
-
-    public function login(array $data): string
-    {
-        DB::beginTransaction();
-        try {
-
-            $user = User::where('email', $data['email'])->first();
-
-            if (! $user) {
-                throw new ApiException('credentials_ko', 401);
-            }
-
-            if (! Hash::check($data['password'], $user->password)) {
-                throw new ApiException('credentials_ko', 401);
-            }
-
-            // if (filled($data['company_uid'])) {
-            //     [$user, $event] = $this->attachUserToCompanyEvent->execute($user, $data['company_uid']);
-            // }
-
-            $token = Auth::setTTL()->attempt(['email' => $data['email'], 'password' => $data['password']]);
 
             if (! $token) {
                 throw new ApiException('credentials_ko', 401);
             }
 
-            DB::commit();
+            return $token;
+            
+        });
+    }
+
+    public function login(array $data): string
+    {
+        return DB::transaction(function () use ($data) {
+
+            $token = JWTAuth::attempt(['email' => $data['email'], 'password' => $data['password']]);
+
+            if (! $token) {
+                throw new ApiException('credentials_ko', 401);
+            }
 
             return $token;
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
+        });
     }
 
     public function loginIntoEvent(string $event_uid): UserResource

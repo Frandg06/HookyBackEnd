@@ -25,22 +25,16 @@ final class RegisterRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:50'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'surnames' => ['required', 'string', 'max:50'],
-            'company_uid' => ['nullable', 'uuid', 'exists:companies,uid'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'name.required' => 'Name is required',
-            'email.required' => 'Email is required',
-            'email.email' => 'Email is invalid',
-            'password.required' => 'Password is required',
-            'password.min' => 'Password must be at least 8 characters',
-            'company_uid.required' => 'Es necesario registrarse/iniciar sesion desde el link que proporcionó la empresa',
+            'email.unique' => __('i18n.user_exists'),
         ];
     }
 }
