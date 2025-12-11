@@ -37,25 +37,6 @@ final class AuthController extends Controller
         $this->emailService = $emailService;
     }
 
-    /**
-     * Handle user registration.
-     */
-    public function register(RegisterRequest $request)
-    {
-        $data = $request->safe()->only('name', 'surnames', 'email', 'password', 'company_uid');
-        $response = $this->authService->register($data);
-
-        return response()->json(['success' => true, 'access_token' => $response], 200);
-    }
-
-    public function login(LoginRequest $request)
-    {
-        $credentials = $request->safe()->only('email', 'password', 'company_uid');
-        $response = $this->authService->login($credentials);
-
-        return response()->json(['success' => true, 'access_token' => $response], 200);
-    }
-
     public function loginIntoEvent(string $event_uid)
     {
         $response = $this->authService->loginIntoEvent($event_uid);
@@ -80,6 +61,7 @@ final class AuthController extends Controller
             'company'
         ])->toResource();
 
+        debug('hola');
         return response()->json(['resp' => $user, 'success' => true], 200);
     }
 
