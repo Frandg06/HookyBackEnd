@@ -44,26 +44,6 @@ final class AuthController extends Controller
         return $this->response($response);
     }
 
-    public function logout()
-    {
-        Auth::invalidate(true);
-        Auth::logout();
-
-        return response()->json(['success' => true, 'message' => __('i18n.logged_out')], 200);
-    }
-
-    public function me()
-    {
-        $user = user()->load([
-            'userImages',
-            'activeEvent',
-            'notifications',
-            'company'
-        ])->toResource();
-
-        return response()->json(['resp' => $user, 'success' => true], 200);
-    }
-
     public function passwordReset(Request $request)
     {
         $email = $request->email;

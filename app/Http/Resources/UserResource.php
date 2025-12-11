@@ -21,8 +21,8 @@ final class UserResource extends JsonResource
             'id' => $this->id,
             'uid' => $this->uid,
             'company' => [
-                'uid' => $this->company->uid,
-                'name' => $this->company->name,
+                'uid' => $this->company?->uid,
+                'name' => $this->company?->name,
             ],
             'event' => $this->when(
                 $this->event,
