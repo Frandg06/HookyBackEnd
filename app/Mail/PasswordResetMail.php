@@ -8,6 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Queue\SerializesModels;
 
 final class PasswordResetMail extends Mailable
@@ -25,7 +26,7 @@ final class PasswordResetMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Password Reset Mail',
+            subject: __('i18n.email_reset_password.subject'),
         );
     }
 
@@ -51,5 +52,18 @@ final class PasswordResetMail extends Mailable
     public function attachments(): array
     {
         return [];
+    }
+
+    /**
+     * Get the headers for the message.
+     * @return \Illuminate\Mail\Mailables\Headers
+     */
+    public function headers(): Headers
+    {
+        return new Headers(
+            text: [
+                'X-MT-Category' => 'Password Reset',
+            ],
+        );
     }
 }
