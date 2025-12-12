@@ -96,4 +96,6 @@ return [
     'user_not_login' => 'Tienes que iniciar sesión para poder continuar.',
     'authenticated_user' => 'Usuario autenticado correctamente.',
     'password_reset_success' => 'La contraseña ha sido restablecida correctamente.',
+    'events_retrieved_successfully' => 'Eventos obtenidos con éxito.',
+    'cities_retrieved_successfully' => 'Ciudades obtenidas con éxito.',
 ];

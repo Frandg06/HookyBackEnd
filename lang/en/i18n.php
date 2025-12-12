@@ -78,4 +78,6 @@ return [
     'limit_users_reached' => 'The event has reached the user limit.',
     'authenticated_user' => 'User authenticated successfully.',
     'password_reset_success' => 'The password has been reset successfully.',
+    'events_retrieved_successfully' => 'Events retrieved successfully.',
+    'cities_retrieved_successfully' => 'Cities retrieved successfully.',
 ];
