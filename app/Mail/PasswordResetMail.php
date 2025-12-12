@@ -56,7 +56,6 @@ final class PasswordResetMail extends Mailable
 
     /**
      * Get the headers for the message.
-     * @return \Illuminate\Mail\Mailables\Headers
      */
     public function headers(): Headers
     {
