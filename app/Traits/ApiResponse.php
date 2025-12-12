@@ -6,6 +6,14 @@ namespace App\Traits;
 
 trait ApiResponse
 {
+    /**
+     * Return a success JSON response.
+     * @param string $message
+     * @param mixed $data
+     * @param int $statusCode
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function successResponse(string $message, $data = [], int $statusCode = 200): \Illuminate\Http\JsonResponse
     {
         return response()->json([

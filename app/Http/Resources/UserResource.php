@@ -64,7 +64,11 @@ final class UserResource extends JsonResource
             'data_images' => $this->data_images,
             'complete_register' => $this->complete_register,
             'age' => $this->age,
-            'userImages' => $this->userImages,
+            'userImages' => $this->userImages->map(fn ($image) => [
+                'uid' => $image->uid,
+                'web_url' => env('CLOUDFLARE_BASE_URL') ."/". $image->web_url,
+                'order' => $image->order,
+            ]),
             'notifications' => [
                 ...$this->getNotificationsByType(),
             ],

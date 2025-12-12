@@ -11,6 +11,8 @@ use App\Http\Controllers\Customer\Auth\RegisterController;
 use App\Http\Controllers\Customer\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\Auth\SocialLoginController;
 use App\Http\Controllers\Customer\ChatController;
+use App\Http\Controllers\Customer\Event\GetEventsCityController;
+use App\Http\Controllers\Customer\Event\GetEventsController;
 use App\Http\Controllers\Customer\ImageController;
 use App\Http\Controllers\Customer\UserController;
 use App\Http\Controllers\TicketController;
@@ -33,6 +35,9 @@ Route::prefix('auth')->group(function () {
 Route::middleware(['auth:api', 'event'])->group(function () {
 
     Route::post('/user/complete', [UserController::class, 'completeRegisterData'])->withoutMiddleware('event');
+
+    Route::get('/event', GetEventsController::class)->withoutMiddleware('event');
+    Route::get('/event/cities', GetEventsCityController::class)->withoutMiddleware('event');
 
     Route::prefix('user')->group(function () {
         Route::put('/password', [UserController::class, 'updatePassword']);
