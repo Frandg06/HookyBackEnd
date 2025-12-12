@@ -115,14 +115,8 @@ final class AuthCompanyService extends Service
 
             $url = config('app.admin_url').'/password/new?token='.$password_token->token;
 
-            $template = view('emails.recovery_password_app', [
-                'link' => $url,
-                'name' => $company->name,
-            ])->render();
-
-            $emailService = new EmailService;
-            $emailService->sendEmail($company, __('i18n.password_reset_subject'), $template);
-
+            $email_service = new EmailService();
+            $email_service->sendPasswordResetEmail($company, $url);
             DB::commit();
 
             return true;
