@@ -34,6 +34,9 @@ final class CreateEventRequest extends FormRequest
             'st_hour' => 'required|date_format:H:i',
             'end_hour' => 'required|date_format:H:i',
             'code' => 'nullable|string|max:12',
+            'room_name' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'banner_image' => 'nullable|string|max:255',
         ];
     }
 }

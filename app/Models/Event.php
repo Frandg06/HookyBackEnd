@@ -29,7 +29,21 @@ final class Event extends Model
 
     protected $keyType = 'string';
 
-    protected $fillable = ['uid', 'st_date', 'end_date', 'company_uid', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'code'];
+    protected $fillable = [
+        'uid',
+        'st_date',
+        'end_date',
+        'company_uid',
+        'timezone',
+        'likes',
+        'super_likes',
+        'name',
+        'colors',
+        'code',
+        'room_name',
+        'city',
+        'banner_image',
+    ];
 
     protected $hidden = ['created_at', 'updated_at', 'id'];
 

@@ -115,4 +115,9 @@ final class EventFilter extends QueryFilter
                     );
             });
     }
+
+    public function city(string $value)
+    {
+        return $this->builder->whereRaw('LOWER(city) LIKE ?', ['%'.mb_strtolower($value).'%']);
+    }
 }
