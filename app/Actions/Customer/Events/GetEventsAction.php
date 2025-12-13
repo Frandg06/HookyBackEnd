@@ -33,6 +33,7 @@ final readonly class GetEventsAction
                         'room_name' => $event->room_name,
                         'city' => $event->city,
                         'banner_image' => $event->banner_image,
+                        'is_active' => $event->is_active,
                     ];
                 }),
                 'cities' => $events->pluck('city')->unique()->values(),
