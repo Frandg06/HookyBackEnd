@@ -17,6 +17,43 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+/**
+ * App\Models\User
+ *
+ * @property string $uid
+ * @property string $name
+ * @property string $surnames
+ * @property string $email
+ * @property string $password
+ * @property int $gender_id
+ * @property int $sexual_orientation_id
+ * @property int $role_id
+ * @property string|null $born_date
+ * @property string|null $description
+ * @property string|null $company_uid
+ * @property SocialProviders|null $provider_name
+ * @property string|null $provider_id
+ * @property bool $auto_password
+ * @property Carbon|null $email_verified_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Company|null $company
+ * @property-read int $age
+ * @property-read bool $complete_register
+ * @property-read bool $data_complete
+ * @property-read bool $data_images
+ * @property-read int $is_premium
+ * @property-read int $likes
+ * @property-read int $super_likes
+ * @property-read bool $auto_password
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Notification> $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Event> $events
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, UserImage> $userImages
+ * @property-read int|null $user_images_count
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereAny(array $columns, mixed $   value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereNot(string $column, mixed $value)
+ */
 final class User extends Authenticatable implements JWTSubject
 {
     use Filterable;
@@ -52,6 +89,7 @@ final class User extends Authenticatable implements JWTSubject
         'company_uid',
         'provider_name',
         'provider_id',
+        'auto_password',
     ];
 
     protected $hidden = [
@@ -75,6 +113,7 @@ final class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
         'provider_name' => SocialProviders::class,
+        'auto_password' => 'boolean',
     ];
 
     public static function whereTargetUsersFrom($auth)

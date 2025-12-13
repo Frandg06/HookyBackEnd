@@ -47,11 +47,12 @@ final class AuthUserService extends Service
     {
         DB::beginTransaction();
         try {
-            if (! Hash::check($data['old_password'], $this->user()->password)) {
+            if ($this->user()->auto_password === false && ! Hash::check($data['old_password'], $this->user()->password)) {
                 throw new ApiException('actual_password_ko', 400);
             }
 
             $this->user()->password = bcrypt($data['password']);
+            $this->user()->auto_password = false;
             $this->user()->save();
 
             DB::commit();

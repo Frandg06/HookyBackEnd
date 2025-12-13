@@ -15,6 +15,7 @@ use App\Http\Services\UserService;
 use App\Models\TargetUsers;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 final class UserController extends Controller
 {
@@ -60,8 +61,8 @@ final class UserController extends Controller
     public function updatePassword(Request $request)
     {
         $request->validate([
-            'old_password' => 'required',
             'password' => 'required|min:8|confirmed',
+            'old_password' => [Rule::requiredIf(fn () => user()->auto_password === false)],
         ]);
 
         $data = $request->only('old_password', 'password');

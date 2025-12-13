@@ -44,6 +44,7 @@ final class UserResource extends JsonResource
             'email' => $this->email,
             'born_date' => $this->born_date,
             'description' => $this->description,
+            'auto_password' => $this->auto_password,
             $this->mergeWhen($this->event, [
                 'like_credits' => $this->likes ?? 0,
                 'super_like_credits' => $this->super_likes ?? 0,

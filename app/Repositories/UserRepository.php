@@ -35,6 +35,7 @@ final class UserRepository
             'name' => $user->getName(),
             'email' => $user->getEmail(),
             'password' => bcrypt(uniqid()),
+            'auto_password' => true,
         ]);
     }
 
