@@ -51,6 +51,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Event> $events
  * @property-read \Illuminate\Database\Eloquent\Collection<int, UserImage> $userImages
  * @property-read int|null $user_images_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|User whereAny(array $columns, mixed $   value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereNot(string $column, mixed $value)
  */
@@ -186,7 +187,7 @@ final class User extends Authenticatable implements JWTSubject
 
     public function userImages(): HasMany
     {
-        return $this->hasMany(UserImage::class, 'user_uid', 'uid');
+        return $this->hasMany(UserImage::class, 'user_uid', 'uid')->orderBy('order', 'asc');
     }
 
     public function interactions(): HasMany

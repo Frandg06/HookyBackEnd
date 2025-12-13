@@ -10,8 +10,6 @@ use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-use function Symfony\Component\Clock\now;
-
 final readonly class GetEventsAction
 {
     /**

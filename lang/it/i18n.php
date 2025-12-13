@@ -82,4 +82,6 @@ return [
     'password_reset_success' => 'La password è stata reimpostata con successo.',
     'events_retrieved_successfully' => 'Eventi recuperati con successo.',
     'cities_retrieved_successfully' => 'Città recuperate con successo.',
+    'image_order_updated' => "Ordine dell'immagine aggiornato con successo.",
+    'image_order_limit' => "L'immagine è già al limite dell'ordine.",
 ];

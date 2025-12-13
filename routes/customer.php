@@ -13,6 +13,7 @@ use App\Http\Controllers\Customer\Auth\SocialLoginController;
 use App\Http\Controllers\Customer\ChatController;
 use App\Http\Controllers\Customer\Event\GetEventsCityController;
 use App\Http\Controllers\Customer\Event\GetEventsController;
+use App\Http\Controllers\Customer\Image\OrderImageController;
 use App\Http\Controllers\Customer\ImageController;
 use App\Http\Controllers\Customer\UserController;
 use App\Http\Controllers\TicketController;
@@ -45,6 +46,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/user/images/{uid}', [ImageController::class, 'update']);
     Route::delete('/user/images/{uid}', [ImageController::class, 'delete']);
     Route::delete('/user/images', [ImageController::class, 'deleteUserImages']);
+    Route::put('/user/images/{uid}/order', OrderImageController::class);
 
     Route::middleware('event')->group(function () {
         // Notifications routes

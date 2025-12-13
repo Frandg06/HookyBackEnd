@@ -80,4 +80,6 @@ return [
     'password_reset_success' => 'The password has been reset successfully.',
     'events_retrieved_successfully' => 'Events retrieved successfully.',
     'cities_retrieved_successfully' => 'Cities retrieved successfully.',
+    'image_order_updated' => 'Image order updated successfully.',
+    'image_order_limit' => 'The image is already at the order limit.',
 ];

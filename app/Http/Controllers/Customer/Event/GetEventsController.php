@@ -17,6 +17,7 @@ final class GetEventsController extends Controller
     public function __invoke(EventFilter $filter, EventOrdenator $order, GetEventsAction $action)
     {
         $response = $action->execute($filter, $order);
+
         return $this->successResponse(__('i18n.events_retrieved_successfully'), $response);
     }
 }

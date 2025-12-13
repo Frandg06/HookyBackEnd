@@ -82,4 +82,6 @@ return [
     'password_reset_success' => 'Das Passwort wurde erfolgreich zurückgesetzt.',
     'events_retrieved_successfully' => 'Veranstaltungen erfolgreich abgerufen.',
     'cities_retrieved_successfully' => 'Städte erfolgreich abgerufen.',
+    'image_order_updated' => 'Bildreihenfolge erfolgreich aktualisiert.',
+    'image_order_limit' => 'Das Bild ist bereits am Reihenfolgenlimit.',
 ];

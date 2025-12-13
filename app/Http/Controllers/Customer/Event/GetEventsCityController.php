@@ -16,6 +16,7 @@ final class GetEventsCityController extends Controller
     public function __invoke(GetEventsCityAction $action)
     {
         $response = $action->execute();
+
         return $this->successResponse(__('i18n.cities_retrieved_successfully'), $response);
     }
 }

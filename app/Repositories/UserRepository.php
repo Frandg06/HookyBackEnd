@@ -30,7 +30,7 @@ final class UserRepository
         $userModel = User::firstOrCreate(
             ['email' => $user->getEmail()],
             [
-                'name' => $user->getName() ?? $user->getNickname(),
+                'name' => $user->getName() ?? $user->getNickname() ?? 'No Name',
                 'password' => bcrypt(uniqid()),
                 'auto_password' => true,
             ]
