@@ -27,16 +27,21 @@ final class UserRepository
 
     public function updateOrCreateUserFromSocialLogin(TwoUser $user, string $provider): ?User
     {
-        return User::updateOrCreate([
-            'email' => $user->getEmail(),
-        ], [
+        $userModel = User::firstOrCreate(
+            ['email' => $user->getEmail()],
+            [
+                'name' => $user->getName() ?? $user->getNickname(),
+                'password' => bcrypt(uniqid()),
+                'auto_password' => true,
+            ]
+        );
+
+        $userModel->update([
             'provider_name' => $provider,
             'provider_id' => $user->getId(),
-            'name' => $user->getName(),
-            'email' => $user->getEmail(),
-            'password' => bcrypt(uniqid()),
-            'auto_password' => true,
         ]);
+
+        return $userModel->refresh();
     }
 
     public function getUserByEmail(string $email): ?User
