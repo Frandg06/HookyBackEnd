@@ -19,6 +19,12 @@ final class CheckEventIsActiveMiddleware
     {
         $user = $request->user();
 
+        $event = $user->event;
+
+        if (! $event) {
+            return response()->json(['error' => true, 'custom_message' => __('i18n.event_not_found'), 'redirect' => '/home'], 404);
+        }
+
         $tz = $user->event->timezone;
 
         $now = now($tz);

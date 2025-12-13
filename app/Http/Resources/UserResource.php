@@ -36,18 +36,6 @@ final class UserResource extends JsonResource
 
                 ]
             ),
-            'company_event' => $this->when(
-                ! $this->event && $this->event,
-                [
-                    'is_active' => $this->event?->is_active,
-                    'uid' => $this->event?->uid,
-                    'name' => $this->event?->name,
-                    'st_date' => $this->event?->st_date,
-                    'end_date' => $this->event?->end_date,
-                    'is_finished' => $this->event?->is_finished,
-
-                ]
-            ),
             'gender_id' => $this->gender_id,
             'sexual_orientation_id' => $this->sexual_orientation_id,
             'premium' => $this->role_id === Role::PREMIUM ? true : false,
@@ -66,8 +54,10 @@ final class UserResource extends JsonResource
             'age' => $this->age,
             'userImages' => $this->userImages->map(fn ($image) => [
                 'uid' => $image->uid,
-                'web_url' => env('CLOUDFLARE_BASE_URL') ."/". $image->web_url,
+                'name' => $image->name,
+                'web_url' => $image->web_url,
                 'order' => $image->order,
+                'type' => $image->type,
             ]),
             'notifications' => [
                 ...$this->getNotificationsByType(),

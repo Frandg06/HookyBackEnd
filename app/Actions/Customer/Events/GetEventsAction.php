@@ -7,7 +7,10 @@ namespace App\Actions\Customer\Events;
 use App\Http\Filters\EventFilter;
 use App\Http\Orders\EventOrdenator;
 use App\Models\Event;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+
+use function Symfony\Component\Clock\now;
 
 final readonly class GetEventsAction
 {
@@ -17,7 +20,7 @@ final readonly class GetEventsAction
     public function execute(EventFilter $filter, EventOrdenator $order)
     {
         return DB::transaction(function () use ($filter, $order) {
-            $events = Event::where('st_date', '>=', now()->toDateString())
+            $events = Event::where('end_date', '>', Carbon::now()->toDateTimeString())
                 ->filter($filter)
                 ->sort($order)
                 ->get();
