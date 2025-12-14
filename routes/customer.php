@@ -15,6 +15,7 @@ use App\Http\Controllers\Customer\Event\GetEventsCityController;
 use App\Http\Controllers\Customer\Event\GetEventsController;
 use App\Http\Controllers\Customer\Image\OrderImageController;
 use App\Http\Controllers\Customer\ImageController;
+use App\Http\Controllers\Customer\Stripe\MakeCheckoutController;
 use App\Http\Controllers\Customer\UserController;
 use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +48,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::delete('/user/images/{uid}', [ImageController::class, 'delete']);
     Route::delete('/user/images', [ImageController::class, 'deleteUserImages']);
     Route::put('/user/images/{uid}/order', OrderImageController::class);
+
+    Route::get('users/{price_id}/checkout', MakeCheckoutController::class)->name('customer.stripe.checkout');
 
     Route::middleware('event')->group(function () {
         // Notifications routes
