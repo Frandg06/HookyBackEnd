@@ -16,6 +16,7 @@ use App\Http\Controllers\Customer\Event\GetEventsController;
 use App\Http\Controllers\Customer\Image\OrderImageController;
 use App\Http\Controllers\Customer\ImageController;
 use App\Http\Controllers\Customer\Stripe\MakeCheckoutController;
+use App\Http\Controllers\Customer\Stripe\PaymentController;
 use App\Http\Controllers\Customer\UserController;
 use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +51,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::put('/user/images/{uid}/order', OrderImageController::class);
 
     Route::get('users/{price_id}/checkout', MakeCheckoutController::class)->name('customer.stripe.checkout');
+    Route::get('users/{sessionId}/payment', PaymentController::class)->name('customer.stripe.payment');
 
     Route::middleware('event')->group(function () {
         // Notifications routes

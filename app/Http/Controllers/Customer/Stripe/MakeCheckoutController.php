@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\Stripe;
 
+use App\Actions\Customer\Stripe\GetPaymentLinkAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\Stripe\MakeCheckoutRequest;
 use App\Http\Services\StripeService;
@@ -15,15 +16,11 @@ final class MakeCheckoutController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(#[CurrentUser] User $user, MakeCheckoutRequest $request, StripeService $stripeService)
+    public function __invoke(#[CurrentUser] User $user, MakeCheckoutRequest $request, GetPaymentLinkAction $action)
     {
         $price_id = $request->input('price_id');
+        $payment_url = $action->execute($user, $price_id);
 
-        $checkoutSession = $stripeService->createPayment([
-            'price_id' => $price_id,
-            'customer_email' => $user->email,
-        ]);
-
-        return $this->successResponse('checkout_session_created', $checkoutSession->url, 201);
+        return $this->successResponse('checkout_session_created', $payment_url, 201);
     }
 }

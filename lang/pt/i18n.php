@@ -85,4 +85,7 @@ return [
     'cities_retrieved_successfully' => 'Cidades obtidas com sucesso.',
     'image_order_updated' => 'Ordem da imagem atualizada com sucesso.',
     'image_order_limit' => 'A imagem já está no limite da ordem.',
+    'payment_not_completed' => 'O pagamento não foi concluído.',
+    'payment_intent_created' => 'Pagamento processado com sucesso.',
+    'user_already_premium' => 'O usuário já é premium.',
 ];

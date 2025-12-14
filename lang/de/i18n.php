@@ -85,4 +85,7 @@ return [
     'cities_retrieved_successfully' => 'Städte erfolgreich abgerufen.',
     'image_order_updated' => 'Bildreihenfolge erfolgreich aktualisiert.',
     'image_order_limit' => 'Das Bild ist bereits am Reihenfolgenlimit.',
+    'payment_not_completed' => 'Die Zahlung wurde nicht abgeschlossen.',
+    'payment_intent_created' => 'Zahlung erfolgreich verarbeitet.',
+    'user_already_premium' => 'Der Benutzer ist bereits Premium.',
 ];

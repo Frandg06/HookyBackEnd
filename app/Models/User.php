@@ -86,7 +86,6 @@ final class User extends Authenticatable implements JWTSubject
         'role_id',
         'born_date',
         'description',
-        'role_id',
         'company_uid',
         'provider_name',
         'provider_id',
@@ -222,6 +221,11 @@ final class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Ticket::class, 'user_uid', 'uid');
     }
 
+    public function vipPayments()
+    {
+        return $this->hasOne(VipPayment::class, 'user_uid', 'uid');
+    }
+
     public function getAgeAttribute(): int
     {
         return Carbon::parse($this->born_date)->age;
@@ -332,6 +336,11 @@ final class User extends Authenticatable implements JWTSubject
             'hook' => $unread->has(NotificationsType::HOOK_TYPE) ? $unread->get(NotificationsType::HOOK_TYPE)->count() : 0,
             'message' => $this->unread_chats,
         ];
+    }
+
+    public function scopeIsPremium()
+    {
+        return $this->role_id === Role::PREMIUM;
     }
 
     public function nextOrLastEvent()
