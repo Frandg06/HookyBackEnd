@@ -4,23 +4,32 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
-use DragonCode\Contracts\Queue\ShouldQueue;
+use App\Models\Event;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Queue\SerializesModels;
 
-final class PasswordResetMail extends Mailable implements ShouldQueue
+final class NotifyStarOfEventMail extends Mailable
 {
     use Queueable;
     use SerializesModels;
 
+    private Event $event;
+
+    private User $user;
+
     /**
      * Create a new message instance.
      */
-    public function __construct(public string $token, public string $name) {}
+    public function __construct(User $user, Event $event)
+    {
+        $this->user = $user;
+        $this->event = $event;
+    }
 
     /**
      * Get the message envelope.
@@ -28,7 +37,7 @@ final class PasswordResetMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: __('i18n.email_reset_password.subject'),
+            subject: __('i18n.email_event_starting.subject', ['eventname' => $this->event->name]),
         );
     }
 
@@ -38,10 +47,11 @@ final class PasswordResetMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'emails.recovery_password_app',
+            view: 'emails.notify_start_of_event',
             with: [
-                'link' => config('app.front_url').'/auth/password/new?token='.$this->token,
-                'name' => $this->name,
+                'event' => $this->event,
+                'user' => $this->user,
+                'link' => config('app.front_url', 'http://localhost:5173'),
             ],
         );
     }
@@ -54,17 +64,5 @@ final class PasswordResetMail extends Mailable implements ShouldQueue
     public function attachments(): array
     {
         return [];
-    }
-
-    /**
-     * Get the headers for the message.
-     */
-    public function headers(): Headers
-    {
-        return new Headers(
-            text: [
-                'X-MT-Category' => 'Password Reset',
-            ],
-        );
     }
 }

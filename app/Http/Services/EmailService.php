@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
+use App\Mail\NotifyStarOfEventMail;
 use App\Mail\PasswordResetMail;
+use App\Models\Event;
 use App\Models\User;
 use Exception;
 use Illuminate\Mail\SentMessage;
@@ -12,8 +14,6 @@ use Illuminate\Support\Facades\Mail as FacadesMail;
 
 final class EmailService
 {
-    private $sender;
-
     public function sendEmail($user, $subject, $template)
     {
 
@@ -36,8 +36,13 @@ final class EmailService
         // }
     }
 
-    public function sendPasswordResetEmail(User $user, string $token): SentMessage
+    public function sendPasswordResetEmail(User $user, string $token)
     {
-        return FacadesMail::to($user->email)->send(new PasswordResetMail($token, $user->name));
+        return FacadesMail::to($user->email)->queue(new PasswordResetMail($token, $user->name));
+    }
+
+    public function sendNotifyStartOfEventEmail(User $user, Event $event): SentMessage
+    {
+        return FacadesMail::to($user->email)->send(new NotifyStarOfEventMail($user, $event));
     }
 }

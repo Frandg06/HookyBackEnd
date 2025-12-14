@@ -88,4 +88,22 @@ return [
     'payment_not_completed' => 'Die Zahlung wurde nicht abgeschlossen.',
     'payment_intent_created' => 'Zahlung erfolgreich verarbeitet.',
     'user_already_premium' => 'Der Benutzer ist bereits Premium.',
+    'notification_scheduled' => 'Alles bereit! Wir benachrichtigen dich, wenn das Event gleich beginnt.',
+    'email_event_starting' => [
+      'subject' => ':eventname beginnt in 5 Minuten!',
+      'message_1' => '<p style="line-height: 140%; margin: 0px">
+        Hallo :name,<br /><br />
+        Mach dich bereit! Das Event <strong>:eventname</strong> fängt gleich an.<br /><br />
+        Wir erwarten dich in<strong> :location </strong>in nur 5 Minuten. 
+        Sei bereit einzutreten und die Nacht zu genießen.<br /><br />
+        Wir sehen uns dort!
+      </p>',
+      'button' => 'Event-Details ansehen',
+      'footer' => '<p style="font-size: 12px; text-align: center; margin-top: 20px;">
+        <strong>Hooky!</strong> - Vernetze dich mit Leuten im Club und finde neue Freunde, während du die Nacht genießt.<br />
+        Wenn du Fragen hast oder Hilfe benötigst, zögere nicht, unser Support-Team unter <a href="mailto:support@hooky.com">support@hooky.com</a> zu kontaktieren.<br /><br />
+        Dies ist eine automatische Nachricht, bitte antworte nicht auf diese E-Mail.<br />
+        <small>&copy; 2025 Hooky. Alle Rechte vorbehalten.</small>
+      </p>',
+],
 ];
