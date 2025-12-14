@@ -24,6 +24,6 @@ final class NotifyStartOfEventController extends Controller
     {
         $action->execute($user, $request->input('event_uid'));
 
-        return $this->successResponse('notification_scheduled');
+        return $this->successResponse('i18n.notification_scheduled');
     }
 }

@@ -40,6 +40,7 @@ Route::middleware(['auth:api'])->group(function () {
     // Event routes
     Route::get('/event', GetEventsController::class);
     Route::get('/event/cities', GetEventsCityController::class);
+    Route::post('/event/{uid}/notify', NotifyStartOfEventController::class);
 
     // User routes
     Route::post('/user/complete', [UserController::class, 'completeRegisterData']);
@@ -50,7 +51,6 @@ Route::middleware(['auth:api'])->group(function () {
     Route::delete('/user/images/{uid}', [ImageController::class, 'delete']);
     Route::delete('/user/images', [ImageController::class, 'deleteUserImages']);
     Route::put('/user/images/{uid}/order', OrderImageController::class);
-    Route::post('/user/notify-start', NotifyStartOfEventController::class);
 
     Route::get('users/{price_id}/checkout', MakeCheckoutController::class)->name('customer.stripe.checkout');
     Route::get('users/{sessionId}/payment', PaymentController::class)->name('customer.stripe.payment');

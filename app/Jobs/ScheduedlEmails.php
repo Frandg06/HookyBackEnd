@@ -8,12 +8,13 @@ use App\Http\Services\EmailService;
 use App\Models\Event;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-final class ScheduedlEmails implements ShouldQueue
+final class ScheduedlEmails implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -38,5 +39,16 @@ final class ScheduedlEmails implements ShouldQueue
     public function handle(): void
     {
         $this->emailService->sendNotifyStartOfEventEmail($this->user, $this->event);
+    }
+
+    public function uniqueId()
+    {
+        return 'user_' . $this->user->uid . '_event_' . $this->event->uid;
+    }
+
+    public function uniqueFor()
+    {
+        // Ejemplo: Mantener el bloqueo por 24 horas
+        return 60 * 60 * 24 * 365; // en milisegundos
     }
 }

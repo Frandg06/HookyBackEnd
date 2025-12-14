@@ -27,4 +27,11 @@ final class NotifyStartOfEventRequest extends FormRequest
             'event_uid' => ['required', 'string', 'exists:events,uid'],
         ];
     }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'event_uid' => $this->route('uid'),
+        ]);
+    }
 }
