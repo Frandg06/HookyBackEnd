@@ -90,20 +90,20 @@ return [
     'user_already_premium' => 'O usuário já é premium.',
     'notification_scheduled' => 'Tudo pronto! Vamos te avisar quando o evento estiver prestes a começar.',
     'email_event_starting' => [
-      'subject' => ':eventname começa em 5 minutos!',
-      'message_1' => '<p style="line-height: 140%; margin: 0px">
+        'subject' => ':eventname começa em 5 minutos!',
+        'message_1' => '<p style="line-height: 140%; margin: 0px">
         Olá :name,<br /><br />
         Prepara-te! O evento <strong>:eventname</strong> está prestes a começar.<br /><br />
         Esperamos por ti em<strong> :location </strong>em apenas 5 minutos. 
         Certifica-te de que estás pronto para entrar e aproveitar a noite.<br /><br />
         Vemo-nos lá!
       </p>',
-      'button' => 'Ver detalhes do evento',
-      'footer' => '<p style="font-size: 12px; text-align: center; margin-top: 20px;">
+        'button' => 'Ver detalhes do evento',
+        'footer' => '<p style="font-size: 12px; text-align: center; margin-top: 20px;">
         <strong>Hooky!</strong> - Conecta-te com pessoas na discoteca e faz novas amizades enquanto desfrutas da noite.<br />
         Se tiveres dúvidas ou precisares de ajuda, não hesites em contactar a nossa equipa de suporte em <a href="mailto:support@hooky.com">support@hooky.com</a>.<br /><br />
         Esta é uma mensagem automática, por favor não respondas a este e-mail.<br />
         <small>&copy; 2025 Hooky. Todos os direitos reservados.</small>
       </p>',
-],
+    ],
 ];

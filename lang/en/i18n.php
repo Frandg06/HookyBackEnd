@@ -88,16 +88,16 @@ return [
     'user_already_premium' => 'User is already premium.',
     'notification_scheduled' => 'All set! We will notify you when the event is about to start.',
     'email_event_starting' => [
-      'subject' => ':eventname starts in 5 minutes!',
-      'message_1' => '<p style="line-height: 140%; margin: 0px">
+        'subject' => ':eventname starts in 5 minutes!',
+        'message_1' => '<p style="line-height: 140%; margin: 0px">
         Hi :name,<br /><br />
         Get ready! The event <strong>:eventname</strong> is about to start.<br /><br />
         We expect you at<strong> :location </strong>in just 5 minutes. 
         Make sure you are ready to enter and enjoy the night.<br /><br />
         See you there!
       </p>',
-      'button' => 'View event details',
-      'footer' => '<p style="font-size: 12px; text-align: center; margin-top: 20px;">
+        'button' => 'View event details',
+        'footer' => '<p style="font-size: 12px; text-align: center; margin-top: 20px;">
         <strong>Hooky!</strong> - Connect with people inside the club and make new friends while enjoying the night.<br />
         If you have questions or need help, feel free to contact our support team at <a href="mailto:support@hooky.com">support@hooky.com</a>.<br /><br />
         This is an automated message, please do not reply to this email.<br />

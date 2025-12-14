@@ -36,10 +36,10 @@ final class CreateUsesrForEvent extends Command
             $eventUid = $this->option('uid');
             if (empty($eventUid)) {
                 $this->error('El parámetro --uid es requerido');
+
                 return Command::FAILURE;
             }
             $event = Event::where('uid', $eventUid)->firstOrFail();
-
 
             $count = (int) $this->option('count') ?? 20;
 

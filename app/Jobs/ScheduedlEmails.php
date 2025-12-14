@@ -43,7 +43,7 @@ final class ScheduedlEmails implements ShouldBeUnique, ShouldQueue
 
     public function uniqueId()
     {
-        return 'user_' . $this->user->uid . '_event_' . $this->event->uid;
+        return 'user_'.$this->user->uid.'_event_'.$this->event->uid;
     }
 
     public function uniqueFor()

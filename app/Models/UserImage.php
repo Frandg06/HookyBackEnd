@@ -18,7 +18,7 @@ final class UserImage extends Model
         'size',
         'type',
         'name',
-        'user_uid'
+        'user_uid',
     ];
 
     protected $visible = [

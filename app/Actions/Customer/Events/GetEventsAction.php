@@ -34,7 +34,7 @@ final readonly class GetEventsAction
                         'city' => $event->city,
                         'banner_image' => $event->banner_image,
                         'is_active' => $event->is_active,
-                        'is_sheduled' => !$event->is_active && !$event->is_finished,
+                        'is_sheduled' => ! $event->is_active && ! $event->is_finished,
                     ];
                 }),
                 'cities' => $events->pluck('city')->unique()->values(),

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 final readonly class GetPaymentLinkAction
 {
     public function __construct(private readonly StripeService $stripeService) {}
+
     /**
      * Execute the action.
      */

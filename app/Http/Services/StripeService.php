@@ -11,7 +11,9 @@ use Stripe\StripeClient;
 final class StripeService
 {
     private StripeClient $stripeClient;
+
     private string $successUrl;
+
     private string $failureUrl;
 
     public function __construct()

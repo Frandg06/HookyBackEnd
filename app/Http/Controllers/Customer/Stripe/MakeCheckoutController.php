@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Customer\Stripe;
 use App\Actions\Customer\Stripe\GetPaymentLinkAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\Stripe\MakeCheckoutRequest;
-use App\Http\Services\StripeService;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 

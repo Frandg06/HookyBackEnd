@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Customer\Stripe;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class CheckoutFailController extends Controller
+final class CheckoutFailController extends Controller
 {
     /**
      * Handle the incoming request.
