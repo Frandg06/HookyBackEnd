@@ -36,7 +36,7 @@ final class UserService extends Service
             $auth = $this->user();
             $cacheKey = 'target_users_uids_'.$auth->uid.'_'.$auth->event->uid;
             $cachedUids = Cache::get($cacheKey, []);
-            $needed = 50 - count($cachedUids);
+            $needed = 100 - count($cachedUids);
 
             if ($needed > 0) {
                 $targetUsers = User::whereTargetUsersFrom($auth)

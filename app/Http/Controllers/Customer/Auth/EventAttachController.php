@@ -8,6 +8,8 @@ use App\Actions\Customer\Auth\EventAttachAction;
 use App\Actions\Customer\Auth\MeAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\Auth\EventAttachRequest;
+use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -16,9 +18,8 @@ final class EventAttachController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(EventAttachRequest $request, EventAttachAction $eventAttachAction, MeAction $userAction): JsonResponse
+    public function __invoke(#[CurrentUser] User $user, EventAttachRequest $request, EventAttachAction $eventAttachAction, MeAction $userAction): JsonResponse
     {
-        $user = user();
         $event_uuid = $request->input('event_uid');
         $eventAttachAction->execute($user, $event_uuid);
         $userResource = $userAction->execute($user);

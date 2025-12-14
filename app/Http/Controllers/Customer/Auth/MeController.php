@@ -6,6 +6,8 @@ namespace App\Http\Controllers\Customer\Auth;
 
 use App\Actions\Customer\Auth\MeAction;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\Request;
 
 final class MeController extends Controller
@@ -13,8 +15,8 @@ final class MeController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(MeAction $action)
+    public function __invoke(#[CurrentUser] User $user, MeAction $action)
     {
-        return $this->successResponse('i18n.authenticated_user', $action->execute());
+        return $this->successResponse('i18n.authenticated_user', $action->execute($user));
     }
 }

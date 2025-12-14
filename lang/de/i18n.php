@@ -80,6 +80,7 @@ return [
     'limit_users_reached' => 'Das Event hat die maximale Anzahl an Teilnehmern erreicht.',
     'authenticated_user' => 'Benutzer erfolgreich authentifiziert.',
     'password_reset_success' => 'Das Passwort wurde erfolgreich zurückgesetzt.',
+    'user_not_login' => 'Sie müssen sich anmelden, um fortzufahren.',
     'events_retrieved_successfully' => 'Veranstaltungen erfolgreich abgerufen.',
     'cities_retrieved_successfully' => 'Städte erfolgreich abgerufen.',
     'image_order_updated' => 'Bildreihenfolge erfolgreich aktualisiert.',

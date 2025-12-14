@@ -28,11 +28,6 @@ abstract class Controller
         return $this->reponseChecked($data, $customRespKey, $code);
     }
 
-    final public function log($message = '', $data = [])
-    {
-        Log::debug($message, $data);
-    }
-
     private function reponseChecked($response, $customRespKey, $code)
     {
         if (isset($response['error']) && $response['error']) {

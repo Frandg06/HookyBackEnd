@@ -251,12 +251,12 @@ final class User extends Authenticatable implements JWTSubject
 
     public function getLikesAttribute(): int
     {
-        return $this->activeEvent->first()?->likes ?? 0;
+        return $this->activeEvent->first()?->pivot->likes ?? 0;
     }
 
     public function getSuperLikesAttribute(): int
     {
-        return $this->activeEvent->first()?->super_likes ?? 0;
+        return $this->activeEvent->first()?->pivot->super_likes ?? 0;
     }
 
     public function scopeChats()
@@ -315,9 +315,7 @@ final class User extends Authenticatable implements JWTSubject
             Interaction::SUPER_LIKE_ID => 'super_likes',
         };
 
-        $this->events()->updateExistingPivot($this->event?->uid, [
-            $name => max(0, $this->likes - 1),
-        ]);
+        $this->activeEvent->first()?->pivot->decrement($name);
     }
 
     public function scopeGetNotificationsByType()

@@ -75,7 +75,6 @@ final class TicketService extends Service
             return EventResource::make($event->refresh());
         } catch (Throwable $e) {
             DB::rollBack();
-            $this->logError($e, __CLASS__, __FUNCTION__);
             throw $e;
         }
     }

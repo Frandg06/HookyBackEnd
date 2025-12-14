@@ -18,13 +18,12 @@ final class CheckCreditsMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $authUser = user()->event;
         $interaction = $request->interactionId;
         $error = null;
-
-        if ($interaction === Interaction::LIKE_ID && $authUser->likes < 1) {
+        debug('Checking credits for interaction '.$interaction.' for user '.$request->user()->likes);
+        if ($interaction === Interaction::LIKE_ID && $request->user()->likes < 1) {
             $error = true;
-        } elseif ($interaction === Interaction::SUPER_LIKE_ID && $authUser->super_likes < 1) {
+        } elseif ($interaction === Interaction::SUPER_LIKE_ID && $request->user()->super_likes < 1) {
             $error = true;
         }
 

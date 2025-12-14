@@ -78,6 +78,7 @@ return [
     'limit_users_reached' => 'The event has reached the user limit.',
     'authenticated_user' => 'User authenticated successfully.',
     'password_reset_success' => 'The password has been reset successfully.',
+    'user_not_login' => 'You must log in to continue.',
     'events_retrieved_successfully' => 'Events retrieved successfully.',
     'cities_retrieved_successfully' => 'Cities retrieved successfully.',
     'image_order_updated' => 'Image order updated successfully.',

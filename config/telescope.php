@@ -177,7 +177,7 @@ return [
         Watchers\JobWatcher::class => env('TELESCOPE_JOB_WATCHER', true),
 
         Watchers\LogWatcher::class => [
-            'enabled' => env('TELESCOPE_LOG_WATCHER', true),
+            'enabled' => true,
             'level' => 'info',
         ],
 

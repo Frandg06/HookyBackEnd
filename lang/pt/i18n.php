@@ -80,6 +80,7 @@ return [
     'limit_users_reached' => 'O evento atingiu o limite de usuários.',
     'authenticated_user' => 'Usuário autenticado com sucesso.',
     'password_reset_success' => 'A senha foi redefinida com sucesso.',
+    'user_not_login' => 'Você precisa fazer login para continuar.',
     'events_retrieved_successfully' => 'Eventos obtidos com sucesso.',
     'cities_retrieved_successfully' => 'Cidades obtidas com sucesso.',
     'image_order_updated' => 'Ordem da imagem atualizada com sucesso.',
