@@ -21,7 +21,7 @@ final class EventAttachByCompanyController extends Controller
     {
         $event = $eventAction->execute($request->input('company_uid'));
 
-        $eventAttachAction->execute($user, $event->uid);
+        $eventAttachAction->execute($user->uid, $event->uid);
 
         return $this->successResponse('i18n.event_attached_by_company');
     }

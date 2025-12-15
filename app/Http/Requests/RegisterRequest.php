@@ -28,6 +28,7 @@ final class RegisterRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'surnames' => ['required', 'string', 'max:50'],
+            'company_uid' => ['nullable', 'uuid', 'exists:companies,uid'],
         ];
     }
 
