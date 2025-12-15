@@ -28,6 +28,9 @@ Route::post('/auth/register', RegisterController::class)->name('customer.registe
 Route::post('/auth/login', LoginController::class)->name('customer.login');
 Route::post('/auth/social-login/{provider}', SocialLoginController::class)->name('customer.social.login');
 
+Route::get('/event', GetEventsController::class);
+Route::get('/event/cities', GetEventsCityController::class);
+
 // Password reset routes
 Route::post('/auth/forgot-password', PasswordResetTokenController::class)->name('customer.password.email');
 Route::put('/auth/reset-password/{token}', ResetPasswordController::class)->name('customer.password.reset');
@@ -40,8 +43,6 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('auth/me', MeController::class)->name('customer.me');
 
     // Event routes
-    Route::get('/event', GetEventsController::class);
-    Route::get('/event/cities', GetEventsCityController::class);
     Route::post('/event/{uid}/notify', NotifyStartOfEventController::class);
 
     // User routes
