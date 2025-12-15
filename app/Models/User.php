@@ -325,7 +325,12 @@ final class User extends Authenticatable implements JWTSubject
     public function scopeGetNotificationsByType()
     {
         if (! $this->event) {
-            return [];
+            return [
+                'like' => 0,
+                'superlike' => 0,
+                'hook' => 0,
+                'message' => 0,
+            ];
         }
 
         $unread = $this->notifications->where('read_at', null)->groupBy('type_id');

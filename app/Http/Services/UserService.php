@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
+use App\Events\LikeNotificationEvent;
+use App\Events\SuperlikeNotificationEvent;
 use App\Exceptions\ApiException;
 use App\Http\Resources\TargetUserResource;
 use App\Models\Interaction;
@@ -69,11 +71,11 @@ final class UserService extends Service
             $user = $this->user();
             $eventUid = $user->event->uid;
             $authUid = $user->uid;
-            $targetUserUid = $uid;
+            $target_user = User::find($uid);
 
             TargetUsers::create([
                 'user_uid' => $authUid,
-                'target_user_uid' => $targetUserUid,
+                'target_user_uid' => $target_user->uid,
                 'event_uid' => $eventUid,
                 'interaction_id' => $interaction,
             ]);
@@ -82,17 +84,19 @@ final class UserService extends Service
             $this->user()->decrementInteraction($interaction);
 
             // Compruebo si es un hook
-            $isHook = TargetUsers::isHook($targetUserUid, $authUid, $eventUid)->exists();
+            $isHook = TargetUsers::isHook($target_user->uid, $authUid, $eventUid)->exists();
 
             if ($isHook) {
-                $this->handleHook($authUid, $targetUserUid, $eventUid, $chat);
-            } elseif (in_array($interaction, [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])) {
-                $this->handleLike($interaction, $authUid, $targetUserUid);
+                $this->handleHook($authUid, $target_user->uid, $eventUid, $chat);
+            } elseif ($interaction === Interaction::LIKE_ID) {
+                LikeNotificationEvent::dispatch($user, $target_user);
+            } elseif ($interaction === Interaction::SUPER_LIKE_ID) {
+                SuperlikeNotificationEvent::dispatch($user, $target_user, 'super_like');
             }
 
             $cacheKey = 'target_users_uids_'.$authUid.'_'.$eventUid;
             $cachedUids = Cache::get($cacheKey, []);
-            $filtered = collect($cachedUids)->reject(fn ($cachedUid) => $cachedUid === $targetUserUid)->values();
+            $filtered = collect($cachedUids)->reject(fn ($cachedUid) => $cachedUid === $target_user->uid)->values();
             Cache::put($cacheKey, $filtered->toArray());
 
             $response = [
