@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Customer\Auth;
 
 use App\Actions\Customer\Auth\EventAttachAction;
 use App\Actions\Customer\Auth\SocialLoginAction;
+use App\Exceptions\ApiException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SocialLoginRequest;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -21,7 +22,11 @@ final class SocialLoginController extends Controller
         $result = $action->execute($accessToken, $provider);
 
         if ($request->filled('event_uid')) {
-            $attachEventAction->execute(JWTAuth::user()->uid, $request->input('event_uid'));
+            try {
+                $attachEventAction->execute(JWTAuth::user()->uid, $request->input('event_uid'));
+            } catch (ApiException $e) {
+                // Do nothing if event attachment fails
+            }
         }
 
         return $this->successResponse('Social login successful', ['access_token' => $result]);
