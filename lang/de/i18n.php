@@ -89,6 +89,8 @@ return [
     'payment_intent_created' => 'Zahlung erfolgreich verarbeitet.',
     'user_already_premium' => 'Der Benutzer ist bereits Premium.',
     'notification_scheduled' => 'Alles bereit! Wir benachrichtigen dich, wenn das Event gleich beginnt.',
+    'event_attached_by_company' => 'Du bist dem Firmenevent erfolgreich beigetreten.',
+    'link_not_valid' => 'Der Link, über den du zugegriffen hast, ist nicht gültig.',
     'email_event_starting' => [
         'subject' => ':eventname beginnt in 5 Minuten!',
         'message_1' => '<p style="line-height: 140%; margin: 0px">

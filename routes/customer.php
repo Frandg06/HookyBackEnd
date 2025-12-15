@@ -11,6 +11,7 @@ use App\Http\Controllers\Customer\Auth\RegisterController;
 use App\Http\Controllers\Customer\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\Auth\SocialLoginController;
 use App\Http\Controllers\Customer\ChatController;
+use App\Http\Controllers\Customer\Event\EventAttachByCompanyController;
 use App\Http\Controllers\Customer\Event\GetEventsCityController;
 use App\Http\Controllers\Customer\Event\GetEventsController;
 use App\Http\Controllers\Customer\Image\OrderImageController;
@@ -34,6 +35,7 @@ Route::put('/auth/reset-password/{token}', ResetPasswordController::class)->name
 Route::middleware(['auth:api'])->group(function () {
     // Auth routes
     Route::post('auth/login/{event_uid}', EventAttachController::class)->name('customer.login.event');
+    Route::post('auth/login/{uid}/company', EventAttachByCompanyController::class)->name('customer.login.event.company');
     Route::post('auth/logout', LogoutController::class)->name('customer.logout');
     Route::get('auth/me', MeController::class)->name('customer.me');
 

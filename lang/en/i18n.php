@@ -87,6 +87,8 @@ return [
     'payment_intent_created' => 'Payment processed successfully.',
     'user_already_premium' => 'User is already premium.',
     'notification_scheduled' => 'All set! We will notify you when the event is about to start.',
+    'event_attached_by_company' => 'You have successfully joined the company event.',
+    'link_not_valid' => 'The link you have accessed is not valid.',
     'email_event_starting' => [
         'subject' => ':eventname starts in 5 minutes!',
         'message_1' => '<p style="line-height: 140%; margin: 0px">
