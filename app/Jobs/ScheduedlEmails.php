@@ -48,7 +48,6 @@ final class ScheduedlEmails implements ShouldBeUnique, ShouldQueue
 
     public function uniqueFor()
     {
-        // Ejemplo: Mantener el bloqueo por 24 horas
-        return 60 * 60 * 24 * 365; // en milisegundos
+        return 60 * 60 * 24 * 365;
     }
 }
