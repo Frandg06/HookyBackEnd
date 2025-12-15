@@ -12,6 +12,7 @@ use App\Http\Services\AuthUserService;
 use App\Http\Services\ImagesService;
 use App\Http\Services\NotificationService;
 use App\Http\Services\UserService;
+use App\Models\Interaction;
 use App\Models\TargetUsers;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -95,7 +96,20 @@ final class UserController extends Controller
     public function getUserToConfirm(Request $request, $uid)
     {
         $user = $this->user();
-        // todo obtener todas las interacciones del usuario hacia el autenticado y luego filtrar por tipo
+
+        $isConfirm = TargetUsers::where('user_uid', $user->uid)
+            ->where('target_user_uid', $uid)
+            ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
+            ->where('event_uid', $user->event->uid)
+            ->exists();
+
+        if ($isConfirm) {
+            return response()->json([
+                'error' => true,
+                'custom_message' => __('i18n.not_aviable_user'),
+                'redirect' => '/home',
+            ], 403);
+        }
 
         $isLike = TargetUsers::checkIsLike($uid, $user);
 
@@ -106,7 +120,7 @@ final class UserController extends Controller
                 'error' => true,
                 'message' => __('i18n.not_aviable_user'),
                 'redirect' => '/home',
-            ], 401);
+            ], 403);
         }
 
         if (! $isLike && ! $isSuperlike) {
@@ -114,7 +128,7 @@ final class UserController extends Controller
                 'error' => true,
                 'message' => __('i18n.not_aviable_user'),
                 'redirect' => '/home',
-            ], 401);
+            ], 403);
         }
 
         $user = User::where('uid', $uid)->first();

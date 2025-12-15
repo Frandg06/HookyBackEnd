@@ -20,7 +20,11 @@ final class CheckCreditsMiddleware
     {
         $interaction = $request->interactionId;
         $error = null;
-        debug('Checking credits for interaction '.$interaction.' for user '.$request->user()->likes);
+
+        if ($request->user()->isPremium()) {
+            return $next($request);
+        }
+
         if ($interaction === Interaction::LIKE_ID && $request->user()->likes < 1) {
             $error = true;
         } elseif ($interaction === Interaction::SUPER_LIKE_ID && $request->user()->super_likes < 1) {

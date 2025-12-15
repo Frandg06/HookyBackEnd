@@ -310,7 +310,7 @@ final class User extends Authenticatable implements JWTSubject
 
     public function decrementInteraction(int $interaction): void
     {
-        if ($interaction === Interaction::DISLIKE_ID) {
+        if ($interaction === Interaction::DISLIKE_ID || $this->isPremium()) {
             return;
         }
 
