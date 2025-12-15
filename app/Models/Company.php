@@ -49,9 +49,9 @@ final class Company extends Authenticatable implements JWTSubject
         return $this->hasMany(Ticket::class, 'company_uid', 'uid');
     }
 
-    public function getlinkAttribute()
+    public function getLinkAttribute()
     {
-        return config('app.front_url').'?t='.$this->uid;
+        return config('app.front_url').'/event?c='.$this->uid;
     }
 
     public function timezone(): BelongsTo

@@ -183,6 +183,11 @@ final class Event extends Model
             ->whereDay('st_date', $date->day);
     }
 
+    public function getLinkAttribute()
+    {
+        return config('app.front_url').'/event?e='.$this->uid;
+    }
+
     public function getTotalUsersAttribute()
     {
         return $this->users2()->count();

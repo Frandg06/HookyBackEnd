@@ -50,7 +50,7 @@ final class NotifyStarOfEventMail extends Mailable
             with: [
                 'event' => $this->event,
                 'user' => $this->user,
-                'link' => config('app.front_url', 'http://localhost:5173'),
+                'link' => $this->event->link,
             ],
         );
     }
