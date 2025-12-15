@@ -22,7 +22,7 @@ final readonly class PaymentAction
                 throw new ApiException('payment_not_completed', 422);
             }
             $user->vipPayments()->create([
-                'stripe_payment_id' => $session->payment_intent,
+                'stripe_payment_id' => $session->id,
             ]);
 
             $user->update(['role_id' => Role::PREMIUM]);

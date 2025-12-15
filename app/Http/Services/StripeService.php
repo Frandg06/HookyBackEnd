@@ -40,6 +40,7 @@ final class StripeService
             'customer_email' => $data['customer_email'] ?? null,
             'success_url' => $this->successUrl,
             'cancel_url' => $this->failureUrl,
+            'allow_promotion_codes' => true,
         ]);
     }
 
@@ -55,6 +56,7 @@ final class StripeService
             'customer_email' => $data['customer_email'] ?? null,
             'success_url' => $this->successUrl,
             'cancel_url' => $this->failureUrl,
+            'allow_promotion_codes' => true,
         ]);
     }
 
