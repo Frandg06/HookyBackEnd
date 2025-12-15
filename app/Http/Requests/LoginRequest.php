@@ -26,7 +26,7 @@ final class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email', 'max:255', 'exists:users,email'],
             'password' => ['required', 'string'],
-            'company_uid' => ['nullable', 'uuid', 'exists:companies,uid'],
+            'event_uid' => ['nullable', 'uuid', 'exists:events,uid'],
         ];
     }
 

@@ -28,7 +28,7 @@ final class SocialLoginRequest extends FormRequest
         return [
             'access_token' => ['required', 'string'],
             'provider' => ['required', 'string', Rule::enum(SocialProviders::class)],
-            'company_uid' => ['nullable', 'uuid', 'exists:companies,uid'],
+            'event_uid' => ['nullable', 'uuid', 'exists:events,uid'],
         ];
     }
 

@@ -120,4 +120,9 @@ final class EventFilter extends QueryFilter
     {
         return $this->builder->whereRaw('LOWER(city) LIKE ?', ['%'.mb_strtolower($value).'%']);
     }
+
+    public function company(string $value)
+    {
+        return $this->builder->where('company_uid', $value);
+    }
 }
