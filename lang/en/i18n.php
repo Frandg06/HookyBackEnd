@@ -76,5 +76,34 @@ return [
     'not_aviable_user' => 'You do not have permission to view this user.',
     'event_not_active_or_next' => 'There is no active or upcoming event.',
     'limit_users_reached' => 'The event has reached the user limit.',
-
+    'authenticated_user' => 'User authenticated successfully.',
+    'password_reset_success' => 'The password has been reset successfully.',
+    'user_not_login' => 'You must log in to continue.',
+    'events_retrieved_successfully' => 'Events retrieved successfully.',
+    'cities_retrieved_successfully' => 'Cities retrieved successfully.',
+    'image_order_updated' => 'Image order updated successfully.',
+    'image_order_limit' => 'The image is already at the order limit.',
+    'payment_not_completed' => 'Payment has not been completed.',
+    'payment_intent_created' => 'Payment processed successfully.',
+    'user_already_premium' => 'User is already premium.',
+    'notification_scheduled' => 'All set! We will notify you when the event is about to start.',
+    'event_attached_by_company' => 'You have successfully joined the company event.',
+    'link_not_valid' => 'The link you have accessed is not valid.',
+    'email_event_starting' => [
+        'subject' => ':eventname starts in 5 minutes!',
+        'message_1' => '<p style="line-height: 140%; margin: 0px">
+        Hi :name,<br /><br />
+        Get ready! The event <strong>:eventname</strong> is about to start.<br /><br />
+        We expect you at<strong> :location </strong>in just 5 minutes. 
+        Make sure you are ready to enter and enjoy the night.<br /><br />
+        See you there!
+      </p>',
+        'button' => 'View event details',
+        'footer' => '<p style="font-size: 12px; text-align: center; margin-top: 20px;">
+        <strong>Hooky!</strong> - Connect with people inside the club and make new friends while enjoying the night.<br />
+        If you have questions or need help, feel free to contact our support team at <a href="mailto:support@hooky.com">support@hooky.com</a>.<br /><br />
+        This is an automated message, please do not reply to this email.<br />
+        <small>&copy; 2025 Hooky. All rights reserved.</small>
+      </p>',
+    ],
 ];

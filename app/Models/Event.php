@@ -14,6 +14,48 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * App\Models\Event
+ *
+ * @property string $uid
+ * @property string $st_date
+ * @property string $end_date
+ * @property string $company_uid
+ * @property string $timezone
+ * @property int $likes
+ * @property int $super_likes
+ * @property string $name
+ * @property array|null $colors
+ * @property string $code
+ * @property string $room_name
+ * @property string $city
+ * @property string|null $banner_image
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read Company $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Chat> $chats
+ * @property-read int|null $chats_count
+ * @property-read bool $is_active
+ * @property-read bool $is_finished
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Notification> $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Ticket> $tickets
+ * @property-read int|null $tickets_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, UserEvent> $users
+ * @property-read int|null $users_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|Event activeEvent($timezone)
+ * @method static \Illuminate\Database\Eloquent\Builder|Event activeOrNextEvent($timezone)
+ * @method static \Illuminate\Database\Eloquent\Builder|Event eventInSameDay($date)
+ * @method static \Illuminate\Database\Eloquent\Builder|Event firstNextEvent($tz)
+ * @method static \Illuminate\Database\Eloquent\Builder|Event lastEvent($timezone)
+ * @method static \Illuminate\Database\Eloquent\Builder|Event nextMontEvents()
+ * @method static \Illuminate\Database\Eloquent\Builder|Event filter(\App\Http\Filters\BaseFilter $filter)
+ * @method static \Illuminate\Database\Eloquent\Builder|Event sort(\App\Http\Orders\BaseOrdenator $order)
+ * @method static \Illuminate\Database\Eloquent\Builder|Event newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Event newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Event query()
+ */
 final class Event extends Model
 {
     use Filterable;
@@ -29,7 +71,21 @@ final class Event extends Model
 
     protected $keyType = 'string';
 
-    protected $fillable = ['uid', 'st_date', 'end_date', 'company_uid', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'code'];
+    protected $fillable = [
+        'uid',
+        'st_date',
+        'end_date',
+        'company_uid',
+        'timezone',
+        'likes',
+        'super_likes',
+        'name',
+        'colors',
+        'code',
+        'room_name',
+        'city',
+        'banner_image',
+    ];
 
     protected $hidden = ['created_at', 'updated_at', 'id'];
 

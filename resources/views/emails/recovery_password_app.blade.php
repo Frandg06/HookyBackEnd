@@ -151,7 +151,7 @@ table, td { color: #000000; } @media (max-width: 480px) { #u_column_2 .v-col-bor
       <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px 10px 10px 40px;font-family:'Raleway',sans-serif;" align="left">
         
 <div class="v-text-align" align="left">
-    <a href="{{$link}}" target="_blank" class="v-button v-size-width" style="box-sizing: border-box; display: inline-block; text-decoration: none; text-size-adjust: none; text-align: center; color: rgb(0, 0, 0); background: rgb(255, 194, 94); border-radius: 0px; width: 42%; max-width: 100%; word-break: break-word; overflow-wrap: break-word; font-size: 14px; line-height: inherit; margin-bottom: 10px;"><span style="display:block;padding:10px 20px;line-height:120%;">Restablecer la contraseña</span>
+    <a href="{{$link}}" target="_blank" class="v-button v-size-width" style="box-sizing: border-box; display: inline-block; text-decoration: none; text-size-adjust: none; text-align: center; color: rgb(0, 0, 0); background: rgb(255, 194, 94); border-radius: 0px; width: 42%; max-width: 100%; word-break: break-word; overflow-wrap: break-word; font-size: 14px; line-height: inherit; margin-bottom: 10px;"><span style="display:block;padding:10px 20px;line-height:120%;">{{ __('i18n.password_reset_subject') }}</span>
     </a>
 </div>
 

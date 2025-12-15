@@ -31,7 +31,6 @@ final class CompanyService extends Service
             return AuthCompanyResource::make($company);
         } catch (Throwable $e) {
             DB::rollBack();
-            $this->log($e, __CLASS__, __FUNCTION__);
             throw $e;
         }
     }

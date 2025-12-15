@@ -7,7 +7,6 @@ namespace App\Http\Controllers;
 use App\Models\Company;
 use App\Models\User;
 use App\Traits\ApiResponse;
-use Illuminate\Support\Facades\Log;
 
 abstract class Controller
 {
@@ -26,11 +25,6 @@ abstract class Controller
     final public function response($data, $customRespKey = 'resp', $code = 200)
     {
         return $this->reponseChecked($data, $customRespKey, $code);
-    }
-
-    final public function log($message = '', $data = [])
-    {
-        Log::debug($message, $data);
     }
 
     private function reponseChecked($response, $customRespKey, $code)

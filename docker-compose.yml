@@ -1,38 +1,4 @@
 services:
-    nginx_service:
-        container_name: nginx_container_hooky
-        image: nginx:stable
-        depends_on:
-            - php_service
-        restart: unless-stopped
-        volumes:
-            - ./devops/nginx_default.template:/etc/nginx/templates/default.conf.template
-            - ./:/var/www/html
-        ports:
-            - 8090:80
-        environment:
-            NGINX_HOST: php_container_hooky
-        extra_hosts:
-            - host.docker.internal:172.17.0.1
-
-    php_service:
-        container_name: php_container_hooky
-        build:
-            context: ./
-            dockerfile: Dockerfile
-        working_dir: /var/www/html
-        restart: unless-stopped
-        volumes:
-            - ./devops/php_fpm.conf:/usr/local/etc/php-fpm.d/www.conf
-            - ./:/var/www/html
-        extra_hosts:
-            - host.docker.internal:172.17.0.1
-        command: >
-            bash -c "if [ ! -d vendor ]; then 
-                composer install && php artisan migrate && php artisan jwt:secret && php artisan key:generate; 
-            else 
-                php artisan migrate && php artisan jwt:secret && php artisan key:generate; 
-            fi && php-fpm -R"
     hooky_db_container:
         image: postgres:16.2
         container_name: hooky_db_container
@@ -48,4 +14,3 @@ services:
 
 volumes:
     hooky_db_container: {}
-    

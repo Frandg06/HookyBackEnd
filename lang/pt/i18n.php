@@ -78,5 +78,34 @@ return [
     'not_aviable_user' => 'Você não tem permissão para ver este usuário.',
     'event_not_active_or_next' => 'Não há nenhum evento ativo ou próximo.',
     'limit_users_reached' => 'O evento atingiu o limite de usuários.',
-
+    'authenticated_user' => 'Usuário autenticado com sucesso.',
+    'password_reset_success' => 'A senha foi redefinida com sucesso.',
+    'user_not_login' => 'Você precisa fazer login para continuar.',
+    'events_retrieved_successfully' => 'Eventos obtidos com sucesso.',
+    'cities_retrieved_successfully' => 'Cidades obtidas com sucesso.',
+    'image_order_updated' => 'Ordem da imagem atualizada com sucesso.',
+    'image_order_limit' => 'A imagem já está no limite da ordem.',
+    'payment_not_completed' => 'O pagamento não foi concluído.',
+    'payment_intent_created' => 'Pagamento processado com sucesso.',
+    'user_already_premium' => 'O usuário já é premium.',
+    'notification_scheduled' => 'Tudo pronto! Vamos te avisar quando o evento estiver prestes a começar.',
+    'event_attached_by_company' => 'Você entrou no evento da empresa com sucesso.',
+    'link_not_valid' => 'O link pelo qual você acessou não é válido.',
+    'email_event_starting' => [
+        'subject' => ':eventname começa em 5 minutos!',
+        'message_1' => '<p style="line-height: 140%; margin: 0px">
+        Olá :name,<br /><br />
+        Prepara-te! O evento <strong>:eventname</strong> está prestes a começar.<br /><br />
+        Esperamos por ti em<strong> :location </strong>em apenas 5 minutos. 
+        Certifica-te de que estás pronto para entrar e aproveitar a noite.<br /><br />
+        Vemo-nos lá!
+      </p>',
+        'button' => 'Ver detalhes do evento',
+        'footer' => '<p style="font-size: 12px; text-align: center; margin-top: 20px;">
+        <strong>Hooky!</strong> - Conecta-te com pessoas na discoteca e faz novas amizades enquanto desfrutas da noite.<br />
+        Se tiveres dúvidas ou precisares de ajuda, não hesites em contactar a nossa equipa de suporte em <a href="mailto:support@hooky.com">support@hooky.com</a>.<br /><br />
+        Esta é uma mensagem automática, por favor não respondas a este e-mail.<br />
+        <small>&copy; 2025 Hooky. Todos os direitos reservados.</small>
+      </p>',
+    ],
 ];

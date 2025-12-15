@@ -78,5 +78,34 @@ return [
     'not_aviable_user' => "Vous n'avez pas la permission de voir cet utilisateur.",
     'event_not_active_or_next' => 'Il n’y a aucun événement actif ou à venir.',
     'limit_users_reached' => 'L’événement a atteint la limite d’utilisateurs.',
-
+    'authenticated_user' => 'Utilisateur authentifié avec succès.',
+    'password_reset_success' => 'Le mot de passe a été réinitialisé avec succès.',
+    'user_not_login' => 'Vous devez vous connecter pour continuer.',
+    'events_retrieved_successfully' => 'Événements récupérés avec succès.',
+    'cities_retrieved_successfully' => 'Villes récupérées avec succès.',
+    'image_order_updated' => "Ordre de l'image mis à jour avec succès.",
+    'image_order_limit' => "L'image est déjà à la limite de l'ordre.",
+    'payment_not_completed' => "Le paiement n'a pas été effectué.",
+    'payment_intent_created' => 'Paiement traité avec succès.',
+    'user_already_premium' => "L'utilisateur est déjà premium.",
+    'notification_scheduled' => 'Tout est prêt ! Nous te préviendrons lorsque l’événement sera sur le point de commencer.',
+    'event_attached_by_company' => 'Tu as rejoint l’événement de l’entreprise avec succès.',
+    'link_not_valid' => "Le lien par lequel tu as accédé n'est pas valide.",
+    'email_event_starting' => [
+        'subject' => ':eventname commence dans 5 minutes !',
+        'message_1' => '<p style="line-height: 140%; margin: 0px">
+        Salut :name,<br /><br />
+        Préparez-vous ! L\'événement <strong>:eventname</strong> est sur le point de commencer.<br /><br />
+        Nous vous attendons à<strong> :location </strong>dans seulement 5 minutes. 
+        Assurez-vous d\'être prêt à entrer et à profiter de la nuit.<br /><br />
+        À tout de suite !
+      </p>',
+        'button' => 'Voir les détails de l\'événement',
+        'footer' => '<p style="font-size: 12px; text-align: center; margin-top: 20px;">
+        <strong>Hooky!</strong> - Connectez-vous avec des personnes en boîte de nuit et faites-vous de nouveaux amis tout en profitant de la soirée.<br />
+        Si vous avez des questions ou besoin d\'aide, n\'hésitez pas à contacter notre équipe de support à <a href="mailto:support@hooky.com">support@hooky.com</a>.<br /><br />
+        Ceci est un message automatisé, merci de ne pas répondre à cet e-mail.<br />
+        <small>&copy; 2025 Hooky. Tous droits réservés.</small>
+      </p>',
+    ],
 ];

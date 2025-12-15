@@ -17,6 +17,44 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+/**
+ * App\Models\User
+ *
+ * @property string $uid
+ * @property string $name
+ * @property string $surnames
+ * @property string $email
+ * @property string $password
+ * @property int $gender_id
+ * @property int $sexual_orientation_id
+ * @property int $role_id
+ * @property string|null $born_date
+ * @property string|null $description
+ * @property string|null $company_uid
+ * @property SocialProviders|null $provider_name
+ * @property string|null $provider_id
+ * @property bool $auto_password
+ * @property Carbon|null $email_verified_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Company|null $company
+ * @property-read int $age
+ * @property-read bool $complete_register
+ * @property-read bool $data_complete
+ * @property-read bool $data_images
+ * @property-read int $is_premium
+ * @property-read int $likes
+ * @property-read int $super_likes
+ * @property-read bool $auto_password
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Notification> $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Event> $events
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, UserImage> $userImages
+ * @property-read int|null $user_images_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereAny(array $columns, mixed $   value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereNot(string $column, mixed $value)
+ */
 final class User extends Authenticatable implements JWTSubject
 {
     use Filterable;
@@ -48,10 +86,10 @@ final class User extends Authenticatable implements JWTSubject
         'role_id',
         'born_date',
         'description',
-        'role_id',
         'company_uid',
         'provider_name',
         'provider_id',
+        'auto_password',
     ];
 
     protected $hidden = [
@@ -75,6 +113,7 @@ final class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
         'provider_name' => SocialProviders::class,
+        'auto_password' => 'boolean',
     ];
 
     public static function whereTargetUsersFrom($auth)
@@ -147,7 +186,7 @@ final class User extends Authenticatable implements JWTSubject
 
     public function userImages(): HasMany
     {
-        return $this->hasMany(UserImage::class, 'user_uid', 'uid');
+        return $this->hasMany(UserImage::class, 'user_uid', 'uid')->orderBy('order', 'asc');
     }
 
     public function interactions(): HasMany
@@ -161,15 +200,30 @@ final class User extends Authenticatable implements JWTSubject
             ->withPivot('likes', 'super_likes', 'logged_at');
     }
 
+    public function activeEvent(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class, 'user_events', 'user_uid', 'event_uid')
+            ->withPivot('likes', 'super_likes', 'logged_at')
+            ->where('st_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->latest('logged_at')
+            ->limit(1);
+    }
+
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'user_uid', 'uid')
-            ->where('event_uid', $this->event->uid);
+            ->where('event_uid', $this->activeEvent?->first()?->uid ?? null);
     }
 
     public function tickets()
     {
         return $this->hasMany(Ticket::class, 'user_uid', 'uid');
+    }
+
+    public function vipPayments()
+    {
+        return $this->hasOne(VipPayment::class, 'user_uid', 'uid');
     }
 
     public function getAgeAttribute(): int
@@ -179,11 +233,7 @@ final class User extends Authenticatable implements JWTSubject
 
     public function getEventAttribute()
     {
-        return $this->events()
-            ->where('st_date', '<=', now())
-            ->where('end_date', '>=', now())
-            ->latest('logged_at')
-            ->first();
+        return $this->activeEvent->first();
     }
 
     public function getDataCompleteAttribute(): bool
@@ -200,22 +250,22 @@ final class User extends Authenticatable implements JWTSubject
 
     public function getDataImagesAttribute(): bool
     {
-        return $this->userImages()->count() >= 1 ? true : false;
+        return $this->userImages->count() >= 1 ? true : false;
     }
 
     public function getLikesAttribute(): int
     {
-        return $this->event?->pivot?->likes ?? 0;
+        return $this->activeEvent->first()?->pivot->likes ?? 0;
     }
 
     public function getSuperLikesAttribute(): int
     {
-        return $this->event?->pivot?->super_likes ?? 0;
+        return $this->activeEvent->first()?->pivot->super_likes ?? 0;
     }
 
     public function scopeChats()
     {
-        return Chat::where('event_uid', user()->event->uid)
+        return Chat::where('event_uid', user()->event?->uid)
             ->whereAny(['user1_uid', 'user2_uid'], user()->uid);
     }
 
@@ -224,7 +274,7 @@ final class User extends Authenticatable implements JWTSubject
         return ChatMessage::whereNot('sender_uid', $this->uid)
             ->where('read_at', false)
             ->whereHas('chat', function ($query) {
-                $query->where('event_uid', $this->event->uid)
+                $query->where('event_uid', $this->event?->uid)
                     ->whereAny(['user1_uid', 'user2_uid'], $this->uid);
             })->count();
     }
@@ -255,12 +305,12 @@ final class User extends Authenticatable implements JWTSubject
 
     public function scopeRemainingUsersToInteract()
     {
-        return $this->interactions()->where('event_uid', $this->event->uid)->where('interaction_id', null)->get();
+        return $this->interactions()->where('event_uid', $this->event?->uid)->where('interaction_id', null)->get();
     }
 
     public function decrementInteraction(int $interaction): void
     {
-        if ($interaction === Interaction::DISLIKE_ID) {
+        if ($interaction === Interaction::DISLIKE_ID || $this->isPremium()) {
             return;
         }
 
@@ -269,9 +319,7 @@ final class User extends Authenticatable implements JWTSubject
             Interaction::SUPER_LIKE_ID => 'super_likes',
         };
 
-        $this->events()->updateExistingPivot($this->event->uid, [
-            $name => max(0, $this->likes - 1),
-        ]);
+        $this->activeEvent->first()?->pivot->decrement($name);
     }
 
     public function scopeGetNotificationsByType()
@@ -280,7 +328,7 @@ final class User extends Authenticatable implements JWTSubject
             return [];
         }
 
-        $unread = $this->notifications()->where('read_at', null)->get()->groupBy('type_id');
+        $unread = $this->notifications->where('read_at', null)->groupBy('type_id');
 
         return [
             'like' => $unread->has(NotificationsType::LIKE_TYPE) ? $unread->get(NotificationsType::LIKE_TYPE)->count() : 0,
@@ -288,6 +336,11 @@ final class User extends Authenticatable implements JWTSubject
             'hook' => $unread->has(NotificationsType::HOOK_TYPE) ? $unread->get(NotificationsType::HOOK_TYPE)->count() : 0,
             'message' => $this->unread_chats,
         ];
+    }
+
+    public function scopeIsPremium()
+    {
+        return $this->role_id === Role::PREMIUM;
     }
 
     public function nextOrLastEvent()
@@ -334,7 +387,6 @@ final class User extends Authenticatable implements JWTSubject
     {
         return [
             'uid' => $this->uid,
-            'event_uid' => $this->event->uid ?? null,
         ];
     }
 

@@ -120,8 +120,6 @@ final class Company extends Authenticatable implements JWTSubject
 
     public function getAtiveOrUpcomingEventAttribute()
     {
-        debug(['active_event' => $this->active_event]);
-
         return $this->active_event ? $this->active_event : $this->next_event;
     }
 

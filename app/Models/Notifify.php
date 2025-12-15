@@ -87,14 +87,6 @@ final class Notifify
             'Accept' => 'application/json',
         ])->post($url, $this->toArray());
 
-        debug([
-            'Notifify emit' => [
-                'url' => $url,
-                'response_status' => $request->status(),
-                'response_body' => $request->body(),
-            ],
-        ]);
-
         return $request->successful();
     }
 

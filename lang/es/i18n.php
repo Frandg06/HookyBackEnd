@@ -87,11 +87,39 @@ return [
 
     'event_not_found' => 'El evento no está activo.',
     'event_not_active' => 'El evento no está activo.',
-    'event_not_found' => 'El evento no existe o no está activo.',
     'event_is_past_delete' => 'No se puede eliminar un evento que ya ha finalizado.',
     'event_is_past' => 'El evento ya ha finalizado.',
     'event_not_start' => 'El evento no ha comenzado todavia, intentelo mas tarde.',
     'ticket_limit_reached' => 'Has alcanzado el límite de tickets para este evento.',
     'ticket_not_found' => 'El ticket no existe o no está activo.',
     'user_not_login' => 'Tienes que iniciar sesión para poder continuar.',
+    'authenticated_user' => 'Usuario autenticado correctamente.',
+    'password_reset_success' => 'La contraseña ha sido restablecida correctamente.',
+    'events_retrieved_successfully' => 'Eventos obtenidos con éxito.',
+    'cities_retrieved_successfully' => 'Ciudades obtenidas con éxito.',
+    'image_order_updated' => 'Orden de imagen actualizado con éxito.',
+    'image_order_limit' => 'La imagen ya está en el límite del orden.',
+    'payment_not_completed' => 'El pago no se ha completado.',
+    'payment_intent_created' => 'Pago procesado correctamente.',
+    'user_already_premium' => 'El usuario ya es premium.',
+    'notification_scheduled' => 'Todo listo! Te avisaremos cuando el evento esté a punto de comenzar.',
+    'event_attached_by_company' => 'Te has unido correctamente al evento de la empresa.',
+    'link_not_valid' => 'El enlace desde el que has accedido no es válido.',
+    'email_event_starting' => [
+        'subject' => '¡:eventname empieza en 5 minutos!',
+        'message_1' => '<p style="line-height: 140%; margin: 0px">
+        Hola :name,<br /><br />
+        ¡Prepárate! El evento <strong>:eventname</strong> está a punto de comenzar.<br /><br />
+        Te esperamos en<strong> :location </strong>en solo 5 minutos. 
+        Asegúrate de estar listo para entrar y disfrutar de la noche.<br /><br />
+        ¡Nos vemos ahí!
+      </p>',
+        'button' => 'Ver detalles del evento',
+        'footer' => '<p style="font-size: 12px; text-align: center; margin-top: 20px;">
+        <strong>Hooky!</strong> - Conéctate con personas dentro de la discoteca y haz nuevas amistades mientras disfrutas de la noche.<br />
+        Si tienes preguntas o necesitas ayuda, no dudes en ponerte en contacto con nuestro equipo de soporte en <a href="mailto:support@hooky.com">support@hooky.com</a>.<br /><br />
+        Este es un mensaje automatizado, por favor no respondas a este correo.<br />
+        <small>&copy; 2025 Hooky. Todos los derechos reservados.</small>
+      </p>',
+    ],
 ];

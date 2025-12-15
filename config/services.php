@@ -48,4 +48,11 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'success_url' => env('APP_FRONT_URL').'/payment?session_id={CHECKOUT_SESSION_ID}',
+        'failure_url' => env('APP_FRONT_URL').'/payment',
+    ],
+
 ];

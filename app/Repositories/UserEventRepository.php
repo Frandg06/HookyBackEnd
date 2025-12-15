@@ -5,16 +5,20 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Event;
-use App\Models\User;
 use App\Models\UserEvent;
 
 final class UserEventRepository
 {
-    public function attachUserToEvent(User $user, Event $event): UserEvent
+    public function findEventByUuid(string $event_uuid): ?Event
     {
-        return UserEvent::createOrUpdate(
+        return Event::where('uid', $event_uuid)->first();
+    }
+
+    public function attachUserToEvent(string $user_uuid, Event $event): UserEvent
+    {
+        return UserEvent::updateOrCreate(
             [
-                'user_uid' => $user->uid,
+                'user_uid' => $user_uuid,
                 'event_uid' => $event->uid,
             ],
             [

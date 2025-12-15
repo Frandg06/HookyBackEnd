@@ -24,7 +24,7 @@ final class EventController extends Controller
 
     public function store(CreateEventRequest $request)
     {
-        $validated = $request->safe()->only('st_date', 'end_date', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'st_hour', 'end_hour');
+        $validated = $request->safe()->only('st_date', 'end_date', 'timezone', 'likes', 'super_likes', 'name', 'colors', 'st_hour', 'end_hour', 'room_name', 'city', 'banner_image');
         $response = $this->eventService->store($validated);
 
         return $this->response($response);
