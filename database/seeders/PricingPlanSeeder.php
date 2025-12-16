@@ -14,10 +14,11 @@ final class PricingPlanSeeder extends Seeder
     public function run(): void
     {
         $elements = [
-            ['name' => 'Basic', 'price' => 149.90, 'limit_users' => 2000, 'limit_events' => 2, 'ticket_limit' => 1000],
-            ['name' => 'Pro', 'price' => 249.90, 'limit_users' => 4000, 'limit_events' => 5, 'ticket_limit' => 3000],
-            ['name' => 'Premium', 'price' => 349.90, 'limit_users' => 8000, 'limit_events' => 10, 'ticket_limit' => 6000],
-            ['name' => 'Ultimate', 'price' => 449.90, 'limit_users' => 10000000000, 'limit_events' => 10000000000, 'ticket_limit' => 10000000000],
+            ['name' => 'Essential', 'price' => 39.95, 'limit_users' => 2000, 'limit_events' => 2, 'ticket_limit' => 1000],
+            ['name' => 'Advanced', 'price' => 59.95, 'limit_users' => 8000, 'limit_events' => 5, 'ticket_limit' => 3000],
+            ['name' => 'Professional', 'price' => 89.95, 'limit_users' => 4000, 'limit_events' => 10, 'ticket_limit' => 6000],
+            ['name' => 'Premium', 'price' => 119.95, 'limit_users' => 10000000000, 'limit_events' => 10000000000, 'ticket_limit' => 10000000000],
+            ['name' => 'Vip', 'price' => 14.95, 'limit_users' => 0, 'limit_events' => 0, 'ticket_limit' => 0],
         ];
 
         foreach ($elements as $element) {
