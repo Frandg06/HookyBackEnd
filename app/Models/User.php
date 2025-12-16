@@ -119,7 +119,7 @@ final class User extends Authenticatable implements JWTSubject
     public static function whereTargetUsersFrom($auth)
     {
         return self::whereNot('uid', $auth->uid)
-            ->has('userImages', '>=', 1)
+            ->has('userImages', '>', 0)
             ->when(in_array($auth->sexual_orientation_id, [SexualOrientation::HOMOSEXUAL, SexualOrientation::HETEROSEXUAL]), function ($q) use ($auth) {
                 $q->whereIn('gender_id', $auth->match_gender)
                     ->whereIn('sexual_orientation_id', [$auth->sexual_orientation_id, SexualOrientation::BISEXUAL]);
