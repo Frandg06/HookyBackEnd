@@ -91,6 +91,7 @@ return [
     'notification_scheduled' => 'Alles bereit! Wir benachrichtigen dich, wenn das Event gleich beginnt.',
     'event_attached_by_company' => 'Du bist dem Firmenevent erfolgreich beigetreten.',
     'link_not_valid' => 'Der Link, über den du zugegriffen hast, ist nicht gültig.',
+    'notification_already_scheduled' => 'Du hast bereits eine Benachrichtigung für dieses Event geplant.',
     'email_event_starting' => [
         'subject' => ':eventname beginnt in 5 Minuten!',
         'message_1' => '<p style="line-height: 140%; margin: 0px">
