@@ -15,8 +15,6 @@ final class TargetUsers extends Model
 
     public static function scopeIsHook($query, InteractionDto $target)
     {
-        debug($target->toArray());
-
         return $query->where('user_uid', $target->target_user_uid)
             ->where('target_user_uid', $target->user_uid)
             ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])

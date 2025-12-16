@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer;
 
+use App\DTO\InteractionDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CompleteAuthUserRequest;
 use App\Http\Requests\CompleteDataRequest;
@@ -97,6 +98,8 @@ final class UserController extends Controller
     {
         $user = $this->user();
 
+        $targetUser = User::find($uid);
+
         $isConfirm = TargetUsers::where('user_uid', $user->uid)
             ->where('target_user_uid', $uid)
             ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
@@ -104,11 +107,10 @@ final class UserController extends Controller
             ->exists();
 
         if ($isConfirm) {
-            return response()->json([
-                'error' => true,
-                'custom_message' => __('i18n.not_aviable_user'),
-                'redirect' => '/home',
-            ], 403);
+            return $this->successResponse('User to confirm retrieved', [
+                'user' => TargetUserResource::make($targetUser),
+                'to_confirm' => false,
+            ]);
         }
 
         $isLike = TargetUsers::checkIsLike($uid, $user);
@@ -131,16 +133,23 @@ final class UserController extends Controller
             ], 403);
         }
 
-        $user = User::where('uid', $uid)->first();
-
-        return $this->response(TargetUserResource::make($user));
+        return $this->successResponse('User to confirm retrieved', [
+            'user' => TargetUserResource::make($targetUser),
+            'to_confirm' => true,
+        ]);
     }
 
     public function showTargetUser(Request $request, $uid)
     {
         $user = $request->user();
 
-        $isHook = TargetUsers::isHook($user->uid, $uid, $user->event->uid);
+        $dto = InteractionDto::fromArray([
+            'user_uid' => $user->uid,
+            'target_user_uid' => $uid,
+            'event_uid' => $user->event->uid,
+        ]);
+
+        $isHook = TargetUsers::isHook($dto);
 
         if (! $isHook) {
             return response()->json([
@@ -152,15 +161,10 @@ final class UserController extends Controller
 
         $user = User::where('uid', $uid)->first();
 
-        return $this->response(TargetUserResource::make($user));
-    }
-
-    public function setInteraction(Request $request, $uid)
-    {
-        $interaction = $request->interactionId;
-        $response = $this->userService->setInteraction($uid, $interaction);
-
-        return response()->json(['success' => true, 'resp' => $response], 200);
+        return $this->successResponse('User to confirm retrieved', [
+            'user' => TargetUserResource::make($user),
+            'to_confirm' => false,
+        ]);
     }
 
     private function parseCompleteData($data)
