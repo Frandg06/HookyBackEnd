@@ -11,13 +11,14 @@ use App\Http\Controllers\Customer\Auth\RegisterController;
 use App\Http\Controllers\Customer\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\Auth\SocialLoginController;
 use App\Http\Controllers\Customer\ChatController;
-use App\Http\Controllers\Customer\Event\EventAttachByCompanyController;
 use App\Http\Controllers\Customer\Event\GetEventsCityController;
 use App\Http\Controllers\Customer\Event\GetEventsController;
 use App\Http\Controllers\Customer\Image\OrderImageController;
 use App\Http\Controllers\Customer\ImageController;
 use App\Http\Controllers\Customer\Stripe\MakeCheckoutController;
 use App\Http\Controllers\Customer\Stripe\PaymentController;
+use App\Http\Controllers\Customer\TargetUser\LikeController;
+use App\Http\Controllers\Customer\TargetUser\SuperlikeController;
 use App\Http\Controllers\Customer\User\NotifyStartOfEventController;
 use App\Http\Controllers\Customer\UserController;
 use App\Http\Controllers\TicketController;
@@ -38,7 +39,6 @@ Route::put('/auth/reset-password/{token}', ResetPasswordController::class)->name
 Route::middleware(['auth:api'])->group(function () {
     // Auth routes
     Route::post('auth/login/{event_uid}', EventAttachController::class)->name('customer.login.event');
-    Route::post('auth/login/{uid}/company', EventAttachByCompanyController::class)->name('customer.login.event.company');
     Route::post('auth/logout', LogoutController::class)->name('customer.logout');
     Route::get('auth/me', MeController::class)->name('customer.me');
 
@@ -74,7 +74,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::get('/target-users', [UserController::class, 'retrieveTargetUsers']);
         Route::get('/target-users/{uid}', [UserController::class, 'showTargetUser']);
-        Route::post('/target-users/{uid}', [UserController::class, 'setInteraction'])->middleware('credits');
+        Route::post('{event_uid}/target-users/{target_user_uid}/like', LikeController::class)->middleware('credits');
+        Route::post('{event_uid}/target-users/{target_user_uid}/superlike', SuperlikeController::class)->middleware('credits');
         Route::get('/target-users/confirm/{uid}', [UserController::class, 'getUserToConfirm']);
     });
 });
