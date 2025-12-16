@@ -20,6 +20,9 @@ final readonly class GetEventsAction
     {
         return DB::transaction(function () use ($user, $filter, $order) {
             $events = Event::where('end_date', '>', Carbon::now()->toDateTimeString())
+                ->whereDoesntHave('users2', function ($query) use ($user) {
+                    $query->where('uid', $user->uid);
+                })
                 ->filter($filter)
                 ->sort($order)
                 ->get();
