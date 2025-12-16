@@ -17,6 +17,7 @@ use App\Http\Controllers\Customer\Image\OrderImageController;
 use App\Http\Controllers\Customer\ImageController;
 use App\Http\Controllers\Customer\Stripe\MakeCheckoutController;
 use App\Http\Controllers\Customer\Stripe\PaymentController;
+use App\Http\Controllers\Customer\TargetUser\DislikeController;
 use App\Http\Controllers\Customer\TargetUser\LikeController;
 use App\Http\Controllers\Customer\TargetUser\SuperlikeController;
 use App\Http\Controllers\Customer\User\NotifyStartOfEventController;
@@ -76,6 +77,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/target-users/{uid}', [UserController::class, 'showTargetUser']);
         Route::post('{event_uid}/target-users/{target_user_uid}/like', LikeController::class)->middleware('credits');
         Route::post('{event_uid}/target-users/{target_user_uid}/superlike', SuperlikeController::class)->middleware('credits');
+        Route::post('{event_uid}/target-users/{target_user_uid}/dislike', DislikeController::class);
         Route::get('/target-users/confirm/{uid}', [UserController::class, 'getUserToConfirm']);
     });
 });
