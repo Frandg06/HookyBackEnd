@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
+use App\Events\PrivateChatMessageEvent;
 use App\Http\Resources\ChatPreviewResource;
 use App\Http\Resources\ChatResource;
 use App\Http\Resources\MessageResource;
 use App\Models\Chat;
 use App\Models\ChatMessage;
-use App\Models\ChatNotify;
-use App\Models\Notifify;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -50,23 +49,15 @@ final class ChatService extends Service
             $message = $chat->messages()->create([
                 'chat_uid' => $uid,
                 'sender_uid' => $this->user()->uid,
+                'receiver_uid' => $userToSend,
                 'message' => $message,
             ]);
 
-            $response = MessageResource::make($message);
+            PrivateChatMessageEvent::dispatch($message);
 
-            $notify = new ChatNotify([
-                'reciber_uid' => $userToSend,
-                'type_id' => Notifify::MESSAGE,
-                'sender_uid' => $this->user()->uid,
-                'sender_name' => $this->user()->name,
-                'payload' => $response,
-            ]);
-
-            $notify->emit();
             DB::commit();
 
-            return $response;
+            return MessageResource::make($message);
         } catch (Throwable $e) {
             DB::rollBack();
             throw $e;
@@ -78,7 +69,7 @@ final class ChatService extends Service
         DB::beginTransaction();
         try {
             ChatMessage::where('chat_uid', $uid)
-                ->where('sender_uid', '!=', $this->user()->uid)
+                ->whereNot('sender_uid', $this->user()->uid)
                 ->where('read_at', false)
                 ->update(['read_at' => true]);
             DB::commit();

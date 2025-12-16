@@ -20,7 +20,11 @@ final class MessageResource extends JsonResource
         return [
             'uid' => $this->uid,
             'chat_uid' => $this->chat_uid,
-            'sender_uid' => $this->sender_uid,
+            'sender' => [
+                'uid' => $this->user->uid,
+                'name' => $this->user->name,
+                'image_url' => $this->user->userImages->first()->web_url,
+            ],
             'message' => $this->message,
             'read_at' => $this->read_at,
             'created_at' => Carbon::parse($this->created_at)->format('H:i'),
