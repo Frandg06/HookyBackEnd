@@ -9,6 +9,8 @@ enum PaymentMethodTypes: string
     case CARD = 'card';
     case AMAZON = 'amazon_pay';
     case REVOLUT = 'revolut_pay';
+    case GOOGLE_PAY = 'google_pay';
+    case APPLE_PAY = 'apple_pay';
 
     public static function values(): array
     {
@@ -21,6 +23,8 @@ enum PaymentMethodTypes: string
             PaymentMethodTypes::CARD => 'card',
             PaymentMethodTypes::AMAZON => 'amazon_pay',
             PaymentMethodTypes::REVOLUT => 'revolut_pay',
+            PaymentMethodTypes::GOOGLE_PAY => 'google_pay',
+            PaymentMethodTypes::APPLE_PAY => 'apple_pay',
         };
     }
 }
