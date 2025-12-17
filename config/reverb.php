@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+if (env('REVERB_DEBUG')) {
+    debug('DEBUG ORIGINS: '.print_r(array_map('trim', explode(',', env('CORS', '*'))), true));
+}
+
 return [
 
     /*
