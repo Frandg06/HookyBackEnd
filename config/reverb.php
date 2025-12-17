@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-if (env('REVERB_DEBUG')) {
-    debug('DEBUG ORIGINS: '.print_r(array_map('trim', explode(',', env('CORS', '*'))), true));
-}
-
 return [
 
     /*
@@ -88,7 +84,11 @@ return [
                     'scheme' => env('REVERB_SCHEME', 'https'),
                     'useTLS' => env('REVERB_SCHEME', 'https') === 'https',
                 ],
-                'allowed_origins' => array_map('trim', explode(',', env('CORS', '*'))),
+                'allowed_origins' => [
+                    'https://admin.hookyapp.es',
+                    'https://app.hookyapp.es',
+                    '*',
+                ],
                 'ping_interval' => env('REVERB_APP_PING_INTERVAL', 60),
                 'activity_timeout' => env('REVERB_APP_ACTIVITY_TIMEOUT', 30),
                 'max_connections' => env('REVERB_APP_MAX_CONNECTIONS'),
