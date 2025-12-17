@@ -10,11 +10,12 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
+use Spatie\Image\Image;
 use Throwable;
 
 final class ImagesService extends Service
 {
-    public function store($img, $data)
+    public function store($file)
     {
         DB::beginTransaction();
         try {
@@ -24,27 +25,30 @@ final class ImagesService extends Service
                 throw new ApiException('user_images_limit', 409);
             }
 
-            if (! in_array($img->getMimeType(), ['image/jpeg', 'image/png', 'image/webp'])) {
-                throw new ApiException('images_extension_ko', 409);
-            }
+            $tempPath = sys_get_temp_dir().'/'.uniqid().'.webp';
 
-            if ($img->getSize() > 1024 * 1024 * 10) {
-                throw new ApiException('images_size_ko', 409);
-            }
-
-            $image = $this->optimize($img, $data);
+            Image::load($file->getPathname())
+                ->width(500)
+                ->format('webp')
+                ->optimize()
+                ->save($tempPath);
 
             $newImage = $user->userImages()->create([
                 'order' => $user->userImages()->count() + 1,
-                'name' => $img->getClientOriginalName(),
-                'size' => $img->getSize(),
-                'type' => $img->getMimeType(),
+                'name' => $file->getClientOriginalName(),
+                'size' => $file->getSize(),
+                'type' => $file->getMimeType(),
             ]);
 
-            $storage = Storage::disk('r2')->put($newImage->url, $image);
+            $stream = fopen($tempPath, 'r');
+            $storage = Storage::disk('r2')->put($newImage->url, $stream);
 
             if (! $storage) {
                 throw new ApiException('images_store_ko', 500);
+            }
+
+            if (is_resource($stream)) {
+                fclose($stream);
             }
 
             DB::commit();
@@ -144,23 +148,24 @@ final class ImagesService extends Service
     private function optimize($image, $data)
     {
 
-        $manager = new ImageManager(
-            Driver::class,
-            autoOrientation: false,
-            strip: true
-        );
+        // $manager = new ImageManager(
+        //     Driver::class,
+        //     autoOrientation: false,
+        //     strip: true
+        // );
 
-        $img = $manager->read($image);
+        return Image::load($image->getOriginalPath())->resize(250, 200)->optimize();
 
-        $rotate = 0;
+        // $img = $manager->read($image);
 
-        $size = $img->size();
-        $ratio = $size->aspectRatio();
+        // $rotate = 0;
 
-        if ($data['width'] === $img->height() && $ratio !== 1) {
-            $rotate = -90;
-        }
+        // $size = $img->size();
+        // $ratio = $size->aspectRatio();
 
-        return $img->scale(width: 500)->rotate($rotate)->toWebP(80);
+        // if ($data['width'] === $img->height() && $ratio !== 1) {
+        //     $rotate = -90;
+
+        // return $img->scale(width: 500)->rotate($rotate)->toWebP(80);
     }
 }

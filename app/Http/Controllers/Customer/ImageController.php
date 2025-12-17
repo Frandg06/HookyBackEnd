@@ -19,18 +19,13 @@ final class ImageController extends Controller
 
     public function store(Request $request)
     {
-
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5000',
+            'image' => 'required|file|mimes:jpeg,png,jpg,webp,|max:5000',
         ]);
 
         $image = $request->file('image');
-        $original_data = [
-            'width' => $request->width,
-            'height' => $request->height,
-        ];
 
-        $response = $this->imageService->store($image, $original_data);
+        $response = $this->imageService->store($image);
 
         return response()->json(['success' => true, 'resp' => $response], 200);
     }
