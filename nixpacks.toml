@@ -1,0 +1,19 @@
+# 1. Definimos los paquetes necesarios (PHP 8.3, Nginx, Node para el build)
+[phases.setup]
+nixPkgs = ["php83", "php83Extensions.pdo_mysql", "php83Extensions.bcmath", "php83Extensions.gd", "php83Extensions.fileinfo", "nginx", "nodejs_20"]
+
+# 2. Comandos de construcción (Build)
+[phases.build]
+cmds = [
+    "npm install && npm run build", 
+    "composer install --no-dev --optimize-autoloader",
+    "php artisan storage:link",
+    "php artisan config:cache",
+    "php artisan route:cache"
+]
+
+# 3. Comando de Inicio (Start)
+# Aquí arrancamos PHP-FPM en segundo plano (-D) inyectando los nuevos límites
+# Y luego arrancamos Nginx con tu configuración personalizada.
+[start]
+cmd = "php-fpm -d post_max_size=50M -d upload_max_filesize=50M -D && nginx -c /app/nginx.conf"
