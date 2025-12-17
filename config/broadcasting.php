@@ -34,9 +34,9 @@ return [
 
         'reverb' => [
             'driver' => 'reverb',
-            'key' => env('REVERB_APP_KEY'),
-            'secret' => env('REVERB_APP_SECRET'),
-            'app_id' => env('REVERB_APP_ID'),
+            'key' => env('REVERB_APP_KEY', 'id_default_key'),
+            'secret' => env('REVERB_APP_SECRET', 'id_default_secret'),
+            'app_id' => env('REVERB_APP_ID', 'id_default_app'),
             'options' => [
                 'host' => env('REVERB_HOST'),
                 'port' => env('REVERB_PORT', 443),
