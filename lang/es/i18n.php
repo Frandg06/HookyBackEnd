@@ -82,9 +82,8 @@ return [
     'notify' => [
         'base' => 'Has recibido un :interaction.',
         'hook' => 'Has hecho un Hook.',
-        'message' => ':username te ha enviado un mensaje.',
     ],
-
+    'message_notify' => 'Se ha enviado el mensaje correctamente.',
     'event_not_found' => 'El evento no está activo.',
     'event_not_active' => 'El evento no está activo.',
     'event_is_past_delete' => 'No se puede eliminar un evento que ya ha finalizado.',

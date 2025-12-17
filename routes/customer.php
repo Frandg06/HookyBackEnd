@@ -10,6 +10,7 @@ use App\Http\Controllers\Customer\Auth\PasswordResetTokenController;
 use App\Http\Controllers\Customer\Auth\RegisterController;
 use App\Http\Controllers\Customer\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\Auth\SocialLoginController;
+use App\Http\Controllers\Customer\Chat\SendMessageController;
 use App\Http\Controllers\Customer\ChatController;
 use App\Http\Controllers\Customer\Event\GetEventsCityController;
 use App\Http\Controllers\Customer\Event\GetEventsController;
@@ -66,7 +67,7 @@ Route::middleware(['auth:api'])->group(function () {
 
         // Chat routes
         Route::get('/chat', [ChatController::class, 'retrieve']);
-        Route::post('/chat/{uid}/send', [ChatController::class, 'sendMessage']);
+        Route::post('/chat/{uid}/send', SendMessageController::class);
         Route::put('/chat/{uid}/read', [ChatController::class, 'readMessage']);
         Route::get('/chat/{uid}', [ChatController::class, 'show']);
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
 
+    'message_notify' => 'Messaggio inviato con successo.',
     'register_user_ko' => "Si è verificato un errore durante la registrazione dell'utente.",
     'register_company_ok' => "L'utente è stato registrato con successo.",
     'user_exists' => 'Esiste già un utente registrato con questa email.',

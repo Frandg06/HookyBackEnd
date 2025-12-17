@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
-use App\Events\PrivateChatMessageEvent;
 use App\Http\Resources\ChatPreviewResource;
 use App\Http\Resources\ChatResource;
-use App\Http\Resources\MessageResource;
 use App\Models\Chat;
 use App\Models\ChatMessage;
 use Illuminate\Support\Facades\DB;
@@ -36,32 +34,6 @@ final class ChatService extends Service
         $chat = Chat::findOrFail($uid);
 
         return ChatResource::make($chat);
-    }
-
-    public function sendMessage(string $uid, string $message)
-    {
-        DB::beginTransaction();
-        try {
-            $chat = Chat::findOrFail($uid);
-
-            $userToSend = $this->user()->uid === $chat->user1_uid ? $chat->user2_uid : $chat->user1_uid;
-
-            $message = $chat->messages()->create([
-                'chat_uid' => $uid,
-                'sender_uid' => $this->user()->uid,
-                'receiver_uid' => $userToSend,
-                'message' => $message,
-            ]);
-
-            PrivateChatMessageEvent::dispatch($message);
-
-            DB::commit();
-
-            return MessageResource::make($message);
-        } catch (Throwable $e) {
-            DB::rollBack();
-            throw $e;
-        }
     }
 
     public function read(string $uid)

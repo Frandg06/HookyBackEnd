@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 return [
-
+    'message_notify' => 'Nachricht erfolgreich gesendet.',
     'register_user_ko' => 'Beim Registrieren des Benutzers ist ein Fehler aufgetreten.',
     'register_company_ok' => 'Der Benutzer wurde erfolgreich registriert.',
     'user_exists' => 'Ein Benutzer mit dieser E-Mail-Adresse existiert bereits.',
