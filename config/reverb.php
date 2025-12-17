@@ -87,6 +87,7 @@ return [
                 'allowed_origins' => [
                     'https://admin.hookyapp.es',
                     'https://app.hookyapp.es',
+                    '*',
                 ],
                 'ping_interval' => env('REVERB_APP_PING_INTERVAL', 60),
                 'activity_timeout' => env('REVERB_APP_ACTIVITY_TIMEOUT', 30),
