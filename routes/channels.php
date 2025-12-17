@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Broadcast;
 
 Broadcast::channel('App.Models.User.{uid}', function (User $user, $uid) {
     return $user->uid === $uid;
-}, ['guards' => ['api']]);
+});
 Broadcast::channel('App.Models.Chat.{chat_uid}', function (User $user, $chat_uid) {
     $exists = Chat::where('uid', $chat_uid)
         ->where(function ($query) use ($user) {
@@ -17,4 +17,4 @@ Broadcast::channel('App.Models.Chat.{chat_uid}', function (User $user, $chat_uid
         })->exists();
 
     return (bool) $exists;
-}, ['guards' => ['api']]);
+});
