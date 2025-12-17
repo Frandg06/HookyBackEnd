@@ -41,7 +41,7 @@ final readonly class NotifyStartOfEventAction
                 throw new ApiException('notification_already_scheduled', 422);
             }
 
-            ScheduedlEmails::dispatch($user, $event)->delay($seconds);
+            ScheduedlEmails::dispatch($user, $event)->delay($seconds > 300 ? $seconds : 0);
 
         });
     }
