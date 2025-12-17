@@ -1,0 +1,22 @@
+# Usamos la imagen optimizada para Laravel con PHP 8.3 y Nginx integrado
+FROM serversideup/php:8.3-fpm-nginx:v3
+
+# Establecemos el directorio de trabajo
+WORKDIR /var/www/html
+
+# Copiamos todos los archivos del proyecto al contenedor
+COPY --chown=webuser:webuser . /var/www/html
+
+# Instalamos las dependencias de PHP (Composer)
+# --no-dev: Para no instalar librerías de test/desarrollo
+# --optimize-autoloader: Para que cargue más rápido
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+# (Opcional) Si necesitas compilar assets dentro de este contenedor (Vite/Mix),
+# descomenta las siguientes líneas. Si es solo una API, ignóralo.
+# RUN apt-get update && apt-get install -y nodejs npm
+# RUN npm ci && npm run build
+
+# NOTA: No hace falta comando CMD o ENTRYPOINT, la imagen base ya gestiona 
+# el inicio de Nginx y PHP automáticamente.
+
