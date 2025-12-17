@@ -7,6 +7,7 @@ namespace App\Jobs;
 use App\Http\Services\EmailService;
 use App\Models\Event;
 use App\Models\User;
+use App\Models\UserScheduledNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -38,6 +39,10 @@ final class ScheduedlEmails implements ShouldBeUnique, ShouldQueue
      */
     public function handle(): void
     {
+        UserScheduledNotification::where('user_uid', $this->user->id)
+            ->where('event_uid', $this->event->uid)
+            ->update(['status' => 'sent']);
+
         $this->emailService->sendNotifyStartOfEventEmail($this->user, $this->event);
     }
 

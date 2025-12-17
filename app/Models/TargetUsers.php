@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\DTO\InteractionDto;
 use Illuminate\Database\Eloquent\Model;
 
 final class TargetUsers extends Model
@@ -12,17 +13,17 @@ final class TargetUsers extends Model
 
     protected $fillable = ['user_uid', 'interaction_id', 'target_user_uid', 'event_uid'];
 
-    public static function scopeIsHook($query, $emitter, $reciber, $event)
+    public static function scopeIsHook($query, InteractionDto $target)
     {
-        return $query->where('user_uid', $reciber)
-            ->where('target_user_uid', $emitter)
+        return $query->where('user_uid', $target->target_user_uid)
+            ->where('target_user_uid', $target->user_uid)
             ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
-            ->whereExists(function ($query) use ($reciber, $emitter, $event) {
+            ->whereExists(function ($query) use ($target) {
                 $query->from('target_users')
-                    ->where('user_uid', $emitter)
-                    ->where('target_user_uid', $reciber)
+                    ->where('user_uid', $target->user_uid)
+                    ->where('target_user_uid', $target->target_user_uid)
                     ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
-                    ->where('event_uid', $event);
+                    ->where('event_uid', $target->event_uid);
             });
     }
 

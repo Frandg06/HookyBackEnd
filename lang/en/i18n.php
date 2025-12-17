@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
 
+    'message_notify' => 'Message sent successfully.',
     'register_user_ko' => 'An error occurred while registering the user.',
     'register_company_ok' => 'The user has been successfully registered.',
     'user_exists' => 'A user with this email address already exists.',
@@ -89,6 +90,7 @@ return [
     'notification_scheduled' => 'All set! We will notify you when the event is about to start.',
     'event_attached_by_company' => 'You have successfully joined the company event.',
     'link_not_valid' => 'The link you have accessed is not valid.',
+    'notification_already_scheduled' => 'You already have a notification scheduled for this event.',
     'email_event_starting' => [
         'subject' => ':eventname starts in 5 minutes!',
         'message_1' => '<p style="line-height: 140%; margin: 0px">

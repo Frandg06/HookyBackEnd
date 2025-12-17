@@ -119,9 +119,16 @@ final class Event extends Model
         return $this->hasMany(Chat::class, 'event_uid', 'uid');
     }
 
+    public function scheduledNotifications(): HasMany
+    {
+        return $this->hasMany(UserScheduledNotification::class, 'event_uid', 'uid');
+    }
+
     public function getIsActiveAttribute()
     {
-        return $this->st_date <= now($this->timezone) && $this->end_date >= now($this->timezone);
+        $now = now($this->timezone);
+
+        return Carbon::parse($this->st_date)->lt($now) && Carbon::parse($this->end_date)->gt($now);
     }
 
     public function getIsFinishedAttribute()

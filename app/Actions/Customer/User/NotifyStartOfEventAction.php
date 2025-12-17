@@ -8,6 +8,7 @@ use App\Exceptions\ApiException;
 use App\Jobs\ScheduedlEmails;
 use App\Models\Event;
 use App\Models\User;
+use App\Models\UserScheduledNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -21,13 +22,26 @@ final readonly class NotifyStartOfEventAction
         DB::transaction(function () use ($user, $eventUid) {
             $event = Event::where('uid', $eventUid)->first();
 
-            if (! $event) {
-                throw new ApiException('event_not_found', 404);
+            $scheduledAt = Carbon::parse($event->st_date)->subMinutes(5);
+
+            $seconds = now()->diffInSeconds($scheduledAt);
+
+            $notification = UserScheduledNotification::firstOrCreate(
+                [
+                    'user_uid' => $user->uid,
+                    'event_uid' => $event->uid,
+                ],
+                [
+                    'scheduled_at' => $scheduledAt,
+                    'status' => 'pending',
+                ]
+            );
+
+            if (! $notification->wasRecentlyCreated) {
+                throw new ApiException('notification_already_scheduled', 422);
             }
 
-            $scheduledAt = now()->diffInSeconds(Carbon::parse($event->st_date)->subMinutes(5));
-
-            ScheduedlEmails::dispatch($user, $event)->delay($scheduledAt);
+            ScheduedlEmails::dispatch($user, $event)->delay($seconds);
 
         });
     }

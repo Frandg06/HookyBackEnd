@@ -82,9 +82,8 @@ return [
     'notify' => [
         'base' => 'Has recibido un :interaction.',
         'hook' => 'Has hecho un Hook.',
-        'message' => ':username te ha enviado un mensaje.',
     ],
-
+    'message_notify' => 'Se ha enviado el mensaje correctamente.',
     'event_not_found' => 'El evento no está activo.',
     'event_not_active' => 'El evento no está activo.',
     'event_is_past_delete' => 'No se puede eliminar un evento que ya ha finalizado.',
@@ -105,6 +104,7 @@ return [
     'notification_scheduled' => 'Todo listo! Te avisaremos cuando el evento esté a punto de comenzar.',
     'event_attached_by_company' => 'Te has unido correctamente al evento de la empresa.',
     'link_not_valid' => 'El enlace desde el que has accedido no es válido.',
+    'notification_already_scheduled' => 'Ya tienes una notificación programada para este evento.',
     'email_event_starting' => [
         'subject' => '¡:eventname empieza en 5 minutos!',
         'message_1' => '<p style="line-height: 140%; margin: 0px">

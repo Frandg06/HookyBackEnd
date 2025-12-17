@@ -11,7 +11,7 @@ use Laravel\Socialite\Two\User as TwoUser;
 
 final class UserRepository
 {
-    public function getUserByUuid(string $uuid): ?User
+    public function findByUuid(string $uuid): ?User
     {
         return User::find($uuid);
     }

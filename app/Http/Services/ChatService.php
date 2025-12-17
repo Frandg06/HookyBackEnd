@@ -6,11 +6,8 @@ namespace App\Http\Services;
 
 use App\Http\Resources\ChatPreviewResource;
 use App\Http\Resources\ChatResource;
-use App\Http\Resources\MessageResource;
 use App\Models\Chat;
 use App\Models\ChatMessage;
-use App\Models\ChatNotify;
-use App\Models\Notifify;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -39,46 +36,12 @@ final class ChatService extends Service
         return ChatResource::make($chat);
     }
 
-    public function sendMessage(string $uid, string $message)
-    {
-        DB::beginTransaction();
-        try {
-            $chat = Chat::findOrFail($uid);
-
-            $userToSend = $this->user()->uid === $chat->user1_uid ? $chat->user2_uid : $chat->user1_uid;
-
-            $message = $chat->messages()->create([
-                'chat_uid' => $uid,
-                'sender_uid' => $this->user()->uid,
-                'message' => $message,
-            ]);
-
-            $response = MessageResource::make($message);
-
-            $notify = new ChatNotify([
-                'reciber_uid' => $userToSend,
-                'type_id' => Notifify::MESSAGE,
-                'sender_uid' => $this->user()->uid,
-                'sender_name' => $this->user()->name,
-                'payload' => $response,
-            ]);
-
-            $notify->emit();
-            DB::commit();
-
-            return $response;
-        } catch (Throwable $e) {
-            DB::rollBack();
-            throw $e;
-        }
-    }
-
     public function read(string $uid)
     {
         DB::beginTransaction();
         try {
             ChatMessage::where('chat_uid', $uid)
-                ->where('sender_uid', '!=', $this->user()->uid)
+                ->whereNot('sender_uid', $this->user()->uid)
                 ->where('read_at', false)
                 ->update(['read_at' => true]);
             DB::commit();
