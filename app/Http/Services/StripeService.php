@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
-use App\Enums\PaymentMethodTypes;
-use App\Enums\PaymentMode;
 use Stripe\StripeClient;
+use App\Enums\PaymentMode;
+use App\Enums\PaymentMethodTypes;
 
 final class StripeService
 {

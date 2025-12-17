@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\User;
 
-use App\Exceptions\ApiException;
-use App\Jobs\ScheduedlEmails;
-use App\Models\Event;
-use App\Models\User;
-use App\Models\UserScheduledNotification;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Event;
+use App\Jobs\ScheduedlEmails;
+use App\Exceptions\ApiException;
 use Illuminate\Support\Facades\DB;
+use App\Models\UserScheduledNotification;
 
 final readonly class NotifyStartOfEventAction
 {

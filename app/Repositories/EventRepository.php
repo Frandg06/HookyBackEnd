@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Event;
 use App\Http\Filters\EventFilter;
 use App\Http\Orders\EventOrdenator;
-use App\Models\Event;
-use App\Models\User;
-use Carbon\Carbon;
 
 final class EventRepository
 {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Orders;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
 
 abstract class QueryOrdenator
 {

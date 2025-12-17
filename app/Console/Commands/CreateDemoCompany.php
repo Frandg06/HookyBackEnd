@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Models\Company;
-use App\Models\PricingPlan;
 use App\Models\TimeZone;
+use App\Models\PricingPlan;
 use Illuminate\Console\Command;
 
 final class CreateDemoCompany extends Command

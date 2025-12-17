@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Models\PasswordResetToken;
 use App\Models\User;
 use Illuminate\Support\Str;
+use App\Models\PasswordResetToken;
 use Laravel\Socialite\Two\User as TwoUser;
 
 final class UserRepository

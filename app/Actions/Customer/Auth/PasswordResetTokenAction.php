@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\Auth;
 
+use Illuminate\Support\Facades\DB;
 use App\Http\Services\EmailService;
 use App\Repositories\UserRepository;
-use Illuminate\Support\Facades\DB;
 
 final readonly class PasswordResetTokenAction
 {

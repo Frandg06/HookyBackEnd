@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\Gender;
 use App\Models\Role;
-use App\Models\SexualOrientation;
 use App\Models\User;
+use App\Models\Gender;
 use Illuminate\Database\Seeder;
+use App\Models\SexualOrientation;
 
 final class UserMockSeeder extends Seeder
 {

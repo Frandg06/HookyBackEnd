@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\Auth;
 
-use App\Actions\Customer\Auth\LogoutAction;
 use App\Http\Controllers\Controller;
+use App\Actions\Customer\Auth\LogoutAction;
 
 final class LogoutController extends Controller
 {

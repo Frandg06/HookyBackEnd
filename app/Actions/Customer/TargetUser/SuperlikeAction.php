@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\TargetUser;
 
-use App\DTO\InteractionDto;
-use App\Events\SuperlikeNotificationEvent;
-use App\Models\TargetUsers;
 use App\Models\User;
-use App\Repositories\NotifyRepository;
-use App\Repositories\TargetUserRepository;
+use App\DTO\InteractionDto;
+use App\Models\TargetUsers;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\NotifyRepository;
+use App\Events\SuperlikeNotificationEvent;
+use App\Repositories\TargetUserRepository;
 
 final readonly class SuperlikeAction
 {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Companies;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Services\CompanyService;
-use Illuminate\Http\Request;
 
 final class CompanyController extends Controller
 {

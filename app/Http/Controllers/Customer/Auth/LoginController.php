@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\Auth;
 
-use App\Actions\Customer\Auth\EventAttachAction;
-use App\Actions\Customer\Auth\LoginAction;
 use App\Exceptions\ApiException;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\LoginRequest;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Requests\LoginRequest;
+use App\Http\Controllers\Controller;
+use App\Actions\Customer\Auth\LoginAction;
+use App\Actions\Customer\Auth\EventAttachAction;
 
 final class LoginController extends Controller
 {

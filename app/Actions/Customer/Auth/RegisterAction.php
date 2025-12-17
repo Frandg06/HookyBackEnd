@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Actions\Customer\Auth;
 
 use App\Exceptions\ApiException;
+use Illuminate\Support\Facades\DB;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 final readonly class RegisterAction
 {

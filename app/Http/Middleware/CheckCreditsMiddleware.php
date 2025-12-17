@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
-use App\Models\Interaction;
 use Closure;
+use App\Models\Interaction;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 

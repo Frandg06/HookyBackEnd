@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
+use Throwable;
+use Spatie\Image\Image;
 use App\Exceptions\ApiException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
-use Spatie\Image\Image;
-use Throwable;
 
 final class ImagesService extends Service
 {
@@ -35,7 +33,7 @@ final class ImagesService extends Service
 
             $newImage = $user->userImages()->create([
                 'order' => $user->userImages()->count() + 1,
-                'name' => $file->getClientOriginalName(),
+                'name' => $file->getClientOriginalName() === 'blob' ? 'IMG_'.uniqid() : $file->getClientOriginalName(),
                 'size' => $file->getSize(),
                 'type' => $file->getMimeType(),
             ]);

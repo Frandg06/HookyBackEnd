@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\Auth;
 
-use App\Actions\Customer\Auth\EventAttachAction;
-use App\Actions\Customer\Auth\RegisterAction;
 use App\Exceptions\ApiException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Exception;
+use App\Actions\Customer\Auth\RegisterAction;
+use App\Actions\Customer\Auth\EventAttachAction;
 
 final class RegisterController extends Controller
 {

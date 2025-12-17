@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
-use App\Http\Resources\ChatPreviewResource;
-use App\Http\Resources\ChatResource;
+use Throwable;
 use App\Models\Chat;
 use App\Models\ChatMessage;
 use Illuminate\Support\Facades\DB;
-use Throwable;
+use App\Http\Resources\ChatResource;
+use App\Http\Resources\ChatPreviewResource;
 
 final class ChatService extends Service
 {

@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
-use App\Exceptions\ApiException;
-use App\Http\Filters\TicketFilter;
-use App\Http\Orders\TicketOrdenator;
-use App\Http\Resources\EventResource;
-use App\Http\Resources\Exports\TicketExportResource;
-use App\Http\Resources\TicketResource;
+use Throwable;
+use Carbon\Carbon;
 use App\Models\Event;
 use App\Models\Ticket;
-use Carbon\Carbon;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
+use App\Exceptions\ApiException;
+use App\Http\Filters\TicketFilter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use Throwable;
+use App\Http\Orders\TicketOrdenator;
+use App\Http\Resources\EventResource;
+use App\Http\Resources\TicketResource;
+use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\Exports\TicketExportResource;
 
 final class TicketService extends Service
 {

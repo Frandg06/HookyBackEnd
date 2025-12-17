@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\User;
 
-use App\Actions\Customer\User\NotifyStartOfEventAction;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Customer\User\NotifyStartOfEventRequest;
 use App\Models\User;
-use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Container\Attributes\CurrentUser;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Actions\Customer\User\NotifyStartOfEventAction;
+use App\Http\Requests\Customer\User\NotifyStartOfEventRequest;
 
 final class NotifyStartOfEventController extends Controller
 {

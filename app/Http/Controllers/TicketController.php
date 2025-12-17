@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Filters\TicketFilter;
 use App\Http\Orders\TicketOrdenator;
-use App\Http\Requests\CreateTicketRequest;
 use App\Http\Services\TicketService;
-use Illuminate\Http\Request;
+use App\Http\Requests\CreateTicketRequest;
 
 final class TicketController extends Controller
 {

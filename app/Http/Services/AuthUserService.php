@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
-use App\Exceptions\ApiException;
-use App\Http\Resources\NotificationUserResource;
-use App\Models\NotificationsType;
-use App\Models\User;
 use Exception;
-use Illuminate\Support\Facades\Cache;
+use App\Models\User;
+use App\Exceptions\ApiException;
+use App\Models\NotificationsType;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
+use App\Http\Resources\NotificationUserResource;
 
 final class AuthUserService extends Service
 {

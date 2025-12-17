@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\Auth;
 
-use App\Actions\Customer\Auth\EventAttachAction;
-use App\Actions\Customer\Auth\SocialLoginAction;
 use App\Exceptions\ApiException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SocialLoginRequest;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Actions\Customer\Auth\EventAttachAction;
+use App\Actions\Customer\Auth\SocialLoginAction;
 
 final class SocialLoginController extends Controller
 {

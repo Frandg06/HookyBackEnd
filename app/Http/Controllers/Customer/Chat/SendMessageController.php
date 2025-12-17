@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\Chat;
 
-use App\Actions\Customer\Chat\SendMessageAction;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Customer\Chat\SendMessageRequest;
 use App\Models\User;
-use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Actions\Customer\Chat\SendMessageAction;
+use Illuminate\Container\Attributes\CurrentUser;
+use App\Http\Requests\Customer\Chat\SendMessageRequest;
 
 final class SendMessageController extends Controller
 {

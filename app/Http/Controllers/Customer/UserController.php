@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer;
 
+use App\Models\User;
 use App\DTO\InteractionDto;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\CompleteAuthUserRequest;
-use App\Http\Requests\CompleteDataRequest;
-use App\Http\Resources\TargetUserResource;
-use App\Http\Services\AuthUserService;
-use App\Http\Services\ImagesService;
-use App\Http\Services\NotificationService;
-use App\Http\Services\UserService;
 use App\Models\Interaction;
 use App\Models\TargetUsers;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Http\Services\UserService;
+use App\Http\Controllers\Controller;
+use App\Http\Services\ImagesService;
+use App\Http\Services\AuthUserService;
+use App\Http\Requests\CompleteDataRequest;
+use App\Http\Resources\TargetUserResource;
+use App\Http\Services\NotificationService;
+use App\Http\Requests\CompleteAuthUserRequest;
 
 final class UserController extends Controller
 {

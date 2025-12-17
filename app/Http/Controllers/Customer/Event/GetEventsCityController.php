@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\Event;
 
-use App\Actions\Customer\Events\GetEventsCityAction;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Actions\Customer\Events\GetEventsCityAction;
 
 final class GetEventsCityController extends Controller
 {

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Companies;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\RegisterCompanyRequest;
-use App\Http\Requests\ResetPasswordRequest;
-use App\Http\Services\AuthCompanyService;
-use App\Http\Services\EmailService;
 use Illuminate\Http\Request;
+use App\Http\Services\EmailService;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Services\AuthCompanyService;
+use App\Http\Requests\ResetPasswordRequest;
+use App\Http\Requests\RegisterCompanyRequest;
 
 final class AuthController extends Controller
 {

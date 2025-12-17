@@ -6,12 +6,11 @@ namespace App\Events;
 
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 final class LikeNotificationEvent implements ShouldBroadcast
 {
@@ -19,10 +18,9 @@ final class LikeNotificationEvent implements ShouldBroadcast
     use InteractsWithSockets;
     use SerializesModels;
 
-
     /**
      * Create a new event instance.
-    */
+     */
     public function __construct(public User $user, public User $likedUser) {}
 
     /**
@@ -32,7 +30,7 @@ final class LikeNotificationEvent implements ShouldBroadcast
      */
     public function broadcastOn(): PrivateChannel
     {
-        return new PrivateChannel('App.Models.User.' . $this->likedUser->uid);
+        return new PrivateChannel('App.Models.User.'.$this->likedUser->uid);
 
     }
 
@@ -43,11 +41,12 @@ final class LikeNotificationEvent implements ShouldBroadcast
 
     public function broadcastWith(): array
     {
-        if (!$this->likedUser->is_premium) {
+        if (! $this->likedUser->is_premium) {
             return [];
         }
+
         return [
-            'image_url' => $this->likedUser->userImages->first()->web_url ,
+            'image_url' => $this->likedUser->userImages->first()->web_url,
             'name' => $this->likedUser->name,
         ];
 

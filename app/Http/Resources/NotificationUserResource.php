@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Models\NotificationsType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\NotificationsType;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 final class NotificationUserResource extends JsonResource

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
-use App\Http\Resources\TargetUserResource;
 use App\Models\User;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+use App\Http\Resources\TargetUserResource;
 
 final class UserService extends Service
 {

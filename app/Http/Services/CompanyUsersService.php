@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
+use App\Models\Event;
 use App\Exceptions\ApiException;
 use App\Http\Filters\UserFilter;
 use App\Http\Orders\UserOrdenator;
-use App\Http\Resources\CompanyUsersResource;
 use App\Http\Resources\EventUsersResource;
+use App\Http\Resources\CompanyUsersResource;
 use App\Http\Resources\Exports\CompanyUsersExportResource;
-use App\Models\Event;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 final class CompanyUsersService extends Service

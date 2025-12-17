@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\Companies\AuthController;
+use App\Http\Controllers\Companies\EventController;
 use App\Http\Controllers\Companies\ChartsController;
 use App\Http\Controllers\Companies\CompanyController;
 use App\Http\Controllers\Companies\CustomersController;
-use App\Http\Controllers\Companies\EventController;
-use App\Http\Controllers\TicketController;
-use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth.event'])->group(function () {
     Route::post('/event/dispatcher', [EventController::class, 'getTicketDispatcher']);

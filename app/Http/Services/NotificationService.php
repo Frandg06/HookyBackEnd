@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
-use Illuminate\Support\Facades\DB;
 use Throwable;
+use Illuminate\Support\Facades\DB;
 
 final class NotificationService extends Service
 {

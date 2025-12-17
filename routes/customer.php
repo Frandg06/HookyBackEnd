@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Customer\Auth\EventAttachController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TicketController;
+use App\Http\Controllers\Customer\ChatController;
+use App\Http\Controllers\Customer\UserController;
+use App\Http\Controllers\Customer\ImageController;
+use App\Http\Controllers\Customer\Auth\MeController;
 use App\Http\Controllers\Customer\Auth\LoginController;
 use App\Http\Controllers\Customer\Auth\LogoutController;
-use App\Http\Controllers\Customer\Auth\MeController;
-use App\Http\Controllers\Customer\Auth\PasswordResetTokenController;
 use App\Http\Controllers\Customer\Auth\RegisterController;
-use App\Http\Controllers\Customer\Auth\ResetPasswordController;
+use App\Http\Controllers\Customer\Stripe\PaymentController;
+use App\Http\Controllers\Customer\Event\GetEventsController;
+use App\Http\Controllers\Customer\TargetUser\LikeController;
+use App\Http\Controllers\Customer\Auth\EventAttachController;
 use App\Http\Controllers\Customer\Auth\SocialLoginController;
 use App\Http\Controllers\Customer\Chat\SendMessageController;
-use App\Http\Controllers\Customer\ChatController;
-use App\Http\Controllers\Customer\Event\GetEventsCityController;
-use App\Http\Controllers\Customer\Event\GetEventsController;
 use App\Http\Controllers\Customer\Image\OrderImageController;
-use App\Http\Controllers\Customer\ImageController;
-use App\Http\Controllers\Customer\Stripe\MakeCheckoutController;
-use App\Http\Controllers\Customer\Stripe\PaymentController;
+use App\Http\Controllers\Customer\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\TargetUser\DislikeController;
-use App\Http\Controllers\Customer\TargetUser\LikeController;
+use App\Http\Controllers\Customer\Event\GetEventsCityController;
+use App\Http\Controllers\Customer\Stripe\MakeCheckoutController;
 use App\Http\Controllers\Customer\TargetUser\SuperlikeController;
+use App\Http\Controllers\Customer\Auth\PasswordResetTokenController;
 use App\Http\Controllers\Customer\User\NotifyStartOfEventController;
-use App\Http\Controllers\Customer\UserController;
-use App\Http\Controllers\TicketController;
-use Illuminate\Support\Facades\Route;
 
 // Auth routes
 Route::post('/auth/register', RegisterController::class)->name('customer.register');

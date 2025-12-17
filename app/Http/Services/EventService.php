@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
+use Exception;
+use Carbon\Carbon;
+use App\Models\Event;
+use Illuminate\Support\Str;
 use App\Exceptions\ApiException;
 use App\Http\Filters\EventFilter;
+use Illuminate\Support\Facades\DB;
 use App\Http\Orders\EventOrdenator;
 use App\Http\Resources\EventResource;
-use App\Http\Resources\Exports\EventExportResource;
-use App\Models\Event;
-use Carbon\Carbon;
-use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use App\Http\Resources\Exports\EventExportResource;
 
 final class EventService extends Service
 {

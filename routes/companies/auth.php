@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Companies\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Companies\AuthController;
 
 Route::post('/register', [AuthController::class, 'register'])->name('company.register');
 Route::post('/login', [AuthController::class, 'login'])->name('company.login');

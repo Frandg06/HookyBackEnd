@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
-use App\Http\Services\EmailService;
-use App\Models\Event;
 use App\Models\User;
-use App\Models\UserScheduledNotification;
+use App\Models\Event;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use App\Http\Services\EmailService;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
+use App\Models\UserScheduledNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 
 final class ScheduedlEmails implements ShouldBeUnique, ShouldQueue
 {

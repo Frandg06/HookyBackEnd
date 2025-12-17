@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Http\Resources\ChatPreviewResource;
 use App\Models\Chat;
 use App\Models\ChatMessage;
+use App\Http\Resources\ChatPreviewResource;
 
 final class ChatRepository
 {

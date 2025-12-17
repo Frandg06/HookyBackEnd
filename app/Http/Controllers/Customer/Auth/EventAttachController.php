@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\Auth;
 
-use App\Actions\Customer\Auth\EventAttachAction;
-use App\Actions\Customer\Auth\MeAction;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Customer\Auth\EventAttachRequest;
 use App\Models\User;
-use Illuminate\Container\Attributes\CurrentUser;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
+use App\Actions\Customer\Auth\MeAction;
+use App\Actions\Customer\Auth\EventAttachAction;
+use Illuminate\Container\Attributes\CurrentUser;
+use App\Http\Requests\Customer\Auth\EventAttachRequest;
 
 final class EventAttachController extends Controller
 {

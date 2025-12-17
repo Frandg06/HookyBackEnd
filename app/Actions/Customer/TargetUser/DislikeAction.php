@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\TargetUser;
 
-use App\DTO\InteractionDto;
 use App\Models\User;
-use App\Repositories\TargetUserRepository;
+use App\DTO\InteractionDto;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\TargetUserRepository;
 
 final readonly class DislikeAction
 {

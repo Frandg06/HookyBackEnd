@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\Auth;
 
-use App\Actions\Customer\Auth\PasswordResetTokenAction;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Customer\Auth\PasswordResetTokenRequest;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Actions\Customer\Auth\PasswordResetTokenAction;
+use App\Http\Requests\Customer\Auth\PasswordResetTokenRequest;
 
 final class PasswordResetTokenController extends Controller
 {

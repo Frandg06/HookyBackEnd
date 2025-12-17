@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Actions\Customer\TargetUser;
 
 use App\DTO\InteractionDto;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 final readonly class RemoveTargetUserFromCacheAction
 {

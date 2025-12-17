@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
-use App\Exceptions\ApiException;
-use App\Http\Resources\AuthCompanyResource;
-use App\Models\TimeZone;
-use Illuminate\Support\Facades\DB;
 use Throwable;
+use App\Models\TimeZone;
+use App\Exceptions\ApiException;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\AuthCompanyResource;
 
 final class CompanyService extends Service
 {

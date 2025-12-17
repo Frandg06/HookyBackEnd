@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\TargetUser;
 
-use App\DTO\InteractionDto;
-use App\Events\HookNotificationEvent;
 use App\Models\User;
-use App\Repositories\ChatRepository;
-use App\Repositories\NotifyRepository;
+use App\DTO\InteractionDto;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\ChatRepository;
+use App\Events\HookNotificationEvent;
+use App\Repositories\NotifyRepository;
 
 final readonly class HookAction
 {

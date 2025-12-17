@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer;
 
-use App\Http\Controllers\Controller;
-use App\Http\Services\ChatService;
 use Illuminate\Http\Request;
+use App\Http\Services\ChatService;
+use App\Http\Controllers\Controller;
 
 final class ChatController extends Controller
 {

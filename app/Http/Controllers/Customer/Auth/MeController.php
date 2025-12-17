@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\Auth;
 
-use App\Actions\Customer\Auth\MeAction;
-use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Actions\Customer\Auth\MeAction;
+use Illuminate\Container\Attributes\CurrentUser;
 
 final class MeController extends Controller
 {

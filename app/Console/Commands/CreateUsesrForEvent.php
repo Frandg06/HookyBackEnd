@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Models\Event;
 use App\Models\User;
+use App\Models\Event;
 use App\Models\UserEvent;
 use App\Models\UserImage;
 use Illuminate\Console\Command;

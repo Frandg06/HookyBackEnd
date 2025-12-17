@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
-use DragonCode\Contracts\Queue\ShouldQueue;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Envelope;
+use DragonCode\Contracts\Queue\ShouldQueue;
 
 final class PasswordResetMail extends Mailable implements ShouldQueue
 {

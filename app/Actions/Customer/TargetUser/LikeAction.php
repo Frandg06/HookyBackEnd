@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\TargetUser;
 
-use App\DTO\InteractionDto;
-use App\Events\LikeNotificationEvent;
-use App\Models\TargetUsers;
 use App\Models\User;
+use App\DTO\InteractionDto;
+use App\Models\TargetUsers;
+use Illuminate\Support\Facades\DB;
+use App\Events\LikeNotificationEvent;
 use App\Repositories\NotifyRepository;
 use App\Repositories\TargetUserRepository;
-use Illuminate\Support\Facades\DB;
 
 final readonly class LikeAction
 {

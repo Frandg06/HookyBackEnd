@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\Events;
 
-use App\Http\Filters\EventFilter;
-use App\Http\Orders\EventOrdenator;
-use App\Models\Event;
 use App\Models\User;
-use App\Repositories\EventRepository;
+use App\Models\Event;
+use App\Http\Filters\EventFilter;
 use Illuminate\Support\Facades\DB;
+use App\Http\Orders\EventOrdenator;
+use App\Repositories\EventRepository;
 
 final readonly class GetEventsAction
 {

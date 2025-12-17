@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Companies;
 
-use App\Http\Controllers\Controller;
 use App\Http\Filters\UserFilter;
 use App\Http\Orders\UserOrdenator;
+use App\Http\Controllers\Controller;
 use App\Http\Services\CompanyUsersService;
 
 final class CustomersController extends Controller

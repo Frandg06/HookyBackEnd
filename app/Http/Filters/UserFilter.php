@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Filters;
 
-use App\Models\Gender;
 use App\Models\Role;
+use App\Models\Gender;
 
 final class UserFilter extends QueryFilter
 {

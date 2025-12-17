@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\Stripe;
 
-use App\Exceptions\ApiException;
-use App\Http\Services\StripeService;
 use App\Models\User;
+use App\Exceptions\ApiException;
 use Illuminate\Support\Facades\DB;
+use App\Http\Services\StripeService;
 
 final readonly class GetPaymentLinkAction
 {

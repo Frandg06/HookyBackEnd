@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\TargetUser;
 
-use App\Actions\Customer\TargetUser\RemoveTargetUserFromCacheAction;
-use App\Actions\Customer\TargetUser\SuperlikeAction;
+use App\Models\User;
 use App\DTO\InteractionDto;
+use Illuminate\Http\Request;
 use App\Enums\InteractionEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Customer\TargetUser\TargetUserRequest;
-use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
-use Illuminate\Http\Request;
+use App\Actions\Customer\TargetUser\SuperlikeAction;
+use App\Http\Requests\Customer\TargetUser\TargetUserRequest;
+use App\Actions\Customer\TargetUser\RemoveTargetUserFromCacheAction;
 
 final class SuperlikeController extends Controller
 {

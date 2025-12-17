@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Companies;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Http\Filters\EventFilter;
+use Illuminate\Http\JsonResponse;
 use App\Http\Orders\EventOrdenator;
+use App\Http\Services\EventService;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateEventRequest;
 use App\Http\Requests\UpdateEventRequest;
-use App\Http\Services\EventService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 final class EventController extends Controller
 {

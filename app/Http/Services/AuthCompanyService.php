@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
-use App\Exceptions\ApiException;
-use App\Models\Company;
-use App\Models\CompanyPasswordResetToken;
-use App\Models\TimeZone;
-use Carbon\Carbon;
 use Exception;
-use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use App\Models\Company;
+use App\Models\TimeZone;
+use App\Exceptions\ApiException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\CompanyPasswordResetToken;
 
 final class AuthCompanyService extends Service
 {

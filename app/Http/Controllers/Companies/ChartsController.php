@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Companies;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\ChartUserAndIncomesResource;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ChartUserAndIncomesResource;
 
 final class ChartsController extends Controller
 {

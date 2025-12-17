@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use Exception;
+use App\Models\User;
 use App\Models\Event;
 use App\Models\Ticket;
-use App\Models\User;
 use App\Models\UserEvent;
-use Exception;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 final class DevSeeder extends Seeder
 {

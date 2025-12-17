@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
-use App\Mail\NotifyStarOfEventMail;
-use App\Mail\PasswordResetMail;
-use App\Models\Event;
-use App\Models\User;
 use Exception;
+use App\Models\User;
+use App\Models\Event;
+use App\Mail\PasswordResetMail;
 use Illuminate\Mail\SentMessage;
+use App\Mail\NotifyStarOfEventMail;
 use Illuminate\Support\Facades\Mail as FacadesMail;
 
 final class EmailService

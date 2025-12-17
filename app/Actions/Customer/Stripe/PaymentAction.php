@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\Stripe;
 
-use App\Exceptions\ApiException;
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Stripe\Checkout\Session;
+use App\Exceptions\ApiException;
+use Illuminate\Support\Facades\DB;
 
 final readonly class PaymentAction
 {

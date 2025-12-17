@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\Auth;
 
-use App\Exceptions\ApiException;
-use App\Repositories\UserRepository;
 use Carbon\Carbon;
+use App\Exceptions\ApiException;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\UserRepository;
 
 final readonly class ResetPasswordAction
 {

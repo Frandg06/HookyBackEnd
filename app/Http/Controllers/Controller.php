@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\Company;
 use App\Models\User;
+use App\Models\Company;
 use App\Traits\ApiResponse;
 
 abstract class Controller

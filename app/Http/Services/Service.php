@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Services;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 
 abstract class Service extends Controller
 {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Services\ImagesService;
-use Illuminate\Http\Request;
 
 final class ImageController extends Controller
 {

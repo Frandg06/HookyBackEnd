@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\Event;
 
-use App\Actions\Customer\Events\GetEventsAction;
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Http\Filters\EventFilter;
 use App\Http\Orders\EventOrdenator;
-use App\Models\User;
+use App\Http\Controllers\Controller;
+use App\Actions\Customer\Events\GetEventsAction;
 use Illuminate\Container\Attributes\CurrentUser;
 
 final class GetEventsController extends Controller

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Actions\Customer\Auth;
 
 use App\Exceptions\ApiException;
-use App\Repositories\UserEventRepository;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\UserEventRepository;
 
 final readonly class EventAttachAction
 {

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-use App\Console\Commands\DestroyImages;
+use Illuminate\Http\Request;
 use App\Exceptions\ApiException;
-use Illuminate\Auth\AuthenticationException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Application;
+use App\Console\Commands\DestroyImages;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(

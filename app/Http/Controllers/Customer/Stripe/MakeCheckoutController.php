@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\Stripe;
 
-use App\Actions\Customer\Stripe\GetPaymentLinkAction;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Customer\Stripe\MakeCheckoutRequest;
 use App\Models\User;
+use App\Http\Controllers\Controller;
 use Illuminate\Container\Attributes\CurrentUser;
+use App\Actions\Customer\Stripe\GetPaymentLinkAction;
+use App\Http\Requests\Customer\Stripe\MakeCheckoutRequest;
 
 final class MakeCheckoutController extends Controller
 {

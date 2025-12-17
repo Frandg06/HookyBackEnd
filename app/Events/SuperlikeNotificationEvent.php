@@ -6,12 +6,11 @@ namespace App\Events;
 
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 final class SuperlikeNotificationEvent implements ShouldBroadcast
 {
@@ -25,13 +24,13 @@ final class SuperlikeNotificationEvent implements ShouldBroadcast
     public function __construct(public User $user, public User $targetUser) {}
 
     /**
-    * Get the channels the event should broadcast on.
-    *
-    * @return array<int, Channel>
-    */
+     * Get the channels the event should broadcast on.
+     *
+     * @return array<int, Channel>
+     */
     public function broadcastOn(): PrivateChannel
     {
-        return new PrivateChannel('App.Models.User.' . $this->targetUser->uid);
+        return new PrivateChannel('App.Models.User.'.$this->targetUser->uid);
 
     }
 
@@ -43,7 +42,7 @@ final class SuperlikeNotificationEvent implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'image_url' => $this->targetUser->userImages->first()->web_url ,
+            'image_url' => $this->targetUser->userImages->first()->web_url,
             'name' => $this->targetUser->name,
         ];
     }

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\Chat;
 
-use App\Events\MessageNotificationEvent;
-use App\Events\PrivateChatMessageEvent;
-use App\Http\Resources\MessageResource;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use App\Repositories\ChatRepository;
 use App\Repositories\UserRepository;
-use Illuminate\Support\Facades\DB;
+use App\Events\PrivateChatMessageEvent;
+use App\Http\Resources\MessageResource;
+use App\Events\MessageNotificationEvent;
 
 final readonly class SendMessageAction
 {

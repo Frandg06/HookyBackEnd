@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Models\Company;
-use App\Models\Event;
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Crypt;
 use Tests\TestCase;
+use App\Models\User;
+use App\Models\Event;
+use App\Models\Company;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 final class LoginCustomerTest extends TestCase
 {
