@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Companies\DomainController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['api', 'lang', 'accept-json'])->group(function () {
@@ -15,4 +16,9 @@ Route::middleware(['api', 'lang', 'accept-json'])->group(function () {
         Route::prefix('export')->group(base_path('routes/export.php'));
         Route::get('/timezones', [DomainController::class, 'getTimeZones'])->middleware(['auth:company']);
     });
+});
+
+Route::post('/debugbar', function (Request $request) {
+    $data = $request->all();
+    debug(['react_debug' => $data]);
 });
