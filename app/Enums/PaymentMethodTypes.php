@@ -7,6 +7,8 @@ namespace App\Enums;
 enum PaymentMethodTypes: string
 {
     case CARD = 'card';
+    case AMAZON = 'amazon_pay';
+    case REVOLUT = 'revolut_pay';
 
     public static function values(): array
     {
@@ -17,6 +19,8 @@ enum PaymentMethodTypes: string
     {
         return match ($this) {
             PaymentMethodTypes::CARD => 'card',
+            PaymentMethodTypes::AMAZON => 'amazon_pay',
+            PaymentMethodTypes::REVOLUT => 'revolut_pay',
         };
     }
 }
