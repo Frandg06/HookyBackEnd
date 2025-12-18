@@ -26,6 +26,10 @@ final readonly class NotifyStartOfEventAction
 
             $seconds = now()->diffInSeconds($scheduledAt);
 
+            if ($seconds <= 300) {
+                throw new ApiException('event_too_soon', 422);
+            }
+
             $notification = UserScheduledNotification::firstOrCreate(
                 [
                     'user_uid' => $user->uid,
@@ -41,7 +45,7 @@ final readonly class NotifyStartOfEventAction
                 throw new ApiException('notification_already_scheduled', 422);
             }
 
-            ScheduedlEmails::dispatch($user, $event)->delay($seconds > 300 ? $seconds : 0);
+            ScheduedlEmails::dispatch($user, $event)->delay($seconds);
 
         });
     }

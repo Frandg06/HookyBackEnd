@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
 
+    'event_too_soon' => 'Faltam menos de 5 minutos para o evento, já não é possível agendar o aviso.',
     'message_notify' => 'Mensagem enviada com sucesso.',
     'register_user_ko' => 'Ocorreu um erro ao registrar o usuário.',
     'register_company_ok' => 'O usuário foi registrado com sucesso.',

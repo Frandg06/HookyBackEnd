@@ -30,6 +30,6 @@ final class EventRepository
             })
             ->filter($filter)
             ->sort($order)
-            ->paginate(1, ['*'], 'page', $page);
+            ->paginate(10, ['*'], 'page', $page);
     }
 }
