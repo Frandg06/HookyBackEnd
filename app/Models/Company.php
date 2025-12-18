@@ -59,11 +59,6 @@ final class Company extends Authenticatable implements JWTSubject
         return $this->belongsTo(TimeZone::class, 'timezone_uid', 'uid');
     }
 
-    public function pricingPlan(): BelongsTo
-    {
-        return $this->belongsTo(PricingPlan::class, 'pricing_plan_uid', 'uid');
-    }
-
     public function checkEventLimit($st_date, $uid)
     {
         $st_date = clone $st_date;

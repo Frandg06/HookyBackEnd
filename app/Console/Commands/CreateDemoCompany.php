@@ -6,7 +6,6 @@ namespace App\Console\Commands;
 
 use App\Models\Company;
 use App\Models\TimeZone;
-use App\Models\PricingPlan;
 use Illuminate\Console\Command;
 
 final class CreateDemoCompany extends Command
@@ -36,7 +35,6 @@ final class CreateDemoCompany extends Command
             'email' => 'demo@hookyapp.es',
             'password' => 'Demo2025',
             'timezone_uid' => TimeZone::find(2)->uid,
-            'pricing_plan_uid' => PricingPlan::find(4)->uid,
         ]);
     }
 }

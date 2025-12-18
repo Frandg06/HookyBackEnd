@@ -29,7 +29,6 @@ final class CompanyFactory extends Factory
             'password' => bcrypt('password'),
             'website' => $this->faker->url,
             'cif' => $this->faker->uuid,
-            'pricing_plan_uid' => \App\Models\PricingPlan::inRandomOrder()->first()->uid,
             'timezone_uid' => \App\Models\TimeZone::inRandomOrder()->first()->uid,
         ];
     }
