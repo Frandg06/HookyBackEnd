@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Companies\DomainController;
 
@@ -18,7 +17,9 @@ Route::middleware(['api', 'lang', 'accept-json'])->group(function () {
     });
 });
 
-Route::post('/debugbar', function (Request $request) {
-    $data = $request->all();
-    debug(['react_debug' => $data]);
+Route::get('/check-limits', function () {
+    return [
+        'upload_max_filesize' => ini_get('upload_max_filesize'),
+        'post_max_size' => ini_get('post_max_size'),
+    ];
 });
