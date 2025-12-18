@@ -59,23 +59,20 @@ final class Company extends Authenticatable implements JWTSubject
         return $this->belongsTo(TimeZone::class, 'timezone_uid', 'uid');
     }
 
-    public function pricingPlan(): BelongsTo
-    {
-        return $this->belongsTo(PricingPlan::class, 'pricing_plan_uid', 'uid');
-    }
-
     public function checkEventLimit($st_date, $uid)
     {
-        $st_date = clone $st_date;
-        $limit = $this->pricingPlan->limit_events;
-        $events = $this->events()
-            ->when($uid, function ($query) use ($uid) {
-                $query->whereNot('uid', $uid);
-            })
-            ->whereDate('st_date', '>=', $st_date->startOfMonth())
-            ->whereDate('st_date', '<=', $st_date->endOfMonth())->count();
+        // $st_date = clone $st_date;
+        // $limit = $this->pricingPlan->limit_events;
+        // $events = $this->events()
+        //     ->when($uid, function ($query) use ($uid) {
+        //         $query->whereNot('uid', $uid);
+        //     })
+        //     ->whereDate('st_date', '>=', $st_date->startOfMonth())
+        //     ->whereDate('st_date', '<=', $st_date->endOfMonth())->count();
 
-        return $events < $limit;
+        // return $events < $limit;
+
+        return true;
     }
 
     public function scopeResource()

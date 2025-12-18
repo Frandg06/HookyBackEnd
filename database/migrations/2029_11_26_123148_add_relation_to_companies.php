@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::table('companies', function (Blueprint $table) {
             $table->foreign('timezone_uid')->references('uid')->on('time_zones')->onDelete('cascade');
-            $table->foreign('pricing_plan_uid')->references('uid')->on('pricing_plans')->onDelete('cascade');
         });
     }
 
@@ -25,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('companies', function (Blueprint $table) {
-            $table->dropForeign(['timezone_uid', 'pricing_plan_uid']);
+            $table->dropForeign(['timezone_uid']);
         });
     }
 };

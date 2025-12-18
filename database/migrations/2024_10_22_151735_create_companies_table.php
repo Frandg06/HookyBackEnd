@@ -24,7 +24,6 @@ return new class extends Migration
             $table->string('country')->nullable();
             $table->string('password');
             $table->uuid('timezone_uid')->nullable();
-            $table->uuid('pricing_plan_uid')->nullable();
             $table->string('cif')->nullable();
             $table->string('website')->nullable();
             $table->timestamps();
