@@ -61,16 +61,18 @@ final class Company extends Authenticatable implements JWTSubject
 
     public function checkEventLimit($st_date, $uid)
     {
-        $st_date = clone $st_date;
-        $limit = $this->pricingPlan->limit_events;
-        $events = $this->events()
-            ->when($uid, function ($query) use ($uid) {
-                $query->whereNot('uid', $uid);
-            })
-            ->whereDate('st_date', '>=', $st_date->startOfMonth())
-            ->whereDate('st_date', '<=', $st_date->endOfMonth())->count();
+        // $st_date = clone $st_date;
+        // $limit = $this->pricingPlan->limit_events;
+        // $events = $this->events()
+        //     ->when($uid, function ($query) use ($uid) {
+        //         $query->whereNot('uid', $uid);
+        //     })
+        //     ->whereDate('st_date', '>=', $st_date->startOfMonth())
+        //     ->whereDate('st_date', '<=', $st_date->endOfMonth())->count();
 
-        return $events < $limit;
+        // return $events < $limit;
+
+        return true;
     }
 
     public function scopeResource()
