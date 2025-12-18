@@ -16,10 +16,3 @@ Route::middleware(['api', 'lang', 'accept-json'])->group(function () {
         Route::get('/timezones', [DomainController::class, 'getTimeZones'])->middleware(['auth:company']);
     });
 });
-
-Route::get('/check-limits', function () {
-    return [
-        'upload_max_filesize' => ini_get('upload_max_filesize'),
-        'post_max_size' => ini_get('post_max_size'),
-    ];
-});

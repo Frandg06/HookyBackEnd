@@ -47,7 +47,7 @@ final class StripeService
     public function createPayment(array $data)
     {
         return $this->stripeClient->checkout->sessions->create([
-            'payment_method_types' => PaymentMethodTypes::values(),
+            'payment_method_types' => env('APP_ENV') === 'local' ? ['card'] : PaymentMethodTypes::values(),
             'line_items' => [[
                 'price' => $data['price_id'],
                 'quantity' => $data['quantity'] ?? 1,
@@ -62,6 +62,8 @@ final class StripeService
 
     public function retrieveSession(string $sessionId)
     {
-        return $this->stripeClient->checkout->sessions->retrieve($sessionId);
+        return $this->stripeClient->checkout->sessions->retrieve($sessionId, [
+            'expand' => ['line_items'],
+        ]);
     }
 }

@@ -57,8 +57,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::delete('/user/images', [ImageController::class, 'deleteUserImages']);
     Route::put('/user/images/{uid}/order', OrderImageController::class);
 
-    Route::get('users/{price_id}/checkout', MakeCheckoutController::class)->name('customer.stripe.checkout');
-    Route::get('users/{sessionId}/payment', PaymentController::class)->name('customer.stripe.payment');
+    Route::get('/stripe/checkout', MakeCheckoutController::class)->name('customer.stripe.checkout');
+    Route::get('/stripe/checkout/status', PaymentController::class)->name('customer.stripe.payment');
 
     Route::middleware('event')->group(function () {
         // Notifications routes

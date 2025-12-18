@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Customer\Stripe;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Services\StripeService;
 use App\Actions\Customer\Stripe\PaymentAction;
@@ -15,8 +16,10 @@ final class PaymentController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(#[CurrentUser()] User $user, string $sessionId, PaymentAction $action, StripeService $stripeService)
+    public function __invoke(#[CurrentUser()] User $user, Request $request, PaymentAction $action, StripeService $stripeService)
     {
+        $sessionId = $request->input('session_id');
+        debug($sessionId);
         $session = $stripeService->retrieveSession($sessionId);
         $action->execute($user, $session);
 

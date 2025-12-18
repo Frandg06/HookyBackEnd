@@ -8,7 +8,7 @@ use App\Models\Product;
 use App\Enums\ProductEnum;
 use Illuminate\Database\Seeder;
 
-final class PricingPlanSeeder extends Seeder
+final class ProductSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -39,7 +39,7 @@ final class PricingPlanSeeder extends Seeder
             [
                 'name' => ProductEnum::ESSENTIAL,
                 'price' => 39.95,
-                'product_id' => $products['ess'],
+                'price_id' => $products['ess'],
                 'limit_users' => 2000,
                 'limit_events' => 2,
                 'ticket_limit' => 1000,
@@ -47,7 +47,7 @@ final class PricingPlanSeeder extends Seeder
             [
                 'name' => ProductEnum::ADVANCED,
                 'price' => 59.95,
-                'product_id' => $products['adv'],
+                'price_id' => $products['adv'],
                 'limit_users' => 8000,
                 'limit_events' => 5,
                 'ticket_limit' => 3000,
@@ -55,7 +55,7 @@ final class PricingPlanSeeder extends Seeder
             [
                 'name' => ProductEnum::PROFESSIONAL,
                 'price' => 89.95,
-                'product_id' => $products['pro'],
+                'price_id' => $products['pro'],
                 'limit_users' => 4000,
                 'limit_events' => 10,
                 'ticket_limit' => 6000,
@@ -63,7 +63,7 @@ final class PricingPlanSeeder extends Seeder
             [
                 'name' => ProductEnum::PREMIUM,
                 'price' => 119.95,
-                'product_id' => $products['pre'],
+                'price_id' => $products['pre'],
                 'limit_users' => -1,
                 'limit_events' => -1,
                 'ticket_limit' => -1,
@@ -71,7 +71,7 @@ final class PricingPlanSeeder extends Seeder
             [
                 'name' => ProductEnum::VIP,
                 'price' => 14.95,
-                'product_id' => $products['vip'],
+                'price_id' => $products['vip'],
                 'limit_users' => -1,
                 'limit_events' => -1,
                 'ticket_limit' => -1,
