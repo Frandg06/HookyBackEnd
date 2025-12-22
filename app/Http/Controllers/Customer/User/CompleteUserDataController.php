@@ -31,6 +31,6 @@ final class CompleteUserDataController extends Controller
 
         $user = $action->execute($user, $data);
 
-        return $this->successResponse('user_data_completed');
+        return $this->successResponse('i18n.user_data_completed');
     }
 }
