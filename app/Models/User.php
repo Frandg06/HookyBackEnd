@@ -6,10 +6,12 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use App\Enums\SocialProviders;
+use App\Enums\User\GenderEnum;
 use App\Models\Traits\Sortable;
 use App\Models\Traits\Filterable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use App\Enums\User\SexualOrientationEnum;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -82,7 +84,9 @@ final class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'gender_id',
+        'gender',
         'sexual_orientation_id',
+        'sexual_orientation',
         'role_id',
         'born_date',
         'description',
@@ -101,19 +105,12 @@ final class User extends Authenticatable implements JWTSubject
 
     protected $dataCompleteValues = [
         'name',
-        'surnames',
         'email',
         'password',
-        'gender_id',
-        'sexual_orientation_id',
+        'gender',
+        'sexual_orientation',
         'role_id',
         'born_date',
-    ];
-
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'provider_name' => SocialProviders::class,
-        'auto_password' => 'boolean',
     ];
 
     public static function whereTargetUsersFrom($auth)
@@ -338,6 +335,16 @@ final class User extends Authenticatable implements JWTSubject
         ];
     }
 
+    public function scopeLoadRelations(): self
+    {
+        return $this->load([
+            'userImages',
+            'activeEvent',
+            'notifications',
+            'company',
+        ]);
+    }
+
     public function scopeIsPremium()
     {
         return $this->role_id === Role::PREMIUM;
@@ -395,15 +402,15 @@ final class User extends Authenticatable implements JWTSubject
         return ['uid'];
     }
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'password' => 'hashed',
+            'email_verified_at' => 'datetime',
+            'auto_password' => 'boolean',
+            'provider_name' => SocialProviders::class,
+            'sexual_orientation' => SexualOrientationEnum::class,
+            'gender' => GenderEnum::class,
         ];
     }
 }

@@ -36,8 +36,8 @@ final class UserResource extends JsonResource
 
                 ]
             ),
-            'gender_id' => $this->gender_id,
-            'sexual_orientation_id' => $this->sexual_orientation_id,
+            'gender' => $this->gender,
+            'sexual_orientation' => $this->sexual_orientation,
             'premium' => $this->role_id === Role::PREMIUM ? true : false,
             'name' => $this->name,
             'surnames' => $this->surnames,

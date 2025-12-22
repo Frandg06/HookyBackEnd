@@ -17,7 +17,6 @@ use App\Http\Services\AuthUserService;
 use App\Http\Requests\CompleteDataRequest;
 use App\Http\Resources\TargetUserResource;
 use App\Http\Services\NotificationService;
-use App\Http\Requests\CompleteAuthUserRequest;
 
 final class UserController extends Controller
 {
@@ -45,17 +44,6 @@ final class UserController extends Controller
     {
         $data = $request->all();
         $response = $this->authUserService->update($data);
-
-        return response()->json(['success' => true, 'resp' => $response], 200);
-    }
-
-    public function completeRegisterData(CompleteAuthUserRequest $request)
-    {
-        $data = $request->all();
-        $info = $this->parseCompleteData($data);
-        $files = $this->parseCompleteFiles($data);
-
-        $response = $this->authUserService->completeRegisterData($info, $files);
 
         return response()->json(['success' => true, 'resp' => $response], 200);
     }
@@ -173,32 +161,10 @@ final class UserController extends Controller
             'born_date' => $data['born_date'],
             'description' => $data['description'],
             'email' => $data['email'],
-            'gender_id' => $data['gender_id'],
+            'gender' => $data['gender'],
             'name' => $data['name'],
-            'sexual_orientation_id' => $data['sexual_orientation_id'],
+            'sexual_orientation' => $data['sexual_orientation'],
             'surnames' => $data['surnames'],
         ];
-    }
-
-    private function parseCompleteFiles($data)
-    {
-        $size = json_decode($data['userImagesSizes'], true);
-
-        $response = [];
-        for ($i = 0; $i < 3; $i++) {
-
-            if (isset($data['userImages'.$i])) {
-
-                $response[] = [
-                    'file' => $data['userImages'.$i],
-                    'data' => [
-                        'width' => $size[$i]['width'],
-                        'height' => $size[$i]['height'],
-                    ],
-                ];
-            }
-        }
-
-        return $response;
     }
 }
