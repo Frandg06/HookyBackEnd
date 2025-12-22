@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Enums\User\GenderEnum;
+use Illuminate\Validation\Rule;
+use App\Enums\User\SexualOrientationEnum;
 use Illuminate\Foundation\Http\FormRequest;
 
 final class CompleteAuthUserRequest extends FormRequest
@@ -27,10 +30,12 @@ final class CompleteAuthUserRequest extends FormRequest
             'born_date' => 'required|date',
             'description' => 'nullable|string',
             'email' => 'required|email',
-            'gender_id' => 'required|exists:genders,id',
+            'gender' => ['required', 'string', Rule::enum(GenderEnum::class)],
             'name' => 'required|string|min:2',
-            'sexual_orientation_id' => 'required|exists:sexual_orientations,id',
+            'sexual_orientation' => ['required', 'string', Rule::enum(SexualOrientationEnum::class)],
             'surnames' => 'required|string|min:2',
+            'userImages' => 'required|array|min:1|max:3',
+            'userImages.*' => 'required|file|mimes:jpeg,png,jpg,webp|max:5000',
         ];
     }
 }

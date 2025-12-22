@@ -23,6 +23,7 @@ use App\Http\Controllers\Customer\TargetUser\DislikeController;
 use App\Http\Controllers\Customer\Event\GetEventsCityController;
 use App\Http\Controllers\Customer\Stripe\MakeCheckoutController;
 use App\Http\Controllers\Customer\TargetUser\SuperlikeController;
+use App\Http\Controllers\Customer\User\CompleteUserDataController;
 use App\Http\Controllers\Customer\Auth\PasswordResetTokenController;
 use App\Http\Controllers\Customer\User\NotifyStartOfEventController;
 
@@ -48,7 +49,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/event/{uid}/notify', NotifyStartOfEventController::class);
 
     // User routes
-    Route::post('/user/complete', [UserController::class, 'completeRegisterData']);
+    Route::post('/user/complete', CompleteUserDataController::class);
     Route::put('/user/password', [UserController::class, 'updatePassword']);
     Route::put('/user/update', [UserController::class, 'update']);
     Route::post('/user/images', [ImageController::class, 'store']);

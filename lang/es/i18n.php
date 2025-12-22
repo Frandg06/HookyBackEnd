@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
 
+    'user_data_completed' => 'Tus datos se han completado correctamente.',
     'event_too_soon' => 'Faltan menos de 5 minutos para el evento, ya no puedes programar el aviso.',
     'register_user_ko' => 'Ocurrió un error al registrar el usuario.',
     'register_company_ok' => 'El usuario ha sido registrado con éxito.',
@@ -123,4 +124,9 @@ return [
         <small>&copy; 2025 Hooky. Todos los derechos reservados.</small>
       </p>',
     ],
+    'heterosexual' => 'Heterosexual',
+    'gay' => 'Gay',
+    'lesbian' => 'Lesbiana',
+    'bisexual' => 'Bisexual',
+    'not_specified' => 'No especificado',
 ];

@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Exceptions\ApiException;
 use App\Models\NotificationsType;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Resources\NotificationUserResource;
@@ -90,31 +89,36 @@ final class AuthUserService extends Service
         return $data;
     }
 
-    public function completeRegisterData($info, $files)
-    {
-        DB::beginTransaction();
-        try {
-            $user = request()->user();
-            $this->update($info, true);
+    // public function completeRegisterData(User $user, CompleteUserDataDto $data)
+    // {
+    //     DB::beginTransaction();
+    //     try {
+    //         $user->update([
+    //             'name' => $data->name,
+    //             'email' => $data->email,
+    //             'born_date' => $data->born_date,
+    //             'sexual_orientation' => $data->sexual_orientation,
+    //             'gender' => $data->gender,
+    //             'description' => $data->description,
+    //         ]);
 
-            $imageService = new ImagesService;
+    //         $imageService = new ImagesService();
+    //         if ($user->userImages->count() === 0) {
+    //             if (count($data->files) < 1 || count($data->files) > 3) {
+    //                 throw new ApiException('invalid_image_count', 400);
+    //             }
+    //             foreach ($data->files as $file) {
+    //                 $imageService->store($file);
+    //             }
+    //         }
 
-            if ($user->userImages()->count() === 0) {
-                if (count($files) < 1 || count($files) > 3) {
-                    throw new ApiException('invalid_image_count', 400);
-                }
-                foreach ($files as $file) {
-                    $imageService->store($file['file'], $file['data']);
-                }
-            }
+    //         DB::commit();
 
-            DB::commit();
-
-            return $user->toResource();
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::error('Error en '.__CLASS__.'->'.__FUNCTION__, ['exception' => $e]);
-            throw $e;
-        }
-    }
+    //         return $user->refresh()->toResource();
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('Error en '.__CLASS__.'->'.__FUNCTION__, ['exception' => $e]);
+    //         throw $e;
+    //     }
+    // }
 }
