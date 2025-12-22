@@ -44,7 +44,7 @@ final class MessageNotificationEvent implements ShouldBroadcast
             'user' => [
                 'uid' => $this->user->uid,
                 'name' => $this->user->name,
-                'image_url' => $this->user->userImages->first()?->web_url,
+                'image_url' => $this->user->images->first()?->web_url,
             ],
         ];
     }

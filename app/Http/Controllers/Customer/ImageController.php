@@ -25,7 +25,7 @@ final class ImageController extends Controller
 
         $image = $request->file('image');
 
-        $response = $this->imageService->store($image);
+        // $response = $this->imageService->store($image);
 
         return response()->json(['success' => true, 'resp' => $response], 200);
     }

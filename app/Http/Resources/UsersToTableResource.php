@@ -30,7 +30,7 @@ final class UsersToTableResource extends JsonResource
             'like_credits' => $this->event->likes,
             'super_like_credits' => $this->event->super_likes,
             'age' => $this->age,
-            'avatar' => $this->userImages()->first()->web_url ?? null,
+            'avatar' => $this->images()->first()->web_url ?? null,
         ];
     }
 }

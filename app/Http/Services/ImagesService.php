@@ -49,7 +49,7 @@ final class ImagesService extends Service
         try {
             $user = request()->user();
 
-            $imageToDelete = $user->userImages()->where('uid', $uid)->first();
+            $imageToDelete = $user->images()->where('uid', $uid)->first();
 
             if (! $imageToDelete) {
                 return throw new ApiException('image_not_found', 404);
@@ -77,7 +77,7 @@ final class ImagesService extends Service
         try {
             $user = request()->user();
 
-            foreach ($user->userImages()->get() as $item) {
+            foreach ($user->images()->get() as $item) {
                 $item->delete();
             }
 

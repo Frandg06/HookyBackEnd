@@ -22,7 +22,7 @@ final class NotificationUserResource extends JsonResource
             'uid' => $this->emitter_user->uid,
             'name' => $this->emitter_user->name,
             'surnames' => $this->emitter_user->surnames,
-            'main_image' => $this->emitter_user->userImages()->first()->web_url,
+            'main_image' => $this->emitter_user->images()->first()->web_url,
             'time' => Carbon::parse($this->updated_at)->diffForHumans([
                 'short' => true,
             ]),

@@ -53,7 +53,7 @@ final class UserResource extends JsonResource
             'data_images' => $this->data_images,
             'complete_register' => $this->complete_register,
             'age' => $this->age,
-            'userImages' => $this->userImages->map(fn ($image) => [
+            'images' => $this->images->map(fn ($image) => [
                 'uid' => $image->uid,
                 'name' => $image->name,
                 'web_url' => $image->web_url,

@@ -51,7 +51,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Notification> $notifications
  * @property-read int|null $notifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Event> $events
- * @property-read \Illuminate\Database\Eloquent\Collection<int, UserImage> $userImages
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, UserImage> $images
  * @property-read int|null $user_images_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder|User whereAny(array $columns, mixed $   value)
@@ -116,7 +116,7 @@ final class User extends Authenticatable implements JWTSubject
     public static function whereTargetUsersFrom($auth)
     {
         return self::whereNot('uid', $auth->uid)
-            ->has('userImages', '>', 0)
+            ->has('images', '>', 0)
             ->when(in_array($auth->sexual_orientation_id, [SexualOrientation::HOMOSEXUAL, SexualOrientation::HETEROSEXUAL]), function ($q) use ($auth) {
                 $q->whereIn('gender_id', $auth->match_gender)
                     ->whereIn('sexual_orientation_id', [$auth->sexual_orientation_id, SexualOrientation::BISEXUAL]);
@@ -181,7 +181,7 @@ final class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Company::class, 'company_uid', 'uid');
     }
 
-    public function userImages(): HasMany
+    public function images(): HasMany
     {
         return $this->hasMany(UserImage::class, 'user_uid', 'uid')->orderBy('order', 'asc');
     }
@@ -242,7 +242,7 @@ final class User extends Authenticatable implements JWTSubject
 
     public function getDataImagesAttribute(): bool
     {
-        return $this->userImages->count() >= 1 ? true : false;
+        return $this->images->count() >= 1 ? true : false;
     }
 
     public function getLikesAttribute(): int
@@ -338,7 +338,7 @@ final class User extends Authenticatable implements JWTSubject
     public function scopeLoadRelations(): self
     {
         return $this->load([
-            'userImages',
+            'images',
             'activeEvent',
             'notifications',
             'company',

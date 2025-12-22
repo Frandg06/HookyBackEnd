@@ -14,11 +14,6 @@ final readonly class MeAction
      */
     public function execute(User $user): UserResource
     {
-        return $user->load([
-            'userImages',
-            'activeEvent',
-            'notifications',
-            'company',
-        ])->toResource();
+        return $user->loadRelations()->toResource();
     }
 }

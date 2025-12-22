@@ -78,7 +78,7 @@ final class AuthUserService extends Service
         $data = [
             'likes' => user()->isPremium ? NotificationUserResource::collection($likes) : [
                 'images' => $likes->take(7)->map(function ($u) {
-                    return $u->user->userImages()->first()->web_url;
+                    return $u->user->images()->first()->web_url;
                 }),
                 'count' => $likes->count(),
             ],
@@ -88,37 +88,4 @@ final class AuthUserService extends Service
 
         return $data;
     }
-
-    // public function completeRegisterData(User $user, CompleteUserDataDto $data)
-    // {
-    //     DB::beginTransaction();
-    //     try {
-    //         $user->update([
-    //             'name' => $data->name,
-    //             'email' => $data->email,
-    //             'born_date' => $data->born_date,
-    //             'sexual_orientation' => $data->sexual_orientation,
-    //             'gender' => $data->gender,
-    //             'description' => $data->description,
-    //         ]);
-
-    //         $imageService = new ImagesService();
-    //         if ($user->userImages->count() === 0) {
-    //             if (count($data->files) < 1 || count($data->files) > 3) {
-    //                 throw new ApiException('invalid_image_count', 400);
-    //             }
-    //             foreach ($data->files as $file) {
-    //                 $imageService->store($file);
-    //             }
-    //         }
-
-    //         DB::commit();
-
-    //         return $user->refresh()->toResource();
-    //     } catch (Exception $e) {
-    //         DB::rollBack();
-    //         Log::error('Error en '.__CLASS__.'->'.__FUNCTION__, ['exception' => $e]);
-    //         throw $e;
-    //     }
-    // }
 }

@@ -27,7 +27,7 @@ final class TargetUserResource extends JsonResource
             'sexual_orientation_name' => $this->sexualOrientation->name,
             'description' => $this->description,
             'age' => $this->age,
-            'userImages' => $this->userImages->pluck('web_url'),
+            'images' => $this->images->pluck('web_url'),
         ];
     }
 }

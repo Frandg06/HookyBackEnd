@@ -22,12 +22,12 @@ final class ChatPreviewResource extends JsonResource
             'user1' => [
                 'uid' => $this->user1->uid,
                 'name' => $this->user1->name,
-                'image' => $this->user1->userImages()->first()->web_url,
+                'image' => $this->user1->images()->first()->web_url,
             ],
             'user2' => [
                 'uid' => $this->user2->uid,
                 'name' => $this->user2->name,
-                'image' => $this->user2->userImages()->first()->web_url,
+                'image' => $this->user2->images()->first()->web_url,
             ],
             'event_uid' => $this->event_uid,
             'last_message' => $this->lastMessage() ? [
