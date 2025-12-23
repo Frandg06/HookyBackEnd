@@ -18,7 +18,7 @@ final class StoreImageAction
     public function execute(User $user, StoreImageDto $data): User
     {
         return DB::transaction(function () use ($user, $data) {
-            $passable = new StoreImagePassable($user->loadRelations(), $data);
+            $passable = new StoreImagePassable($user->load('images'), $data);
 
             app(Pipeline::class)
                 ->send($passable)

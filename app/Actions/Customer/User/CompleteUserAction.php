@@ -19,7 +19,7 @@ final class CompleteUserAction
     public function execute(User $user, CompleteUserDataDto $data): User
     {
         return DB::transaction(function () use ($user, $data) {
-            $passable = new CompleteUserDataPassable($user->loadRelations(), $data);
+            $passable = new CompleteUserDataPassable($user->load('images'), $data);
 
             app(Pipeline::class)
                 ->send($passable)
