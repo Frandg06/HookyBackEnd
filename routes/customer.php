@@ -14,6 +14,7 @@ use App\Http\Controllers\Customer\Auth\RegisterController;
 use App\Http\Controllers\Customer\Stripe\PaymentController;
 use App\Http\Controllers\Customer\Event\GetEventsController;
 use App\Http\Controllers\Customer\TargetUser\LikeController;
+use App\Http\Controllers\Customer\User\UpdateUserController;
 use App\Http\Controllers\Customer\Auth\EventAttachController;
 use App\Http\Controllers\Customer\Auth\SocialLoginController;
 use App\Http\Controllers\Customer\Chat\SendMessageController;
@@ -50,8 +51,8 @@ Route::middleware(['auth:api'])->group(function () {
 
     // User routes
     Route::post('/user/complete', CompleteUserDataController::class);
+    Route::put('/user/update', UpdateUserController::class);
     Route::put('/user/password', [UserController::class, 'updatePassword']);
-    Route::put('/user/update', [UserController::class, 'update']);
     Route::post('/user/images', [ImageController::class, 'store']);
     Route::post('/user/images/{uid}', [ImageController::class, 'update']);
     Route::delete('/user/images/{uid}', [ImageController::class, 'delete']);

@@ -5,43 +5,14 @@ declare(strict_types=1);
 namespace App\Http\Services;
 
 use Exception;
-use App\Models\User;
 use App\Exceptions\ApiException;
 use App\Models\NotificationsType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Cache;
 use App\Http\Resources\NotificationUserResource;
 
 final class AuthUserService extends Service
 {
-    public function update(array $data, bool $isRegister = false)
-    {
-        DB::beginTransaction();
-        try {
-            $existingUser = User::where('email', $data['email'])->whereNot('uid', $this->user()->uid)->first();
-
-            if ($existingUser) {
-                throw new ApiException('user_exists', 409);
-            }
-
-            $this->user()->update($data);
-
-            if (! $isRegister && (isset($data['gender_id']) || isset($data['sexual_orientation_id']))) {
-                $this->user()->interactions()->delete();
-                $cacheKey = 'target_users_uids_'.user()->uid.'_'.user()->event->uid;
-                Cache::forget($cacheKey);
-            }
-
-            DB::commit();
-
-            return $this->user()->toResource();
-        } catch (Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-    }
-
     public function updatePassword(array $data)
     {
         DB::beginTransaction();
