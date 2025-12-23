@@ -17,19 +17,6 @@ final class ImageController extends Controller
         $this->imageService = $imageService;
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'image' => 'required|file|mimes:jpeg,png,jpg,webp,|max:5000',
-        ]);
-
-        $image = $request->file('image');
-
-        // $response = $this->imageService->store($image);
-
-        return response()->json(['success' => true, 'resp' => $response], 200);
-    }
-
     public function delete(string $uid)
     {
         $this->imageService->delete($uid);

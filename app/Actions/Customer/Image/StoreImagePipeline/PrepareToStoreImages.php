@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Customer\User\CompleteUserPipeline;
+namespace App\Actions\Customer\Image\StoreImagePipeline;
 
 use Closure;
 use Spatie\Image\Image;
@@ -13,7 +13,7 @@ final class PrepareToStoreImages
     /**
      * Check if a user is changing their email address to another one that already exists in the database.
      */
-    public function handle(CompleteUserDataPassable $passable, Closure $next): CompleteUserDataPassable
+    public function handle(StoreImagePassable $passable, Closure $next): StoreImagePassable
     {
         foreach ($passable->data->files as $index => $file) {
             $data = [

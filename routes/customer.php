@@ -18,6 +18,7 @@ use App\Http\Controllers\Customer\User\UpdateUserController;
 use App\Http\Controllers\Customer\Auth\EventAttachController;
 use App\Http\Controllers\Customer\Auth\SocialLoginController;
 use App\Http\Controllers\Customer\Chat\SendMessageController;
+use App\Http\Controllers\Customer\Image\ImageStoreController;
 use App\Http\Controllers\Customer\Image\OrderImageController;
 use App\Http\Controllers\Customer\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\TargetUser\DislikeController;
@@ -53,7 +54,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/user/complete', CompleteUserDataController::class);
     Route::put('/user/update', UpdateUserController::class);
     Route::put('/user/password', [UserController::class, 'updatePassword']);
-    Route::post('/user/images', [ImageController::class, 'store']);
+    Route::post('/user/images', ImageStoreController::class);
     Route::post('/user/images/{uid}', [ImageController::class, 'update']);
     Route::delete('/user/images/{uid}', [ImageController::class, 'delete']);
     Route::delete('/user/images', [ImageController::class, 'deleteUserImages']);
