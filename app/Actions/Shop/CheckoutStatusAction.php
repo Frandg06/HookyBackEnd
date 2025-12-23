@@ -2,28 +2,30 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Customer\Stripe;
+namespace App\Actions\Shop;
 
-use App\Models\Role;
-use App\Models\User;
 use App\Exceptions\ApiException;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\StripeService;
 use App\Repositories\OrderRepository;
+use App\Repositories\CompanyRepository;
 use App\Repositories\ProductRepository;
 
-final readonly class PaymentAction
+final readonly class CheckoutStatusAction
 {
     public function __construct(
+        private readonly StripeService $stripeService,
         private readonly OrderRepository $orderRepository,
         private readonly ProductRepository $productRepository,
-        private readonly StripeService $stripeService,
+        private readonly CompanyRepository $companyRepository,
     ) {}
 
-    public function execute(User $user, string $sessionId): void
+    /**
+     * Execute the action.
+     */
+    public function execute(string $sessionId): void
     {
-        DB::transaction(function () use ($user, $sessionId) {
-
+        DB::transaction(function () use ($sessionId) {
             $session = $this->stripeService->retrieveSession($sessionId);
 
             if ($session->payment_status !== 'paid') {
@@ -31,6 +33,14 @@ final readonly class PaymentAction
             }
 
             $priceId = $session->line_items->data[0]->price->id;
+            $email = $session->customer_details->email;
+            debug('Email retrieved from Stripe session: '.$email);
+
+            // Create or update
+            $company = $this->companyRepository->findCompanyByEmail($email);
+            if (! $company) {
+                throw new ApiException('company_not_found', 404);
+            }
             $product = $this->productRepository->findProductByPriceId($priceId);
 
             if (! $product) {
@@ -38,12 +48,10 @@ final readonly class PaymentAction
             }
 
             $this->orderRepository->createOrder([
-                'user_uid' => $user->uid,
+                'company_uid' => $company->uid,
                 'product_uuid' => $product->uuid,
                 'order_number' => $session->id,
             ]);
-
-            $user->update(['role_id' => Role::PREMIUM]);
         });
     }
 }

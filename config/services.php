@@ -53,6 +53,8 @@ return [
         'secret' => env('STRIPE_SECRET'),
         'success_url' => env('APP_FRONT_URL').'/payment?session_id={CHECKOUT_SESSION_ID}',
         'failure_url' => env('APP_FRONT_URL').'/payment',
+        'success_sub_url' => env('APP_SHOP_URL').'/payment/status?session_id={CHECKOUT_SESSION_ID}',
+        'failure_sub_url' => env('APP_SHOP_URL').'/payment/status',
     ],
 
 ];
