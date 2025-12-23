@@ -14,7 +14,6 @@ use App\Http\Services\UserService;
 use App\Http\Controllers\Controller;
 use App\Http\Services\ImagesService;
 use App\Http\Services\AuthUserService;
-use App\Http\Requests\CompleteDataRequest;
 use App\Http\Resources\TargetUserResource;
 use App\Http\Services\NotificationService;
 
@@ -38,14 +37,6 @@ final class UserController extends Controller
         $this->userService = $userService;
         $this->imageService = $imageService;
         $this->notificationService = $notificationService;
-    }
-
-    public function update(CompleteDataRequest $request)
-    {
-        $data = $request->all();
-        $response = $this->authUserService->update($data);
-
-        return response()->json(['success' => true, 'resp' => $response], 200);
     }
 
     public function updatePassword(Request $request)
