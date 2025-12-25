@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Actions\Customer\TargetUser;
 
 use App\Models\User;
-use App\DTO\InteractionDto;
 use App\Models\TargetUsers;
+use App\Dtos\InteractionDto;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\NotifyRepository;
 use App\Events\SuperlikeNotificationEvent;

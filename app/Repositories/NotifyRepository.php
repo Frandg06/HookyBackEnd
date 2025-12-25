@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\DTO\InteractionDto;
+use App\Dtos\InteractionDto;
 use App\Models\Notification;
 
 final class NotifyRepository

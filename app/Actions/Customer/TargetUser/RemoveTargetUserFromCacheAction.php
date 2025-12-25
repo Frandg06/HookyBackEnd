@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\TargetUser;
 
-use App\DTO\InteractionDto;
+use App\Dtos\InteractionDto;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 

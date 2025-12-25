@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Customer;
 
 use App\Models\User;
-use App\DTO\InteractionDto;
 use App\Models\Interaction;
 use App\Models\TargetUsers;
+use App\Dtos\InteractionDto;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Services\UserService;
