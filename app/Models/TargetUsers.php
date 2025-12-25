@@ -50,7 +50,7 @@ final class TargetUsers extends Model
         return $this->belongsTo(User::class, 'user_uid', 'uid');
     }
 
-    public function interactionUser()
+    public function targetUser()
     {
         return $this->belongsTo(User::class, 'target_user_uid', 'uid');
     }

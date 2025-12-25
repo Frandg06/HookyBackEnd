@@ -66,20 +66,20 @@ final class User extends Authenticatable implements JWTSubject
     use Notifiable;
     use Sortable;
 
-    public bool $incrementing = false;
+    public $incrementing = false;
 
-    protected string $table = 'users';
+    protected $table = 'users';
 
-    protected string $primaryKey = 'uid';
+    protected $primaryKey = 'uid';
 
-    protected string $keyType = 'string';
+    protected $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    protected array $fillable = [
+    protected $fillable = [
         'name',
         'surnames',
         'email',
@@ -97,7 +97,7 @@ final class User extends Authenticatable implements JWTSubject
         'auto_password',
     ];
 
-    protected array $hidden = [
+    protected $hidden = [
         'password',
         'remember_token',
         'updated_at',
@@ -182,9 +182,27 @@ final class User extends Authenticatable implements JWTSubject
         return $this->hasMany(UserImage::class, 'user_uid', 'uid')->orderBy('order', 'asc');
     }
 
+    public function profilePicture(): HasMany
+    {
+        return $this->hasMany(UserImage::class, 'user_uid', 'uid')->where('order', 1);
+    }
+
     public function interactions(): HasMany
     {
         return $this->hasMany(TargetUsers::class, 'user_uid', 'uid');
+    }
+
+    public function likesReceived(): HasMany
+    {
+        return $this->hasMany(TargetUsers::class, 'target_user_uid', 'uid')
+            ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID]);
+    }
+
+    public function likesReceivedOnEvent(): HasMany
+    {
+        return $this->hasMany(TargetUsers::class, 'target_user_uid', 'uid')
+            ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
+            ->where('event_uid', $this->event?->uid);
     }
 
     public function hooksAsUser1()
@@ -362,10 +380,12 @@ final class User extends Authenticatable implements JWTSubject
             'activeEvent',
             'notifications',
             'company',
+            'likesReceivedOnEvent.user.profilePicture',
         ])->loadCount([
             'hooksAsUser1',
             'hooksAsUser2',
             'events',
+            'likesReceived',
         ]);
     }
 
