@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\Carbon;
+use Spatie\Sluggable\HasSlug;
 use App\Models\Traits\Sortable;
 use App\Models\Traits\Filterable;
+use Spatie\Sluggable\SlugOptions;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -60,6 +62,7 @@ final class Event extends Model
 {
     use Filterable;
     use HasFactory;
+    use HasSlug;
     use HasUuids;
     use Sortable;
 
@@ -246,5 +249,20 @@ final class Event extends Model
     public function uniqueIds(): array
     {
         return ['uid'];
+    }
+
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('name')
+            ->saveSlugsTo('slug');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'st_date' => 'datetime',
+            'end_date' => 'datetime',
+        ];
     }
 }

@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Customer\Event;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Actions\Customer\Events\GetEventsCityAction;
+use App\Actions\Customer\Event\GetEventsCityAction;
 
 final class GetEventsCityController extends Controller
 {

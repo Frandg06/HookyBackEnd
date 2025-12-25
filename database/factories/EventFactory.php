@@ -33,7 +33,7 @@ final class EventFactory extends Factory
             'label-yellow',
         ];
 
-        $st_date = fake()->dateTimeInInterval('-1 months', '-10 days');
+        $st_date = fake()->dateTimeInInterval('-1 hour', '+10 days');
         $end_date = Carbon::parse($st_date)->addHours(8)->toDateString();
 
         return [
@@ -46,6 +46,9 @@ final class EventFactory extends Factory
             'likes' => fake()->numberBetween(1, 100),
             'super_likes' => fake()->numberBetween(1, 100),
             'colors' => $colors[rand(0, count($colors) - 1)],
+            'room_name' => fake()->word(),
+            'city' => fake()->city(),
+            'banner_image' => fake()->imageUrl(640, 480, 'events', true),
         ];
     }
 }

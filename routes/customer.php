@@ -11,6 +11,7 @@ use App\Http\Controllers\Customer\Auth\MeController;
 use App\Http\Controllers\Customer\Auth\LoginController;
 use App\Http\Controllers\Customer\Auth\LogoutController;
 use App\Http\Controllers\Customer\Auth\RegisterController;
+use App\Http\Controllers\Customer\Event\GetEventController;
 use App\Http\Controllers\Customer\Stripe\PaymentController;
 use App\Http\Controllers\Customer\Event\GetEventsController;
 use App\Http\Controllers\Customer\TargetUser\LikeController;
@@ -36,6 +37,7 @@ Route::post('/auth/social-login/{provider}', SocialLoginController::class)->name
 
 Route::get('/event', GetEventsController::class);
 Route::get('/event/cities', GetEventsCityController::class);
+Route::get('/event/{slug}', GetEventController::class);
 
 // Password reset routes
 Route::post('/auth/forgot-password', PasswordResetTokenController::class)->name('customer.password.email');

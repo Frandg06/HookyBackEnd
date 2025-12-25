@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions\Customer\Events;
+namespace App\Actions\Customer\Event;
 
 use App\Models\Event;
 use Illuminate\Support\Facades\DB;

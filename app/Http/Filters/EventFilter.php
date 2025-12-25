@@ -125,4 +125,26 @@ final class EventFilter extends QueryFilter
     {
         return $this->builder->where('company_uid', $value);
     }
+
+    public function isToday(bool $value)
+    {
+        if ($value === true) {
+            $this->builder->whereDate('st_date', now()->format('Y-m-d'));
+        } else {
+            $this->builder->whereDate('st_date', '!=', now()->format('Y-m-d'));
+        }
+
+        return $this->builder;
+    }
+
+    public function isThisWeek(bool $value)
+    {
+        if ($value === true) {
+            $this->builder->whereDate('st_date', '>=', now()->startOfWeek()->format('Y-m-d'))->whereDate('st_date', '<=', now()->endOfWeek()->format('Y-m-d'));
+        } else {
+            $this->builder->whereDate('st_date', '<=', now()->startOfWeek()->format('Y-m-d'))->whereDate('st_date', '>=', now()->endOfWeek()->format('Y-m-d'));
+        }
+
+        return $this->builder;
+    }
 }
