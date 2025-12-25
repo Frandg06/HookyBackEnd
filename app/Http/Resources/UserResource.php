@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,29 +17,11 @@ final class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
             'uid' => $this->uid,
-            'company' => [
-                'uid' => $this->company?->uid,
-                'name' => $this->company?->name,
-            ],
-            'event' => $this->when(
-                $this->event,
-                [
-                    'is_active' => $this->event?->is_active,
-                    'uid' => $this->event?->uid,
-                    'name' => $this->event?->name,
-                    'st_date' => $this->event?->st_date,
-                    'end_date' => $this->event?->end_date,
-                    'is_finished' => $this->event?->is_finished,
-
-                ]
-            ),
+            'name' => $this->name,
             'gender' => $this->gender,
             'sexual_orientation' => $this->sexual_orientation,
-            'premium' => $this->role_id === Role::PREMIUM ? true : false,
-            'name' => $this->name,
-            'surnames' => $this->surnames,
+            'premium' => $this->is_premium,
             'email' => $this->email,
             'born_date' => $this->born_date,
             'description' => $this->description,
@@ -68,6 +49,18 @@ final class UserResource extends JsonResource
                 'hooks' => $this->hooks_as_user1_count + $this->hooks_as_user2_count,
                 'likes' => $this->likes_received_count,
             ],
+            'event' => $this->when(
+                $this->event,
+                [
+                    'is_active' => $this->event?->is_active,
+                    'uid' => $this->event?->uid,
+                    'name' => $this->event?->name,
+                    'st_date' => $this->event?->st_date,
+                    'end_date' => $this->event?->end_date,
+                    'is_finished' => $this->event?->is_finished,
+
+                ]
+            ),
             'likes_received' => $this->likesReceivedOnEvent->map(fn ($like) => [
                 'uid' => $like->user->uid,
                 'name' => $like->user->name,
