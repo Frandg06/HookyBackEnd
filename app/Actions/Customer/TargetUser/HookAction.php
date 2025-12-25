@@ -8,6 +8,7 @@ use App\Models\User;
 use App\DTO\InteractionDto;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\ChatRepository;
+use App\Repositories\HookRepository;
 use App\Events\HookNotificationEvent;
 use App\Repositories\NotifyRepository;
 
@@ -15,7 +16,8 @@ final readonly class HookAction
 {
     public function __construct(
         private readonly ChatRepository $chatRepository,
-        private readonly NotifyRepository $notifyRepository
+        private readonly NotifyRepository $notifyRepository,
+        private readonly HookRepository $hookRepository,
     ) {}
 
     /**
@@ -26,6 +28,8 @@ final readonly class HookAction
         return DB::transaction(function () use ($user, $targeUser, $target) {
 
             $chat = $this->chatRepository->store($user->uid, $targeUser->uid, $target->event_uid);
+
+            $this->hookRepository->create($user->uid, $targeUser->uid, $target->event_uid);
 
             HookNotificationEvent::dispatch($user, $targeUser, $target->event_uid, $chat->uid);
 

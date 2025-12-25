@@ -63,6 +63,10 @@ final class UserResource extends JsonResource
             'notifications' => [
                 ...$this->getNotificationsByType(),
             ],
+            'stats' => [
+                'events' => $this->events_count,
+                'hooks' => $this->hooks_as_user1_count + $this->hooks_as_user2_count,
+            ],
 
         ];
     }

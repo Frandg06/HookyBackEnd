@@ -12,6 +12,7 @@ use App\Models\Traits\Filterable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use App\Enums\User\SexualOrientationEnum;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -65,20 +66,20 @@ final class User extends Authenticatable implements JWTSubject
     use Notifiable;
     use Sortable;
 
-    public $incrementing = false;
+    public bool $incrementing = false;
 
-    protected $table = 'users';
+    protected string $table = 'users';
 
-    protected $primaryKey = 'uid';
+    protected string $primaryKey = 'uid';
 
-    protected $keyType = 'string';
+    protected string $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    protected $fillable = [
+    protected array $fillable = [
         'name',
         'surnames',
         'email',
@@ -96,14 +97,14 @@ final class User extends Authenticatable implements JWTSubject
         'auto_password',
     ];
 
-    protected $hidden = [
+    protected array $hidden = [
         'password',
         'remember_token',
         'updated_at',
         'created_at',
     ];
 
-    protected $dataCompleteValues = [
+    protected array $dataCompleteValues = [
         'name',
         'email',
         'password',
@@ -156,11 +157,6 @@ final class User extends Authenticatable implements JWTSubject
             });
     }
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     public function gender(): BelongsTo
     {
         return $this->belongsTo(Gender::class);
@@ -189,6 +185,16 @@ final class User extends Authenticatable implements JWTSubject
     public function interactions(): HasMany
     {
         return $this->hasMany(TargetUsers::class, 'user_uid', 'uid');
+    }
+
+    public function hooksAsUser1()
+    {
+        return $this->hasMany(Hook::class, 'user1_uid', 'uid');
+    }
+
+    public function hooksAsUser2()
+    {
+        return $this->hasMany(Hook::class, 'user2_uid', 'uid');
     }
 
     public function events(): BelongsToMany
@@ -223,9 +229,23 @@ final class User extends Authenticatable implements JWTSubject
         return Carbon::parse($this->born_date)->age;
     }
 
-    public function getEventAttribute()
+    public function getEventAttribute(): ?Event
     {
         return $this->activeEvent->first();
+    }
+
+    public function hooks(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->hooksAsUser1->merge($this->hooksAsUser2);
+        });
+    }
+
+    public function hooksCount(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->hooks->count();
+        });
     }
 
     public function getDataCompleteAttribute(): bool
@@ -342,6 +362,10 @@ final class User extends Authenticatable implements JWTSubject
             'activeEvent',
             'notifications',
             'company',
+        ])->loadCount([
+            'hooksAsUser1',
+            'hooksAsUser2',
+            'events',
         ]);
     }
 
@@ -377,24 +401,18 @@ final class User extends Authenticatable implements JWTSubject
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
-     *
-     * @return mixed
      */
-    public function getJWTIdentifier()
+    public function getJWTIdentifier(): mixed
     {
         return $this->getKey();
     }
 
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
-     *
-     * @return array
      */
-    public function getJWTCustomClaims()
+    public function getJWTCustomClaims(): array
     {
-        return [
-            'uid' => $this->uid,
-        ];
+        return [];
     }
 
     public function uniqueIds(): array
