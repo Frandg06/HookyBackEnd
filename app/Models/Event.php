@@ -263,6 +263,7 @@ final class Event extends Model
         return [
             'st_date' => 'datetime',
             'end_date' => 'datetime',
+            'entry_fee' => 'decimal:2',
         ];
     }
 }

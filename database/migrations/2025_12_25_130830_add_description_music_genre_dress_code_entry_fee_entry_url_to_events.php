@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable()->after('banner_image');
             $table->string('music_genre')->nullable()->after('description');
             $table->string('dress_code')->nullable()->after('music_genre');
-            $table->string('entry_fee', 8)->nullable()->after('dress_code');
+            $table->decimal('entry_fee', 8, 2)->nullable()->after('dress_code');
             $table->string('entry_url')->nullable()->after('entry_fee');
         });
     }

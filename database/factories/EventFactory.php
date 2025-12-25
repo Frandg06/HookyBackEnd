@@ -49,6 +49,11 @@ final class EventFactory extends Factory
             'room_name' => fake()->word(),
             'city' => fake()->city(),
             'banner_image' => fake()->imageUrl(640, 480, 'events', true),
+            'entry_fee' => fake()->randomFloat(2, 0, 100),
+            'description' => fake()->paragraph(),
+            'music_genre' => fake()->word(),
+            'dress_code' => fake()->word(),
+            'entry_url' => fake()->url(),
         ];
     }
 }
