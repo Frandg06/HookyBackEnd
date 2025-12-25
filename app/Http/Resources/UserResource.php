@@ -61,14 +61,6 @@ final class UserResource extends JsonResource
 
                 ]
             ),
-            'likes_received' => $this->likesReceivedOnEvent->map(fn ($like) => [
-                'uid' => $like->user->uid,
-                'name' => $like->user->name,
-                'age' => $like->user->age,
-                'interaction_id' => $like->interaction_id,
-                'images' => $like->user->profilePicture->first()?->web_url,
-            ]),
-
         ];
     }
 }

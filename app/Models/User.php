@@ -234,7 +234,7 @@ final class User extends Authenticatable implements JWTSubject
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'user_uid', 'uid')
-            ->where('event_uid', $this->activeEvent?->first()?->uid ?? null);
+            ->where('event_uid', $this->event?->uid ?? null);
     }
 
     public function tickets()
@@ -380,7 +380,6 @@ final class User extends Authenticatable implements JWTSubject
             'activeEvent',
             'notifications',
             'company',
-            'likesReceivedOnEvent.user.profilePicture',
         ])->loadCount([
             'hooksAsUser1',
             'hooksAsUser2',
