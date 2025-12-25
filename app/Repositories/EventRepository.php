@@ -37,4 +37,12 @@ final class EventRepository
             ->sort($order)
             ->paginate(10, ['*'], 'page', $page);
     }
+
+    public function getUpcomingAndActiveEvents(EventFilter $filter, EventOrdenator $order, int $page = 1)
+    {
+        return Event::withCount('users2')->where('end_date', '>', Carbon::now()->toDateTimeString())
+            ->filter($filter)
+            ->sort($order)
+            ->paginate(10, ['*'], 'page', $page);
+    }
 }

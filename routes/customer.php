@@ -25,6 +25,7 @@ use App\Http\Controllers\Customer\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\TargetUser\DislikeController;
 use App\Http\Controllers\Customer\Event\GetEventsCityController;
 use App\Http\Controllers\Customer\Stripe\MakeCheckoutController;
+use App\Http\Controllers\Customer\Event\GetEventsGuestController;
 use App\Http\Controllers\Customer\TargetUser\SuperlikeController;
 use App\Http\Controllers\Customer\User\CompleteUserDataController;
 use App\Http\Controllers\Customer\Auth\PasswordResetTokenController;
@@ -39,6 +40,11 @@ Route::post('/auth/social-login/{provider}', SocialLoginController::class)->name
 Route::post('/auth/forgot-password', PasswordResetTokenController::class)->name('customer.password.email');
 Route::put('/auth/reset-password/{token}', ResetPasswordController::class)->name('customer.password.reset');
 
+// Public Event routes
+Route::get('/event/guest', GetEventsGuestController::class);
+Route::get('/event/cities', GetEventsCityController::class);
+Route::get('/event/{slug}', GetEventController::class);
+
 Route::middleware(['auth:api'])->group(function () {
     // Auth routes
     Route::post('auth/login/{event_uid}', EventAttachController::class)->name('customer.login.event');
@@ -48,8 +54,6 @@ Route::middleware(['auth:api'])->group(function () {
     // Event routes
     Route::get('/event', GetEventsController::class);
     Route::post('/event/{uid}/notify', NotifyStartOfEventController::class);
-    Route::get('/event/cities', GetEventsCityController::class);
-    Route::get('/event/{slug}', GetEventController::class);
 
     // User routes
     Route::post('/user/complete', CompleteUserDataController::class);

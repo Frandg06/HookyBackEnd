@@ -26,7 +26,7 @@ final class EventResource extends JsonResource
             'banner_image' => $this->banner_image,
             'is_active' => $this->is_active,
             'is_sheduled' => ! $this->is_active && ! $this->is_finished,
-            'is_notified' => $this->scheduledNotifications->where('user_uid', request()->user()->uid)->first() ? true : false,
+            'is_notified' => request()->user() ? ($this->scheduledNotifications->where('user_uid', request()->user()->uid)->first() ? true : false) : false,
             'users_count' => $this->users2_count ?? 0,
             'diffForHumans' => $this->st_date->diffForHumans(),
             'slug' => $this->slug,
