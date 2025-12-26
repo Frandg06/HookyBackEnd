@@ -30,6 +30,8 @@ use App\Http\Controllers\Customer\TargetUser\SuperlikeController;
 use App\Http\Controllers\Customer\User\CompleteUserDataController;
 use App\Http\Controllers\Customer\Auth\PasswordResetTokenController;
 use App\Http\Controllers\Customer\User\NotifyStartOfEventController;
+use App\Http\Controllers\Customer\User\Notification\GetHookNotificationsController;
+use App\Http\Controllers\Customer\User\Notification\GetLikeNotificationsController;
 
 // Auth routes
 Route::post('/auth/register', RegisterController::class)->name('customer.register');
@@ -70,7 +72,8 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::middleware('event')->group(function () {
         // Notifications routes
-        Route::get('/notifications', [UserController::class, 'getNotifications']);
+        Route::get('/notifications/like', GetLikeNotificationsController::class);
+        Route::get('/notifications/hook', GetHookNotificationsController::class);
         Route::post('/notifications/read/{type}', [UserController::class, 'readNotificationsByType']);
 
         // Chat routes

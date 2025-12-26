@@ -52,13 +52,6 @@ final class UserController extends Controller
         return response()->json(['success' => true, 'resp' => $response], 200);
     }
 
-    public function getNotifications()
-    {
-        $response = $this->authUserService->getNotifications();
-
-        return response()->json(['success' => true, 'resp' => $response], 200);
-    }
-
     public function readNotificationsByType($type)
     {
         $response = $this->notificationService->readNotificationsByType($type);

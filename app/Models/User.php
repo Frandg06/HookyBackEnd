@@ -184,7 +184,7 @@ final class User extends Authenticatable implements JWTSubject
 
     public function profilePicture(): HasMany
     {
-        return $this->hasMany(UserImage::class, 'user_uid', 'uid')->where('order', 1);
+        return $this->hasMany(UserImage::class, 'user_uid', 'uid')->where('order', 1)->limit(1);
     }
 
     public function interactions(): HasMany
@@ -196,13 +196,6 @@ final class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(TargetUsers::class, 'target_user_uid', 'uid')
             ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID]);
-    }
-
-    public function likesReceivedOnEvent(): HasMany
-    {
-        return $this->hasMany(TargetUsers::class, 'target_user_uid', 'uid')
-            ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
-            ->where('event_uid', $this->event?->uid);
     }
 
     public function hooksAsUser1()
@@ -234,7 +227,13 @@ final class User extends Authenticatable implements JWTSubject
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'user_uid', 'uid')
-            ->where('event_uid', $this->event?->uid ?? null);
+            ->where('event_uid', $this->event?->uid);
+    }
+
+    public function likeNotifications(): HasMany
+    {
+        return $this->hasMany(Notification::class, 'user_uid', 'uid')
+            ->whereIn('type_id', [NotificationsType::LIKE_TYPE, NotificationsType::SUPER_LIKE_TYPE]);
     }
 
     public function tickets()
