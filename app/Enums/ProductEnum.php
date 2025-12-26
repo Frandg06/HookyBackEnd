@@ -12,9 +12,9 @@ enum ProductEnum: string
     case PREMIUM = 'Premium';
     case VIP = 'VIP';
 
-    public static function label(): string
+    public function label(): string
     {
-        return match (self::cases()) {
+        return match ($this) {
             self::ESSENTIAL => 'Essential',
             self::ADVANCED => 'Advanced',
             self::PROFESSIONAL => 'Professional',

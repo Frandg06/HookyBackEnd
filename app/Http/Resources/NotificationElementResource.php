@@ -44,7 +44,7 @@ final class NotificationElementResource extends JsonResource
                     ->first();
 
                 return [
-                    'chat' => optional($chat)->uid,
+                    'chat' => $chat->uid,
                 ];
             }),
         ];
@@ -52,12 +52,8 @@ final class NotificationElementResource extends JsonResource
 
     private function getDefaultImages()
     {
-        $gender = [
-            'men', 'women',
-        ];
-
+        $gender = ['men', 'women'];
         $rand = rand(1, 50);
-
         $photo = "https://randomuser.me/api/portraits/{$gender[array_rand($gender)]}/{$rand}.jpg";
 
         return $photo;
