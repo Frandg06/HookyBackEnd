@@ -58,7 +58,6 @@ final class UserResource extends JsonResource
                     'st_date' => $this->event?->st_date,
                     'end_date' => $this->event?->end_date,
                     'is_finished' => $this->event?->is_finished,
-
                 ]
             ),
         ];

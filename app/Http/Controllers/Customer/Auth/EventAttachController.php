@@ -20,8 +20,8 @@ final class EventAttachController extends Controller
     public function __invoke(#[CurrentUser] User $user, EventAttachRequest $request, EventAttachAction $eventAttachAction): JsonResponse
     {
         $event_uuid = $request->input('event_uid');
-        $eventAttachAction->execute($user->uid, $event_uuid);
+        $event = $eventAttachAction->execute($user->uid, $event_uuid);
 
-        return $this->successResponse('Event attached successfully');
+        return $this->successResponse('Event attached successfully', $event);
     }
 }
