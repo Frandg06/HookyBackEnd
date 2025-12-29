@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 final class Hook extends Model
@@ -29,6 +30,21 @@ final class Hook extends Model
         'user2_uid',
         'event_uid',
     ];
+
+    public function user1(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user1_uid', 'uid');
+    }
+
+    public function user2(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user2_uid', 'uid');
+    }
+
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(Event::class, 'event_uid', 'uid');
+    }
 
     public function uniqueIds(): array
     {

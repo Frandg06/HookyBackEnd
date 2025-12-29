@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use App\Enums\InteractionEnum;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-final class NotificationElementResource extends JsonResource
+final class LikeMinifiedResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

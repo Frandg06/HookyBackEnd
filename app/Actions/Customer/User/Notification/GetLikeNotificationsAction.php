@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\TargetUsers;
 use App\Enums\InteractionEnum;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\NotificationElementResource;
+use App\Http\Resources\LikeMinifiedResource;
 
 final readonly class GetLikeNotificationsAction
 {
@@ -34,7 +34,7 @@ final readonly class GetLikeNotificationsAction
                 ->paginate(20, ['*'], 'page', $page);
 
             return [
-                'likes' => NotificationElementResource::collection($likes),
+                'likes' => LikeMinifiedResource::collection($likes),
                 'pagination' => [
                     'current_page' => $likes->currentPage(),
                     'next_page' => $likes->currentPage() + 1 > $likes->lastPage() ? null : $likes->currentPage() + 1,
