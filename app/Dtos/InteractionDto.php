@@ -13,16 +13,6 @@ final class InteractionDto
         public ?int $interaction_id
     ) {}
 
-    public static function fromArray(array $data): self
-    {
-        return new self(
-            $data['user_uid'],
-            $data['target_user_uid'],
-            $data['event_uid'],
-            $data['interaction_id'] ?? null,
-        );
-    }
-
     public function toArray(): array
     {
         return [

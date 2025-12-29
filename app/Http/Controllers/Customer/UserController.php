@@ -16,6 +16,7 @@ use App\Http\Services\ImagesService;
 use App\Http\Services\AuthUserService;
 use App\Http\Resources\TargetUserResource;
 use App\Http\Services\NotificationService;
+use Illuminate\Container\Attributes\CurrentUser;
 
 final class UserController extends Controller
 {
@@ -111,15 +112,14 @@ final class UserController extends Controller
         ]);
     }
 
-    public function showTargetUser(Request $request, $uid)
+    public function showTargetUser(#[CurrentUser] User $user, $uid)
     {
-        $user = $request->user();
-
-        $dto = InteractionDto::fromArray([
-            'user_uid' => $user->uid,
-            'target_user_uid' => $uid,
-            'event_uid' => $user->event->uid,
-        ]);
+        $dto = new InteractionDto(
+            user_uid: $user->uid,
+            target_user_uid: $uid,
+            event_uid: $user->event->uid,
+            interaction_id: null,
+        );
 
         $isHook = TargetUsers::isHook($dto);
 
@@ -131,10 +131,10 @@ final class UserController extends Controller
             ], 401);
         }
 
-        $user = User::where('uid', $uid)->first();
+        $target = User::findOrFail($uid);
 
         return $this->successResponse('User to confirm retrieved', [
-            'user' => TargetUserResource::make($user),
+            'user' => TargetUserResource::make($target),
             'to_confirm' => false,
         ]);
     }

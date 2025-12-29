@@ -17,7 +17,6 @@ final class TargetUserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
             'uid' => $this->uid,
             'name' => $this->name,
             'description' => $this->description,
