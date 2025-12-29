@@ -138,17 +138,4 @@ final class UserController extends Controller
             'to_confirm' => false,
         ]);
     }
-
-    private function parseCompleteData($data)
-    {
-        return [
-            'born_date' => $data['born_date'],
-            'description' => $data['description'],
-            'email' => $data['email'],
-            'gender' => $data['gender'],
-            'name' => $data['name'],
-            'sexual_orientation' => $data['sexual_orientation'],
-            'surnames' => $data['surnames'],
-        ];
-    }
 }
