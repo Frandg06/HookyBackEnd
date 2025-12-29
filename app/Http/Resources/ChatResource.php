@@ -16,20 +16,19 @@ final class ChatResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
+        $auth = $request->user()->uid;
+        $chat_user = $auth === $this->user1_uid ? $this->user2 : $this->user1;
+
         return [
             'uid' => $this->uid,
-            'user1' => [
-                'uid' => $this->user1->uid,
-                'name' => $this->user1->name,
-                'image' => $this->user1->images()->first()->web_url,
-            ],
-            'user2' => [
-                'uid' => $this->user2->uid,
-                'name' => $this->user2->name,
-                'image' => $this->user2->images()->first()->web_url,
+            'chat_user' => [
+                'uid' => $chat_user->uid,
+                'name' => $chat_user->name,
+                'image' => $chat_user->images->first()->web_url,
             ],
             'event_uid' => $this->event_uid,
-            'messages' => MessageResource::collection($this->messages()->orderBy('created_at', 'desc')->get()),
+            'messages' => MessageResource::collection($this->messages->sortByDesc('created_at')),
         ];
     }
 }

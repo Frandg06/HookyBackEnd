@@ -15,23 +15,20 @@ final class ChatService extends Service
 {
     public function retrieve($user)
     {
-        $chats = Chat::where('event_uid', $user->event->uid)
+        $chats = Chat::with('messages')
+            ->where('event_uid', $user->event->uid)
             ->whereAny(['user1_uid', 'user2_uid'], $user->uid)
-            ->orderBy(function ($query) {
-                $query->select('created_at')
-                    ->from('chat_messages')
-                    ->whereColumn('chat_messages.chat_uid', 'chats.uid')
-                    ->orderBy('created_at', 'desc')
-                    ->limit(1);
-            }, 'desc')
-            ->get();
+            ->whereHas('messages')
+            ->withMax('messages', 'created_at')
+            ->orderByDesc('messages_max_created_at')
+            ->paginate(100, ['*'], 'page', 1);
 
         return ChatPreviewResource::collection($chats);
     }
 
     public function show(string $uid): ChatResource
     {
-        $chat = Chat::findOrFail($uid);
+        $chat = Chat::with('messages')->findOrFail($uid);
 
         return ChatResource::make($chat);
     }

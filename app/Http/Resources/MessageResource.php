@@ -17,14 +17,13 @@ final class MessageResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
+        $auth = $request->user()->uid;
+
         return [
             'uid' => $this->uid,
             'chat_uid' => $this->chat_uid,
-            'sender' => [
-                'uid' => $this->user->uid,
-                'name' => $this->user->name,
-                'image_url' => $this->user->images->first()->web_url,
-            ],
+            'is_sender' => $auth === $this->sender_uid,
             'message' => $this->message,
             'read_at' => $this->read_at,
             'created_at' => Carbon::parse($this->created_at)->format('H:i'),
