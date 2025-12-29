@@ -15,11 +15,26 @@ enum SexualOrientationEnum: string
     public static function label(): string
     {
         return match (self::class) {
-            self::HETEROSEXUAL => __('i18n.heterosexual'),
-            self::GAY => __('i18n.gay'),
-            self::LESBIAN => __('i18n.lesbian'),
-            self::BISEXUAL => __('i18n.bisexual'),
-            self::PREFER_NOT_TO_SAY => __('i18n.prefer_not_to_say'),
+            self::HETEROSEXUAL => 'heterosexual',
+            self::GAY => 'gay',
+            self::LESBIAN => 'lesbian',
+            self::BISEXUAL => 'bisexual',
+            self::PREFER_NOT_TO_SAY => 'prefer_not_to_say',
         };
+    }
+
+    public function isHomosexual(): bool
+    {
+        return in_array($this, [self::GAY, self::LESBIAN]);
+    }
+
+    public function isBisexual(): bool
+    {
+        return $this === self::BISEXUAL;
+    }
+
+    public function isHeterosexual(): bool
+    {
+        return $this === self::HETEROSEXUAL;
     }
 }

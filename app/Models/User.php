@@ -118,30 +118,34 @@ final class User extends Authenticatable implements JWTSubject
     {
         return self::whereNot('uid', $auth->uid)
             ->has('images', '>', 0)
-            ->when(in_array($auth->sexual_orientation_id, [SexualOrientation::HOMOSEXUAL, SexualOrientation::HETEROSEXUAL]), function ($q) use ($auth) {
-                $q->whereIn('gender_id', $auth->match_gender)
-                    ->whereIn('sexual_orientation_id', [$auth->sexual_orientation_id, SexualOrientation::BISEXUAL]);
+            ->when($auth->sexual_orientation->isHomosexual(), function ($q) use ($auth) {
+                $q->where('gender', $auth->gender->same())
+                    ->whereIn('sexual_orientation', [$auth->sexual_orientation, SexualOrientationEnum::BISEXUAL]);
             })
-            ->when($auth->sexual_orientation_id === SexualOrientation::BISEXUAL, function ($q) use ($auth) {
-                $q->when($auth->gender_id === Gender::MALE, function ($query) {
+            ->when($auth->sexual_orientation->isHeterosexual(), function ($q) use ($auth) {
+                $q->where('gender', $auth->gender->opposite())
+                    ->whereIn('sexual_orientation', [$auth->sexual_orientation, SexualOrientationEnum::BISEXUAL]);
+            })
+            ->when($auth->sexual_orientation->isBisexual(), function ($q) use ($auth) {
+                $q->when($auth->gender->isMale(), function ($query) {
                     $query->where(function ($q) {
                         $q->where(function ($subQuery) {
-                            $subQuery->where('gender_id', Gender::MALE)
-                                ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
+                            $subQuery->where('gender', GenderEnum::MALE)
+                                ->whereIn('sexual_orientation', [SexualOrientationEnum::GAY, SexualOrientationEnum::BISEXUAL]);
                         })->orWhere(function ($subQuery) {
-                            $subQuery->where('gender_id', Gender::FEMALE)
-                                ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                            $subQuery->where('gender', GenderEnum::FEMALE)
+                                ->whereIn('sexual_orientation', [SexualOrientationEnum::HETEROSEXUAL, SexualOrientationEnum::BISEXUAL]);
                         });
                     });
                 });
-                $q->when($auth->gender_id === Gender::FEMALE, function ($query) {
+                $q->when($auth->gender->isFemale(), function ($query) {
                     $query->where(function ($q) {
                         $q->where(function ($subQuery) {
-                            $subQuery->where('gender_id', Gender::FEMALE)
-                                ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
+                            $subQuery->where('gender', GenderEnum::FEMALE)
+                                ->whereIn('sexual_orientation', [SexualOrientationEnum::LESBIAN, SexualOrientationEnum::BISEXUAL]);
                         })->orWhere(function ($subQuery) {
-                            $subQuery->where('gender_id', Gender::MALE)
-                                ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                            $subQuery->where('gender', GenderEnum::MALE)
+                                ->whereIn('sexual_orientation', [SexualOrientationEnum::HETEROSEXUAL, SexualOrientationEnum::BISEXUAL]);
                         });
                     });
                 });
@@ -184,7 +188,7 @@ final class User extends Authenticatable implements JWTSubject
 
     public function profilePicture(): HasMany
     {
-        return $this->hasMany(UserImage::class, 'user_uid', 'uid')->where('order', 1)->limit(1);
+        return $this->hasMany(UserImage::class, 'user_uid', 'uid')->orderBy('order', 'asc')->limit(1);
     }
 
     public function interactions(): HasMany
