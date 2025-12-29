@@ -15,9 +15,9 @@ final class GetLikeNotificationsController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(#[CurrentUser()] User $user, GetLikeNotificationsAction $action)
+    public function __invoke(#[CurrentUser] User $user, Request $request, GetLikeNotificationsAction $action)
     {
-        $response = $action->execute($user);
+        $response = $action->execute($user, $request->integer('page', 1));
 
         return $this->successResponse(__('i18n.notifications_retrieved'), $response);
     }

@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Dtos\InteractionDto;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class TargetUsers extends Model
 {
@@ -50,6 +51,11 @@ final class TargetUsers extends Model
         return $this->belongsTo(User::class, 'user_uid', 'uid');
     }
 
+    public function emitter(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_uid', 'uid');
+    }
+
     public function targetUser()
     {
         return $this->belongsTo(User::class, 'target_user_uid', 'uid');
@@ -62,7 +68,7 @@ final class TargetUsers extends Model
 
     public function interaction()
     {
-        return $this->belongsTo(Interaction::class, 'iteraction_id');
+        return $this->belongsTo(Interaction::class, 'interaction_id');
     }
 
     public function scopeUsersWithoutInteraction($query, $eventUid)

@@ -5,36 +5,43 @@ declare(strict_types=1);
 namespace App\Actions\Customer\User\Notification;
 
 use App\Models\User;
-use App\Models\Notification;
+use App\Models\TargetUsers;
+use App\Enums\InteractionEnum;
 use Illuminate\Support\Facades\DB;
-use App\Enums\NotificationTypeEnum;
 use App\Http\Resources\NotificationElementResource;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 final readonly class GetLikeNotificationsAction
 {
     /**
      * Execute the action.
      */
-    public function execute(User $user): AnonymousResourceCollection
+    public function execute(User $user, int $page = 1): array
     {
-        return DB::transaction(function () use ($user) {
+        return DB::transaction(function () use ($user, $page) {
 
-            $likes = Notification::with([
-                'emitter_user:uid,name',
-                'emitter_user.profilePicture',
-                'user:uid,role_id',
-                'type:id,name',
-            ])->where('user_uid', $user->uid)
-                ->whereIn('type_id', [
-                    NotificationTypeEnum::LIKE->toId(),
-                    NotificationTypeEnum::SUPERLIKE->toId(),
-                ])
+            $likes = TargetUsers::with([
+                'emitter:uid,name',
+                'emitter.profilePicture',
+                'targetUser:uid,role_id',
+                'interaction:id,name',
+            ])->where('target_user_uid', $user->uid)
                 ->where('event_uid', $user->event->uid)
+                ->whereIn('interaction_id', [
+                    InteractionEnum::LIKE->toId(),
+                    InteractionEnum::SUPERLIKE->toId(),
+                ])
                 ->orderBy('created_at', 'desc')
-                ->get();
+                ->paginate(20, ['*'], 'page', $page);
 
-            return NotificationElementResource::collection($likes);
+            return [
+                'likes' => NotificationElementResource::collection($likes),
+                'pagination' => [
+                    'current_page' => $likes->currentPage(),
+                    'next_page' => $likes->currentPage() + 1 > $likes->lastPage() ? null : $likes->currentPage() + 1,
+                    'total_pages' => $likes->lastPage(),
+                    'prev_page' => $likes->currentPage() - 1 < 1 ? null : $likes->currentPage() - 1,
+                ],
+            ];
         });
     }
 }

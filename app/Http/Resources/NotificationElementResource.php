@@ -6,7 +6,7 @@ namespace App\Http\Resources;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Enums\NotificationTypeEnum;
+use App\Enums\InteractionEnum;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 final class NotificationElementResource extends JsonResource
@@ -19,34 +19,22 @@ final class NotificationElementResource extends JsonResource
     public function toArray(Request $request): array
     {
 
-        $showFull = $this->user->is_premium || in_array($this->type->name, [
-            NotificationTypeEnum::HOOK->label(),
-            NotificationTypeEnum::SUPERLIKE->label(),
-        ]);
+        $showFull = $this->targetUser->is_premium || $this->interaction_id === InteractionEnum::SUPERLIKE->toId();
 
         return [
-            'uid' => $this->uid,
-            'emitter_user_uid' => $this->emitter_user->uid,
-            'type' => $this->type->name,
+            'uid' => $this->id,
+            'emitter_uid' => $this->emitter->uid,
+            'type' => $this->interaction->name,
             'time' => Carbon::parse($this->updated_at)->diffForHumans([
                 'short' => true,
             ]),
             $this->mergeWhen($showFull, [
-                'name' => $this->emitter_user->name,
-                'image' => $this->emitter_user->profilePicture->first()->web_url,
+                'name' => $this->emitter->name,
+                'image' => $this->emitter->profilePicture->first()?->web_url ?? $this->getDefaultImages(),
             ]),
             $this->mergeWhen(! $showFull, [
                 'image' => $this->getDefaultImages(),
             ]),
-            $this->mergeWhen($this->type->name === NotificationTypeEnum::HOOK->label(), function () {
-                $chat = $this->emitter_user->chats()
-                    ->whereAny(['user1_uid', 'user2_uid'], $this->emitter_user->uid)
-                    ->first();
-
-                return [
-                    'chat' => $chat->uid,
-                ];
-            }),
         ];
     }
 
