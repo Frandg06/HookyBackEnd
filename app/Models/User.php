@@ -28,7 +28,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $surnames
  * @property string $email
  * @property string $password
- * @property int $gender_id
  * @property int $sexual_orientation_id
  * @property int $role_id
  * @property string|null $born_date
@@ -84,9 +83,7 @@ final class User extends Authenticatable implements JWTSubject
         'surnames',
         'email',
         'password',
-        'gender_id',
         'gender',
-        'sexual_orientation_id',
         'sexual_orientation',
         'role_id',
         'born_date',
@@ -322,18 +319,6 @@ final class User extends Authenticatable implements JWTSubject
     public function getIsPremiumAttribute(): bool
     {
         return $this->role_id === Role::PREMIUM ? true : false;
-    }
-
-    public function getMatchGenderAttribute()
-    {
-        switch ($this->sexual_orientation_id) {
-            case SexualOrientation::BISEXUAL:
-                return [Gender::MALE, Gender::FEMALE];
-            case SexualOrientation::HETEROSEXUAL:
-                return $this->gender_id === Gender::FEMALE ? [Gender::MALE] : [Gender::FEMALE];
-            case SexualOrientation::HOMOSEXUAL:
-                return [$this->gender_id];
-        }
     }
 
     public function scopeRemainingUsersToInteract()

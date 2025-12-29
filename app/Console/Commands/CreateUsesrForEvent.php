@@ -8,8 +8,10 @@ use App\Models\User;
 use App\Models\Event;
 use App\Models\UserEvent;
 use App\Models\UserImage;
+use App\Enums\User\GenderEnum;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use App\Enums\User\SexualOrientationEnum;
 
 final class CreateUsesrForEvent extends Command
 {
@@ -46,12 +48,12 @@ final class CreateUsesrForEvent extends Command
             $this->info("Creando {$count} usuarios para el evento: {$event->name}");
 
             if ($this->option('gender')) {
-                $gender = $this->option('gender') === 'female' ? 1 : 2;
+                $gender = $this->option('gender') === 'female' ? GenderEnum::FEMALE : GenderEnum::MALE;
             }
 
             $users = User::factory()->count($count)->create([
-                'gender_id' => $gender ?? rand(1, 2),
-                'sexual_orientation_id' => 2,
+                'gender' => $gender ?? GenderEnum::MALE,
+                'sexual_orientation' => SexualOrientationEnum::HETEROSEXUAL,
             ]);
 
             $users->each(function (User $user) use ($event) {
@@ -62,9 +64,17 @@ final class CreateUsesrForEvent extends Command
                     'likes' => $event->likes,
                     'super_likes' => $event->super_likes,
                 ]);
+
+                if ($user->gender === GenderEnum::MALE) {
+                    $rand = rand(1, 99);
+                    $image = "https://randomuser.me/api/portraits/men/{$rand}.jpg";
+                } else {
+                    $rand = rand(1, 99);
+                    $image = "https://randomuser.me/api/portraits/women/{$rand}.jpg";
+                }
                 UserImage::create([
                     'user_uid' => $user->uid,
-                    'name' => 'Default Image',
+                    'name' => $image,
                     'order' => 1,
                     'type' => 'profile',
                     'size' => 0,

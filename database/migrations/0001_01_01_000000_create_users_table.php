@@ -16,8 +16,6 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->uuid('uid')->unique();
-            $table->unsignedBigInteger('gender_id')->nullable();
-            $table->unsignedBigInteger('sexual_orientation_id')->nullable();
             $table->unsignedBigInteger('role_id')->default(2);
             $table->string('name');
             $table->string('surnames')->nullable();

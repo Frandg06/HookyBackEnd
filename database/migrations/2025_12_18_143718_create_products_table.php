@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('price', 8, 2);
             $table->string('price_id')->unique();
-            $table->integer('limit_users');
-            $table->integer('limit_events');
-            $table->integer('ticket_limit');
+            $table->unsignedInteger('limit_users');
+            $table->unsignedInteger('limit_events');
+            $table->unsignedInteger('ticket_limit');
             $table->timestamps();
         });
 
