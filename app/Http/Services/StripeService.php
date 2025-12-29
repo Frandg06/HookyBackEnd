@@ -68,7 +68,7 @@ final class StripeService
     public function retrieveSession(string $sessionId)
     {
         return $this->stripeClient->checkout->sessions->retrieve($sessionId, [
-            'expand' => ['line_items'],
+            'expand' => ['line_items', 'payment_intent.payment_method'],
         ]);
     }
 }

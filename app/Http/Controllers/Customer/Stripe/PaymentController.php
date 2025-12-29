@@ -18,8 +18,8 @@ final class PaymentController extends Controller
     public function __invoke(#[CurrentUser()] User $user, Request $request, PaymentAction $action)
     {
         $sessionId = $request->input('session_id');
-        $action->execute($user, $sessionId);
+        $order = $action->execute($user, $sessionId);
 
-        return $this->successResponse('payment_intent_created');
+        return $this->successResponse('payment_intent_created', $order);
     }
 }
