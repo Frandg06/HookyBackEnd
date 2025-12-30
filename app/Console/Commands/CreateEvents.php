@@ -14,7 +14,7 @@ final class CreateEvents extends Command
      *
      * @var string
      */
-    protected $signature = 'app:create-events';
+    protected $signature = 'app:create-events {--count=10}';
 
     /**
      * The console command description.
@@ -28,7 +28,9 @@ final class CreateEvents extends Command
      */
     public function handle()
     {
-        Event::factory()->count(10)->create([
+        $count = (int) $this->option('count');
+
+        Event::factory()->count($count)->create([
             'name' => 'Sample Event',
         ]);
     }

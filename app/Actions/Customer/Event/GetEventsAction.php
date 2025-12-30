@@ -9,7 +9,7 @@ use App\Http\Filters\EventFilter;
 use Illuminate\Support\Facades\DB;
 use App\Http\Orders\EventOrdenator;
 use App\Repositories\EventRepository;
-use App\Http\Resources\Customer\Event\EventResource;
+use App\Http\Resources\Customer\Event\EventCollection;
 
 final readonly class GetEventsAction
 {
@@ -18,21 +18,12 @@ final readonly class GetEventsAction
     /**
      * Execute the action.
      */
-    public function execute(User $user, EventFilter $filter, EventOrdenator $order, int $page)
+    public function execute(User $user, EventFilter $filter, EventOrdenator $order, int $page): EventCollection
     {
         return DB::transaction(function () use ($user, $filter, $order, $page) {
             $events = $this->eventRepository->getUpcomingAndActiveEventsForUser($user, $filter, $order, $page);
 
-            return [
-                'events' => EventResource::collection($events),
-                'pagination' => [
-                    'current_page' => $events->currentPage(),
-                    'next_page' => $events->currentPage() + 1 > $events->lastPage() ? null : $events->currentPage() + 1,
-                    'total_pages' => $events->lastPage(),
-                    'prev_page' => $events->currentPage() - 1 < 1 ? null : $events->currentPage() - 1,
-                ],
-            ];
-
+            return EventCollection::make($events);
         });
     }
 }
