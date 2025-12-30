@@ -28,7 +28,6 @@ final class ChatResource extends JsonResource
                 'image' => $chat_user->images->first()->web_url,
             ],
             'event_uid' => $this->event_uid,
-            'messages' => MessageResource::collection($this->messages->sortByDesc('created_at')),
         ];
     }
 }

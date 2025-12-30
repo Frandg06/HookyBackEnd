@@ -29,6 +29,7 @@ final readonly class GetEventsAction
                     'current_page' => $events->currentPage(),
                     'next_page' => $events->currentPage() + 1 > $events->lastPage() ? null : $events->currentPage() + 1,
                     'total_pages' => $events->lastPage(),
+                    'prev_page' => $events->currentPage() - 1 < 1 ? null : $events->currentPage() - 1,
                 ],
             ];
 

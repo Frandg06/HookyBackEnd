@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer;
 
+use Illuminate\Http\Request;
 use App\Http\Services\ChatService;
 use App\Http\Controllers\Controller;
 
@@ -23,9 +24,11 @@ final class ChatController extends Controller
         return $this->response($response);
     }
 
-    public function show(string $uid)
+    public function show(string $uid, Request $request)
     {
-        $response = $this->chatService->show($uid);
+        $page = $request->integer('page', 1);
+
+        $response = $this->chatService->show($uid, $page);
 
         return $this->response($response);
     }
