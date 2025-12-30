@@ -47,9 +47,9 @@ final class ImagesService extends Service
     {
         DB::beginTransaction();
         try {
-            $user = request()->user();
+            $user = request()->user()->load('images');
 
-            $imageToDelete = $user->images()->where('uid', $uid)->first();
+            $imageToDelete = $user->images->where('uid', $uid)->first();
 
             if (! $imageToDelete) {
                 return throw new ApiException('image_not_found', 404);
@@ -61,7 +61,11 @@ final class ImagesService extends Service
                 throw new ApiException('i18n.image_delete_ko', 500);
             }
 
+            $deletedOrder = $imageToDelete->order;
             $imageToDelete->delete();
+
+            $user->images()->where('order', '>', $deletedOrder)->decrement('order');
+
             DB::commit();
 
             return true;
