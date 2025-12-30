@@ -8,10 +8,8 @@ use Throwable;
 use App\Models\Chat;
 use App\Models\ChatMessage;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ChatResource;
-use App\Http\Resources\MessageResource;
-use App\Http\Resources\PaginationResource;
 use App\Http\Resources\ChatPreviewResource;
+use App\Http\Resources\Customer\Chat\ChatCollection;
 
 final class ChatService extends Service
 {
@@ -28,20 +26,15 @@ final class ChatService extends Service
         return ChatPreviewResource::collection($chats);
     }
 
-    public function show(string $uid, int $page): array
+    public function show(string $uid, int $page): ChatCollection
     {
-        $chat = Chat::with('user1:uid,name', 'user2:uid,name', 'user1.profilePicture', 'user2.profilePicture')->find($uid);
-
-        $messages = ChatMessage::where('chat_uid', $uid)
+        $messages = ChatMessage::with('chat')
+            ->where('chat_uid', $uid)
             ->orderByDesc('created_at')
             ->orderByDesc('uid')
             ->paginate(100, ['*'], 'page', $page);
 
-        return [
-            'chat' => ChatResource::make($chat),
-            'messages' => MessageResource::collection($messages),
-            'pagination' => PaginationResource::make($messages),
-        ];
+        return ChatCollection::make($messages);
     }
 
     public function read(string $uid)
