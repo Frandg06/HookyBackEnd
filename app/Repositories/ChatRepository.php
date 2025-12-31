@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Chat;
+use App\Models\User;
 use App\Models\ChatMessage;
 
 final class ChatRepository
@@ -37,5 +38,16 @@ final class ChatRepository
             'receiver_uid' => $receiver_uid,
             'message' => $message,
         ]);
+    }
+
+    public function getChatsFromUser(User $user, int $page = 1)
+    {
+        return Chat::with('messages')
+            ->where('event_uid', $user->event->uid)
+            ->whereAny(['user1_uid', 'user2_uid'], $user->uid)
+            ->whereHas('messages')
+            ->withMax('messages', 'created_at')
+            ->orderByDesc('messages_max_created_at')
+            ->paginate(100, ['*'], 'page', $page);
     }
 }

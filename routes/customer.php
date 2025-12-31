@@ -11,6 +11,7 @@ use App\Http\Controllers\Customer\Auth\MeController;
 use App\Http\Controllers\Customer\Auth\LoginController;
 use App\Http\Controllers\Customer\Auth\LogoutController;
 use App\Http\Controllers\Customer\Auth\RegisterController;
+use App\Http\Controllers\Customer\Chat\GetChatsController;
 use App\Http\Controllers\Customer\Event\GetEventController;
 use App\Http\Controllers\Customer\Stripe\PaymentController;
 use App\Http\Controllers\Customer\Event\GetEventsController;
@@ -77,7 +78,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/notifications/read/{type}', [UserController::class, 'readNotificationsByType']);
 
         // Chat routes
-        Route::get('/chat', [ChatController::class, 'retrieve']);
+        Route::get('/chat', GetChatsController::class);
         Route::post('/chat/{uid}/send', SendMessageController::class);
         Route::put('/chat/{uid}/read', [ChatController::class, 'readMessage']);
         Route::get('/chat/{uid}', [ChatController::class, 'show']);

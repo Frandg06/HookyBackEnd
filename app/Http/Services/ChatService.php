@@ -13,19 +13,6 @@ use App\Http\Resources\Customer\Chat\ChatPreviewResource;
 
 final class ChatService extends Service
 {
-    public function retrieve($user)
-    {
-        $chats = Chat::with('messages')
-            ->where('event_uid', $user->event->uid)
-            ->whereAny(['user1_uid', 'user2_uid'], $user->uid)
-            ->whereHas('messages')
-            ->withMax('messages', 'created_at')
-            ->orderByDesc('messages_max_created_at')
-            ->paginate(100, ['*'], 'page', 1);
-
-        return ChatPreviewResource::collection($chats);
-    }
-
     public function show(string $uid, int $page): ChatCollection
     {
         $chat = Chat::find($uid);
