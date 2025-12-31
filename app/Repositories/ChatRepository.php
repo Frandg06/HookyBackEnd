@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Chat;
+use App\Models\User;
 use App\Models\ChatMessage;
-use App\Http\Resources\ChatPreviewResource;
 
 final class ChatRepository
 {
@@ -40,8 +40,22 @@ final class ChatRepository
         ]);
     }
 
-    public function toResourcePreview(Chat $chat)
+    public function getChatsFromUser(User $user, int $page = 1)
     {
-        return ChatPreviewResource::make($chat);
+        return Chat::with('messages')
+            ->where('event_uid', $user->event->uid)
+            ->whereAny(['user1_uid', 'user2_uid'], $user->uid)
+            ->whereHas('messages')
+            ->withMax('messages', 'created_at')
+            ->orderByDesc('messages_max_created_at')
+            ->paginate(100, ['*'], 'page', $page);
+    }
+
+    public function getMessagesFromChat(Chat $chat, int $page = 1)
+    {
+        return $chat->messages()
+            ->orderByDesc('created_at')
+            ->orderByDesc('uid')
+            ->paginate(100, ['*'], 'page', $page);
     }
 }

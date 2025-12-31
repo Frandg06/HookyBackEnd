@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\NotificationTypeEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,14 +13,17 @@ final class Notification extends Model
 {
     use HasUuids;
 
+    public $incrementing = false;
+
+    protected $primaryKey = 'uid';
+
+    protected $keyType = 'string';
+
     protected $fillable = [
-        'id',
         'uid',
         'user_uid',
-        'emitter_uid',
         'event_uid',
-        'type_id',
-        'msg',
+        'type',
         'read_at',
         'created_at',
         'updated_at',
@@ -48,5 +52,15 @@ final class Notification extends Model
     public function uniqueIds(): array
     {
         return ['uid'];
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'read_at' => 'bool',
+            'type' => NotificationTypeEnum::class,
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+        ];
     }
 }

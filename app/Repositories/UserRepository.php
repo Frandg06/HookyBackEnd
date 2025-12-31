@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Models\Hook;
 use App\Models\User;
+use App\Models\TargetUsers;
 use Illuminate\Support\Str;
+use App\Enums\InteractionEnum;
 use App\Models\PasswordResetToken;
 use Laravel\Socialite\Two\User as TwoUser;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 final class UserRepository
 {
@@ -79,5 +83,41 @@ final class UserRepository
     public function deletePasswordResetToken(PasswordResetToken $passwordResetToken): void
     {
         $passwordResetToken->delete();
+    }
+
+    public function getLikesNotifications(User $user, int $page = 1): LengthAwarePaginator
+    {
+        return TargetUsers::with([
+            'emitter:uid,name',
+            'emitter.profilePicture',
+            'targetUser:uid,role_id',
+        ])->where('target_user_uid', $user->uid)
+            ->where('event_uid', $user->event->uid)
+            ->whereIn('interaction', InteractionEnum::LikeInteractions())
+            ->orderBy('created_at', 'desc')
+            ->paginate(20, ['*'], 'page', $page);
+    }
+
+    public function getHooksNotifications(User $user, int $page = 1): LengthAwarePaginator
+    {
+        return Hook::with([
+            'user1:uid,name',
+            'user1.profilePicture',
+            'user2:uid,name',
+            'user2.profilePicture',
+            'event:uid,name',
+        ])->whereAny(['user1_uid', 'user2_uid'], $user->uid)
+            ->where('event_uid', $user->event->uid)
+            ->orderBy('created_at', 'desc')
+            ->orderBy('uid', 'desc')
+            ->paginate(20, ['*'], 'page', $page);
+    }
+
+    public function markNotificationsAsReadByType(User $user, string $type): void
+    {
+        $user->notifications()
+            ->where('type', $type)
+            ->where('read_at', false)
+            ->update(['read_at' => true]);
     }
 }

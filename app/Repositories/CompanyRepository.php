@@ -12,4 +12,9 @@ final class CompanyRepository
     {
         return Company::find($uuid);
     }
+
+    public function findCompanyByEmail(string $email): ?Company
+    {
+        return Company::where('email', $email)->first();
+    }
 }

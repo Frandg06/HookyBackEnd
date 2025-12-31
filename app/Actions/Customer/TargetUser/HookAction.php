@@ -5,17 +5,20 @@ declare(strict_types=1);
 namespace App\Actions\Customer\TargetUser;
 
 use App\Models\User;
-use App\DTO\InteractionDto;
+use App\Dtos\InteractionDto;
 use Illuminate\Support\Facades\DB;
+use App\Enums\NotificationTypeEnum;
 use App\Repositories\ChatRepository;
+use App\Repositories\HookRepository;
 use App\Events\HookNotificationEvent;
-use App\Repositories\NotifyRepository;
+use App\Repositories\NotificationRepository;
 
 final readonly class HookAction
 {
     public function __construct(
         private readonly ChatRepository $chatRepository,
-        private readonly NotifyRepository $notifyRepository
+        private readonly NotificationRepository $notificationRepository,
+        private readonly HookRepository $hookRepository,
     ) {}
 
     /**
@@ -27,9 +30,11 @@ final readonly class HookAction
 
             $chat = $this->chatRepository->store($user->uid, $targeUser->uid, $target->event_uid);
 
+            $this->hookRepository->store($user->uid, $targeUser->uid, $target->event_uid);
+
             HookNotificationEvent::dispatch($user, $targeUser, $target->event_uid, $chat->uid);
 
-            $this->notifyRepository->createBoth($target, 3);
+            $this->notificationRepository->storeBoth($target, NotificationTypeEnum::HOOK);
 
             return [
                 'super_like_credits' => $user->super_likes,

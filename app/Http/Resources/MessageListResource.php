@@ -20,7 +20,7 @@ final class MessageListResource extends JsonResource
             'reciber_uid' => $this->emitter_user->uid,
             'name' => $this->emitter_user->name,
             'surnames' => $this->emitter_user->surnames,
-            'avatar' => $this->emitter_user->userImages->first()->web_url,
+            'avatar' => $this->emitter_user->images->first()->web_url,
         ];
     }
 }

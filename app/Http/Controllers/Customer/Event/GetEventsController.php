@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Http\Filters\EventFilter;
 use App\Http\Orders\EventOrdenator;
 use App\Http\Controllers\Controller;
-use App\Actions\Customer\Events\GetEventsAction;
+use App\Actions\Customer\Event\GetEventsAction;
 use Illuminate\Container\Attributes\CurrentUser;
 
 final class GetEventsController extends Controller

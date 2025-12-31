@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
 
+    'user_data_completed' => 'I tuoi dati sono stati completati con successo.',
     'event_too_soon' => 'Mancano meno di 5 minuti all’evento, non puoi più programmare la notifica.',
     'message_notify' => 'Messaggio inviato con successo.',
     'register_user_ko' => "Si è verificato un errore durante la registrazione dell'utente.",

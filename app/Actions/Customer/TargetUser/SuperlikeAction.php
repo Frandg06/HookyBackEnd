@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace App\Actions\Customer\TargetUser;
 
 use App\Models\User;
-use App\DTO\InteractionDto;
 use App\Models\TargetUsers;
+use App\Dtos\InteractionDto;
 use Illuminate\Support\Facades\DB;
-use App\Repositories\NotifyRepository;
+use App\Enums\NotificationTypeEnum;
 use App\Events\SuperlikeNotificationEvent;
 use App\Repositories\TargetUserRepository;
+use App\Repositories\NotificationRepository;
 
 final readonly class SuperlikeAction
 {
     public function __construct(
         private readonly TargetUserRepository $targetUserRepository,
         private readonly HookAction $hookAction,
-        private readonly NotifyRepository $notifyRepository
+        private readonly NotificationRepository $notificationRepository
     ) {}
 
     /**
@@ -40,7 +41,7 @@ final readonly class SuperlikeAction
 
             SuperlikeNotificationEvent::dispatch($user, $target_user);
 
-            $this->notifyRepository->create($target, 2);
+            $this->notificationRepository->create($target, NotificationTypeEnum::SUPERLIKE);
 
             return [
                 'super_like_credits' => $user->super_likes,

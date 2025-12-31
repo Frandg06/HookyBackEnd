@@ -44,12 +44,12 @@ final class UserImage extends Model
 
     public function getUrlAttribute(): string
     {
-        return 'hooky/profile/'.$this->user->uid.'/'.$this->uid.config('filesystems.disks.r2.image_default_extension');
+        return 'hooky/profile/'.$this->user_uid.'/'.$this->uid.config('filesystems.disks.r2.image_default_extension');
     }
 
     public function getWebUrlAttribute(): string
     {
-        return config('filesystems.disks.r2.url').'profile/'.$this->user->uid.'/'.$this->uid.config('filesystems.disks.r2.image_default_extension');
+        return config('filesystems.disks.r2.url').'profile/'.$this->user_uid.'/'.$this->uid.config('filesystems.disks.r2.image_default_extension');
     }
 
     public function user(): BelongsTo

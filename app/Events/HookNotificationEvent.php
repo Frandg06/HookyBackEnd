@@ -53,12 +53,12 @@ final class HookNotificationEvent implements ShouldBroadcast
             'user1' => [
                 'uid' => $this->user1->uid,
                 'name' => $this->user1->name,
-                'image_url' => $this->user1->userImages->first()?->web_url,
+                'image_url' => $this->user1->images->first()?->web_url,
             ],
             'user2' => [
                 'uid' => $this->user2->uid,
                 'name' => $this->user2->name,
-                'image_url' => $this->user2->userImages->first()?->web_url,
+                'image_url' => $this->user2->images->first()?->web_url,
             ],
             'chat_uid' => $this->chat_uid,
         ];

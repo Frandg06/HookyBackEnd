@@ -11,32 +11,44 @@ use App\Http\Controllers\Customer\Auth\MeController;
 use App\Http\Controllers\Customer\Auth\LoginController;
 use App\Http\Controllers\Customer\Auth\LogoutController;
 use App\Http\Controllers\Customer\Auth\RegisterController;
+use App\Http\Controllers\Customer\Chat\GetChatsController;
+use App\Http\Controllers\Customer\Chat\ShowChatController;
+use App\Http\Controllers\Customer\Event\GetEventController;
 use App\Http\Controllers\Customer\Stripe\PaymentController;
 use App\Http\Controllers\Customer\Event\GetEventsController;
 use App\Http\Controllers\Customer\TargetUser\LikeController;
+use App\Http\Controllers\Customer\User\UpdateUserController;
 use App\Http\Controllers\Customer\Auth\EventAttachController;
 use App\Http\Controllers\Customer\Auth\SocialLoginController;
 use App\Http\Controllers\Customer\Chat\SendMessageController;
+use App\Http\Controllers\Customer\Image\ImageStoreController;
 use App\Http\Controllers\Customer\Image\OrderImageController;
 use App\Http\Controllers\Customer\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\TargetUser\DislikeController;
 use App\Http\Controllers\Customer\Event\GetEventsCityController;
 use App\Http\Controllers\Customer\Stripe\MakeCheckoutController;
+use App\Http\Controllers\Customer\Event\GetEventsGuestController;
 use App\Http\Controllers\Customer\TargetUser\SuperlikeController;
+use App\Http\Controllers\Customer\User\CompleteUserDataController;
 use App\Http\Controllers\Customer\Auth\PasswordResetTokenController;
 use App\Http\Controllers\Customer\User\NotifyStartOfEventController;
+use App\Http\Controllers\Customer\User\Notification\GetHookNotificationsController;
+use App\Http\Controllers\Customer\User\Notification\GetLikeNotificationsController;
+use App\Http\Controllers\Customer\User\Notification\ReadNotificationsByTypeController;
 
 // Auth routes
 Route::post('/auth/register', RegisterController::class)->name('customer.register');
 Route::post('/auth/login', LoginController::class)->name('customer.login');
 Route::post('/auth/social-login/{provider}', SocialLoginController::class)->name('customer.social.login');
 
-Route::get('/event', GetEventsController::class);
-Route::get('/event/cities', GetEventsCityController::class);
-
 // Password reset routes
 Route::post('/auth/forgot-password', PasswordResetTokenController::class)->name('customer.password.email');
 Route::put('/auth/reset-password/{token}', ResetPasswordController::class)->name('customer.password.reset');
+
+// Public Event routes
+Route::get('/event/guest', GetEventsGuestController::class);
+Route::get('/event/cities', GetEventsCityController::class);
+Route::get('/event/{slug}', GetEventController::class);
 
 Route::middleware(['auth:api'])->group(function () {
     // Auth routes
@@ -45,13 +57,14 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('auth/me', MeController::class)->name('customer.me');
 
     // Event routes
+    Route::get('/event', GetEventsController::class);
     Route::post('/event/{uid}/notify', NotifyStartOfEventController::class);
 
     // User routes
-    Route::post('/user/complete', [UserController::class, 'completeRegisterData']);
+    Route::post('/user/complete', CompleteUserDataController::class);
+    Route::put('/user/update', UpdateUserController::class);
     Route::put('/user/password', [UserController::class, 'updatePassword']);
-    Route::put('/user/update', [UserController::class, 'update']);
-    Route::post('/user/images', [ImageController::class, 'store']);
+    Route::post('/user/images', ImageStoreController::class);
     Route::post('/user/images/{uid}', [ImageController::class, 'update']);
     Route::delete('/user/images/{uid}', [ImageController::class, 'delete']);
     Route::delete('/user/images', [ImageController::class, 'deleteUserImages']);
@@ -62,14 +75,15 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::middleware('event')->group(function () {
         // Notifications routes
-        Route::get('/notifications', [UserController::class, 'getNotifications']);
-        Route::post('/notifications/read/{type}', [UserController::class, 'readNotificationsByType']);
+        Route::get('/notifications/like', GetLikeNotificationsController::class);
+        Route::get('/notifications/hook', GetHookNotificationsController::class);
+        Route::post('/notifications/{type}/read', ReadNotificationsByTypeController::class);
 
         // Chat routes
-        Route::get('/chat', [ChatController::class, 'retrieve']);
+        Route::get('/chat', GetChatsController::class);
         Route::post('/chat/{uid}/send', SendMessageController::class);
         Route::put('/chat/{uid}/read', [ChatController::class, 'readMessage']);
-        Route::get('/chat/{uid}', [ChatController::class, 'show']);
+        Route::get('/chat/{uid}', ShowChatController::class);
 
         // Ticket routes
         Route::post('/redeem', [TicketController::class, 'redeem']);

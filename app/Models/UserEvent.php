@@ -29,18 +29,4 @@ final class UserEvent extends Model
     {
         return $query->activeEventData()->event->company_uid;
     }
-
-    public function scopeGetMales($query)
-    {
-        return $query->whereHas('user', function ($query) {
-            $query->where('gender_id', Gender::MALE);
-        });
-    }
-
-    public function scopeGetFemales($query)
-    {
-        return $query->whereHas('user', function ($query) {
-            $query->where('gender_id', Gender::FEMALE);
-        });
-    }
 }

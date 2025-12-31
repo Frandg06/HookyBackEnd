@@ -16,8 +16,8 @@ final readonly class OrderImageAction
     public function execute(User $user, string $imageUid, string $direction): void
     {
         DB::transaction(function () use ($user, $imageUid, $direction) {
-            $user->load('userImages');
-            $image = $user->userImages->where('uid', $imageUid)->first();
+            $user->load('images');
+            $image = $user->images->where('uid', $imageUid)->first();
 
             $currentOrder = $image->order;
 
@@ -31,7 +31,7 @@ final readonly class OrderImageAction
                 throw new ApiException('image_order_limit', 422);
             }
 
-            $user->userImages->where('order', $newOrder)->first()->update(['order' => $currentOrder]);
+            $user->images->where('order', $newOrder)->first()->update(['order' => $currentOrder]);
 
             $image->update(['order' => $newOrder]);
         });

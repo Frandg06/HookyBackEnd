@@ -7,11 +7,11 @@ namespace App\Events;
 use App\Models\ChatMessage;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
-use App\Http\Resources\MessageResource;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use App\Http\Resources\Customer\Notification\MessageEventResource;
 
 final class PrivateChatMessageEvent implements ShouldBroadcast
 {
@@ -42,6 +42,6 @@ final class PrivateChatMessageEvent implements ShouldBroadcast
     public function broadcastWith(): array
     {
 
-        return MessageResource::make($this->message)->resolve();
+        return MessageEventResource::make($this->message)->resolve();
     }
 }

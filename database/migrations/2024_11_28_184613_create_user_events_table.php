@@ -18,8 +18,8 @@ return new class extends Migration
             $table->uuid('user_uid');
             $table->uuid('event_uid');
             $table->datetime('logged_at');
-            $table->integer('likes');
-            $table->integer('super_likes');
+            $table->unsignedInteger('likes');
+            $table->unsignedInteger('super_likes');
             $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
             $table->foreign('event_uid')->references('uid')->on('events')->onDelete('cascade');
             $table->timestamps();

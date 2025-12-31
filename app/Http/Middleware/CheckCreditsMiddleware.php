@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use Closure;
-use App\Models\Interaction;
 use Illuminate\Http\Request;
+use App\Enums\InteractionEnum;
 use Symfony\Component\HttpFoundation\Response;
+use App\Exceptions\InsufficientCreditsException;
 
 final class CheckCreditsMiddleware
 {
@@ -18,21 +19,18 @@ final class CheckCreditsMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $interaction = $request->interactionId;
-        $error = null;
+        $interaction = $request->segments()[count($request->segments()) - 1];
 
         if ($request->user()->isPremium()) {
             return $next($request);
         }
 
-        if ($interaction === Interaction::LIKE_ID && $request->user()->likes < 1) {
-            $error = true;
-        } elseif ($interaction === Interaction::SUPER_LIKE_ID && $request->user()->super_likes < 1) {
-            $error = true;
+        if ($interaction === InteractionEnum::LIKE && $request->user()->likes < 1) {
+            throw InsufficientCreditsException::likes();
         }
 
-        if ($error) {
-            return response()->json(['error' => false, 'message' => 'No tienes suficiente creditos para hacer esa interacción'], 400);
+        if ($interaction === InteractionEnum::SUPERLIKE && $request->user()->super_likes < 1) {
+            throw InsufficientCreditsException::superLikes();
         }
 
         return $next($request);

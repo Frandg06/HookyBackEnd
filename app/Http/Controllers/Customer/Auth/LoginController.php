@@ -28,6 +28,6 @@ final class LoginController extends Controller
             }
         }
 
-        return $this->successResponse('Login successful.', ['access_token' => $response]);
+        return $this->successResponse('i18n.login_ok', ['access_token' => $response]);
     }
 }

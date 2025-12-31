@@ -20,3 +20,4 @@ yarn-error.log
 /.zed
 /storage/logs/*.log
 /seeds/DatabaseSeeder.php
+execute-test.php

@@ -6,26 +6,22 @@ namespace App\Enums;
 
 enum InteractionEnum: string
 {
-    case SUPER_LIKE = 'super_like';
+    case SUPERLIKE = 'superlike';
     case LIKE = 'like';
     case DISLIKE = 'dislike';
 
-    public static function fromId(int $id): ?self
+    public static function LikeInteractions(): array
     {
-        return match ($id) {
-            1 => self::SUPER_LIKE,
-            2 => self::LIKE,
-            3 => self::DISLIKE,
-            default => null,
-        };
+        return [self::LIKE, self::SUPERLIKE];
     }
 
-    public function toId(): int
+    public function isLike(): bool
     {
-        return match ($this) {
-            self::SUPER_LIKE => 1,
-            self::LIKE => 2,
-            self::DISLIKE => 3,
-        };
+        return in_array($this, [self::LIKE, self::SUPERLIKE], true);
+    }
+
+    public function isDislike(): bool
+    {
+        return $this === self::DISLIKE;
     }
 }

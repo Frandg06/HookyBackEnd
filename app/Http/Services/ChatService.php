@@ -8,34 +8,10 @@ use Throwable;
 use App\Models\Chat;
 use App\Models\ChatMessage;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ChatResource;
-use App\Http\Resources\ChatPreviewResource;
+use App\Http\Resources\Customer\Chat\ChatPreviewResource;
 
 final class ChatService extends Service
 {
-    public function retrieve($user)
-    {
-        $chats = Chat::where('event_uid', $user->event->uid)
-            ->whereAny(['user1_uid', 'user2_uid'], $user->uid)
-            ->orderBy(function ($query) {
-                $query->select('created_at')
-                    ->from('chat_messages')
-                    ->whereColumn('chat_messages.chat_uid', 'chats.uid')
-                    ->orderBy('created_at', 'desc')
-                    ->limit(1);
-            }, 'desc')
-            ->get();
-
-        return ChatPreviewResource::collection($chats);
-    }
-
-    public function show(string $uid): ChatResource
-    {
-        $chat = Chat::findOrFail($uid);
-
-        return ChatResource::make($chat);
-    }
-
     public function read(string $uid)
     {
         DB::beginTransaction();

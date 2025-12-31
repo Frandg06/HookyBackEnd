@@ -8,8 +8,15 @@ use App\Models\Order;
 
 final class OrderRepository
 {
-    public function createOrder(array $data)
+    public function createOrder(array $data): Order
     {
-        Order::create($data);
+        return Order::create($data);
+    }
+
+    public function firstOrCreateOrder(array $data): Order
+    {
+        return Order::firstOrCreate([
+            'session_id' => $data['session_id'],
+        ], $data);
     }
 }

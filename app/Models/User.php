@@ -5,11 +5,16 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\Carbon;
+use App\Enums\InteractionEnum;
 use App\Enums\SocialProviders;
+use App\Enums\User\GenderEnum;
 use App\Models\Traits\Sortable;
 use App\Models\Traits\Filterable;
+use App\Enums\NotificationTypeEnum;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use App\Enums\User\SexualOrientationEnum;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,44 +22,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-/**
- * App\Models\User
- *
- * @property string $uid
- * @property string $name
- * @property string $surnames
- * @property string $email
- * @property string $password
- * @property int $gender_id
- * @property int $sexual_orientation_id
- * @property int $role_id
- * @property string|null $born_date
- * @property string|null $description
- * @property string|null $company_uid
- * @property SocialProviders|null $provider_name
- * @property string|null $provider_id
- * @property bool $auto_password
- * @property Carbon|null $email_verified_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Company|null $company
- * @property-read int $age
- * @property-read bool $complete_register
- * @property-read bool $data_complete
- * @property-read bool $data_images
- * @property-read int $is_premium
- * @property-read int $likes
- * @property-read int $super_likes
- * @property-read bool $auto_password
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Notification> $notifications
- * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Event> $events
- * @property-read \Illuminate\Database\Eloquent\Collection<int, UserImage> $userImages
- * @property-read int|null $user_images_count
- *
- * @method static \Illuminate\Database\Eloquent\Builder|User whereAny(array $columns, mixed $   value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereNot(string $column, mixed $value)
- */
 final class User extends Authenticatable implements JWTSubject
 {
     use Filterable;
@@ -81,8 +48,8 @@ final class User extends Authenticatable implements JWTSubject
         'surnames',
         'email',
         'password',
-        'gender_id',
-        'sexual_orientation_id',
+        'gender',
+        'sexual_orientation',
         'role_id',
         'born_date',
         'description',
@@ -99,51 +66,48 @@ final class User extends Authenticatable implements JWTSubject
         'created_at',
     ];
 
-    protected $dataCompleteValues = [
+    protected array $dataCompleteValues = [
         'name',
-        'surnames',
         'email',
         'password',
-        'gender_id',
-        'sexual_orientation_id',
+        'gender',
+        'sexual_orientation',
         'role_id',
         'born_date',
-    ];
-
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'provider_name' => SocialProviders::class,
-        'auto_password' => 'boolean',
     ];
 
     public static function whereTargetUsersFrom($auth)
     {
         return self::whereNot('uid', $auth->uid)
-            ->has('userImages', '>', 0)
-            ->when(in_array($auth->sexual_orientation_id, [SexualOrientation::HOMOSEXUAL, SexualOrientation::HETEROSEXUAL]), function ($q) use ($auth) {
-                $q->whereIn('gender_id', $auth->match_gender)
-                    ->whereIn('sexual_orientation_id', [$auth->sexual_orientation_id, SexualOrientation::BISEXUAL]);
+            ->has('images', '>', 0)
+            ->when($auth->sexual_orientation->isHomosexual(), function ($q) use ($auth) {
+                $q->where('gender', $auth->gender->same())
+                    ->whereIn('sexual_orientation', [$auth->sexual_orientation, SexualOrientationEnum::BISEXUAL]);
             })
-            ->when($auth->sexual_orientation_id === SexualOrientation::BISEXUAL, function ($q) use ($auth) {
-                $q->when($auth->gender_id === Gender::MALE, function ($query) {
+            ->when($auth->sexual_orientation->isHeterosexual(), function ($q) use ($auth) {
+                $q->where('gender', $auth->gender->opposite())
+                    ->whereIn('sexual_orientation', [$auth->sexual_orientation, SexualOrientationEnum::BISEXUAL]);
+            })
+            ->when($auth->sexual_orientation->isBisexual(), function ($q) use ($auth) {
+                $q->when($auth->gender->isMale(), function ($query) {
                     $query->where(function ($q) {
                         $q->where(function ($subQuery) {
-                            $subQuery->where('gender_id', Gender::MALE)
-                                ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
+                            $subQuery->where('gender', GenderEnum::MALE)
+                                ->whereIn('sexual_orientation', [SexualOrientationEnum::GAY, SexualOrientationEnum::BISEXUAL]);
                         })->orWhere(function ($subQuery) {
-                            $subQuery->where('gender_id', Gender::FEMALE)
-                                ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                            $subQuery->where('gender', GenderEnum::FEMALE)
+                                ->whereIn('sexual_orientation', [SexualOrientationEnum::HETEROSEXUAL, SexualOrientationEnum::BISEXUAL]);
                         });
                     });
                 });
-                $q->when($auth->gender_id === Gender::FEMALE, function ($query) {
+                $q->when($auth->gender->isFemale(), function ($query) {
                     $query->where(function ($q) {
                         $q->where(function ($subQuery) {
-                            $subQuery->where('gender_id', Gender::FEMALE)
-                                ->whereIn('sexual_orientation_id', [SexualOrientation::HOMOSEXUAL, SexualOrientation::BISEXUAL]);
+                            $subQuery->where('gender', GenderEnum::FEMALE)
+                                ->whereIn('sexual_orientation', [SexualOrientationEnum::LESBIAN, SexualOrientationEnum::BISEXUAL]);
                         })->orWhere(function ($subQuery) {
-                            $subQuery->where('gender_id', Gender::MALE)
-                                ->whereIn('sexual_orientation_id', [SexualOrientation::HETEROSEXUAL, SexualOrientation::BISEXUAL]);
+                            $subQuery->where('gender', GenderEnum::MALE)
+                                ->whereIn('sexual_orientation', [SexualOrientationEnum::HETEROSEXUAL, SexualOrientationEnum::BISEXUAL]);
                         });
                     });
                 });
@@ -159,21 +123,6 @@ final class User extends Authenticatable implements JWTSubject
             });
     }
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    public function gender(): BelongsTo
-    {
-        return $this->belongsTo(Gender::class);
-    }
-
-    public function sexualOrientation(): BelongsTo
-    {
-        return $this->belongsTo(SexualOrientation::class);
-    }
-
     public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class);
@@ -184,14 +133,35 @@ final class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Company::class, 'company_uid', 'uid');
     }
 
-    public function userImages(): HasMany
+    public function images(): HasMany
     {
         return $this->hasMany(UserImage::class, 'user_uid', 'uid')->orderBy('order', 'asc');
+    }
+
+    public function profilePicture(): HasMany
+    {
+        return $this->hasMany(UserImage::class, 'user_uid', 'uid')->orderBy('order', 'asc')->limit(1);
     }
 
     public function interactions(): HasMany
     {
         return $this->hasMany(TargetUsers::class, 'user_uid', 'uid');
+    }
+
+    public function likesReceived(): HasMany
+    {
+        return $this->hasMany(TargetUsers::class, 'target_user_uid', 'uid')
+            ->whereIn('interaction', [InteractionEnum::LIKE, InteractionEnum::SUPERLIKE]);
+    }
+
+    public function hooksAsUser1()
+    {
+        return $this->hasMany(Hook::class, 'user1_uid', 'uid');
+    }
+
+    public function hooksAsUser2()
+    {
+        return $this->hasMany(Hook::class, 'user2_uid', 'uid');
     }
 
     public function events(): BelongsToMany
@@ -213,7 +183,13 @@ final class User extends Authenticatable implements JWTSubject
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'user_uid', 'uid')
-            ->where('event_uid', $this->activeEvent?->first()?->uid ?? null);
+            ->where('read_at', false);
+    }
+
+    public function likeNotifications(): HasMany
+    {
+        return $this->hasMany(Notification::class, 'user_uid', 'uid')
+            ->whereIn('type_id', [NotificationsType::LIKE_TYPE, NotificationsType::SUPER_LIKE_TYPE]);
     }
 
     public function tickets()
@@ -226,9 +202,23 @@ final class User extends Authenticatable implements JWTSubject
         return Carbon::parse($this->born_date)->age;
     }
 
-    public function getEventAttribute()
+    public function getEventAttribute(): ?Event
     {
         return $this->activeEvent->first();
+    }
+
+    public function hooks(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->hooksAsUser1->merge($this->hooksAsUser2);
+        });
+    }
+
+    public function hooksCount(): Attribute
+    {
+        return Attribute::get(function () {
+            return $this->hooks->count();
+        });
     }
 
     public function getDataCompleteAttribute(): bool
@@ -243,9 +233,9 @@ final class User extends Authenticatable implements JWTSubject
         return true;
     }
 
-    public function getDataImagesAttribute(): bool
+    public function getDataImagesAttribute(): Attribute
     {
-        return $this->userImages->count() >= 1 ? true : false;
+        return Attribute::get(fn () => $this->images->count() >= 1);
     }
 
     public function getLikesAttribute(): int
@@ -274,68 +264,42 @@ final class User extends Authenticatable implements JWTSubject
             })->count();
     }
 
-    public function getCompleteRegisterAttribute(): bool
+    public function completeRegister(): Attribute
     {
-        return $this->data_complete && $this->data_images
-            ? true
-            : false;
+        return Attribute::get(fn () => $this->data_complete && $this->data_images);
     }
 
-    public function getIsPremiumAttribute(): bool
+    public function isPremium(): Attribute
     {
-        return $this->role_id === Role::PREMIUM ? true : false;
+        return Attribute::get(fn () => $this->role_id === Role::PREMIUM);
     }
 
-    public function getMatchGenderAttribute()
+    public function unreadNotifications(): Attribute
     {
-        switch ($this->sexual_orientation_id) {
-            case SexualOrientation::BISEXUAL:
-                return [Gender::MALE, Gender::FEMALE];
-            case SexualOrientation::HETEROSEXUAL:
-                return $this->gender_id === Gender::FEMALE ? [Gender::MALE] : [Gender::FEMALE];
-            case SexualOrientation::HOMOSEXUAL:
-                return [$this->gender_id];
-        }
-    }
+        $unread_notifications = $this->notifications->where('event_uid', $this->event?->uid)->groupBy('type');
 
-    public function scopeRemainingUsersToInteract()
-    {
-        return $this->interactions()->where('event_uid', $this->event?->uid)->where('interaction_id', null)->get();
-    }
-
-    public function decrementInteraction(int $interaction): void
-    {
-        if ($interaction === Interaction::DISLIKE_ID || $this->isPremium()) {
-            return;
-        }
-
-        $name = match ($interaction) {
-            Interaction::LIKE_ID => 'likes',
-            Interaction::SUPER_LIKE_ID => 'super_likes',
-        };
-
-        $this->activeEvent->first()?->pivot->decrement($name);
-    }
-
-    public function scopeGetNotificationsByType()
-    {
-        if (! $this->event) {
+        return Attribute::get(function () use ($unread_notifications) {
             return [
-                'like' => 0,
-                'superlike' => 0,
-                'hook' => 0,
-                'message' => 0,
+                'like' => $unread_notifications->get(NotificationTypeEnum::LIKE->value)?->count() ?? 0,
+                'superlike' => $unread_notifications->get(NotificationTypeEnum::SUPERLIKE->value)?->count() ?? 0,
+                'hook' => $unread_notifications->get(NotificationTypeEnum::HOOK->value)?->count() ?? 0,
+                'message' => $this->unread_chats,
             ];
-        }
+        });
+    }
 
-        $unread = $this->notifications->where('read_at', null)->groupBy('type_id');
-
-        return [
-            'like' => $unread->has(NotificationsType::LIKE_TYPE) ? $unread->get(NotificationsType::LIKE_TYPE)->count() : 0,
-            'superlike' => $unread->has(NotificationsType::SUPER_LIKE_TYPE) ? $unread->get(NotificationsType::SUPER_LIKE_TYPE)->count() : 0,
-            'hook' => $unread->has(NotificationsType::HOOK_TYPE) ? $unread->get(NotificationsType::HOOK_TYPE)->count() : 0,
-            'message' => $this->unread_chats,
-        ];
+    public function scopeLoadRelations(): self
+    {
+        return $this->load([
+            'images',
+            'activeEvent',
+            'company',
+        ])->loadCount([
+            'hooksAsUser1',
+            'hooksAsUser2',
+            'events',
+            'likesReceived',
+        ]);
     }
 
     public function scopeIsPremium()
@@ -370,24 +334,18 @@ final class User extends Authenticatable implements JWTSubject
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
-     *
-     * @return mixed
      */
-    public function getJWTIdentifier()
+    public function getJWTIdentifier(): mixed
     {
         return $this->getKey();
     }
 
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
-     *
-     * @return array
      */
-    public function getJWTCustomClaims()
+    public function getJWTCustomClaims(): array
     {
-        return [
-            'uid' => $this->uid,
-        ];
+        return [];
     }
 
     public function uniqueIds(): array
@@ -395,15 +353,15 @@ final class User extends Authenticatable implements JWTSubject
         return ['uid'];
     }
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'password' => 'hashed',
+            'email_verified_at' => 'datetime',
+            'auto_password' => 'boolean',
+            'provider_name' => SocialProviders::class,
+            'sexual_orientation' => SexualOrientationEnum::class,
+            'gender' => GenderEnum::class,
         ];
     }
 }

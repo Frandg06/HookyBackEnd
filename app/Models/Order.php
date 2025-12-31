@@ -14,12 +14,27 @@ final class Order extends Model
     protected $fillable = [
         'uuid',
         'order_number',
+        'session_id',
         'user_uid',
         'company_uid',
         'product_uuid',
     ];
 
     protected $primaryKey = 'uuid';
+
+    public static function booted()
+    {
+        self::creating(function ($model) {
+            $latestOrder = self::latest()->value('order_number');
+
+            if (! $latestOrder) {
+                return $model->order_number = 'ODR-78900';
+            }
+
+            [$string, $number] = explode('-', $latestOrder);
+            $model->order_number = $string.'-'.((int) $number + 1);
+        });
+    }
 
     public function product()
     {

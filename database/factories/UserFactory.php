@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Role;
+use App\Enums\User\GenderEnum;
 use Illuminate\Support\Facades\Hash;
+use App\Enums\User\SexualOrientationEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -31,8 +33,8 @@ final class UserFactory extends Factory
             'surnames' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'password' => Hash::make('a'),
-            'gender_id' => fake()->numberBetween(1, 2),
-            'sexual_orientation_id' => fake()->numberBetween(1, 3),
+            'gender' => fake()->randomElement(GenderEnum::cases())->value,
+            'sexual_orientation' => fake()->randomElement(SexualOrientationEnum::cases())->value,
             'role_id' => Role::USER,
             'born_date' => fake()->date(),
             'description' => fake()->paragraph(),

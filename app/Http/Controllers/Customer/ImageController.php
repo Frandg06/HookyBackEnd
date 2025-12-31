@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Customer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Services\ImagesService;
+use App\Http\Resources\Customer\UserResource;
 
 final class ImageController extends Controller
 {
@@ -17,24 +18,11 @@ final class ImageController extends Controller
         $this->imageService = $imageService;
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'image' => 'required|file|mimes:jpeg,png,jpg,webp,|max:5000',
-        ]);
-
-        $image = $request->file('image');
-
-        $response = $this->imageService->store($image);
-
-        return response()->json(['success' => true, 'resp' => $response], 200);
-    }
-
     public function delete(string $uid)
     {
         $this->imageService->delete($uid);
 
-        return $this->response($this->user()->toResource());
+        return $this->response(UserResource::make($this->user()->loadRelations()));
     }
 
     public function update(Request $request, string $uid)

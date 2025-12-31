@@ -24,9 +24,9 @@ return new class extends Migration
             $table->string('code');
             $table->boolean('redeemed')->default(false);
             $table->dateTime('redeemed_at')->nullable();
-            $table->integer('likes')->default(5);
-            $table->integer('super_likes')->default(1);
-            $table->integer('price')->default(0);
+            $table->unsignedInteger('likes')->default(5);
+            $table->unsignedInteger('super_likes')->default(1);
+            $table->unsignedInteger('price')->default(0);
             $table->timestamps();
             $table->foreign('company_uid')->references('uid')->on('companies')->onDelete('cascade');
             $table->foreign('event_uid')->references('uid')->on('events')->onDelete('cascade');

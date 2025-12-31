@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Filters;
 
-use App\Models\Gender;
-
 final class EventFilter extends QueryFilter
 {
     public function range(string $value)
@@ -100,20 +98,20 @@ final class EventFilter extends QueryFilter
     public function percentages(string $value)
     {
 
-        $gender = $value === 'males' ? Gender::MALE : Gender::FEMALE;
-        $genderToCompare = $value === 'males' ? Gender::FEMALE : Gender::MALE;
+        // $gender = $value === 'males' ? Gender::MALE : Gender::FEMALE;
+        // $genderToCompare = $value === 'males' ? Gender::FEMALE : Gender::MALE;
 
-        return $this->builder
-            ->whereIn('events.uid', function ($query) use ($gender, $genderToCompare) {
-                $query->select('user_events.event_uid')
-                    ->from('user_events')
-                    ->join('users', 'users.uid', '=', 'user_events.user_uid')
-                    ->groupBy('user_events.event_uid')
-                    ->havingRaw(
-                        'SUM(CASE WHEN users.gender_id = ? THEN 1 ELSE 0 END) > SUM(CASE WHEN users.gender_id = ? THEN 1 ELSE 0 END)',
-                        [$gender, $genderToCompare]
-                    );
-            });
+        // return $this->builder
+        //     ->whereIn('events.uid', function ($query) use ($gender, $genderToCompare) {
+        //         $query->select('user_events.event_uid')
+        //             ->from('user_events')
+        //             ->join('users', 'users.uid', '=', 'user_events.user_uid')
+        //             ->groupBy('user_events.event_uid')
+        //             ->havingRaw(
+        //                 'SUM(CASE WHEN users.gender_id = ? THEN 1 ELSE 0 END) > SUM(CASE WHEN users.gender_id = ? THEN 1 ELSE 0 END)',
+        //                 [$gender, $genderToCompare]
+        //             );
+        //     });
     }
 
     public function city(string $value)
@@ -124,5 +122,27 @@ final class EventFilter extends QueryFilter
     public function company(string $value)
     {
         return $this->builder->where('company_uid', $value);
+    }
+
+    public function isToday(bool $value)
+    {
+        if ($value === true) {
+            $this->builder->whereDate('st_date', now()->format('Y-m-d'));
+        } else {
+            $this->builder->whereDate('st_date', '!=', now()->format('Y-m-d'));
+        }
+
+        return $this->builder;
+    }
+
+    public function isThisWeek(bool $value)
+    {
+        if ($value === true) {
+            $this->builder->whereDate('st_date', '>=', now()->startOfWeek()->format('Y-m-d'))->whereDate('st_date', '<=', now()->endOfWeek()->format('Y-m-d'));
+        } else {
+            $this->builder->whereDate('st_date', '<=', now()->startOfWeek()->format('Y-m-d'))->whereDate('st_date', '>=', now()->endOfWeek()->format('Y-m-d'));
+        }
+
+        return $this->builder;
     }
 }

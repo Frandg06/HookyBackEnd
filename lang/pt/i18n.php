@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 return [
-
+    'user_data_completed' => 'Seus dados foram completados com sucesso.',
     'event_too_soon' => 'Faltam menos de 5 minutos para o evento, já não é possível agendar o aviso.',
     'message_notify' => 'Mensagem enviada com sucesso.',
     'register_user_ko' => 'Ocorreu um erro ao registrar o usuário.',

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Customer\TargetUser;
 
 use App\Models\User;
-use App\DTO\InteractionDto;
+use App\Dtos\InteractionDto;
 use Illuminate\Http\Request;
 use App\Enums\InteractionEnum;
 use App\Http\Controllers\Controller;
@@ -29,7 +29,7 @@ final class LikeController extends Controller
             $user->uid,
             $request->target_user_uid,
             $request->event_uid,
-            InteractionEnum::LIKE->toId(),
+            InteractionEnum::LIKE,
         );
 
         $response = $likeAction->execute($user, $dto);
