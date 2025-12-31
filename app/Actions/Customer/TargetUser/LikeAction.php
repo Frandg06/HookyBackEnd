@@ -8,15 +8,16 @@ use App\Models\User;
 use App\Models\TargetUsers;
 use App\Dtos\InteractionDto;
 use Illuminate\Support\Facades\DB;
+use App\Enums\NotificationTypeEnum;
 use App\Events\LikeNotificationEvent;
-use App\Repositories\NotifyRepository;
 use App\Repositories\TargetUserRepository;
+use App\Repositories\NotificationRepository;
 
 final readonly class LikeAction
 {
     public function __construct(
         private readonly TargetUserRepository $targetUserRepository,
-        private readonly NotifyRepository $notifyRepository,
+        private readonly NotificationRepository $notificationRepository,
         private HookAction $hookAction
     ) {}
 
@@ -40,7 +41,7 @@ final readonly class LikeAction
 
             LikeNotificationEvent::dispatch($user, $target_user);
 
-            $this->notifyRepository->create($target, 1);
+            $this->notificationRepository->create($target, NotificationTypeEnum::LIKE);
 
             return [
                 'super_like_credits' => $user->super_likes,

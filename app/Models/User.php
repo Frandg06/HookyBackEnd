@@ -9,6 +9,7 @@ use App\Enums\SocialProviders;
 use App\Enums\User\GenderEnum;
 use App\Models\Traits\Sortable;
 use App\Models\Traits\Filterable;
+use App\Enums\NotificationTypeEnum;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use App\Enums\User\SexualOrientationEnum;
@@ -228,7 +229,7 @@ final class User extends Authenticatable implements JWTSubject
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'user_uid', 'uid')
-            ->where('event_uid', $this->event?->uid);
+            ->where('read_at', false);
     }
 
     public function likeNotifications(): HasMany
@@ -342,21 +343,13 @@ final class User extends Authenticatable implements JWTSubject
 
     public function scopeGetNotificationsByType()
     {
-        if (! $this->event) {
-            return [
-                'like' => 0,
-                'superlike' => 0,
-                'hook' => 0,
-                'message' => 0,
-            ];
-        }
 
-        $unread = $this->notifications->where('read_at', null)->groupBy('type_id');
+        $unread = $this->notifications->where('event_uid', $this->event?->uid)->groupBy('type');
 
         return [
-            'like' => $unread->has(NotificationsType::LIKE_TYPE) ? $unread->get(NotificationsType::LIKE_TYPE)->count() : 0,
-            'superlike' => $unread->has(NotificationsType::SUPER_LIKE_TYPE) ? $unread->get(NotificationsType::SUPER_LIKE_TYPE)->count() : 0,
-            'hook' => $unread->has(NotificationsType::HOOK_TYPE) ? $unread->get(NotificationsType::HOOK_TYPE)->count() : 0,
+            'like' => $unread->get(NotificationTypeEnum::LIKE->value)?->count() ?? 0,
+            'superlike' => $unread->get(NotificationTypeEnum::SUPERLIKE->value)?->count() ?? 0,
+            'hook' => $unread->get(NotificationTypeEnum::HOOK->value)?->count() ?? 0,
             'message' => $this->unread_chats,
         ];
     }
