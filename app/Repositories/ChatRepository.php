@@ -50,4 +50,12 @@ final class ChatRepository
             ->orderByDesc('messages_max_created_at')
             ->paginate(100, ['*'], 'page', $page);
     }
+
+    public function getMessagesFromChat(Chat $chat, int $page = 1)
+    {
+        return $chat->messages()
+            ->orderByDesc('created_at')
+            ->orderByDesc('uid')
+            ->paginate(100, ['*'], 'page', $page);
+    }
 }

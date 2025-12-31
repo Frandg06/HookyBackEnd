@@ -8,7 +8,7 @@ use App\Models\Hook;
 
 final class HookRepository
 {
-    public function create(string $user1Uid, string $user2Uid, string $eventUid): Hook
+    public function store(string $user1Uid, string $user2Uid, string $eventUid): Hook
     {
 
         return Hook::create([

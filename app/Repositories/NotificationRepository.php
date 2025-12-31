@@ -22,7 +22,7 @@ final class NotificationRepository
         ]);
     }
 
-    public function createBoth(InteractionDto $dto, NotificationTypeEnum $type): void
+    public function storeBoth(InteractionDto $dto, NotificationTypeEnum $type): void
     {
         // Notify target user
         $this->create($dto, $type);

@@ -12,6 +12,7 @@ use App\Http\Controllers\Customer\Auth\LoginController;
 use App\Http\Controllers\Customer\Auth\LogoutController;
 use App\Http\Controllers\Customer\Auth\RegisterController;
 use App\Http\Controllers\Customer\Chat\GetChatsController;
+use App\Http\Controllers\Customer\Chat\ShowChatController;
 use App\Http\Controllers\Customer\Event\GetEventController;
 use App\Http\Controllers\Customer\Stripe\PaymentController;
 use App\Http\Controllers\Customer\Event\GetEventsController;
@@ -81,7 +82,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/chat', GetChatsController::class);
         Route::post('/chat/{uid}/send', SendMessageController::class);
         Route::put('/chat/{uid}/read', [ChatController::class, 'readMessage']);
-        Route::get('/chat/{uid}', [ChatController::class, 'show']);
+        Route::get('/chat/{uid}', ShowChatController::class);
 
         // Ticket routes
         Route::post('/redeem', [TicketController::class, 'redeem']);

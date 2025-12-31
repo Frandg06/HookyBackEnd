@@ -30,11 +30,11 @@ final readonly class HookAction
 
             $chat = $this->chatRepository->store($user->uid, $targeUser->uid, $target->event_uid);
 
-            $this->hookRepository->create($user->uid, $targeUser->uid, $target->event_uid);
+            $this->hookRepository->store($user->uid, $targeUser->uid, $target->event_uid);
 
             HookNotificationEvent::dispatch($user, $targeUser, $target->event_uid, $chat->uid);
 
-            $this->notificationRepository->createBoth($target, NotificationTypeEnum::HOOK);
+            $this->notificationRepository->storeBoth($target, NotificationTypeEnum::HOOK);
 
             return [
                 'super_like_credits' => $user->super_likes,

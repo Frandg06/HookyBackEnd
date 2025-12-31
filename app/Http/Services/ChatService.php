@@ -8,23 +8,10 @@ use Throwable;
 use App\Models\Chat;
 use App\Models\ChatMessage;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\Customer\Chat\ChatCollection;
 use App\Http\Resources\Customer\Chat\ChatPreviewResource;
 
 final class ChatService extends Service
 {
-    public function show(string $uid, int $page): ChatCollection
-    {
-        $chat = Chat::find($uid);
-
-        $messages = $chat->messages()
-            ->orderByDesc('created_at')
-            ->orderByDesc('uid')
-            ->paginate(100, ['*'], 'page', $page);
-
-        return ChatCollection::make($messages)->withChat($chat);
-    }
-
     public function read(string $uid)
     {
         DB::beginTransaction();
