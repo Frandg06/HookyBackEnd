@@ -4,20 +4,17 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\Event;
 
-use App\Models\Event;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\EventRepository;
 
 final readonly class GetEventsCityAction
 {
-    /**
-     * Execute the action.
-     */
-    public function execute()
+    public function __construct(private readonly EventRepository $eventRepository) {}
+
+    public function execute(): array
     {
         return DB::transaction(function () {
-            return Event::where('st_date', '>=', now()->toDateString())
-                ->distinct()
-                ->pluck('city');
+            return $this->eventRepository->getEventCities();
         });
     }
 }

@@ -5,29 +5,19 @@ declare(strict_types=1);
 namespace App\Actions\Customer\User\Notification;
 
 use App\Models\User;
-use App\Models\TargetUsers;
-use App\Enums\InteractionEnum;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\UserRepository;
 use App\Http\Resources\Customer\Interaction\LikeMinifiedCollection;
 
 final readonly class GetLikeNotificationsAction
 {
-    /**
-     * Execute the action.
-     */
+    public function __construct(private readonly UserRepository $user_repository) {}
+
     public function execute(User $user, int $page = 1): LikeMinifiedCollection
     {
         return DB::transaction(function () use ($user, $page) {
 
-            $likes = TargetUsers::with([
-                'emitter:uid,name',
-                'emitter.profilePicture',
-                'targetUser:uid,role_id',
-            ])->where('target_user_uid', $user->uid)
-                ->where('event_uid', $user->event->uid)
-                ->whereIn('interaction', InteractionEnum::LikeInteractions())
-                ->orderBy('created_at', 'desc')
-                ->paginate(20, ['*'], 'page', $page);
+            $likes = $this->user_repository->getLikesNotifications($user, $page);
 
             return LikeMinifiedCollection::make($likes);
         });

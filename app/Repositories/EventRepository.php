@@ -45,4 +45,12 @@ final class EventRepository
             ->sort($order)
             ->paginate(20, ['*'], 'page', $page);
     }
+
+    public function getEventCities(): array
+    {
+        return Event::where('st_date', '>=', now()->toDateString())
+            ->distinct()
+            ->pluck('city')
+            ->toArray();
+    }
 }
