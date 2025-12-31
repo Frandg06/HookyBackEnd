@@ -8,14 +8,14 @@ use App\Models\User;
 use App\Models\TargetUsers;
 use App\Enums\InteractionEnum;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\LikeMinifiedResource;
+use App\Http\Resources\Customer\Notification\LikeMinifiedCollection;
 
 final readonly class GetLikeNotificationsAction
 {
     /**
      * Execute the action.
      */
-    public function execute(User $user, int $page = 1): array
+    public function execute(User $user, int $page = 1): LikeMinifiedCollection
     {
         return DB::transaction(function () use ($user, $page) {
 
@@ -33,15 +33,7 @@ final readonly class GetLikeNotificationsAction
                 ->orderBy('created_at', 'desc')
                 ->paginate(20, ['*'], 'page', $page);
 
-            return [
-                'likes' => LikeMinifiedResource::collection($likes),
-                'pagination' => [
-                    'current_page' => $likes->currentPage(),
-                    'next_page' => $likes->currentPage() + 1 > $likes->lastPage() ? null : $likes->currentPage() + 1,
-                    'total_pages' => $likes->lastPage(),
-                    'prev_page' => $likes->currentPage() - 1 < 1 ? null : $likes->currentPage() - 1,
-                ],
-            ];
+            return LikeMinifiedCollection::make($likes);
         });
     }
 }
