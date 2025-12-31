@@ -328,20 +328,6 @@ final class User extends Authenticatable implements JWTSubject
         return $this->interactions()->where('event_uid', $this->event?->uid)->where('interaction_id', null)->get();
     }
 
-    public function decrementInteraction(int $interaction): void
-    {
-        if ($interaction === Interaction::DISLIKE_ID || $this->isPremium()) {
-            return;
-        }
-
-        $name = match ($interaction) {
-            Interaction::LIKE_ID => 'likes',
-            Interaction::SUPER_LIKE_ID => 'super_likes',
-        };
-
-        $this->activeEvent->first()?->pivot->decrement($name);
-    }
-
     public function scopeGetNotificationsByType()
     {
 

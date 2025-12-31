@@ -59,15 +59,15 @@ return Application::configure(basePath: dirname(__DIR__))
             ], 422);
         });
 
-        $exceptions->render(function (Exception $e, Request $request) {
-            Log::error($e->getMessage(), ['stack' => $e->getTraceAsString()]);
+        // $exceptions->render(function (Exception $e, Request $request) {
+        //     Log::error($e->getMessage(), ['stack' => $e->getTraceAsString()]);
 
-            return response()->json([
-                'error' => true,
-                'log' => env('APP_ENV') === 'local' ? $e->getMessage() : null,
-                'custom_message' => __('i18n.unexpected_error'),
-            ], 500);
-        });
+        //     return response()->json([
+        //         'error' => true,
+        //         'log' => env('APP_ENV') === 'local' ? $e->getMessage() : null,
+        //         'custom_message' => __('i18n.unexpected_error'),
+        //     ], 500);
+        // });
     })->withCommands([
         DestroyImages::class,
     ])
