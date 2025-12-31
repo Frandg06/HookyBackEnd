@@ -34,6 +34,7 @@ use App\Http\Controllers\Customer\Auth\PasswordResetTokenController;
 use App\Http\Controllers\Customer\User\NotifyStartOfEventController;
 use App\Http\Controllers\Customer\User\Notification\GetHookNotificationsController;
 use App\Http\Controllers\Customer\User\Notification\GetLikeNotificationsController;
+use App\Http\Controllers\Customer\User\Notification\ReadNotificationsByTypeController;
 
 // Auth routes
 Route::post('/auth/register', RegisterController::class)->name('customer.register');
@@ -76,7 +77,7 @@ Route::middleware(['auth:api'])->group(function () {
         // Notifications routes
         Route::get('/notifications/like', GetLikeNotificationsController::class);
         Route::get('/notifications/hook', GetHookNotificationsController::class);
-        Route::post('/notifications/read/{type}', [UserController::class, 'readNotificationsByType']);
+        Route::post('/notifications/{type}/read', ReadNotificationsByTypeController::class);
 
         // Chat routes
         Route::get('/chat', GetChatsController::class);

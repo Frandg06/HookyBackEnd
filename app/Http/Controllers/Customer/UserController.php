@@ -15,7 +15,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Services\ImagesService;
 use App\Http\Services\AuthUserService;
 use App\Http\Resources\TargetUserResource;
-use App\Http\Services\NotificationService;
 use Illuminate\Container\Attributes\CurrentUser;
 
 final class UserController extends Controller
@@ -32,12 +31,10 @@ final class UserController extends Controller
         AuthUserService $authUserService,
         UserService $userService,
         ImagesService $imageService,
-        NotificationService $notificationService
     ) {
         $this->authUserService = $authUserService;
         $this->userService = $userService;
         $this->imageService = $imageService;
-        $this->notificationService = $notificationService;
     }
 
     public function updatePassword(Request $request)
@@ -49,13 +46,6 @@ final class UserController extends Controller
 
         $data = $request->only('old_password', 'password');
         $response = $this->authUserService->updatePassword($data);
-
-        return response()->json(['success' => true, 'resp' => $response], 200);
-    }
-
-    public function readNotificationsByType($type)
-    {
-        $response = $this->notificationService->readNotificationsByType($type);
 
         return response()->json(['success' => true, 'resp' => $response], 200);
     }

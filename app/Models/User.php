@@ -233,9 +233,9 @@ final class User extends Authenticatable implements JWTSubject
         return true;
     }
 
-    public function getDataImagesAttribute(): bool
+    public function getDataImagesAttribute(): Attribute
     {
-        return $this->images->count() >= 1 ? true : false;
+        return Attribute::get(fn () => $this->images->count() >= 1);
     }
 
     public function getLikesAttribute(): int
@@ -264,29 +264,28 @@ final class User extends Authenticatable implements JWTSubject
             })->count();
     }
 
-    public function getCompleteRegisterAttribute(): bool
+    public function completeRegister(): Attribute
     {
-        return $this->data_complete && $this->data_images
-            ? true
-            : false;
+        return Attribute::get(fn () => $this->data_complete && $this->data_images);
     }
 
-    public function getIsPremiumAttribute(): bool
+    public function isPremium(): Attribute
     {
-        return $this->role_id === Role::PREMIUM ? true : false;
+        return Attribute::get(fn () => $this->role_id === Role::PREMIUM);
     }
 
-    public function scopeGetNotificationsByType()
+    public function unreadNotifications(): Attribute
     {
+        $unread_notifications = $this->notifications->where('event_uid', $this->event?->uid)->groupBy('type');
 
-        $unread = $this->notifications->where('event_uid', $this->event?->uid)->groupBy('type');
-
-        return [
-            'like' => $unread->get(NotificationTypeEnum::LIKE->value)?->count() ?? 0,
-            'superlike' => $unread->get(NotificationTypeEnum::SUPERLIKE->value)?->count() ?? 0,
-            'hook' => $unread->get(NotificationTypeEnum::HOOK->value)?->count() ?? 0,
-            'message' => $this->unread_chats,
-        ];
+        return Attribute::get(function () use ($unread_notifications) {
+            return [
+                'like' => $unread_notifications->get(NotificationTypeEnum::LIKE->value)?->count() ?? 0,
+                'superlike' => $unread_notifications->get(NotificationTypeEnum::SUPERLIKE->value)?->count() ?? 0,
+                'hook' => $unread_notifications->get(NotificationTypeEnum::HOOK->value)?->count() ?? 0,
+                'message' => $this->unread_chats,
+            ];
+        });
     }
 
     public function scopeLoadRelations(): self
@@ -294,7 +293,6 @@ final class User extends Authenticatable implements JWTSubject
         return $this->load([
             'images',
             'activeEvent',
-            'notifications',
             'company',
         ])->loadCount([
             'hooksAsUser1',

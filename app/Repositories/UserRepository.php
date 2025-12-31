@@ -80,4 +80,12 @@ final class UserRepository
     {
         $passwordResetToken->delete();
     }
+
+    public function markNotificationsAsReadByType(User $user, string $type): void
+    {
+        $user->notifications()
+            ->where('type', $type)
+            ->where('read_at', false)
+            ->update(['read_at' => true]);
+    }
 }

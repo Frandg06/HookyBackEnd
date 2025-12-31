@@ -41,9 +41,7 @@ final class UserResource extends JsonResource
                 'order' => $image->order,
                 'type' => $image->type,
             ]),
-            'notifications' => [
-                ...$this->getNotificationsByType(),
-            ],
+            'notifications' => $this->unread_notifications,
             'stats' => [
                 'events' => $this->events_count,
                 'hooks' => $this->hooks_as_user1_count + $this->hooks_as_user2_count,
