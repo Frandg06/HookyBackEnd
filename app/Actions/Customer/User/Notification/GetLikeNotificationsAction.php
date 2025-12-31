@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\TargetUsers;
 use App\Enums\InteractionEnum;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\Customer\Notification\LikeMinifiedCollection;
+use App\Http\Resources\Customer\Interaction\LikeMinifiedCollection;
 
 final readonly class GetLikeNotificationsAction
 {

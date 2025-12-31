@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Resources\Customer\Notification;
+namespace App\Http\Resources\Customer\Interaction;
 
 use Illuminate\Http\Request;
 use App\Http\Resources\PaginationResource;
