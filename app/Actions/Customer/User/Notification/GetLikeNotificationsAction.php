@@ -23,13 +23,9 @@ final readonly class GetLikeNotificationsAction
                 'emitter:uid,name',
                 'emitter.profilePicture',
                 'targetUser:uid,role_id',
-                'interaction:id,name',
             ])->where('target_user_uid', $user->uid)
                 ->where('event_uid', $user->event->uid)
-                ->whereIn('interaction_id', [
-                    InteractionEnum::LIKE->toId(),
-                    InteractionEnum::SUPERLIKE->toId(),
-                ])
+                ->whereIn('interaction', InteractionEnum::LikeInteractions())
                 ->orderBy('created_at', 'desc')
                 ->paginate(20, ['*'], 'page', $page);
 

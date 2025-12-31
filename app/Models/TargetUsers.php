@@ -74,22 +74,6 @@ final class TargetUsers extends Model
         return $this->belongsTo(Event::class, 'event_uid', 'uid');
     }
 
-    public function scopeUsersWithoutInteraction($query, $eventUid)
-    {
-        return $query->where('interaction_id', null)
-            ->where('event_uid', $eventUid)
-            ->get()
-            ->pluck('target_user_uid');
-    }
-
-    public function scopeUsersWithInteraction($query, $eventUid)
-    {
-        return $query->where('event_uid', $eventUid)
-            ->whereNot('interaction_id', null)
-            ->get()
-            ->pluck('target_user_uid');
-    }
-
     protected function casts(): array
     {
         return [

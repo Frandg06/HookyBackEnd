@@ -276,11 +276,6 @@ final class User extends Authenticatable implements JWTSubject
         return $this->role_id === Role::PREMIUM ? true : false;
     }
 
-    public function scopeRemainingUsersToInteract()
-    {
-        return $this->interactions()->where('event_uid', $this->event?->uid)->where('interaction_id', null)->get();
-    }
-
     public function scopeGetNotificationsByType()
     {
 

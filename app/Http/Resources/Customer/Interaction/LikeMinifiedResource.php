@@ -19,12 +19,12 @@ final class LikeMinifiedResource extends JsonResource
     public function toArray(Request $request): array
     {
 
-        $showFull = $this->targetUser->is_premium || $this->interaction_id === InteractionEnum::SUPERLIKE->toId();
+        $showFull = $this->targetUser->is_premium || $this->interaction === InteractionEnum::SUPERLIKE;
 
         return [
             'uid' => $this->id,
             'emitter_uid' => $this->emitter->uid,
-            'type' => $this->interaction->name,
+            'type' => $this->interaction,
             'time' => Carbon::parse($this->updated_at)->diffForHumans([
                 'short' => true,
             ]),
