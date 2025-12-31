@@ -22,43 +22,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-/**
- * App\Models\User
- *
- * @property string $uid
- * @property string $name
- * @property string $surnames
- * @property string $email
- * @property string $password
- * @property int $sexual_orientation_id
- * @property int $role_id
- * @property string|null $born_date
- * @property string|null $description
- * @property string|null $company_uid
- * @property SocialProviders|null $provider_name
- * @property string|null $provider_id
- * @property bool $auto_password
- * @property Carbon|null $email_verified_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Company|null $company
- * @property-read int $age
- * @property-read bool $complete_register
- * @property-read bool $data_complete
- * @property-read bool $data_images
- * @property-read int $is_premium
- * @property-read int $likes
- * @property-read int $super_likes
- * @property-read bool $auto_password
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Notification> $notifications
- * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Event> $events
- * @property-read \Illuminate\Database\Eloquent\Collection<int, UserImage> $images
- * @property-read int|null $user_images_count
- *
- * @method static \Illuminate\Database\Eloquent\Builder|User whereAny(array $columns, mixed $   value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereNot(string $column, mixed $value)
- */
 final class User extends Authenticatable implements JWTSubject
 {
     use Filterable;
@@ -158,16 +121,6 @@ final class User extends Authenticatable implements JWTSubject
                     ->where('ui.user_uid', $auth->uid)
                     ->where('ui.event_uid', $auth->event->uid);
             });
-    }
-
-    public function gender(): BelongsTo
-    {
-        return $this->belongsTo(Gender::class);
-    }
-
-    public function sexualOrientation(): BelongsTo
-    {
-        return $this->belongsTo(SexualOrientation::class);
     }
 
     public function role(): BelongsTo
