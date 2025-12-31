@@ -8,6 +8,7 @@ use Exception;
 use App\Exceptions\ApiException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\Customer\UserResource;
 
 final class AuthUserService extends Service
 {
@@ -25,7 +26,7 @@ final class AuthUserService extends Service
 
             DB::commit();
 
-            return $this->user()->toResource();
+            return UserResource::make($this->user()->loadRelations());
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;

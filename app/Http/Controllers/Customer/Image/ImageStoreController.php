@@ -24,6 +24,6 @@ final class ImageStoreController extends Controller
 
         $user = $action->execute($user, $data);
 
-        return $this->successResponse(__('i18n.image_store_ok'), $user->loadRelations()->toResource());
+        return $this->successResponse(__('i18n.image_store_ok'), $user);
     }
 }

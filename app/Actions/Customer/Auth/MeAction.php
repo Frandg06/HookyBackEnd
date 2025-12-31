@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Actions\Customer\Auth;
 
 use App\Models\User;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\Customer\UserResource;
 
 final readonly class MeAction
 {
@@ -14,6 +14,6 @@ final readonly class MeAction
      */
     public function execute(User $user): UserResource
     {
-        return $user->loadRelations()->toResource();
+        return UserResource::make($user->loadRelations());
     }
 }

@@ -6,12 +6,8 @@ namespace App\Http\Resources\Customer\Chat;
 
 use App\Models\Chat;
 use Illuminate\Http\Request;
-use App\Http\Resources\ChatResource;
-use App\Http\Resources\MessageResource;
-// Asumiré que tienes un ChatResource, si no, puedes usar el modelo directo o crear uno.
 use App\Http\Resources\PaginationResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use App\Http\Resources\Customer\Chat\ChatResource as ChatChatResource;
 
 final class ChatCollection extends ResourceCollection
 {
@@ -31,7 +27,7 @@ final class ChatCollection extends ResourceCollection
             'pagination' => PaginationResource::make($this->resource),
             $this->mergeWhen($this->chatData, function () {
                 return [
-                    'chat' => ChatChatResource::make($this->chatData),
+                    'chat' => ChatResource::make($this->chatData),
                 ];
             }),
         ];

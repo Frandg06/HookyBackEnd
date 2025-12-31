@@ -6,7 +6,6 @@ namespace App\Repositories;
 
 use App\Models\Chat;
 use App\Models\ChatMessage;
-use App\Http\Resources\ChatPreviewResource;
 
 final class ChatRepository
 {
@@ -38,10 +37,5 @@ final class ChatRepository
             'receiver_uid' => $receiver_uid,
             'message' => $message,
         ]);
-    }
-
-    public function toResourcePreview(Chat $chat)
-    {
-        return ChatPreviewResource::make($chat);
     }
 }

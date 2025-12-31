@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\DB;
 use App\Repositories\ChatRepository;
 use App\Repositories\UserRepository;
 use App\Events\PrivateChatMessageEvent;
-use App\Http\Resources\MessageResource;
 use App\Events\MessageNotificationEvent;
+use App\Http\Resources\Customer\Chat\MessageResource;
 
 final readonly class SendMessageAction
 {

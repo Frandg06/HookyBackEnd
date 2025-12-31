@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Dtos\StoreImageDto;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\Customer\UserResource;
 use App\Actions\Customer\Image\StoreImagePipeline\SaveImageDataPipe;
 use App\Actions\Customer\Image\StoreImagePipeline\StoreImagePassable;
 use App\Actions\Customer\Image\StoreImagePipeline\StoreUserImagesPipe;
@@ -15,7 +16,7 @@ use App\Actions\Customer\Image\StoreImagePipeline\PrepareToStoreImages;
 
 final class StoreImageAction
 {
-    public function execute(User $user, StoreImageDto $data): User
+    public function execute(User $user, StoreImageDto $data): UserResource
     {
         return DB::transaction(function () use ($user, $data) {
             $passable = new StoreImagePassable($user->load('images'), $data);
@@ -29,7 +30,7 @@ final class StoreImageAction
                 ])
                 ->thenReturn();
 
-            return $passable->user;
+            return UserResource::make($passable->user->loadRelations());
         });
 
     }

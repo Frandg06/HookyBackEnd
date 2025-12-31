@@ -7,8 +7,8 @@ namespace App\Actions\Customer\User;
 use App\Models\User;
 use App\Dtos\UpdateUserDto;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Cache;
+use App\Http\Resources\Customer\UserResource;
 
 final readonly class UpdateUserAction
 {
@@ -33,7 +33,7 @@ final readonly class UpdateUserAction
                 Cache::forget($cacheKey);
             }
 
-            return $user->loadRelations()->toResource();
+            return UserResource::make($user->loadRelations());
         });
     }
 }

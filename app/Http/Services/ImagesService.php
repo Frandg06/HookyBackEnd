@@ -9,6 +9,7 @@ use App\Exceptions\ApiException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\Customer\UserResource;
 
 final class ImagesService extends Service
 {
@@ -35,7 +36,7 @@ final class ImagesService extends Service
 
             DB::commit();
 
-            return $user->toResource();
+            return UserResource::make($user->loadRelations());
         } catch (Throwable $e) {
             DB::rollBack();
             debug(['error_updating_image' => $e->getMessage()]);
