@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Spatie\Sluggable\HasSlug;
+use App\Enums\User\GenderEnum;
 use App\Models\Traits\Sortable;
 use App\Models\Traits\Filterable;
 use Spatie\Sluggable\SlugOptions;
@@ -228,11 +229,11 @@ final class Event extends Model
         }
 
         $males = $this->users2()
-            ->where('users.gender_id', Gender::MALE)
+            ->where('users.gender', GenderEnum::MALE)
             ->count();
 
         $females = $this->users2()
-            ->where('users.gender_id', Gender::FEMALE)
+            ->where('users.gender', GenderEnum::FEMALE)
             ->count();
 
         return [
@@ -243,7 +244,7 @@ final class Event extends Model
 
     public function getHooksAttribute()
     {
-        return $this->notifications()->where('type_id', '=', NotificationsType::HOOK_TYPE)->count() / 2;
+        return Hook::where('event_uid', $this->uid)->count();
     }
 
     public function uniqueIds(): array

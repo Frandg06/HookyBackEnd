@@ -186,12 +186,6 @@ final class User extends Authenticatable implements JWTSubject
             ->where('read_at', false);
     }
 
-    public function likeNotifications(): HasMany
-    {
-        return $this->hasMany(Notification::class, 'user_uid', 'uid')
-            ->whereIn('type_id', [NotificationsType::LIKE_TYPE, NotificationsType::SUPER_LIKE_TYPE]);
-    }
-
     public function tickets()
     {
         return $this->hasMany(Ticket::class, 'user_uid', 'uid');

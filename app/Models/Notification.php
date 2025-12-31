@@ -29,11 +29,6 @@ final class Notification extends Model
         'updated_at',
     ];
 
-    public function type(): BelongsTo
-    {
-        return $this->belongsTo(NotificationsType::class, 'type_id', 'id');
-    }
-
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class, 'event_uid', 'uid');
