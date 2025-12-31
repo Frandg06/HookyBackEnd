@@ -29,7 +29,7 @@ final class LikeController extends Controller
             $user->uid,
             $request->target_user_uid,
             $request->event_uid,
-            InteractionEnum::LIKE->toId(),
+            InteractionEnum::LIKE,
         );
 
         $response = $likeAction->execute($user, $dto);

@@ -29,7 +29,7 @@ final class SuperlikeController extends Controller
             $user->uid,
             $request->target_user_uid,
             $request->event_uid,
-            InteractionEnum::SUPERLIKE->toId(),
+            InteractionEnum::SUPERLIKE,
         );
 
         $response = $action->execute($user, $dto);

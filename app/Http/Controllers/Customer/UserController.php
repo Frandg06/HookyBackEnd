@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Customer;
 
 use App\Models\User;
-use App\Models\Interaction;
 use App\Models\TargetUsers;
 use App\Dtos\InteractionDto;
 use Illuminate\Http\Request;
+use App\Enums\InteractionEnum;
 use Illuminate\Validation\Rule;
 use App\Http\Services\UserService;
 use App\Http\Controllers\Controller;
@@ -75,7 +75,7 @@ final class UserController extends Controller
 
         $isConfirm = TargetUsers::where('user_uid', $user->uid)
             ->where('target_user_uid', $uid)
-            ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID])
+            ->whereIn('interaction', InteractionEnum::LikeInteractions())
             ->where('event_uid', $user->event->uid)
             ->exists();
 
@@ -118,7 +118,7 @@ final class UserController extends Controller
             user_uid: $user->uid,
             target_user_uid: $uid,
             event_uid: $user->event->uid,
-            interaction_id: null,
+            interaction: null,
         );
 
         $isHook = TargetUsers::isHook($dto);

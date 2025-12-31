@@ -29,7 +29,7 @@ final class DislikeController extends Controller
             $user->uid,
             $request->target_user_uid,
             $request->event_uid,
-            InteractionEnum::DISLIKE->toId(),
+            InteractionEnum::DISLIKE,
         );
 
         $response = $dislikeAction->execute($user, $dto);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\Carbon;
+use App\Enums\InteractionEnum;
 use App\Enums\SocialProviders;
 use App\Enums\User\GenderEnum;
 use App\Models\Traits\Sortable;
@@ -197,7 +198,7 @@ final class User extends Authenticatable implements JWTSubject
     public function likesReceived(): HasMany
     {
         return $this->hasMany(TargetUsers::class, 'target_user_uid', 'uid')
-            ->whereIn('interaction_id', [Interaction::LIKE_ID, Interaction::SUPER_LIKE_ID]);
+            ->whereIn('interaction', [InteractionEnum::LIKE, InteractionEnum::SUPERLIKE]);
     }
 
     public function hooksAsUser1()
