@@ -8,8 +8,8 @@ use Throwable;
 use App\Models\Chat;
 use App\Models\ChatMessage;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\ChatPreviewResource;
 use App\Http\Resources\Customer\Chat\ChatCollection;
+use App\Http\Resources\Customer\Chat\ChatPreviewResource;
 
 final class ChatService extends Service
 {
