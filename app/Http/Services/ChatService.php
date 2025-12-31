@@ -28,13 +28,14 @@ final class ChatService extends Service
 
     public function show(string $uid, int $page): ChatCollection
     {
-        $messages = ChatMessage::with('chat')
-            ->where('chat_uid', $uid)
+        $chat = Chat::find($uid);
+
+        $messages = $chat->messages()
             ->orderByDesc('created_at')
             ->orderByDesc('uid')
             ->paginate(100, ['*'], 'page', $page);
 
-        return ChatCollection::make($messages);
+        return ChatCollection::make($messages)->withChat($chat);
     }
 
     public function read(string $uid)
