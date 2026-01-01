@@ -6,9 +6,11 @@ namespace App\Repositories;
 
 use App\Models\Hook;
 use App\Models\User;
+use App\Models\Settings;
 use App\Models\TargetUsers;
 use Illuminate\Support\Str;
 use App\Enums\InteractionEnum;
+use App\Dtos\UpdateSettingsDto;
 use App\Models\PasswordResetToken;
 use Laravel\Socialite\Two\User as TwoUser;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -126,5 +128,18 @@ final class UserRepository
             ->where('type', $type)
             ->where('read_at', false)
             ->update(['read_at' => true]);
+    }
+
+    public function updateOrCreateUserSettings(string $user_uid, UpdateSettingsDto $data): void
+    {
+        Settings::updateOrCreate(
+            ['user_uid' => $user_uid],
+            [
+                'new_like_notification' => $data->new_like_notification,
+                'new_superlike_notification' => $data->new_superlike_notification,
+                'new_message_notification' => $data->new_message_notification,
+                'event_start_email' => $data->event_start_email,
+            ]
+        );
     }
 }

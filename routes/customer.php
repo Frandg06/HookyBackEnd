@@ -15,6 +15,7 @@ use App\Http\Controllers\Customer\Event\GetEventsController;
 use App\Http\Controllers\Customer\Image\SwapImageController;
 use App\Http\Controllers\Customer\TargetUser\LikeController;
 use App\Http\Controllers\Customer\User\UpdateUserController;
+use App\Http\Controllers\Customer\User\UpdateSettingsController;
 use App\Http\Controllers\Customer\Auth\EventAttachController;
 use App\Http\Controllers\Customer\Auth\SocialLoginController;
 use App\Http\Controllers\Customer\Chat\SendMessageController;
@@ -70,6 +71,7 @@ Route::middleware(['auth:api'])->group(function () {
     // User routes
     Route::post('/user/complete', CompleteUserDataController::class);
     Route::put('/user/update', UpdateUserController::class);
+    Route::put('/user/settings', UpdateSettingsController::class);
 
     Route::put('/user/password', UpdatePasswordController::class);
 

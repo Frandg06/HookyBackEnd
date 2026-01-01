@@ -145,6 +145,11 @@ final class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Ticket::class, 'user_uid', 'uid');
     }
 
+    public function settings(): HasOne
+    {
+        return $this->hasOne(Settings::class, 'user_uid', 'uid');
+    }
+
     public function getAgeAttribute(): int
     {
         return Carbon::parse($this->born_date)->age;
