@@ -12,7 +12,7 @@ final class UpdateUserPipe
     /**
      * Check if a user is changing their email address to another one that already exists in the database.
      */
-    public function handle(CompleteUserDataPassable $passable, Closure $next): CompleteUserDataPassable
+    public function handle(CompleteUserDataPassable $passable, Closure $next): mixed
     {
         $passable->user->update([
             'name' => $passable->data->name,

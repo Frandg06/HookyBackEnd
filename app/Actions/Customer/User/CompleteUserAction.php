@@ -9,9 +9,10 @@ use App\Dtos\CompleteUserDataDto;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\DB;
 use App\Actions\Customer\User\CompleteUserPipeline\UpdateUserPipe;
-use App\Actions\Customer\User\CompleteUserPipeline\SaveImageDataPipe;
-use App\Actions\Customer\User\CompleteUserPipeline\StoreUserImagesPipe;
-use App\Actions\Customer\User\CompleteUserPipeline\PrepareToStoreImages;
+use App\Actions\Customer\Image\StoreImagePipeline\SaveImageDataPipe;
+use App\Actions\Customer\Image\StoreImagePipeline\StoreUserImagesPipe;
+use App\Actions\Customer\Image\StoreImagePipeline\PrepareToStoreImages;
+use App\Actions\Customer\User\CompleteUserPipeline\TransformPassablePipe;
 use App\Actions\Customer\User\CompleteUserPipeline\CompleteUserDataPassable;
 
 final class CompleteUserAction
@@ -25,6 +26,7 @@ final class CompleteUserAction
                 ->send($passable)
                 ->through([
                     UpdateUserPipe::class,
+                    TransformPassablePipe::class,
                     PrepareToStoreImages::class,
                     StoreUserImagesPipe::class,
                     SaveImageDataPipe::class,
