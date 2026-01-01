@@ -58,6 +58,7 @@ final class UserResource extends JsonResource
                     'is_finished' => $this->event?->is_finished,
                 ]
             ),
+            'settings' => $this->settings,
         ];
     }
 }

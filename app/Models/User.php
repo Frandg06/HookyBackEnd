@@ -251,7 +251,7 @@ final class User extends Authenticatable implements JWTSubject
         return $this->load([
             'images',
             'activeEvent',
-            'company',
+            'settings',
         ])->loadCount([
             'hooksAsUser1',
             'hooksAsUser2',

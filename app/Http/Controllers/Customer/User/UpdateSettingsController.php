@@ -24,6 +24,6 @@ final class UpdateSettingsController extends Controller
 
         $response = $action->execute($user, $data);
 
-        $this->successResponse('i18n.settings_updated', $response);
+        return $this->successResponse('i18n.settings_updated', $response);
     }
 }
