@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Models\Hook;
 use App\Models\User;
 use App\Models\TargetUsers;
+use App\Dtos\InteractionDto;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\SexualOrientationEnum;
 use Illuminate\Database\Eloquent\Collection;
@@ -72,5 +74,18 @@ final class TargetUserRepository
     public function getTargetUsersFromUids(array $uids): Collection
     {
         return User::with('images')->whereIn('uid', $uids)->get();
+    }
+
+    public function isHook(InteractionDto $dto): bool
+    {
+        return Hook::where(function ($query) use ($dto) {
+            $query->where('user1_uid', $dto->user_uid)
+                ->where('user2_uid', $dto->target_user_uid);
+        })->orWhere(function ($query) use ($dto) {
+            $query->where('user1_uid', $dto->target_user_uid)
+                ->where('user2_uid', $dto->user_uid);
+        })
+            ->where('event_uid', $dto->event_uid)
+            ->exists();
     }
 }

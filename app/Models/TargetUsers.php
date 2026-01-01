@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Dtos\InteractionDto;
 use App\Enums\InteractionEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,20 +20,6 @@ final class TargetUsers extends Model
         'created_at',
         'updated_at',
     ];
-
-    public static function scopeIsHook($query, InteractionDto $target)
-    {
-        return $query->where('user_uid', $target->target_user_uid)
-            ->where('target_user_uid', $target->user_uid)
-            ->whereIn('interaction', [InteractionEnum::LIKE, InteractionEnum::SUPERLIKE])
-            ->whereExists(function ($query) use ($target) {
-                $query->from('target_users')
-                    ->where('user_uid', $target->user_uid)
-                    ->where('target_user_uid', $target->target_user_uid)
-                    ->whereIn('interaction', [InteractionEnum::LIKE, InteractionEnum::SUPERLIKE])
-                    ->where('event_uid', $target->event_uid);
-            });
-    }
 
     public static function checkIsLike($uid, $auth)
     {
