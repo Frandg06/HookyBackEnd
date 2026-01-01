@@ -37,8 +37,10 @@ use App\Http\Controllers\Customer\Auth\PasswordResetTokenController;
 use App\Http\Controllers\Customer\User\NotifyStartOfEventController;
 use App\Http\Controllers\Customer\TargetUser\GetTargetUsersController;
 use App\Http\Controllers\Customer\TargetUser\CheckPendingMatchController;
+use App\Http\Controllers\Customer\TargetUser\GetInteractionsGivenHistoryController;
 use App\Http\Controllers\Customer\User\Notification\GetHookNotificationsController;
 use App\Http\Controllers\Customer\User\Notification\GetLikeNotificationsController;
+use App\Http\Controllers\Customer\TargetUser\GetInteractionsRecivedHistoryController;
 use App\Http\Controllers\Customer\User\Notification\ReadNotificationsByTypeController;
 
 // Auth routes
@@ -96,10 +98,13 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/redeem', RedeemTicketController::class);
 
         Route::get('/target-users', GetTargetUsersController::class);
+        Route::get('/target-users/history/recived', GetInteractionsRecivedHistoryController::class);
+        Route::get('/target-users/history/given', GetInteractionsGivenHistoryController::class);
         Route::get('/target-users/{uid}', ShowTargetUserController::class);
         Route::post('{event_uid}/target-users/{target_user_uid}/like', LikeController::class)->middleware('credits');
         Route::post('{event_uid}/target-users/{target_user_uid}/superlike', SuperlikeController::class)->middleware('credits');
         Route::post('{event_uid}/target-users/{target_user_uid}/dislike', DislikeController::class);
         Route::get('/target-users/confirm/{uid}', CheckPendingMatchController::class);
+
     });
 });

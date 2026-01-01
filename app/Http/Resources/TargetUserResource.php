@@ -22,6 +22,9 @@ final class TargetUserResource extends JsonResource
             'description' => $this->description,
             'age' => $this->age,
             'images' => $this->images->pluck('web_url'),
+            $this->mergeWhen($this->interaction, [
+                'interaction' => $this->interaction,
+            ]),
         ];
     }
 }

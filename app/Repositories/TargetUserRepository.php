@@ -116,4 +116,22 @@ final class TargetUserRepository
             ->where('event_uid', $eventUid)
             ->exists();
     }
+
+    public function getInteractionsHistory(User $user, int $page = 1)
+    {
+        return TargetUsers::with(['emitter:uid,name,born_date', 'emitter.images:uid,user_uid'])
+            ->where('target_user_uid', $user->uid)
+            ->where('event_uid', $user->event->uid)
+            ->orderBy('created_at', 'desc')
+            ->paginate(20, ['*'], 'page', $page);
+    }
+
+    public function getInteractionsGivenHistory(User $user, int $page = 1)
+    {
+        return TargetUsers::with(['targetUser:uid,name,born_date', 'targetUser.images:uid,user_uid'])
+            ->where('user_uid', $user->uid)
+            ->where('event_uid', $user->event->uid)
+            ->orderBy('created_at', 'desc')
+            ->paginate(20, ['*'], 'page', $page);
+    }
 }
