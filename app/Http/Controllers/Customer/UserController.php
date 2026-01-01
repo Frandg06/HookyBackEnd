@@ -9,10 +9,8 @@ use App\Models\TargetUsers;
 use App\Dtos\InteractionDto;
 use Illuminate\Http\Request;
 use App\Enums\InteractionEnum;
-use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use App\Http\Services\ImagesService;
-use App\Http\Services\AuthUserService;
 use App\Http\Resources\TargetUserResource;
 use Illuminate\Container\Attributes\CurrentUser;
 
@@ -25,24 +23,9 @@ final class UserController extends Controller
     protected $notificationService;
 
     public function __construct(
-        AuthUserService $authUserService,
         ImagesService $imageService,
     ) {
-        $this->authUserService = $authUserService;
         $this->imageService = $imageService;
-    }
-
-    public function updatePassword(Request $request)
-    {
-        $request->validate([
-            'password' => 'required|min:8|confirmed',
-            'old_password' => [Rule::requiredIf(fn () => user()->auto_password === false)],
-        ]);
-
-        $data = $request->only('old_password', 'password');
-        $response = $this->authUserService->updatePassword($data);
-
-        return response()->json(['success' => true, 'resp' => $response], 200);
     }
 
     public function getUserToConfirm(Request $request, $uid)

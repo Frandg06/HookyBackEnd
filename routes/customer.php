@@ -27,6 +27,7 @@ use App\Http\Controllers\Customer\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\TargetUser\DislikeController;
 use App\Http\Controllers\Customer\Event\GetEventsCityController;
 use App\Http\Controllers\Customer\Stripe\MakeCheckoutController;
+use App\Http\Controllers\Customer\User\UpdatePasswordController;
 use App\Http\Controllers\Customer\Event\GetEventsGuestController;
 use App\Http\Controllers\Customer\TargetUser\SuperlikeController;
 use App\Http\Controllers\Customer\User\CompleteUserDataController;
@@ -65,7 +66,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/user/complete', CompleteUserDataController::class);
     Route::put('/user/update', UpdateUserController::class);
 
-    Route::put('/user/password', [UserController::class, 'updatePassword']);
+    Route::put('/user/password', UpdatePasswordController::class);
 
     Route::post('/user/images', ImageStoreController::class);
     Route::post('/user/images/{uid}', [ImageController::class, 'update']);
