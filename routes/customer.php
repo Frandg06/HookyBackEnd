@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Customer\ChatController;
 use App\Http\Controllers\Customer\ImageController;
 use App\Http\Controllers\Customer\Auth\MeController;
 use App\Http\Controllers\Customer\Auth\LoginController;
@@ -24,6 +23,7 @@ use App\Http\Controllers\Customer\Image\OrderImageController;
 use App\Http\Controllers\Customer\Image\DeleteImageController;
 use App\Http\Controllers\Customer\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\TargetUser\DislikeController;
+use App\Http\Controllers\Customer\Chat\MarkChatAsReadController;
 use App\Http\Controllers\Customer\Event\GetEventsCityController;
 use App\Http\Controllers\Customer\Stripe\MakeCheckoutController;
 use App\Http\Controllers\Customer\Ticket\RedeemTicketController;
@@ -89,7 +89,7 @@ Route::middleware(['auth:api'])->group(function () {
         // Chat routes
         Route::get('/chat', GetChatsController::class);
         Route::post('/chat/{uid}/send', SendMessageController::class);
-        Route::put('/chat/{uid}/read', [ChatController::class, 'readMessage']);
+        Route::put('/chat/{uid}/read', MarkChatAsReadController::class);
         Route::get('/chat/{uid}', ShowChatController::class);
 
         // Ticket routes

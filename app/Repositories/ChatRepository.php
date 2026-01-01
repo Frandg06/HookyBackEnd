@@ -58,4 +58,12 @@ final class ChatRepository
             ->orderByDesc('uid')
             ->paginate(100, ['*'], 'page', $page);
     }
+
+    public function markMessagesAsRead(string $chatUid, string $userUid): void
+    {
+        ChatMessage::where('chat_uid', $chatUid)
+            ->whereNot('sender_uid', $userUid)
+            ->where('read_at', false)
+            ->update(['read_at' => true]);
+    }
 }
