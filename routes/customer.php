@@ -32,6 +32,7 @@ use App\Http\Controllers\Customer\TargetUser\SuperlikeController;
 use App\Http\Controllers\Customer\User\CompleteUserDataController;
 use App\Http\Controllers\Customer\Auth\PasswordResetTokenController;
 use App\Http\Controllers\Customer\User\NotifyStartOfEventController;
+use App\Http\Controllers\Customer\TargetUser\GetTargetUsersController;
 use App\Http\Controllers\Customer\User\Notification\GetHookNotificationsController;
 use App\Http\Controllers\Customer\User\Notification\GetLikeNotificationsController;
 use App\Http\Controllers\Customer\User\Notification\ReadNotificationsByTypeController;
@@ -63,7 +64,9 @@ Route::middleware(['auth:api'])->group(function () {
     // User routes
     Route::post('/user/complete', CompleteUserDataController::class);
     Route::put('/user/update', UpdateUserController::class);
+
     Route::put('/user/password', [UserController::class, 'updatePassword']);
+
     Route::post('/user/images', ImageStoreController::class);
     Route::post('/user/images/{uid}', [ImageController::class, 'update']);
     Route::delete('/user/images/{uid}', [ImageController::class, 'delete']);
@@ -88,7 +91,7 @@ Route::middleware(['auth:api'])->group(function () {
         // Ticket routes
         Route::post('/redeem', [TicketController::class, 'redeem']);
 
-        Route::get('/target-users', [UserController::class, 'retrieveTargetUsers']);
+        Route::get('/target-users', GetTargetUsersController::class);
         Route::get('/target-users/{uid}', [UserController::class, 'showTargetUser']);
         Route::post('{event_uid}/target-users/{target_user_uid}/like', LikeController::class)->middleware('credits');
         Route::post('{event_uid}/target-users/{target_user_uid}/superlike', SuperlikeController::class)->middleware('credits');

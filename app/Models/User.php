@@ -76,53 +76,6 @@ final class User extends Authenticatable implements JWTSubject
         'born_date',
     ];
 
-    public static function whereTargetUsersFrom($auth)
-    {
-        return self::whereNot('uid', $auth->uid)
-            ->has('images', '>', 0)
-            ->when($auth->sexual_orientation->isHomosexual(), function ($q) use ($auth) {
-                $q->where('gender', $auth->gender->same())
-                    ->whereIn('sexual_orientation', [$auth->sexual_orientation, SexualOrientationEnum::BISEXUAL]);
-            })
-            ->when($auth->sexual_orientation->isHeterosexual(), function ($q) use ($auth) {
-                $q->where('gender', $auth->gender->opposite())
-                    ->whereIn('sexual_orientation', [$auth->sexual_orientation, SexualOrientationEnum::BISEXUAL]);
-            })
-            ->when($auth->sexual_orientation->isBisexual(), function ($q) use ($auth) {
-                $q->when($auth->gender->isMale(), function ($query) {
-                    $query->where(function ($q) {
-                        $q->where(function ($subQuery) {
-                            $subQuery->where('gender', GenderEnum::MALE)
-                                ->whereIn('sexual_orientation', [SexualOrientationEnum::GAY, SexualOrientationEnum::BISEXUAL]);
-                        })->orWhere(function ($subQuery) {
-                            $subQuery->where('gender', GenderEnum::FEMALE)
-                                ->whereIn('sexual_orientation', [SexualOrientationEnum::HETEROSEXUAL, SexualOrientationEnum::BISEXUAL]);
-                        });
-                    });
-                });
-                $q->when($auth->gender->isFemale(), function ($query) {
-                    $query->where(function ($q) {
-                        $q->where(function ($subQuery) {
-                            $subQuery->where('gender', GenderEnum::FEMALE)
-                                ->whereIn('sexual_orientation', [SexualOrientationEnum::LESBIAN, SexualOrientationEnum::BISEXUAL]);
-                        })->orWhere(function ($subQuery) {
-                            $subQuery->where('gender', GenderEnum::MALE)
-                                ->whereIn('sexual_orientation', [SexualOrientationEnum::HETEROSEXUAL, SexualOrientationEnum::BISEXUAL]);
-                        });
-                    });
-                });
-            })
-            ->whereHas('events', function ($q) use ($auth) {
-                $q->where('event_uid', $auth->event->uid);
-            })
-            ->whereNotIn('uid', function ($q) use ($auth) {
-                $q->select('target_user_uid')
-                    ->from('target_users as ui')
-                    ->where('ui.user_uid', $auth->uid)
-                    ->where('ui.event_uid', $auth->event->uid);
-            });
-    }
-
     public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class);
@@ -256,6 +209,11 @@ final class User extends Authenticatable implements JWTSubject
                 $query->where('event_uid', $this->event?->uid)
                     ->whereAny(['user1_uid', 'user2_uid'], $this->uid);
             })->count();
+    }
+
+    public function targetUsersCacheKey(): Attribute
+    {
+        return Attribute::get(fn () => 'target_users_uids_'.$this->uid.'_'.$this->event->uid);
     }
 
     public function completeRegister(): Attribute

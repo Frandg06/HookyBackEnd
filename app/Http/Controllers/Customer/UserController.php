@@ -10,7 +10,6 @@ use App\Dtos\InteractionDto;
 use Illuminate\Http\Request;
 use App\Enums\InteractionEnum;
 use Illuminate\Validation\Rule;
-use App\Http\Services\UserService;
 use App\Http\Controllers\Controller;
 use App\Http\Services\ImagesService;
 use App\Http\Services\AuthUserService;
@@ -21,19 +20,15 @@ final class UserController extends Controller
 {
     protected $authUserService;
 
-    protected $userService;
-
     protected $imageService;
 
     protected $notificationService;
 
     public function __construct(
         AuthUserService $authUserService,
-        UserService $userService,
         ImagesService $imageService,
     ) {
         $this->authUserService = $authUserService;
-        $this->userService = $userService;
         $this->imageService = $imageService;
     }
 
@@ -48,13 +43,6 @@ final class UserController extends Controller
         $response = $this->authUserService->updatePassword($data);
 
         return response()->json(['success' => true, 'resp' => $response], 200);
-    }
-
-    public function retrieveTargetUsers()
-    {
-        $response = $this->userService->getTargetUsers();
-
-        return response()->json(['resp' => $response, 'success' => true], 200);
     }
 
     public function getUserToConfirm(Request $request, $uid)
