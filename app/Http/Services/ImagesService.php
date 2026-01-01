@@ -17,61 +17,29 @@ final class ImagesService extends Service
     {
         DB::beginTransaction();
         try {
-            $user = $this->user();
+            // $user = $this->user();
 
-            if ($img_uid) {
+            // if ($img_uid) {
 
-                $delete = $this->delete($img_uid);
+            //     $delete = $this->delete($img_uid);
 
-                if (! $delete) {
-                    throw new ApiException('delete_image_unexpected_error', 500);
-                }
-            }
-
-            // $store = $this->store($img, $data);
-
-            // if (! $store) {
-            //     throw new ApiException('store_image_unexpected_error', 500);
+            //     if (! $delete) {
+            //         throw new ApiException('delete_image_unexpected_error', 500);
+            //     }
             // }
 
-            DB::commit();
+            // // $store = $this->store($img, $data);
 
-            return UserResource::make($user->loadRelations());
+            // // if (! $store) {
+            // //     throw new ApiException('store_image_unexpected_error', 500);
+            // // }
+
+            // DB::commit();
+
+            // return UserResource::make($user->loadRelations());
         } catch (Throwable $e) {
             DB::rollBack();
             debug(['error_updating_image' => $e->getMessage()]);
-            throw $e;
-        }
-    }
-
-    public function delete($uid)
-    {
-        DB::beginTransaction();
-        try {
-            $user = request()->user()->load('images');
-
-            $imageToDelete = $user->images->where('uid', $uid)->first();
-
-            if (! $imageToDelete) {
-                return throw new ApiException('image_not_found', 404);
-            }
-
-            $delete = Storage::disk('r2')->delete($imageToDelete->url);
-
-            if (! $delete) {
-                throw new ApiException('i18n.image_delete_ko', 500);
-            }
-
-            $deletedOrder = $imageToDelete->order;
-            $imageToDelete->delete();
-
-            $user->images()->where('order', '>', $deletedOrder)->decrement('order');
-
-            DB::commit();
-
-            return true;
-        } catch (Throwable $e) {
-            DB::rollBack();
             throw $e;
         }
     }

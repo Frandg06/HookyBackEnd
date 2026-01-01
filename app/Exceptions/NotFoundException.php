@@ -23,6 +23,11 @@ final class NotFoundException extends Exception
         return new self('chat');
     }
 
+    public static function image(): self
+    {
+        return new self('imagen');
+    }
+
     public function render(Request $request): JsonResponse
     {
         return response()->json([

@@ -23,6 +23,7 @@ use App\Http\Controllers\Customer\Auth\SocialLoginController;
 use App\Http\Controllers\Customer\Chat\SendMessageController;
 use App\Http\Controllers\Customer\Image\ImageStoreController;
 use App\Http\Controllers\Customer\Image\OrderImageController;
+use App\Http\Controllers\Customer\Image\DeleteImageController;
 use App\Http\Controllers\Customer\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\TargetUser\DislikeController;
 use App\Http\Controllers\Customer\Event\GetEventsCityController;
@@ -70,7 +71,7 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::post('/user/images', ImageStoreController::class);
     Route::post('/user/images/{uid}', [ImageController::class, 'update']);
-    Route::delete('/user/images/{uid}', [ImageController::class, 'delete']);
+    Route::delete('/user/images/{uid}', DeleteImageController::class);
     Route::delete('/user/images', [ImageController::class, 'deleteUserImages']);
     Route::put('/user/images/{uid}/order', OrderImageController::class);
 

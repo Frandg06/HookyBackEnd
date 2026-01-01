@@ -8,6 +8,7 @@ use App\Models\Hook;
 use App\Models\User;
 use App\Models\TargetUsers;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use App\Enums\InteractionEnum;
 use App\Models\PasswordResetToken;
 use Laravel\Socialite\Two\User as TwoUser;
@@ -78,6 +79,18 @@ final class UserRepository
         $user->update([
             'password' => bcrypt($password),
         ]);
+    }
+
+    public function updateUserAutoPassword(User $user, bool $autoPassword): void
+    {
+        $user->update([
+            'auto_password' => $autoPassword,
+        ]);
+    }
+
+    public function checkPassword(User $user, string $password): bool
+    {
+        return Hash::check($password, $user->password);
     }
 
     public function deletePasswordResetToken(PasswordResetToken $passwordResetToken): void
