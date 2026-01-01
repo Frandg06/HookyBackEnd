@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Customer\ImageController;
 use App\Http\Controllers\Customer\Auth\MeController;
 use App\Http\Controllers\Customer\Auth\LoginController;
 use App\Http\Controllers\Customer\Auth\LogoutController;
@@ -13,6 +12,7 @@ use App\Http\Controllers\Customer\Chat\ShowChatController;
 use App\Http\Controllers\Customer\Event\GetEventController;
 use App\Http\Controllers\Customer\Stripe\PaymentController;
 use App\Http\Controllers\Customer\Event\GetEventsController;
+use App\Http\Controllers\Customer\Image\SwapImageController;
 use App\Http\Controllers\Customer\TargetUser\LikeController;
 use App\Http\Controllers\Customer\User\UpdateUserController;
 use App\Http\Controllers\Customer\Auth\EventAttachController;
@@ -72,7 +72,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::put('/user/password', UpdatePasswordController::class);
 
     Route::post('/user/images', ImageStoreController::class);
-    Route::post('/user/images/{uid}', [ImageController::class, 'update']);
+    Route::post('/user/images/{uid}', SwapImageController::class);
     Route::delete('/user/images/{uid}', DeleteImageController::class);
     Route::delete('/user/images', ClearUserImagesController::class);
     Route::put('/user/images/{uid}/order', OrderImageController::class);
