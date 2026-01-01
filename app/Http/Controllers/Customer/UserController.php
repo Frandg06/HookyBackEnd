@@ -6,13 +6,11 @@ namespace App\Http\Controllers\Customer;
 
 use App\Models\User;
 use App\Models\TargetUsers;
-use App\Dtos\InteractionDto;
 use Illuminate\Http\Request;
 use App\Enums\InteractionEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Services\ImagesService;
 use App\Http\Resources\TargetUserResource;
-use Illuminate\Container\Attributes\CurrentUser;
 
 final class UserController extends Controller
 {
@@ -70,33 +68,6 @@ final class UserController extends Controller
         return $this->successResponse('User to confirm retrieved', [
             'user' => TargetUserResource::make($targetUser),
             'to_confirm' => true,
-        ]);
-    }
-
-    public function showTargetUser(#[CurrentUser] User $user, $uid)
-    {
-        $dto = new InteractionDto(
-            user_uid: $user->uid,
-            target_user_uid: $uid,
-            event_uid: $user->event->uid,
-            interaction: null,
-        );
-
-        $isHook = TargetUsers::isHook($dto);
-
-        if (! $isHook) {
-            return response()->json([
-                'error' => true,
-                'message' => __('i18n.not_aviable_user'),
-                'redirect' => '/home',
-            ], 401);
-        }
-
-        $target = User::findOrFail($uid);
-
-        return $this->successResponse('User to confirm retrieved', [
-            'user' => TargetUserResource::make($target),
-            'to_confirm' => false,
         ]);
     }
 }
