@@ -15,6 +15,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use App\Enums\User\SexualOrientationEnum;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -91,9 +92,9 @@ final class User extends Authenticatable implements JWTSubject
         return $this->hasMany(UserImage::class, 'user_uid', 'uid')->orderBy('order', 'asc');
     }
 
-    public function profilePicture(): HasMany
+    public function profilePicture(): HasOne
     {
-        return $this->hasMany(UserImage::class, 'user_uid', 'uid')->orderBy('order', 'asc')->limit(1);
+        return $this->hasOne(UserImage::class, 'user_uid', 'uid')->where('order', 1)->latestOfMany();
     }
 
     public function interactions(): HasMany

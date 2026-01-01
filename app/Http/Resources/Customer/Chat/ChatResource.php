@@ -25,7 +25,7 @@ final class ChatResource extends JsonResource
             'chat_user' => [
                 'uid' => $chat_user->uid,
                 'name' => $chat_user->name,
-                'image' => $chat_user->images->first()->web_url,
+                'image' => $chat_user->profilePicture->web_url,
             ],
             'event_uid' => $this->event_uid,
         ];

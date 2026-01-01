@@ -23,7 +23,7 @@ final class MessageEventResource extends JsonResource
             'sender' => [
                 'uid' => $this->user->uid,
                 'name' => $this->user->name,
-                'image_url' => $this->user->images->first()->web_url,
+                'image_url' => $this->user->profilePicture->web_url,
             ],
             'message' => $this->message,
             'read_at' => $this->read_at,

@@ -30,7 +30,7 @@ final class LikeMinifiedResource extends JsonResource
             ]),
             $this->mergeWhen($showFull, [
                 'name' => $this->emitter->name,
-                'image' => $this->emitter->profilePicture->first()?->web_url ?? $this->getDefaultImages(),
+                'image' => $this->emitter->profilePicture->web_url ?? $this->getDefaultImages(),
             ]),
             $this->mergeWhen(! $showFull, [
                 'image' => $this->getDefaultImages(),

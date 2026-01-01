@@ -42,7 +42,7 @@ final class SuperlikeNotificationEvent implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'image_url' => $this->targetUser->images->first()->web_url,
+            'image_url' => $this->targetUser->profilePicture->web_url,
             'name' => $this->targetUser->name,
         ];
     }

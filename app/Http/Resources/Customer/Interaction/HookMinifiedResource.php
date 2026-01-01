@@ -29,7 +29,7 @@ final class HookMinifiedResource extends JsonResource
                 'short' => true,
             ]),
             'name' => $emitter->name,
-            'image' => $emitter->profilePicture->first()?->web_url ?? $this->getDefaultImages(),
+            'image' => $emitter->profilePicture->web_url ?? $this->getDefaultImages(),
             'chat' => $receiver->chats()
                 ->whereAny(['user1_uid', 'user2_uid'], $emitter->uid)
                 ->where('event_uid', $this->event->uid)

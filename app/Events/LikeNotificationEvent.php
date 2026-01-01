@@ -46,7 +46,7 @@ final class LikeNotificationEvent implements ShouldBroadcast
         }
 
         return [
-            'image_url' => $this->likedUser->images->first()->web_url,
+            'image_url' => $this->likedUser->profilePicture->web_url,
             'name' => $this->likedUser->name,
         ];
 
