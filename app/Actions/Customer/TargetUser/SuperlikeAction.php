@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Actions\Customer\TargetUser;
 
 use App\Models\User;
-use App\Models\TargetUsers;
 use App\Dtos\InteractionDto;
 use Illuminate\Support\Facades\DB;
 use App\Enums\NotificationTypeEnum;
@@ -33,7 +32,7 @@ final readonly class SuperlikeAction
 
             $user->activeEvent->first()?->pivot->decrement('super_likes');
 
-            $isHook = TargetUsers::isHook($target)->exists();
+            $isHook = $this->targetUserRepository->isHook($target);
 
             if ($isHook) {
                 return $this->hookAction->execute($user, $target_user, $target);

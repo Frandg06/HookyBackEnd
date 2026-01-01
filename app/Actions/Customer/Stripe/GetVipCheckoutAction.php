@@ -24,7 +24,7 @@ final readonly class GetVipCheckoutAction
     public function execute(User $user): string
     {
         return DB::transaction(function () use ($user) {
-            if ($user->isPremium()) {
+            if ($user->is_premium) {
                 throw new ApiException('user_already_premium');
             }
 

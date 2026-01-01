@@ -22,16 +22,18 @@ final class InteractionHistoryResource extends JsonResource
             'uid' => $this->id,
             'emitter' => $this->whenLoaded('emitter', function () {
                 return [
-                    'emitter_uid' => $this->emitter->uid,
+                    'uid' => $this->emitter->uid,
                     'name' => $this->emitter->name,
                     'image' => $this->emitter->profilePicture->web_url ?? $this->getDefaultImages(),
+                    'age' => $this->emitter->age,
                 ];
             }),
             'reciver' => $this->whenLoaded('targetUser', function () {
                 return [
-                    'target_user_uid' => $this->targetUser->uid,
+                    'uid' => $this->targetUser->uid,
                     'name' => $this->targetUser->name,
                     'image' => $this->targetUser->profilePicture->web_url ?? $this->getDefaultImages(),
+                    'age' => $this->targetUser->age,
                 ];
             }),
             'type' => $this->interaction,
