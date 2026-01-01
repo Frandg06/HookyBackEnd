@@ -32,6 +32,7 @@ use App\Http\Controllers\Customer\User\ShowTargetUserController;
 use App\Http\Controllers\Customer\User\UpdatePasswordController;
 use App\Http\Controllers\Customer\Event\GetEventsGuestController;
 use App\Http\Controllers\Customer\TargetUser\SuperlikeController;
+use App\Http\Controllers\Customer\Image\ClearUserImagesController;
 use App\Http\Controllers\Customer\User\CompleteUserDataController;
 use App\Http\Controllers\Customer\Auth\PasswordResetTokenController;
 use App\Http\Controllers\Customer\User\NotifyStartOfEventController;
@@ -73,7 +74,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/user/images', ImageStoreController::class);
     Route::post('/user/images/{uid}', [ImageController::class, 'update']);
     Route::delete('/user/images/{uid}', DeleteImageController::class);
-    Route::delete('/user/images', [ImageController::class, 'deleteUserImages']);
+    Route::delete('/user/images', ClearUserImagesController::class);
     Route::put('/user/images/{uid}/order', OrderImageController::class);
 
     Route::get('/stripe/checkout', MakeCheckoutController::class)->name('customer.stripe.checkout');

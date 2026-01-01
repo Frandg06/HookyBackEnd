@@ -29,4 +29,9 @@ final class UserImageRepository
             ->where('order', '>', $order)
             ->decrement('order');
     }
+
+    public function deleteAllByUserUid(string $user_uid): void
+    {
+        UserImage::where('user_uid', $user_uid)->delete();
+    }
 }

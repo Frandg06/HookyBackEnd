@@ -7,8 +7,6 @@ namespace App\Http\Services;
 use Throwable;
 use App\Exceptions\ApiException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\Customer\UserResource;
 
 final class ImagesService extends Service
@@ -41,32 +39,6 @@ final class ImagesService extends Service
             DB::rollBack();
             debug(['error_updating_image' => $e->getMessage()]);
             throw $e;
-        }
-    }
-
-    public function deleteUserImages()
-    {
-        DB::beginTransaction();
-        try {
-            $user = request()->user();
-
-            foreach ($user->images()->get() as $item) {
-                $item->delete();
-            }
-
-            $remove = Storage::disk('r2')->deleteDirectory("hooky/profile/$user->uid");
-
-            if (! $remove) {
-                throw new ApiException('image_delete_ko', 500);
-            }
-
-            DB::commit();
-
-            return true;
-        } catch (Throwable $e) {
-            DB::rollBack();
-            Log::error('Error en '.__CLASS__.'->'.__FUNCTION__, ['exception' => $e]);
-            throw new ApiException('image_delete_ko', 500);
         }
     }
 }

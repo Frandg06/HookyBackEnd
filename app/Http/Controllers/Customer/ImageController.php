@@ -34,11 +34,4 @@ final class ImageController extends Controller
 
         return response()->json(['success' => true, 'resp' => $response], 200);
     }
-
-    public function deleteUserImages()
-    {
-        $response = $this->imageService->deleteUserImages();
-
-        return response()->json(['success' => true, 'resp' => 'Image delete successfully'], 200);
-    }
 }
