@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Customer\ChatController;
-use App\Http\Controllers\Customer\UserController;
 use App\Http\Controllers\Customer\ImageController;
 use App\Http\Controllers\Customer\Auth\MeController;
 use App\Http\Controllers\Customer\Auth\LoginController;
@@ -37,6 +36,7 @@ use App\Http\Controllers\Customer\User\CompleteUserDataController;
 use App\Http\Controllers\Customer\Auth\PasswordResetTokenController;
 use App\Http\Controllers\Customer\User\NotifyStartOfEventController;
 use App\Http\Controllers\Customer\TargetUser\GetTargetUsersController;
+use App\Http\Controllers\Customer\TargetUser\CheckPendingMatchController;
 use App\Http\Controllers\Customer\User\Notification\GetHookNotificationsController;
 use App\Http\Controllers\Customer\User\Notification\GetLikeNotificationsController;
 use App\Http\Controllers\Customer\User\Notification\ReadNotificationsByTypeController;
@@ -100,6 +100,6 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('{event_uid}/target-users/{target_user_uid}/like', LikeController::class)->middleware('credits');
         Route::post('{event_uid}/target-users/{target_user_uid}/superlike', SuperlikeController::class)->middleware('credits');
         Route::post('{event_uid}/target-users/{target_user_uid}/dislike', DislikeController::class);
-        Route::get('/target-users/confirm/{uid}', [UserController::class, 'getUserToConfirm']);
+        Route::get('/target-users/confirm/{uid}', CheckPendingMatchController::class);
     });
 });

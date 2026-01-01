@@ -8,6 +8,7 @@ use App\Models\Hook;
 use App\Models\User;
 use App\Models\TargetUsers;
 use App\Dtos\InteractionDto;
+use App\Enums\InteractionEnum;
 use App\Enums\User\GenderEnum;
 use App\Enums\User\SexualOrientationEnum;
 use Illuminate\Database\Eloquent\Collection;
@@ -86,6 +87,33 @@ final class TargetUserRepository
                 ->where('user2_uid', $dto->user_uid);
         })
             ->where('event_uid', $dto->event_uid)
+            ->exists();
+    }
+
+    public function hasUserInteractedWith(string $userUid, string $targetUserUid, string $eventUid): bool
+    {
+        return TargetUsers::where('user_uid', $userUid)
+            ->where('target_user_uid', $targetUserUid)
+            ->whereIn('interaction', InteractionEnum::LikeInteractions())
+            ->where('event_uid', $eventUid)
+            ->exists();
+    }
+
+    public function hasReceivedLikeFrom(string $targetUserUid, string $userUid, string $eventUid): bool
+    {
+        return TargetUsers::where('user_uid', $targetUserUid)
+            ->where('target_user_uid', $userUid)
+            ->where('interaction', InteractionEnum::LIKE)
+            ->where('event_uid', $eventUid)
+            ->exists();
+    }
+
+    public function hasReceivedSuperlikeFrom(string $targetUserUid, string $userUid, string $eventUid): bool
+    {
+        return TargetUsers::where('user_uid', $targetUserUid)
+            ->where('target_user_uid', $userUid)
+            ->where('interaction', InteractionEnum::SUPERLIKE)
+            ->where('event_uid', $eventUid)
             ->exists();
     }
 }
