@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TicketController;
 use App\Http\Controllers\Customer\ChatController;
 use App\Http\Controllers\Customer\UserController;
 use App\Http\Controllers\Customer\ImageController;
@@ -28,6 +27,7 @@ use App\Http\Controllers\Customer\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\TargetUser\DislikeController;
 use App\Http\Controllers\Customer\Event\GetEventsCityController;
 use App\Http\Controllers\Customer\Stripe\MakeCheckoutController;
+use App\Http\Controllers\Customer\Ticket\RedeemTicketController;
 use App\Http\Controllers\Customer\User\ShowTargetUserController;
 use App\Http\Controllers\Customer\User\UpdatePasswordController;
 use App\Http\Controllers\Customer\Event\GetEventsGuestController;
@@ -93,7 +93,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/chat/{uid}', ShowChatController::class);
 
         // Ticket routes
-        Route::post('/redeem', [TicketController::class, 'redeem']);
+        Route::post('/redeem', RedeemTicketController::class);
 
         Route::get('/target-users', GetTargetUsersController::class);
         Route::get('/target-users/{uid}', ShowTargetUserController::class);

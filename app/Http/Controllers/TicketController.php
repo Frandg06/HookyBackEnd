@@ -34,14 +34,6 @@ final class TicketController extends Controller
         return $this->response($response);
     }
 
-    public function redeem(Request $request)
-    {
-        $code = $request->code;
-        $ticket = $this->ticketService->redeem($code);
-
-        return response()->json(['resp' => $ticket, 'success' => true], 200);
-    }
-
     public function getTicketsToExport(TicketFilter $filter, TicketOrdenator $order)
     {
         $tickets = $this->ticketService->getTicketsToExport($filter, $order);

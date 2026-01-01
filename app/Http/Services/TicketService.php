@@ -12,7 +12,6 @@ use Illuminate\Support\Str;
 use App\Exceptions\ApiException;
 use App\Http\Filters\TicketFilter;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Orders\TicketOrdenator;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\TicketResource;
@@ -75,53 +74,6 @@ final class TicketService extends Service
             return EventResource::make($event->refresh());
         } catch (Throwable $e) {
             DB::rollBack();
-            throw $e;
-        }
-    }
-
-    public function redeem(string $code): array
-    {
-        DB::beginTransaction();
-        try {
-            $event_uid = user()->event->uid;
-
-            $ticket = Ticket::where('code', $code)
-                ->where('event_uid', $event_uid)
-                ->where('redeemed', false)
-                ->first();
-
-            if (! $ticket) {
-                throw new ApiException('ticket_invalid', 400);
-            }
-
-            $tz = user()->event->timezone;
-
-            $ticket->update([
-                'user_uid' => user()->uid,
-                'redeemed' => true,
-                'redeemed_at' => now($tz),
-            ]);
-
-            user()->events()->updateExistingPivot(user()->event->uid, [
-                'likes' => user()->likes + $ticket->likes,
-                'super_likes' => user()->superlikes + $ticket->super_likes,
-            ]);
-
-            DB::commit();
-
-            return [
-                'user_total' => [
-                    'super_like_credits' => $this->user()->super_likes,
-                    'like_credits' => $this->user()->likes,
-                ],
-                'ticket_add' => [
-                    'super_likes' => $ticket->super_likes,
-                    'likes' => $ticket->likes,
-                ],
-            ];
-        } catch (Throwable $e) {
-            DB::rollBack();
-            Log::error('Error en '.__CLASS__.'->'.__FUNCTION__, ['exception' => $e]);
             throw $e;
         }
     }

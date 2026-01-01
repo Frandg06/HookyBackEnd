@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\Models\Event;
 use App\Models\UserEvent;
+use Illuminate\Support\Facades\DB;
 
 final class UserEventRepository
 {
@@ -27,5 +28,15 @@ final class UserEventRepository
                 'super_likes' => $event->super_likes,
             ]
         );
+    }
+
+    public function addCredits(string $userUid, string $eventUid, int $likes, int $superLikes): void
+    {
+        UserEvent::where('user_uid', $userUid)
+            ->where('event_uid', $eventUid)
+            ->update([
+                'likes' => DB::raw("likes + {$likes}"),
+                'super_likes' => DB::raw("super_likes + {$superLikes}"),
+            ]);
     }
 }
