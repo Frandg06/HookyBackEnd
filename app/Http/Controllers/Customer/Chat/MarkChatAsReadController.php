@@ -20,7 +20,7 @@ final class MarkChatAsReadController extends Controller
         MarkChatAsReadRequest $request,
         MarkChatAsReadAction $action
     ) {
-        $chat_uid = $request->string('uid')->toString();
+        $chat_uid = $request->string('chat_uid')->toString();
         $action->execute($user, $chat_uid);
 
         return $this->successResponse('Messages marked as read');

@@ -32,7 +32,7 @@ final readonly class LikeAction
 
             $user->activeEvent->first()?->pivot->decrement('likes');
 
-            $isHook = $this->targetUserRepository->isHook($target);
+            $isHook = $this->targetUserRepository->canMakeHook($target);
 
             if ($isHook) {
                 return $this->hookAction->execute($user, $target_user, $target);

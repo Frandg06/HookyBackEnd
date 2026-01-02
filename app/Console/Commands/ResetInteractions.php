@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Models\Chat;
+use App\Models\Hook;
 use App\Models\TargetUsers;
 use App\Models\Notification;
 use Illuminate\Console\Command;
@@ -37,6 +38,7 @@ final class ResetInteractions extends Command
         TargetUsers::query()->delete();
         Notification::query()->delete();
         Chat::query()->delete();
+        Hook::query()->delete();
 
         $this->info('Interactions reset successfully.');
 

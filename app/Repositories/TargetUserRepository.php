@@ -90,6 +90,21 @@ final class TargetUserRepository
             ->exists();
     }
 
+    public function canMakeHook(InteractionDto $target): bool
+    {
+        return TargetUsers::where('user_uid', $target->target_user_uid)
+            ->where('target_user_uid', $target->user_uid)
+            ->whereIn('interaction', [InteractionEnum::LIKE, InteractionEnum::SUPERLIKE])
+            ->whereExists(function ($query) use ($target) {
+                $query->from('target_users')
+                    ->where('user_uid', $target->user_uid)
+                    ->where('target_user_uid', $target->target_user_uid)
+                    ->whereIn('interaction', [InteractionEnum::LIKE, InteractionEnum::SUPERLIKE])
+                    ->where('event_uid', $target->event_uid);
+            })
+            ->exists();
+    }
+
     public function hasUserInteractedWith(string $userUid, string $targetUserUid, string $eventUid): bool
     {
         return TargetUsers::where('user_uid', $userUid)
