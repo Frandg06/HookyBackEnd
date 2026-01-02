@@ -119,7 +119,7 @@ final class TargetUserRepository
 
     public function getInteractionsHistory(User $user, int $page = 1)
     {
-        return TargetUsers::with(['emitter:uid,name,born_date', 'emitter.images:uid,user_uid'])
+        return TargetUsers::with(['emitter:uid,name,born_date', 'emitter.profilePicture'])
             ->where('target_user_uid', $user->uid)
             ->where('event_uid', $user->event->uid)
             ->orderBy('created_at', 'desc')
@@ -133,5 +133,32 @@ final class TargetUserRepository
             ->where('event_uid', $user->event->uid)
             ->orderBy('created_at', 'desc')
             ->paginate(20, ['*'], 'page', $page);
+    }
+
+    public function receivedInteractionIsSuperLike(InteractionDto $dto): bool
+    {
+        return TargetUsers::where('user_uid', $dto->target_user_uid)
+            ->where('target_user_uid', $dto->user_uid)
+            ->where('interaction', InteractionEnum::SUPERLIKE)
+            ->where('event_uid', $dto->event_uid)
+            ->exists();
+    }
+
+    public function receivedInteractionIsLike(InteractionDto $dto): bool
+    {
+        return TargetUsers::where('user_uid', $dto->target_user_uid)
+            ->where('target_user_uid', $dto->user_uid)
+            ->where('interaction', InteractionEnum::LIKE)
+            ->where('event_uid', $dto->event_uid)
+            ->exists();
+    }
+
+    public function receivedInteractionIsDislike(InteractionDto $dto): bool
+    {
+        return TargetUsers::where('user_uid', $dto->target_user_uid)
+            ->where('target_user_uid', $dto->user_uid)
+            ->where('interaction', InteractionEnum::DISLIKE)
+            ->where('event_uid', $dto->event_uid)
+            ->exists();
     }
 }

@@ -94,7 +94,7 @@ final class User extends Authenticatable implements JWTSubject
 
     public function profilePicture(): HasOne
     {
-        return $this->hasOne(UserImage::class, 'user_uid', 'uid')->where('order', 1)->latestOfMany();
+        return $this->hasOne(UserImage::class, 'user_uid', 'uid')->ofMany('order', 'min');
     }
 
     public function interactions(): HasMany

@@ -25,7 +25,7 @@ final class ShowTargetUserController extends Controller
             interaction: null,
         );
 
-        $response = $action->execute($dto);
+        $response = $action->execute($user, $dto);
 
         return $this->successResponse('User to confirm retrieved', $response);
     }
