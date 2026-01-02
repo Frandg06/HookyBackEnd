@@ -21,7 +21,7 @@ final class CheckCreditsMiddleware
     {
         $interaction = $request->segments()[count($request->segments()) - 1];
 
-        if ($request->user()->isPremium()) {
+        if ($request->user()->is_premium) {
             return $next($request);
         }
 

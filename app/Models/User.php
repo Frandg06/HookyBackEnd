@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use App\Enums\InteractionEnum;
 use App\Enums\SocialProviders;
 use App\Enums\User\GenderEnum;
@@ -87,37 +86,6 @@ final class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Company::class, 'company_uid', 'uid');
     }
 
-    public function images(): HasMany
-    {
-        return $this->hasMany(UserImage::class, 'user_uid', 'uid')->orderBy('order', 'asc');
-    }
-
-    public function profilePicture(): HasOne
-    {
-        return $this->hasOne(UserImage::class, 'user_uid', 'uid')->ofMany('order', 'min');
-    }
-
-    public function interactions(): HasMany
-    {
-        return $this->hasMany(TargetUsers::class, 'user_uid', 'uid');
-    }
-
-    public function likesReceived(): HasMany
-    {
-        return $this->hasMany(TargetUsers::class, 'target_user_uid', 'uid')
-            ->whereIn('interaction', [InteractionEnum::LIKE, InteractionEnum::SUPERLIKE]);
-    }
-
-    public function hooksAsUser1()
-    {
-        return $this->hasMany(Hook::class, 'user1_uid', 'uid');
-    }
-
-    public function hooksAsUser2()
-    {
-        return $this->hasMany(Hook::class, 'user2_uid', 'uid');
-    }
-
     public function events(): BelongsToMany
     {
         return $this->belongsToMany(Event::class, 'user_events', 'user_uid', 'event_uid')
@@ -134,15 +102,46 @@ final class User extends Authenticatable implements JWTSubject
             ->limit(1);
     }
 
+    public function images(): HasMany
+    {
+        return $this->hasMany(UserImage::class, 'user_uid', 'uid')->orderBy('order', 'asc');
+    }
+
+    public function interactions(): HasMany
+    {
+        return $this->hasMany(TargetUsers::class, 'user_uid', 'uid');
+    }
+
+    public function likesReceived(): HasMany
+    {
+        return $this->hasMany(TargetUsers::class, 'target_user_uid', 'uid')
+            ->whereIn('interaction', [InteractionEnum::LIKE, InteractionEnum::SUPERLIKE]);
+    }
+
+    public function hooksAsUser1(): HasMany
+    {
+        return $this->hasMany(Hook::class, 'user1_uid', 'uid');
+    }
+
+    public function hooksAsUser2(): HasMany
+    {
+        return $this->hasMany(Hook::class, 'user2_uid', 'uid');
+    }
+
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'user_uid', 'uid')
             ->where('read_at', false);
     }
 
-    public function tickets()
+    public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class, 'user_uid', 'uid');
+    }
+
+    public function profilePicture(): HasOne
+    {
+        return $this->hasOne(UserImage::class, 'user_uid', 'uid')->ofMany('order', 'min');
     }
 
     public function settings(): HasOne
@@ -150,9 +149,9 @@ final class User extends Authenticatable implements JWTSubject
         return $this->hasOne(Settings::class, 'user_uid', 'uid');
     }
 
-    public function getAgeAttribute(): int
+    public function age(): Attribute
     {
-        return Carbon::parse($this->born_date)->age;
+        return Attribute::get(fn () => $this->born_date->age);
     }
 
     public function getEventAttribute(): ?Event
@@ -174,16 +173,11 @@ final class User extends Authenticatable implements JWTSubject
         });
     }
 
-    public function getDataCompleteAttribute(): bool
+    public function dataComplete(): Attribute
     {
-        foreach ($this->dataCompleteValues as $value) {
-            if (! $this->{$value}) {
-                return false;
-                break;
-            }
-        }
-
-        return true;
+        return Attribute::get(fn () => collect($this->dataCompleteValues)
+            ->every(fn ($value) => ! empty($this->{$value}))
+        );
     }
 
     public function getDataImagesAttribute(): Attribute
@@ -260,36 +254,6 @@ final class User extends Authenticatable implements JWTSubject
         ]);
     }
 
-    public function scopeIsPremium()
-    {
-        return $this->role_id === Role::PREMIUM;
-    }
-
-    public function nextOrLastEvent()
-    {
-        $now = Carbon::now();
-
-        if (! $this->company) {
-            return null;
-        }
-
-        // Primero intentamos encontrar el evento futuro más cercano
-        $futureEvent = $this->company->events()
-            ->where('st_date', '>', $now)
-            ->orderBy('st_date', 'asc')
-            ->first();
-
-        if ($futureEvent) {
-            return $futureEvent;
-        }
-
-        // Si no hay eventos futuros, devolvemos el último evento pasado
-        return $this->company->events()
-            ->where('st_date', '<=', $now)
-            ->orderBy('st_date', 'desc')
-            ->first();
-    }
-
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      */
@@ -320,6 +284,7 @@ final class User extends Authenticatable implements JWTSubject
             'provider_name' => SocialProviders::class,
             'sexual_orientation' => SexualOrientationEnum::class,
             'gender' => GenderEnum::class,
+            'born_date' => 'date',
         ];
     }
 }
