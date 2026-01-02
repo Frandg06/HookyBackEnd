@@ -28,7 +28,7 @@ final class UserResource extends JsonResource
             'auto_password' => $this->auto_password,
             $this->mergeWhen($this->event, [
                 'like_credits' => $this->likes ?? 0,
-                'super_like_credits' => $this->super_likes ?? 0,
+                'superlike_credits' => $this->superlikes ?? 0,
             ]),
             'data_complete' => $this->data_complete,
             'data_images' => $this->data_images,

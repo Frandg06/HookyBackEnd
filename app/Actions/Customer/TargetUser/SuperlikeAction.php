@@ -30,7 +30,7 @@ final readonly class SuperlikeAction
 
             $this->targetUserRepository->create($target->toArray());
 
-            $user->activeEvent->first()?->pivot->decrement('super_likes');
+            $user->activeEvent->first()?->pivot->decrement('superlikes');
 
             $isHook = $this->targetUserRepository->canMakeHook($target);
 
@@ -43,7 +43,7 @@ final readonly class SuperlikeAction
             $this->notificationRepository->create($target, NotificationTypeEnum::SUPERLIKE);
 
             return [
-                'super_like_credits' => $user->super_likes,
+                'superlike_credits' => $user->superlikes,
                 'like_credits' => $user->likes,
             ];
         });

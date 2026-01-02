@@ -23,7 +23,7 @@ final class TicketOrdenator extends QueryOrdenator
 
     public function superlikes(string $value)
     {
-        return $this->builder->orderBy('super_likes', $value);
+        return $this->builder->orderBy('superlikes', $value);
     }
 
     public function likes(string $value)

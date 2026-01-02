@@ -28,7 +28,7 @@ final readonly class EventAttachAction
 
             return [
                 'like_credits' => $user->likes ?? 0,
-                'super_like_credits' => $user->super_likes ?? 0,
+                'superlike_credits' => $user->superlikes ?? 0,
                 'event' => [
                     'is_active' => $event->is_active,
                     'uid' => $event->uid,

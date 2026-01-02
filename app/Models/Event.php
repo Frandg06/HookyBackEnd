@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $company_uid
  * @property string $timezone
  * @property int $likes
- * @property int $super_likes
+ * @property int $superlikes
  * @property string $name
  * @property array|null $colors
  * @property string $code
@@ -82,7 +82,7 @@ final class Event extends Model
         'company_uid',
         'timezone',
         'likes',
-        'super_likes',
+        'superlikes',
         'name',
         'colors',
         'code',

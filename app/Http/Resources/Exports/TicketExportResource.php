@@ -21,7 +21,7 @@ final class TicketExportResource extends JsonResource
             'Nombre' => $this->name,
             'Precio' => $this->price,
             'Canjeado' => $this->redeemed ? 'Si' : 'No',
-            'Superlikes' => $this->super_likes,
+            'Superlikes' => $this->superlikes,
             'Likes' => $this->likes,
             'Codigo' => $this->code,
             'Evento' => $this->event?->name,

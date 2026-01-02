@@ -89,13 +89,13 @@ final class User extends Authenticatable implements JWTSubject
     public function events(): BelongsToMany
     {
         return $this->belongsToMany(Event::class, 'user_events', 'user_uid', 'event_uid')
-            ->withPivot('likes', 'super_likes', 'logged_at');
+            ->withPivot('likes', 'superlikes', 'logged_at');
     }
 
     public function activeEvent(): BelongsToMany
     {
         return $this->belongsToMany(Event::class, 'user_events', 'user_uid', 'event_uid')
-            ->withPivot('likes', 'super_likes', 'logged_at')
+            ->withPivot('likes', 'superlikes', 'logged_at')
             ->where('st_date', '<=', now())
             ->where('end_date', '>=', now())
             ->latest('logged_at')
@@ -151,7 +151,7 @@ final class User extends Authenticatable implements JWTSubject
 
     public function age(): Attribute
     {
-        return Attribute::get(fn () => $this->born_date->age);
+        return Attribute::get(fn () => $this->born_date?->age);
     }
 
     public function getEventAttribute(): ?Event
@@ -192,7 +192,7 @@ final class User extends Authenticatable implements JWTSubject
 
     public function getSuperLikesAttribute(): int
     {
-        return $this->activeEvent->first()?->pivot->super_likes ?? 0;
+        return $this->activeEvent->first()?->pivot->superlikes ?? 0;
     }
 
     public function scopeChats()

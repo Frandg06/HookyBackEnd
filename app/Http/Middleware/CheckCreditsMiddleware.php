@@ -29,7 +29,7 @@ final class CheckCreditsMiddleware
             throw InsufficientCreditsException::likes();
         }
 
-        if ($interaction === InteractionEnum::SUPERLIKE && $request->user()->super_likes < 1) {
+        if ($interaction === InteractionEnum::SUPERLIKE && $request->user()->superlikes < 1) {
             throw InsufficientCreditsException::superLikes();
         }
 

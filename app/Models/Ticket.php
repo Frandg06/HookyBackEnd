@@ -25,7 +25,7 @@ final class Ticket extends Model
         'code',
         'redeemed',
         'redeemed_at',
-        'super_likes',
+        'superlikes',
         'likes',
         'user_uid',
         'event_uid',

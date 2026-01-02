@@ -24,7 +24,7 @@ final class TicketFactory extends Factory
             'code' => mb_strtoupper(Str::random(6)),
             'redeemed' => false,
             'redeemed_at' => null,
-            'super_likes' => $this->faker->numberBetween(0, 100),
+            'superlikes' => $this->faker->numberBetween(0, 100),
             'likes' => $this->faker->numberBetween(0, 100),
             'user_uid' => null,
             'event_uid' => $this->faker->uuid,

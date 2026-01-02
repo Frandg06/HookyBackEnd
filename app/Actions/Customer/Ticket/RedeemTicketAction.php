@@ -21,7 +21,7 @@ final readonly class RedeemTicketAction
     /**
      * Execute the action to redeem a ticket for a user.
      *
-     * @return array{user_total: array{super_like_credits: int, like_credits: int}, ticket_add: array{super_likes: int, likes: int}}
+     * @return array{user_total: array{superlike_credits: int, like_credits: int}, ticket_add: array{superlikes: int, likes: int}}
      */
     public function execute(User $user, string $code): bool
     {
@@ -36,7 +36,7 @@ final readonly class RedeemTicketAction
                 $user->uid,
                 $event->uid,
                 $ticket->likes,
-                $ticket->super_likes
+                $ticket->superlikes
             );
 
             return true;

@@ -28,7 +28,7 @@ final class UsersToTableResource extends JsonResource
             'born_date' => $this->born_date,
             'description' => $this->description,
             'like_credits' => $this->event->likes,
-            'super_like_credits' => $this->event->super_likes,
+            'superlike_credits' => $this->event->superlikes,
             'age' => $this->age,
             'avatar' => $this->profilePicture->web_url ?? null,
         ];

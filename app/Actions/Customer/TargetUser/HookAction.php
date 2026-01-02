@@ -37,7 +37,7 @@ final readonly class HookAction
             $this->notificationRepository->storeBoth($target, NotificationTypeEnum::HOOK);
 
             return [
-                'super_like_credits' => $user->super_likes,
+                'superlike_credits' => $user->superlikes,
                 'like_credits' => $user->likes,
             ];
         });

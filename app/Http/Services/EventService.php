@@ -137,7 +137,7 @@ final class EventService extends Service
             ->with(['users', 'tickets'])
             ->filter($filtrer)
             ->sort($ordenator)
-            ->get(['name', 'st_date', 'end_date', 'colors', 'likes', 'super_likes']);
+            ->get(['name', 'st_date', 'end_date', 'colors', 'likes', 'superlikes']);
 
         return EventExportResource::collection($events);
     }

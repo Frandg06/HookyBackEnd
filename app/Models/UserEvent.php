@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 final class UserEvent extends Model
 {
-    protected $fillable = ['user_uid', 'event_uid', 'logged_at', 'likes', 'super_likes'];
+    protected $fillable = ['user_uid', 'event_uid', 'logged_at', 'likes', 'superlikes'];
 
     public function event()
     {

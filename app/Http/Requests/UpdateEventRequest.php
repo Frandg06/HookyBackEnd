@@ -28,7 +28,7 @@ final class UpdateEventRequest extends FormRequest
             'end_date' => 'nullable|date',
             'timezone' => 'nullable|string',
             'likes' => 'nullable|numeric',
-            'super_likes' => 'nullable|numeric',
+            'superlikes' => 'nullable|numeric',
             'name' => 'nullable|string',
             'colors' => 'nullable|string',
             'st_hour' => 'nullable|date_format:H:i',

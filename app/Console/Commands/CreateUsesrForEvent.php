@@ -62,7 +62,7 @@ final class CreateUsesrForEvent extends Command
                     'event_uid' => $event->uid,
                     'logged_at' => now(),
                     'likes' => $event->likes,
-                    'super_likes' => $event->super_likes,
+                    'superlikes' => $event->superlikes,
                 ]);
 
                 if ($user->gender === GenderEnum::MALE) {

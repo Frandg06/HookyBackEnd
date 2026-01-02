@@ -25,7 +25,7 @@ final class UserEventRepository
             [
                 'logged_at' => now(),
                 'likes' => $event->likes,
-                'super_likes' => $event->super_likes,
+                'superlikes' => $event->superlikes,
             ]
         );
     }
@@ -36,7 +36,7 @@ final class UserEventRepository
             ->where('event_uid', $eventUid)
             ->update([
                 'likes' => DB::raw("likes + {$likes}"),
-                'super_likes' => DB::raw("super_likes + {$superLikes}"),
+                'superlikes' => DB::raw("superlikes + {$superLikes}"),
             ]);
     }
 }

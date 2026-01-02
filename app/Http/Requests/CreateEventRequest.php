@@ -28,7 +28,7 @@ final class CreateEventRequest extends FormRequest
             'end_date' => 'required|date',
             'timezone' => 'required|string',
             'likes' => 'required|integer',
-            'super_likes' => 'required|integer',
+            'superlikes' => 'required|integer',
             'name' => 'required|string|max:255',
             'colors' => 'required|string|max:16',
             'st_hour' => 'required|date_format:H:i',

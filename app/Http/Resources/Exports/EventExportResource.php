@@ -22,7 +22,7 @@ final class EventExportResource extends JsonResource
             'Fecha_inicio' => $this->st_date,
             'Fecha_final' => $this->end_date,
             'Likes' => $this->likes,
-            'Superlikes' => $this->super_likes,
+            'Superlikes' => $this->superlikes,
             'Registros' => $this->users()->count(),
             'Tickets_Canjeados' => $this->tickets()->where('redeemed', true)->count(),
             'Hombres' => $this->users()->getMales()->count(),

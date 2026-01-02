@@ -22,7 +22,7 @@ return new class extends Migration
             $table->dateTime('end_date');
             $table->string('timezone');
             $table->unsignedInteger('likes');
-            $table->unsignedInteger('super_likes');
+            $table->unsignedInteger('superlikes');
             $table->string('colors')->default('label-sky');
             $table->string('code')->nullable();
             $table->foreign('company_uid')->references('uid')->on('companies')->onDelete('cascade');

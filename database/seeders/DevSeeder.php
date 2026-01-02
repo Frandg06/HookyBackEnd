@@ -49,7 +49,7 @@ final class DevSeeder extends Seeder
                     'price' => rand(3, 6),
                     'redeemed_at' => fake()->dateTimeInInterval('-6 months', '+6 months'),
                     'likes' => fake()->numberBetween(1, 100),
-                    'super_likes' => fake()->numberBetween(1, 100),
+                    'superlikes' => fake()->numberBetween(1, 100),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -64,7 +64,7 @@ final class DevSeeder extends Seeder
                     'user_uid' => $user->uid,
                     'event_uid' => $event->uid,
                     'logged_at' => fake()->dateTimeInInterval('-12 hours', '+15 hours'),
-                    'super_likes' => $event->super_likes,
+                    'superlikes' => $event->superlikes,
                     'likes' => $event->likes,
                 ]);
 
@@ -97,7 +97,7 @@ final class DevSeeder extends Seeder
         //         'user_uid' => $user->uid,
         //         'event_uid' => $event->uid,
         //         'logged_at' => fake()->dateTimeInInterval('-12 hours', '+15 hours'),
-        //         'super_likes' => $event->super_likes,
+        //         'superlikes' => $event->superlikes,
         //         'likes' => $event->likes,
         //     ]);
 

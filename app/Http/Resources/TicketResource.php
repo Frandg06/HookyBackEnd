@@ -22,7 +22,7 @@ final class TicketResource extends JsonResource
             'name' => $this->name,
             'price' => $this->price,
             'redeemed' => $this->redeemed,
-            'super_likes' => $this->super_likes,
+            'superlikes' => $this->superlikes,
             'likes' => $this->likes,
             'code' => $this->code,
             'event' => $this->event?->name,

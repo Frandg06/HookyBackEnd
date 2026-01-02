@@ -34,7 +34,7 @@ final class EventResource extends JsonResource
             'banner_image' => $this->banner_image,
             'timezone' => $this->timezone,
             'likes' => $this->likes,
-            'super_likes' => $this->super_likes,
+            'superlikes' => $this->superlikes,
             'colors' => $this->colors,
             'users_count' => $this->users()->count(),
             'incomes' => $this->tickets()->where('redeemed', true)->sum('price'),

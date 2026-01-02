@@ -38,12 +38,12 @@ final class TicketFilter extends QueryFilter
 
     public function superlikesMin($value)
     {
-        return $this->builder->where('super_likes', '>=', $value);
+        return $this->builder->where('superlikes', '>=', $value);
     }
 
     public function superlikesMax($value)
     {
-        return $this->builder->where('super_likes', '<=', $value);
+        return $this->builder->where('superlikes', '<=', $value);
     }
 
     public function redeemed(bool $value)

@@ -44,7 +44,7 @@ final class EventFactory extends Factory
             'end_date' => $end_date,
             'timezone' => 'Europe/Madrid',
             'likes' => fake()->numberBetween(1, 100),
-            'super_likes' => fake()->numberBetween(1, 100),
+            'superlikes' => fake()->numberBetween(1, 100),
             'colors' => $colors[rand(0, count($colors) - 1)],
             'room_name' => fake()->word(),
             'city' => fake()->city(),

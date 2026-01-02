@@ -43,7 +43,7 @@ final readonly class LikeAction
             $this->notificationRepository->create($target, NotificationTypeEnum::LIKE);
 
             return [
-                'super_like_credits' => $user->super_likes,
+                'superlike_credits' => $user->superlikes,
                 'like_credits' => $user->likes,
             ];
         });

@@ -58,7 +58,7 @@ final class TicketService extends Service
                     'event_uid' => $uuid,
                     'redeemed' => false,
                     'likes' => $data['likes'],
-                    'super_likes' => $data['superlikes'],
+                    'superlikes' => $data['superlikes'],
                     'name' => $data['name'],
                     'price' => $data['price'],
                     'created_at' => now(),
