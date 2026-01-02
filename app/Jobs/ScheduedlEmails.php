@@ -39,7 +39,7 @@ final class ScheduedlEmails implements ShouldBeUnique, ShouldQueue
      */
     public function handle(): void
     {
-        UserScheduledNotification::where('user_uid', $this->user->id)
+        UserScheduledNotification::where('user_uid', $this->user->uid)
             ->where('event_uid', $this->event->uid)
             ->update(['status' => 'sent']);
 

@@ -103,6 +103,7 @@ return [
     'payment_not_completed' => 'El pago no se ha completado.',
     'payment_intent_created' => 'Pago procesado correctamente.',
     'user_already_premium' => 'El usuario ya es premium.',
+    'notifications_disabled' => 'Las notificaciones están deshabilitadas en tu configuración.',
     'notification_scheduled' => 'Todo listo! Te avisaremos cuando el evento esté a punto de comenzar.',
     'event_attached_by_company' => 'Te has unido correctamente al evento de la empresa.',
     'link_not_valid' => 'El enlace desde el que has accedido no es válido.',
