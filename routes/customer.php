@@ -14,8 +14,8 @@ use App\Http\Controllers\Customer\Stripe\PaymentController;
 use App\Http\Controllers\Customer\Event\GetEventsController;
 use App\Http\Controllers\Customer\Image\SwapImageController;
 use App\Http\Controllers\Customer\TargetUser\LikeController;
+use App\Http\Controllers\Customer\User\DeleteUserController;
 use App\Http\Controllers\Customer\User\UpdateUserController;
-use App\Http\Controllers\Customer\User\UpdateSettingsController;
 use App\Http\Controllers\Customer\Auth\EventAttachController;
 use App\Http\Controllers\Customer\Auth\SocialLoginController;
 use App\Http\Controllers\Customer\Chat\SendMessageController;
@@ -30,6 +30,7 @@ use App\Http\Controllers\Customer\Stripe\MakeCheckoutController;
 use App\Http\Controllers\Customer\Ticket\RedeemTicketController;
 use App\Http\Controllers\Customer\User\ShowTargetUserController;
 use App\Http\Controllers\Customer\User\UpdatePasswordController;
+use App\Http\Controllers\Customer\User\UpdateSettingsController;
 use App\Http\Controllers\Customer\Event\GetEventsGuestController;
 use App\Http\Controllers\Customer\TargetUser\SuperlikeController;
 use App\Http\Controllers\Customer\Image\ClearUserImagesController;
@@ -72,6 +73,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/user/complete', CompleteUserDataController::class);
     Route::put('/user/update', UpdateUserController::class);
     Route::put('/user/settings', UpdateSettingsController::class);
+    Route::delete('/user', DeleteUserController::class);
 
     Route::put('/user/password', UpdatePasswordController::class);
 
