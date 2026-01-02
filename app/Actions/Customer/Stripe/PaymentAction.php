@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Exceptions\ApiException;
 use Illuminate\Support\Facades\DB;
+use App\Http\Services\EmailService;
 use App\Http\Services\StripeService;
 use App\Repositories\OrderRepository;
 use App\Repositories\ProductRepository;
@@ -18,6 +19,7 @@ final readonly class PaymentAction
         private readonly OrderRepository $orderRepository,
         private readonly ProductRepository $productRepository,
         private readonly StripeService $stripeService,
+        private readonly EmailService $emailService,
     ) {}
 
     public function execute(User $user, string $sessionId): array
@@ -26,7 +28,6 @@ final readonly class PaymentAction
 
             $session = $this->stripeService->retrieveSession($sessionId);
 
-            debug($session);
             if ($session->payment_status !== 'paid') {
                 throw new ApiException('payment_not_completed', 422);
             }
@@ -49,6 +50,16 @@ final readonly class PaymentAction
                 'product_uuid' => $product->uuid,
                 'session_id' => $session->id,
             ]);
+
+            if ($order->wasRecentlyCreated) {
+                $this->emailService->sendPaymentSuccessEmail($user, [
+                    'amount' => number_format($session->amount_total / 100, 2),
+                    'method' => $cardBrand ?? 'N/A',
+                    'last4' => $last4 ?? 'N/A',
+                    'date' => now()->format('F d, Y'),
+                    'transaction_id' => $order->order_number,
+                ]);
+            }
 
             $user->update(['role_id' => Role::PREMIUM]);
 
