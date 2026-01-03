@@ -125,7 +125,7 @@ describe('register user', function () {
         $response->assertJsonValidationErrors(['password']);
     });
 
-    it('user can register but event attachment fails because event is inactive', function () {
+    it('registration works when event is inactive', function () {
         // Arrange
         $event = Event::factory()->create([
             'st_date' => now()->subDays(2),
