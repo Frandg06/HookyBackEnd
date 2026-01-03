@@ -39,7 +39,7 @@ final class EventFactory extends Factory
         return [
             'uid' => fake()->uuid(),
             'name' => fake()->name(),
-            'company_uid' => '54ce8856-fb28-4ff9-bae5-6ed039829959',
+            'company_uid' => CompanyFactory::new()->create()->uid,
             'st_date' => $st_date,
             'end_date' => $end_date,
             'timezone' => 'Europe/Madrid',

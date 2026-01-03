@@ -52,12 +52,12 @@ return Application::configure(basePath: dirname(__DIR__))
             ], $e->getCode());
         });
 
-        $exceptions->render(function (ValidationException $e, Request $request) {
-            return response()->json([
-                'error' => true,
-                'custom_message' => implode(' ', $e->validator->errors()->all()),
-            ], 422);
-        });
+        // $exceptions->render(function (ValidationException $e, Request $request) {
+        //     return response()->json([
+        //         'error' => true,
+        //         'custom_message' => implode(' ', $e->validator->errors()->all()),
+        //     ], 422);
+        // });
 
         // $exceptions->render(function (Exception $e, Request $request) {
         //     Log::error($e->getMessage(), ['stack' => $e->getTraceAsString()]);
