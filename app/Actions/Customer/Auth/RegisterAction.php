@@ -4,30 +4,29 @@ declare(strict_types=1);
 
 namespace App\Actions\Customer\Auth;
 
-use App\Exceptions\ApiException;
+use App\Dtos\RegisterUserDto;
+use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\DB;
-use App\Repositories\UserRepository;
-use Illuminate\Support\Facades\Auth;
+use App\Actions\Customer\Auth\RegistrationPipeline\RegisterUserPassable;
 
 final readonly class RegisterAction
 {
-    public function __construct(private readonly UserRepository $userRepository) {}
-
     /**
      * Execute the action.
      */
-    public function execute(array $data): string
+    public function execute(RegisterUserDto $data): string
     {
         return DB::transaction(function () use ($data): string {
-            $user = $this->userRepository->createUser($data);
+            $passable = new RegisterUserPassable(userDto: $data);
+            app(Pipeline::class)
+                ->send($passable)
+                ->through([
+                    RegistrationPipeline\RegisterUserPipe::class,
+                    RegistrationPipeline\AttachEventPipe::class,
+                ])
+                ->thenReturn();
 
-            $token = Auth::login($user);
-
-            if (! $token) {
-                throw new ApiException('credentials_ko', 401);
-            }
-
-            return $token;
+            return $passable->accessToken;
         });
     }
 }

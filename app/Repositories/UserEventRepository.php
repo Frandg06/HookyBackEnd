@@ -12,7 +12,7 @@ final class UserEventRepository
 {
     public function findEventByUuid(string $event_uuid): ?Event
     {
-        return Event::where('uid', $event_uuid)->first();
+        return Event::find($event_uuid);
     }
 
     public function attachUserToEvent(string $user_uuid, Event $event): UserEvent

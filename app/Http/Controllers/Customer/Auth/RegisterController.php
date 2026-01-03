@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Customer\Auth;
 
-use App\Exceptions\ApiException;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Dtos\RegisterUserDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
 use App\Actions\Customer\Auth\RegisterAction;
@@ -18,16 +17,16 @@ final class RegisterController extends Controller
      */
     public function __invoke(RegisterRequest $request, RegisterAction $action, EventAttachAction $attachAction)
     {
-        $response = $action->execute($request->validated());
 
-        if ($request->filled('event_uid')) {
-            try {
-                $attachAction->execute(JWTAuth::user()->uid, $request->input('event_uid'));
-            } catch (ApiException $e) {
-                // Do nothing if event attachment fails
-            }
-        }
+        $data = new RegisterUserDto(
+            name: $request->string('name')->toString(),
+            email: $request->string('email')->toString(),
+            password: $request->string('password')->toString(),
+            eventUid: $request->string('event_uid')->toString() ?: null,
+        );
 
-        return $this->successResponse('Registration successful.', ['access_token' => $response]);
+        $response = $action->execute($data);
+
+        return $this->successResponse('Registration successful.', ['access_token' => $response], 201);
     }
 }

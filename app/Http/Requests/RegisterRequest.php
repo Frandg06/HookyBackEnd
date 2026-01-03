@@ -27,7 +27,7 @@ final class RegisterRequest extends FormRequest
             'name' => ['required', 'string', 'max:50'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'event_uid' => ['nullable', 'uuid', 'exists:events,uid'],
+            'event_uid' => ['nullable', 'string'],
         ];
     }
 
